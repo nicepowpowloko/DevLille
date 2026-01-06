@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afficher / Masquer</title>
+</head>
+<body>
+    
+<script>
+
+function hideAndShow(){
+    var p = document.getElementById('demo');
+    var s = p.style.display;
+        if(s == 'none'){
+            p.style.display = 'block'
+        } else{
+            p.style.display = 'none'
+        }
+
+}
+
+</script>
+
+<h2> Afficher / Masquer en JAVASCRIPT</h2>
+
+<P id="demo"> fonction en JAVASCRIPT</P>
+<button type="button" onclick="hideAndShow()">Click</button>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Rendre accessible aux mobiles + zoom -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Page accessible RGAA / ARIA</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        header, footer {
+            background: #004a99;
+            color: white;
+            padding: 15px;
+        }
+
+        nav a {
+            color: white;
+            margin-right: 20px;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER ACCESSIBLE -->
+<header role="banner">
+    <h1>Site Accessible RGAA</h1>
+
+    <!-- Navigation avec rôle et ARIA -->
+    <nav role="navigation" aria-label="Navigation principale">
+        <a href="#contenu-principal">Aller au contenu</a>
+        <a href="#">Accueil</a>
+        <a href="#">Contact</a>
+    </nav>
+</header>
+
+<!-- CONTENU PRINCIPAL -->
+<main id="contenu-principal" role="main">
+    <h2>Présentation</h2>
+
+    <p>Cette page est un exemple conforme au RGAA et utilisant ARIA.</p>
+
+    <!-- IMAGE AVEC ALT -->
+    <div class="card">
+        <img src="https://picsum.photos/400/300"
+             alt="Photographie de paysage montrant une montagne et un lac">
+
+        <p>Cette image possède un texte alternatif.</p>
+    </div>
+
+    <!-- BOUTON ACCESSIBLE -->
+    <button aria-label="Ajouter un élément">➕ Ajouter</button>
+
+    <!-- ALERTE ACCESSIBLE -->
+    <div id="zone-message" aria-live="assertive"></div>
+
+<button onclick="afficherAlerte()">Afficher alerte</button>
+
+<script>
+function afficherAlerte() {
+    document.getElementById("zone-message").innerHTML =
+        '<div role="alert">⚠ Message important lu automatiquement</div>';
+}
+</script>
+</main>
+
+<!-- FOOTER -->
+<footer role="contentinfo">
+    © 2025 – Site conforme RGAA
+</footer>
+
+</body>
+</html>

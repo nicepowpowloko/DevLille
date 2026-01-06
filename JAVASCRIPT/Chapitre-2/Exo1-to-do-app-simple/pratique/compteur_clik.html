@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <title>compteur click</title>
+<body>
+    <h2 id="compteur">0</h2>
+    <button id="btnIncrementer">Cliquer ici</button>
+    
+    <script>
+        let compteur = 0;
+        let affichage = document.getElementById("compteur");
+        let bouton = document.getElementById("btnIncrementer");
+        
+        bouton.onclick = function() {
+            compteur++;
+            affichage.textContent = compteur;
+        };
+    </script>
+</body>
+</html>

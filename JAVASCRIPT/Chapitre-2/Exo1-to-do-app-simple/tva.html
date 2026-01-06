@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prix_TTC</title>
+</head>
+<body>
+
+<script>
+  
+  // Demander le prix HT à l'utilisateur
+  var prixHT = prompt("Entrez le prix HT :");
+  //La fonction prompt() est utilisée pour demander à l'utilisateur d'entrer le prix HT.
+
+  // Convertir le prix HT en nombre
+  prixHT = parseFloat(prixHT);
+  //La fonction parseFloat() est utilisée pour convertir la valeur entrée en nombre.
+
+  // Vérifier si la valeur est numérique
+  //La condition if (!isNaN(prixHT)) vérifie si la valeur est numérique.
+  if (!isNaN(prixHT)) {
+    // Calculer le prix TTC avec une TVA de 20%
+    var prixTTC = prixHT * 1.2;
+
+    // Afficher le résultat dans la page HTML
+    document.body.innerText = "Prix HT : " + prixHT.toFixed(2) + " €\n" +
+                               "Prix TTC (TVA 20%) : " + prixTTC.toFixed(2) + " €";
+                           // Si la valeur est numérique, le prix TTC est calculé avec une TVA de 20% et affiché dans la page HTML.                  
+  } else {
+    // Afficher un message d'erreur si la valeur n'est pas numérique
+    document.body.innerText = "Veuillez entrer un prix HT valide.";
+  }
+</script>
+
+</body>
+</html>

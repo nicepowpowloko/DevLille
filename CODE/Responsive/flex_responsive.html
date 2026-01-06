@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple Flex Responsive</title>
+
+    <style>
+        /* 
+           ----- STYLES DE BASE -----
+            */
+
+        body {
+            margin: 0;                       /* Retire les marges du navigateur */
+            font-family: Arial, sans-serif;  /* Police générale */
+            background: #f5f5f5;             /* Couleur de fond */
+            padding: 20px;                   /* Espace interne autour du contenu */
+        }
+
+        h1 {
+            text-align: center;              /* Centre le titre */
+            color: #333;                     /* Couleur du texte */
+        }
+
+        /* ----- Conteneur FLEX ----- */
+        .galerie {
+            display: flex;                   /* Active le mode flexbox */
+            flex-direction: column;          /* Les éléments seront empilés sur mobile */
+            gap: 20px;                       /* Espace entre les images */
+            margin-top: 30px;                /* Espace au-dessus de la galerie */
+        }
+
+        /* ----- Carte contenant chaque image ----- */
+        .carte {
+            background: white;               /* Fond blanc */
+            border-radius: 10px;             /* Coins arrondis */
+            overflow: hidden;                /* Coupe ce qui dépasse de la carte */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);  /* Petite ombre douce */
+        }
+
+        /* ----- Style des images ----- */
+        .carte img {
+            width: 100%;                     /* L’image prend toute la largeur */
+            display: block;                  /* Retire l'espace fantôme des images */
+        }
+
+        .carte p {
+            padding: 15px;                   /* Espace dans le texte */
+            margin: 0;                       /* Retire les marges */
+            text-align: center;              /* Centre le texte */
+            font-size: 16px;                 /* Taille du texte */
+        }
+
+
+
+        /* 
+           ----- MEDIA QUERY TABLETTE (min-width: 600px) -----
+            */
+
+        @media (min-width: 600px) {
+
+            .galerie {
+                flex-direction: row;         /* Passe les cartes en ligne */
+                flex-wrap: wrap;             /* Permet le retour à la ligne */
+                justify-content: center;     /* Centre les cartes */
+            }
+
+            .carte {
+                width: 45%;                  /* 2 cartes par ligne */
+            }
+        }
+
+
+
+        /* 
+           ----- MEDIA QUERY DESKTOP (min-width: 900px) ----- */
+
+        @media (min-width: 900px) {
+
+            .carte {
+                width: 30%;                  /* 3 cartes par ligne sur grand écran 
+                
+                Comme 3 × 30% = 90%, cela laisse 10% pour les marges / espaces (gap), et donc le navigateur peut afficher 3 cartes par ligne.*/
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <h1>Galerie Responsive en Flexbox</h1>
+
+    <!-- Conteneur flex -->
+    <div class="galerie">
+
+        <!-- Carte 1 -->
+        <div class="carte">
+            <img src="../Exemple_Boostr/IMG/fortnite.jpg" alt="image 1">
+            <p>Fortnite</p>
+        </div>
+
+        <!-- Carte 2 -->
+        <div class="carte">
+            <img src="../Exemple_Boostr/IMG/lol.jpg" alt="image 2">
+            <p>League of Legends</p>
+        </div>
+
+        <!-- Carte 3 -->
+        <div class="carte">
+            <img src="../Exemple_Boostr/IMG/World-of-Warcraft.jpg" alt="image 3">
+            <p>WOW</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

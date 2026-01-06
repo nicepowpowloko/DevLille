@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apparition_Images_Textes</title>
+  <style>
+    /* Style pour masquer les images et les textes par défaut */
+    .content {
+      display: none;
+    }
+
+    .content img{
+        height: 300px;
+        width: 500px;
+    }
+
+    
+
+
+  </style>
+</head>
+<body>
+
+<!-- Icône 1 -->
+<img src="../IMG/viking.png" alt="Icone 1" onclick="toggleContent('content1')">
+
+
+
+<!-- Icône 2 -->
+<img src="../IMG/chevalier(1).png" alt="Icone 2" onclick="toggleContent('content2')">
+
+<!-- Zone pour afficher les images et les textes -->
+<div id="content1" class="content">
+  <img src="../IMG/ACValhalla_1.jpg" alt="Image 1">
+  <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Debitis similique recusandae officia necessitatibus voluptatum nihil, ex modi facilis vitae ad repellendus porro, quasi amet ducimus quas doloribus nesciunt veritatis vero?</p>
+</div>
+
+<div id="content2" class="content">
+  <img src="../IMG/chevalier-img.jpg" alt="Image 2">
+  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, dolor. Eos, autem nam officia reiciendis vero delectus blanditiis eligendi laudantium! Ipsa aut molestiae quidem maiores fugit voluptate expedita doloribus aperiam?</p>
+</div>
+
+<script>
+function toggleContent(contentId) {
+  // Masquer tous les contenus
+  //toggleContent(contentId): Cette fonction prend un argument contentId, qui est l'ID de l'élément du DOM que vous souhaitez afficher. Voici ce qu'elle fait :
+  //Appelle une fonction auxiliaire hideAllContent() pour masquer tous les contenus.
+//Affichage du contenu spécifié : Obtient l'élément du DOM avec l'ID spécifié (contentId). Si l'élément existe, il le rend visible en modifiant sa propriété display pour block.
+  hideAllContent(); 
+  hideAllContent();
+
+  // Afficher le contenu correspondant
+  var content = document.getElementById(contentId);
+  if (content) {
+    content.style.display = 'block';
+  }
+}
+
+function hideAllContent() {
+  // Masquer tous les contenus
+  var contents = document.querySelectorAll('.content');
+  contents.forEach(function(content) {
+    content.style.display = 'none';
+  });
+}
+//hideAllContent(): Cette fonction masque tous les contenus en modifiant la propriété display de chaque élément avec la classe CSS .content pour none. Elle utilise querySelectorAll pour sélectionner tous les éléments correspondant à la classe .content, puis elle utilise forEach pour parcourir la liste et masquer chaque élément.
+
+</script>
+
+</body>
+</html>

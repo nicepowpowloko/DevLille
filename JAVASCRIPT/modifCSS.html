@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+
+<script>
+
+function changeStyle() {
+    let element = document.getElementById('demo');
+
+    if (element.style.fontSize === '35px') {
+        
+        element.style.fontSize = '16px';
+        element.style.color = 'black';
+        element.style.backgroundColor = 'transparent';
+//Si le texte est déjà gros (35px), alors on va le remettre à la normale.
+
+    } else {
+       
+        element.style.fontSize = '35px';
+        element.style.color = 'white';
+        element.style.backgroundColor = 'purple';
+//Si le texte était modifié, on réinitialise les styles pour qu’il redevienne normal.
+    }
+}
+</script>
+
+<p id="demo">Le JavaScript change aussi le style des éléments HTML.</p>
+<button onclick="changeStyle()">Click</button>
+
+
+</body>
+</html>

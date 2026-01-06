@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do_While</title>
+</head>
+<body>
+    
+
+<script>
+
+function jeuDevinette() {
+    // déclare une fonction appelée jeuDevinette.
+  let nombreSecret = Math.floor(Math.random() * 20) + 1; // 1 à 20 aléatoire
+  // Math.floor arrondit à l’entier inférieur, donc entre 0 et 19
+  let essais = 0;
+  let nombreUtilisateur;
+// Déclare une variable qui va stocker le nombre saisi par l’utilisateur.
+// On ne lui donne pas encore de valeur, car elle sera saisie dans la boucle.
+  do {
+    nombreUtilisateur = parseInt(prompt("Devine le nombre entre 1 et 20 :"));
+    essais++;
+    // le code à l’intérieur des {} s’exécute au moins une fois, puis se répète tant que la condition est vraie.
+    // prompt() affiche une boîte de dialogue pour que l’utilisateur saisisse un texte.
+    // parseInt() convertit ce texte en nombre entier.
+    // La valeur est stockée dans nombreUtilisateur.
+
+    if (nombreUtilisateur < nombreSecret) {
+      alert("Trop petit !");
+      // Si le nombre saisi est inférieur au nombre secret, on affiche
+    } else if (nombreUtilisateur > nombreSecret) {
+      alert("Trop grand !");
+      // Si le nombre saisi est supérieur, on affiche le message
+    } else if (nombreUtilisateur === nombreSecret) {
+      alert("Bravo ! Tu as trouvé le nombre en " + essais + " essais.");
+    } else {
+        // Si la saisie n’est pas un nombre valide (exemple : texte vide ou lettres), on demande à l’utilisateur de saisir correctement un nombre.
+      alert("Merci de saisir un nombre valide !");
+    }
+
+  } while (nombreUtilisateur !== nombreSecret);
+}
+
+// Lancer le jeu
+jeuDevinette();
+
+
+</script>
+
+
+    
+</body>
+</html>

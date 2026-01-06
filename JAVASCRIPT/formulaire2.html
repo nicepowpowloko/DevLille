@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulaire avec Catégorie</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    form {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 20px;
+      margin: 20px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    #comment{
+        width: 300px;
+    }
+
+
+
+
+
+  </style>
+</head>
+<body>
+
+<form id="myForm">
+  <label for="category">Catégorie :</label>
+  <select id="category" name="category">
+    <option value="option1" >Veuillez selectionner une catégorie...</option>
+    <option value="Transport de passagers">Transport de passagers</option>
+    <option value="Transport mobilité réduite">Transport mobilité réduite</option>
+    <option value="Portage de repas">Portage de repas</option>
+    <option value="Aide à domicile">Aide à domicile</option>
+    <option value="Alpha bien-etre">Alpha bien-etre</option>
+    <!-- Ajoutez d'autres options au besoin -->
+  </select>
+
+  <label for="lastName">Nom :</label>
+  <input type="text" id="lastName" name="lastName" required>
+
+  <label for="firstName">Prénom :</label>
+  <input type="text" id="firstName" name="firstName" required>
+
+  <label for="email">Email :</label>
+  <input type="email" id="email" name="email" required>
+
+  <label for="phone">Téléphone :</label>
+  <input type="tel" id="phone" name="phone">
+
+  <label for="comment">Commentaire :</label>
+  <textarea id="comment" name="comment" rows="4"></textarea>
+
+  <button type="button" onclick="submitForm()">Envoyer</button>
+
+</form>
+
+<script>
+function submitForm() {
+  // Récupérer les valeurs des champs
+  var category = document.getElementById('category').value;
+  var firstName = document.getElementById('firstName').value;
+  var lastName = document.getElementById('lastName').value;
+  var email = document.getElementById('email').value;
+  var phone = document.getElementById('phone').value;
+  var comment = document.getElementById('comment').value;
+
+  // Afficher les données dans la console (vous pouvez ajuster cela selon vos besoins)
+  console.log('Catégorie:', category);
+  console.log('Prénom:', firstName);
+  console.log('Nom:', lastName);
+  console.log('Email:', email);
+  console.log('Téléphone:', phone);
+
+ // Construction de l'URL de l'e-mail
+ var mailtoLink = 'mailto:thomas22751@gmail.com' +
+    '?subject=' + encodeURIComponent('Nouveau formulaire de contact') +
+    '&body=' + encodeURIComponent('Catégorie: ' + category + ' \n' +
+                                  'Prénom: ' + firstName + '\n' +
+                                  'Nom: ' + lastName + '\n' +
+                                  'Email: ' + email + '\n' +
+                                  'Téléphone: ' + phone + '\n' +
+                                  'Commentaire: ' + comment);
+
+  // Ouvrir le client de messagerie par défaut avec le lien mailto
+  window.location.href = mailtoLink;
+
+
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Meta pour rendre la page responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mise en page Flexbox</title>
+
+    <style>
+        /* ----- RESET DU BODY ----- */
+        body {
+            margin: 0;                 /* Supprime les marges par défaut */
+            font-family: Arial, sans-serif; 
+        }
+
+        /* ----- HEADER ----- */
+        header {
+            background: #1e88e5;       
+            padding: 20px;             /* Espace interne */
+            color: white;              /* Texte en blanc */
+            text-align: center;        /* Centrer le texte */
+        }
+
+        /* ----- CONTENEUR PRINCIPAL ----- */
+        .container {
+            display: flex;             /* Active Flexbox */
+            gap: 20px;                 /* Ajoute de l’espace entre les blocs */
+            padding: 20px;
+        }
+
+        /* ----- SIDEBAR À GAUCHE ----- */
+        .sidebar {
+            width: 250px;              /* Largeur fixe */
+            background: #f1f1f1;       /* Couleur gris clair */
+            padding: 20px;             /* Espace interne */
+            border-radius: 10px;       /* Angles arrondis */
+        }
+
+        /* ----- CONTENU PRINCIPAL ----- */
+        .content {
+            flex: 1;                   /* Prend tout l’espace disponible */
+            background: #fafafa;       
+            padding: 20px;            
+            border-radius: 10px;
+        }
+
+        /* ----- IMAGES ALIGNÉES EN FLEXBOX ----- */
+        .gallery {
+            display: flex;             /* Active Flexbox */
+            gap: 15px;                 /* Espace entre les images */
+            flex-wrap: wrap;           /* Permet le retour à la ligne */
+        }
+
+        .gallery img {
+            width: 200px;              /* Taille fixe */
+            height: 130px;
+            object-fit: cover;         /* Coupe l’image pour qu’elle remplisse son cadre */
+            border-radius: 8px;        /* Angles arrondis */
+        }
+
+        /* ----- FOOTER ----- */
+        footer {
+            background: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+
+</head>
+<body>
+
+    <!-- ----- HEADER ----- -->
+    <header>
+        <h1>Exemple Page FlexBox</h1>
+    </header>
+
+    <!-- ----- CONTENEUR FLEX PRINCIPAL ----- -->
+    <!-- Ce flex contient la sidebar + le contenu -->
+    <div class="container">
+
+        <!-- ----- SIDEBAR ----- -->
+        <div class="sidebar">
+            <h3>Menu</h3>
+            <ul>
+                <li>Accueil</li>
+                <li>Galerie</li>
+                <li>Profil</li>
+                <li>Contact</li>
+            </ul>
+        </div>
+
+        <!-- ----- CONTENU PRINCIPAL ----- -->
+        <div class="content">
+            <h2>Galerie d’images</h2>
+            <p>Les images ci-dessous sont alignées grâce à Flexbox.</p>
+
+            <!-- ----- FLEXBOX POUR LA GALERIE ----- -->
+            <div class="gallery">
+
+                <!-- Image 1 -->
+                <img src="https://picsum.photos/400/300?random=1" alt="Image 1">
+                
+                <!-- Image 2 -->
+                <img src="https://picsum.photos/400/300?random=2" alt="Image 2">
+
+                <!-- Image 3 -->
+                <img src="https://picsum.photos/400/300?random=3" alt="Image 3">
+
+                <!-- Image 4 -->
+                <img src="https://picsum.photos/400/300?random=4" alt="Image 4">
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ----- FOOTER ----- -->
+    <footer>
+         Exemple Flexbox 
+    </footer>
+
+</body>
+</html>

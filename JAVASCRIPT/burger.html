@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Burger</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .navbar {
+      background-color: #eadada;
+      padding: 15px;
+      color: #101010;
+      font-weight: bolder;
+      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .menu {
+      display: none;
+      flex-direction: column;
+      background-color: #25e907;
+      padding: 15px;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+    }
+
+    .menu a {
+      color: #fff;
+      text-decoration: none;
+      margin-bottom: 10px;
+    }
+
+    .menu-icon {
+      font-size: 24px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="menu-icon" onclick="toggleMenu()">☰</div>
+  <div class="menu">
+    <a href="#">Accueil</a>
+    <a href="#">Services</a>
+    <a href="#">Contact</a>
+  </div>
+</div>
+
+<script>
+  function toggleMenu() {
+    const menu = document.querySelector('.menu');
+    //const menu = document.querySelector('.menu');: Cette ligne récupère l'élément du DOM avec la classe CSS .menu et le stocke dans la variable menu.
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    //menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';: Cette ligne vérifie la valeur actuelle de la propriété CSS display de l'élément menu. Si la valeur est 'block', cela signifie que le menu est actuellement visible. Dans ce cas, la ligne affecte la valeur 'none' à menu.style.display, ce qui le rend invisible. Si la valeur actuelle est différente de 'block' (c'est-à-dire qu'elle est 'none' ou une autre valeur), la ligne affecte 'block' à menu.style.display, rendant ainsi le menu visible.
+  }
+</script>
+
+</body>
+</html>

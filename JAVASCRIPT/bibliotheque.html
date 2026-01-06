@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bibliothèque de livres</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        input, button {
+            margin: 5px 0;
+            padding: 6px;
+        }
+
+        .book {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .book img {
+            width: 80px;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Ajouter un livre</h2>
+
+<!-- Champ pour le titre du livre -->
+<input type="text" id="title" placeholder="Titre"><br>
+
+<!-- Champ pour l’auteur -->
+<input type="text" id="author" placeholder="Auteur"><br>
+
+<!-- Champ pour l’année -->
+<input type="number" id="year" placeholder="Année"><br>
+
+<!-- Input fichier caché pour sélectionner une image -->
+<input type="file" id="imageInput" accept="image/*" style="display:none">
+
+<!-- Bouton qui ouvre l’explorateur de fichiers -->
+<button onclick="uploadImage()">Uploader une image</button>
+
+<!-- Affiche le nom de l’image sélectionnée -->
+<span id="imageName"></span><br><br>
+
+<!-- Bouton pour ajouter le livre -->
+<button onclick="addBook()">Ajouter le livre</button>
+
+<!-- Bouton pour trier les livres par titre -->
+<button onclick="sortBooks()">Trier par titre</button>
+
+<hr>
+<!-- Séparateur visuel -->
+
+<h2>Bibliothèque</h2>
+<!-- Zone où les livres seront affichés -->
+<div id="bookList"></div>
+
+<script>
+/* Tableau qui stocke tous les livres */
+let library = [];
+
+/* Variable pour stocker l’image sélectionnée */
+let selectedImage = null;
+
+// Fonction qui ouvre l’explorateur de fichiers
+function uploadImage() {
+    document.getElementById('imageInput').click();
+    // Simule un clic sur l’input file caché
+}
+
+// Événement déclenché quand une image est sélectionnée
+document.getElementById('imageInput').addEventListener('change', function () {
+    selectedImage = this.files[0]; // Récupère le fichier image
+    document.getElementById('imageName').textContent = selectedImage.name;
+    // Affiche le nom du fichier
+});
+
+// Fonction pour ajouter un livre
+function addBook() {
+    // Récupération des valeurs des champs
+    const title = document.getElementById('title').value;
+    const author = document.getElementById('author').value;
+    const year = document.getElementById('year').value;
+
+    // Vérification que tous les champs sont remplis
+    if (!title || !author || !year || !selectedImage) {
+        alert("Veuillez remplir tous les champs et uploader une image");
+        return; // Arrête la fonction
+    }
+
+    // Création de l’objet livre
+    const book = {
+        title: title,
+        author: author,
+        year: year,
+        image: URL.createObjectURL(selectedImage)
+        // Crée une URL temporaire pour afficher l’image
+    };
+
+    // Ajout du livre dans le tableau
+    library.push(book);
+
+    // Mise à jour de l’affichage
+    displayBooks();
+
+    // Réinitialisation des champs
+    document.getElementById('title').value = '';
+    document.getElementById('author').value = '';
+    document.getElementById('year').value = '';
+    document.getElementById('imageName').textContent = '';
+    selectedImage = null;
+}
+
+// Fonction pour afficher tous les livres
+function displayBooks() {
+    const container = document.getElementById('bookList');
+    container.innerHTML = ''; // Vide l’affichage
+
+    // Parcourt le tableau des livres
+    library.forEach((book, index) => {
+        const div = document.createElement('div');
+        div.className = 'book';
+
+        // Contenu HTML d’un livre
+        div.innerHTML = `
+            <img src="${book.image}">
+            <div>
+                <strong>${book.title}</strong><br>
+                Auteur : ${book.author}<br>
+                Année : ${book.year}<br>
+                <button onclick="deleteBook(${index})">Supprimer</button>
+            </div>
+        `;
+
+        // Ajoute le livre à la page
+        container.appendChild(div);
+    });
+}
+
+// Fonction pour supprimer un livre
+function deleteBook(index) {
+    library.splice(index, 1); // Supprime le livre du tableau
+    displayBooks(); // Met à jour l’affichage
+}
+
+// Fonction pour trier les livres par titre
+function sortBooks() {
+    library.sort((a, b) => a.title.localeCompare(b.title));
+    // Tri alphabétique
+    displayBooks();
+}
+</script>
+
+</body>
+</html>

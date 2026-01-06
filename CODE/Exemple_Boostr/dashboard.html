@@ -1,0 +1,215 @@
+<!--
+VERSION DASHBOARD COMMENTÉE LIGNE PAR LIGNE
+Chaque ligne contient un commentaire expliquant son rôle
+-->
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Déclare l'encodage et le type de document -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Titre de la page affiché dans l'onglet navigateur -->
+    <title>Dashboard_TableauBord_Bootstrap</title>
+
+    <!-- Bootstrap CSS via CDN pour les composants et utilitaires -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Variables globales pour personnaliser facilement les dimensions */
+        :root {
+            --sidebar-w: 240px; /* largeur sidebar */
+            --header-h: 60px;   /* hauteur header */
+            --footer-h: 40px;   /* hauteur footer */
+        }
+
+        /* Grille principale utilisant CSS Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: var(--sidebar-w) 1fr; /* sidebar fixe + contenu flexible */
+            grid-template-rows: var(--header-h) 1fr var(--footer-h); /* header, contenu, footer */
+            grid-template-areas:
+                "sidebar header"
+                "sidebar main"
+                "sidebar footer";
+            height: 100vh; /* prend toute la hauteur de l'écran */
+        }
+
+        /* Sidebar */
+        .sidebar {
+            grid-area: sidebar; /* place la sidebar dans la grille */
+            background: #0674e3; /* couleur de fond */
+            color: rgb(32, 31, 31); /* couleur texte */
+            padding: 1rem; /* espace interne */
+            display: flex; /* flex pour alignement vertical */
+            flex-direction: column; /* éléments en colonne */
+            gap: 1rem; /* espace entre les liens */
+        }
+
+        /* Responsive pour mobile */
+        @media (max-width: 992px) {
+            .app-grid {
+                grid-template-columns: 1fr; /* plus de colonne sidebar */
+                grid-template-areas: "header" "main" "footer";
+            }
+            .sidebar {
+                position: fixed; /* overlay mobile */
+                top: 0;
+                left: -300px; /* cachée par défaut */
+                width: var(--sidebar-w);
+                height: 100%;
+                transition: left .3s ease; /* animation ouverture/fermeture */
+                z-index: 1000;
+            }
+            .sidebar.show { left: 0; } /* affichage quand clic sur menu */
+            .sidebar-overlay {
+                position: fixed;
+                inset: 0; /* couvre tout l'écran */
+                background: rgba(0,0,0,0.5); /* gris semi-transparent */
+                display: none; /* caché par défaut */
+                z-index: 999;
+            }
+            .sidebar-overlay.active { display: block; } /* overlay visible si menu ouvert */
+        }
+
+        /* Header */
+        .header {
+            grid-area: header; /* zone header */
+            background: #f8f9fa; /* couleur claire */
+            display: flex; /* alignement horizontal */
+            align-items: center; /* centre vertical */
+            justify-content: space-between; /* espace entre titre et boutons */
+            padding: 0 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        /* Contenu principal */
+        main {
+            grid-area: main; /* zone contenu */
+            overflow-y: auto; /* scroll si contenu dépasse */
+            padding: 1.5rem;
+            background: #f3f4f6;
+        }
+
+        /* Grille cartes statistiques */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* responsive */
+            gap: 1rem; /* espace entre cartes */
+        }
+
+        /* Footer */
+        footer {
+            grid-area: footer; /* zone footer */
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Overlay pour mobile, permet de fermer le menu quand clic en dehors -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Wrapper principal avec la grille CSS -->
+<div class="app-grid">
+
+    <!-- Sidebar avec navigation -->
+    <aside class="sidebar" id="sidebarMenu">
+        <h4>Menu</h4>
+        <nav class="nav flex-column gap-1">
+            <!-- Liens navigation -->
+            <a class="nav-link text-light" href="#">Tableau de bord</a>
+            <a class="nav-link text-light" href="#">Statistiques</a>
+            <a class="nav-link text-light" href="#">Utilisateurs</a>
+            <a class="nav-link text-light" href="#">Paramètres</a>
+            <hr class="text-secondary"> <!-- ligne séparation -->
+            <a class="nav-link text-danger" href="#">Déconnexion</a> <!-- texte rouge avec text-danger -->
+        </nav>
+    </aside>
+
+    <!-- Header avec bouton mobile et actions -->
+    <header class="header">
+        <button class="btn btn-dark d-lg-none" id="btnToggleSidebar">☰</button> <!-- visible seulement mobile -->
+        <h5 class="m-0">Dashboard</h5>
+        <div class="d-flex gap-2"> <!-- boutons actions -->
+            <button class="btn btn-outline-primary btn-sm">Notifications</button>
+            <button class="btn btn-outline-secondary btn-sm">Profil</button>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main>
+        <h3 class="mb-3">Bienvenue 👋</h3>
+        <p class="text-muted">Voici un dashboard via l'utilisation de Bootstrap.</p>
+
+        <!-- Cartes statistiques -->
+        <div class="cards-grid mb-4">
+            <div class="card p-3">
+                <h5>Ventes</h5>
+                <p class="fs-4 fw-bold">12 430 €</p>
+            </div>
+            <div class="card p-3">
+                <h5>Visiteurs</h5>
+                <p class="fs-4 fw-bold">8 912</p>
+            </div>
+            <div class="card p-3">
+                <h5>Conversions</h5>
+                <p class="fs-4 fw-bold">4.3 %</p>
+            </div>
+        </div>
+
+        <!-- Contenu flexible Bootstrap row/col -->
+        <div class="row g-3">
+            <div class="col-lg-8">
+                <div class="card p-3" style="height: 300px;">
+                    <h5>Graphique (exemple)</h5>
+                    <p class="text-muted"></p>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card p-3" style="height: 300px;">
+                    <h5>Activité récente</h5>
+                    <ul>
+                        <li>Achat effectué</li>
+                        <li>Nouvel utilisateur inscrit</li>
+                        <li>Mise à jour publiée</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer simple -->
+    <footer>
+        <small> Dashboard Démo</small>
+    </footer>
+</div>
+
+<!-- Bootstrap JS bundle pour composants interactifs -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // RÉFÉRENCES DES ÉLÉMENTS
+    const sidebar = document.getElementById("sidebarMenu");
+    const overlay = document.getElementById("sidebarOverlay");
+    const btnToggle = document.getElementById("btnToggleSidebar");
+
+    // OUVERTURE / FERMETURE MENU MOBILE
+    btnToggle.addEventListener("click", () => {
+        sidebar.classList.toggle("show"); // affiche/masque sidebar
+        overlay.classList.toggle("active"); // affiche/masque overlay
+    });
+
+    overlay.addEventListener("click", () => {
+        sidebar.classList.remove("show"); // ferme sidebar
+        overlay.classList.remove("active"); // masque overlay
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exemple Transform X / Y</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f6f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      width: 300px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    /* La carte bouge vers le haut quand on passe la souris */
+    .card:hover {
+      transform: translateY(-100px);
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: #4e7cf0;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.3s ease;
+    }
+
+    /* Le bouton glisse légèrement vers la droite au hover */
+    .btn:hover {
+      transform: translateX(10px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Bienvenue !</h2>
+    <p>Ceci est un exemple simple utilisant <strong>transform: translateX()</strong> et <strong>translateY()</strong>.</p>
+    <a href="#" class="btn">Cliquer ici</a>
+  </div>
+
+</body>
+</html>

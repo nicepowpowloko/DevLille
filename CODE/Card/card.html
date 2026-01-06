@@ -1,0 +1,407 @@
+<!DOCTYPE html> <!-- Déclare le type de document : HTML5 -->
+<html lang="fr"> <!-- Langue principale du document : français -->
+<head>
+  <meta charset="UTF-8"> <!-- Encodage des caractères (accents, etc.) -->
+  <title>Mini portfolio avancé</title> <!-- Titre affiché dans l’onglet du navigateur -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Rendre la page responsive : largeur = largeur de l'écran, zoom initial 1 -->
+
+  <style>
+    /* Réinitialisation de base : retire marges et paddings par défaut */
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+
+    /* Style général du corps de la page */
+    body {
+      font-family: Arial, sans-serif;   /* Police principale */
+      background: #0f172a;             /* Couleur de fond sombre (bleu nuit) */
+      color: #e5e7eb;                  /* Couleur principale du texte (gris clair) */
+      padding: 30px 16px 60px;         /* Marges internes : haut/gauche/droite/bas */
+    }
+
+    /* Conteneur principal centré avec une largeur max */
+    .portfolio-container {
+      max-width: 1100px;  /* Largeur maximale du contenu */
+      margin: 0 auto;     /* Auto à gauche/droite = centré */
+    }
+
+    /* Titre principal */
+    h1 {
+      text-align: center;   /* Centrer le texte */
+      margin-bottom: 10px;  /* Espacement sous le titre */
+      font-size: 2rem;      /* Taille de police plus grande */
+    }
+
+    /* Sous-titre de description */
+    .subtitle {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #9ca3af;        /* Gris plus clair */
+      margin-bottom: 24px;
+    }
+
+    /* Barre de "filtres" (boutons déco, pas fonctionnels ici) */
+    .filters {
+      display: flex;              /* Met les boutons sur une ligne */
+      justify-content: center;    /* Centre horizontalement */
+      gap: 10px;                  /* Espace entre les boutons */
+      margin-bottom: 24px;
+      flex-wrap: wrap;            /* Permet le retour à la ligne sur petits écrans */
+    }
+
+    /* Style de base des boutons de filtre */
+    .filter-btn {
+      border: 1px solid #4b5563;         /* Bordure grise */
+      background: transparent;           /* Fond transparent */
+      color: #e5e7eb;                    /* Texte clair */
+      padding: 6px 14px;                 /* Espace intérieur */
+      border-radius: 999px;              /* Bouton très arrondi (pilule) */
+      font-size: 0.8rem;
+      cursor: pointer;                   /* Curseur en forme de main */
+      transition: 
+        background 0.25s ease, 
+        color 0.25s ease, 
+        border-color 0.25s ease;        /* Animations douces au hover */
+    }
+
+    /* Bouton actif ou survolé : fond vert + texte foncé */
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: #22c55e;    /* Vert */
+      border-color: #22c55e;
+      color: #020617;         /* Bleu très foncé */
+    }
+
+    /* Grille responsive pour les projets */
+    .grid {
+      display: grid;   /* Utilisation de CSS Grid */
+      /* Colonnes auto-adaptatives :
+         - minmax(240px, 1fr) = min 240px, max 1 fraction de l'espace disponible
+         - auto-fit = le navigateur calcule combien de colonnes il peut afficher */
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 22px;       /* Espace entre les cartes */
+    }
+
+    /* Carte d'un projet */
+    .project {
+      background: #020617;             /* Fond très sombre */
+      border-radius: 14px;             /* Coins arrondis */
+      overflow: hidden;                /* Cache ce qui dépasse (utile pour l'image) */
+      position: relative;              /* Nécessaire pour positionner les badges en absolute */
+      box-shadow: 0 10px 30px rgba(15,23,42,0.9); /* Ombre portée */
+      border: 1px solid #1f2937;       /* Bordure discrète */
+      transition: 
+        transform 0.25s ease, 
+        box-shadow 0.25s ease, 
+        border-color 0.25s ease;       /* Animation au hover */
+    }
+
+    /* Effet au survol de la carte : elle "monte" et l'ombre augmente */
+    .project:hover {
+      transform: translateY(-8px);                   /* Décalage vers le haut */
+      box-shadow: 0 20px 45px rgba(15,23,42,1);      /* Ombre plus large/intense */
+      border-color: #22c55e;                         /* Bordure devient verte */
+    }
+
+    /* Conteneur de l'image pour gérer l'overlay */
+    .project-img-wrapper {
+      position: relative;  /* Pour positionner l'overlay et le badge par rapport à ce bloc */
+      overflow: hidden;
+    }
+
+    /* Image du projet */
+    .project img {
+      width: 100%;           /* Prend toute la largeur de la carte */
+      display: block;        /* Retire l’espace blanc sous l’image (inline-block) */
+      height: 170px;         /* Hauteur fixe */
+      object-fit: cover;     /* Recadre l’image pour remplir la zone sans déformation */
+      transition: 
+        transform 0.4s ease, 
+        filter 0.4s ease;    /* Animation pour zoom + filtre au hover */
+    }
+
+    /* Overlay sombre avec dégradé, invisible par défaut */
+    .project-overlay {
+      position: absolute;     /* On se place par rapport à .project-img-wrapper */
+      inset: 0;               /* top:0; right:0; bottom:0; left:0; */
+      background: linear-gradient(
+        to top, 
+        rgba(15,23,42,0.9), 
+        rgba(15,23,42,0.1)
+      );                      /* Dégradé du bas sombre vers le haut plus transparent */
+      opacity: 0;             /* Caché au départ */
+      display: flex;          /* Pour aligner le texte en bas */
+      align-items: flex-end;
+      padding: 12px 14px;
+      transition: opacity 0.3s ease; /* Apparition progressive */
+    }
+
+    /* Texte affiché dans l'overlay */
+    .overlay-text {
+      font-size: 0.8rem;
+      color: #e5e7eb;
+    }
+
+    /* Au survol de la carte, on zoome l’image et on change légèrement sa couleur */
+    .project:hover img {
+      transform: scale(1.06);      /* Zoom léger */
+      filter: grayscale(25%);      /* Légère désaturation (noir & blanc) */
+    }
+
+    /* Au survol, l’overlay devient visible */
+    .project:hover .project-overlay {
+      opacity: 1;
+    }
+
+    /* Badges (étiquette "Nouveau", "UI", etc.) */
+    .badge {
+      position: absolute;          /* Positionné sur l'image */
+      top: 10px;
+      left: 10px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;      /* Espacement entre les lettres */
+      text-transform: uppercase;   /* TEXTE EN MAJUSCULES */
+      background: rgba(34,197,94,0.1);     /* Fond vert transparent */
+      color: #22c55e;                      /* Texte vert */
+      backdrop-filter: blur(6px);          /* Effet flou derrière (si supporté) */
+      border: 1px solid rgba(34,197,94,0.5);
+    }
+
+    /* Variantes de couleur pour les autres badges */
+    .badge-secondary {
+      background: rgba(59,130,246,0.12);
+      color: #60a5fa;
+      border-color: rgba(59,130,246,0.6);
+    }
+
+    .badge-danger {
+      background: rgba(239,68,68,0.12);
+      color: #fca5a5;
+      border-color: rgba(239,68,68,0.6);
+    }
+
+    /* Partie texte de la carte (sous l'image) */
+    .project-body {
+      padding: 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;    /* Espace vertical entre les éléments internes */
+    }
+
+    /* En-tête de la carte : titre + année */
+    .project-header {
+      display: flex;
+      justify-content: space-between;  /* Titre à gauche, année à droite */
+      align-items: center;
+      gap: 8px;
+    }
+
+    .project-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .project-year {
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    /* Description du projet */
+    .project-desc {
+      font-size: 0.85rem;
+      color: #9ca3af;
+      line-height: 1.4;  /* Hauteur de ligne pour lisibilité */
+    }
+
+    /* Pied de carte : tags + bouton */
+    .project-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    /* Tags de techno / type de projet */
+    .project-tags {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    /* Bouton "Voir" */
+    .view-btn {
+      border: none;
+      background: #22c55e;    /* Vert principal */
+      color: #020617;         /* Texte foncé */
+      font-size: 0.78rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: background 0.25s ease, transform 0.2s ease;
+    }
+
+    /* Effet hover sur le bouton */
+    .view-btn:hover {
+      background: #4ade80;    /* Vert plus clair */
+      transform: translateY(-1px);
+    }
+
+    /* Adaptation sur petits écrans */
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 12px 40px;   /* Un peu moins de padding */
+      }
+      h1 {
+        font-size: 1.6rem;        /* Titre légèrement plus petit */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="portfolio-container">
+    <!-- Titre principal de la page -->
+    <h1>Mes projets</h1>
+
+    <!-- Phrase d’intro pour expliquer le type de projets -->
+    <p class="subtitle">
+      Sélection de travaux web : sites vitrines, interfaces marketing et outils interactifs.
+    </p>
+
+    <!-- Barre de filtres (uniquement visuelle pour l’instant, pas de JS) -->
+    <div class="filters">
+      <button class="filter-btn active">Tous</button>
+      <button class="filter-btn">Sites vitrines</button>
+      <button class="filter-btn">UI / Design</button>
+      <button class="filter-btn">Applications</button>
+    </div>
+
+    <!-- Grille de projets -->
+    <div class="grid">
+
+      <!-- Projet 1 -->
+      <div class="project">
+        <div class="project-img-wrapper">
+          <!-- Badge vert "Nouveau" -->
+          <span class="badge">Nouveau</span>
+          <!-- Image du projet -->
+          <img src="https://www.slagon.fr/wp-content/uploads/2022/04/vitrine2-min.png" alt="">
+          <!-- Overlay avec texte explicatif, visible au hover -->
+          <div class="project-overlay">
+            <p class="overlay-text">
+              Refonte complète du site pour améliorer la conversion sur mobile.
+            </p>
+          </div>
+        </div>
+
+        <!-- Contenu texte sous l'image -->
+        <div class="project-body">
+          <div class="project-header">
+            <h2 class="project-title">Site vitrine entreprise</h2>
+            <span class="project-year">2025</span>
+          </div>
+          <p class="project-desc">
+            Présentation des services d’une PME avec mise en avant des témoignages clients.
+          </p>
+          <div class="project-footer">
+            <span class="project-tags">HTML • CSS Grid • Responsive</span>
+            <button class="view-btn">Voir</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projet 2 -->
+      <div class="project">
+        <div class="project-img-wrapper">
+          <!-- Badge bleu "UI" -->
+          <span class="badge badge-secondary">UI</span>
+          <img src="https://cdn.prod.website-files.com/621635d669ee14171934d40a/6789287b2c1732e0b4b1d3ea_66431cc29a6f4ccd61d7b81b_Landing-page-ve-page-produit-e-commerce.webp" alt="">
+          <div class="project-overlay">
+            <p class="overlay-text">
+              Page d’atterrissage optimisée pour une campagne publicitaire.
+            </p>
+          </div>
+        </div>
+
+        <div class="project-body">
+          <div class="project-header">
+            <h2 class="project-title">Landing page produit</h2>
+            <span class="project-year">2024</span>
+          </div>
+          <p class="project-desc">
+            Design orienté conversion, section FAQ accordéon et bloc de témoignages.
+          </p>
+          <div class="project-footer">
+            <span class="project-tags">UI Design • Flexbox</span>
+            <button class="view-btn">Voir</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projet 3 -->
+      <div class="project">
+        <div class="project-img-wrapper">
+          <!-- Badge rouge "App" -->
+          <span class="badge badge-danger">App</span>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc94FAcsqlIJhdaR6BR6sPU94LUIhMIlx9TA&s" alt="">
+          <div class="project-overlay">
+            <p class="overlay-text">
+              Tableau de bord pour suivre les tâches et les priorités.
+            </p>
+          </div>
+        </div>
+
+        <div class="project-body">
+          <div class="project-header">
+            <h2 class="project-title">Dashboard de tâches</h2>
+            <span class="project-year">2023</span>
+          </div>
+          <p class="project-desc">
+            Interface claire pour gérer projets, deadlines et notifications en temps réel.
+          </p>
+          <div class="project-footer">
+            <span class="project-tags">CSS Grid • UI • Prototype</span>
+            <button class="view-btn">Voir</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projet 4 -->
+      <div class="project">
+        <div class="project-img-wrapper">
+          <!-- Badge bleu "Portfolio" -->
+          <span class="badge badge-secondary">Portfolio</span>
+          <img src="https://shopiweb.fr/cdn/shop/files/TexteOndule_1.png?crop=center&height=1200&v=1761933792&width=1200" alt="">
+          <div class="project-overlay">
+            <p class="overlay-text">
+              Portfolio personnel avec mise en avant des compétences.
+            </p>
+          </div>
+        </div>
+
+        <div class="project-body">
+          <div class="project-header">
+            <h2 class="project-title">Portfolio créatif</h2>
+            <span class="project-year">2022</span>
+          </div>
+          <p class="project-desc">
+            Page unique avec sections animées, timeline et formulaire de contact.
+          </p>
+          <div class="project-footer">
+            <span class="project-tags">Animations • Micro-interactions</span>
+            <button class="view-btn">Voir</button>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- fin .grid -->
+  </div> <!-- fin .portfolio-container -->
+</body>
+</html>

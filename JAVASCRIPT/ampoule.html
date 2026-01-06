@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ampoule</title>
+</head>
+<body>
+
+<!---------------------------------------------------------->
+
+<script>
+function allumerLumiere() {
+    document.getElementById('MyImage').src =
+    'https://www.w3schools.com/js/pic_bulbon.gif';
+}
+
+function eteindreLumiere() {
+    document.getElementById('MyImage').src =
+    'https://www.w3schools.com/js/pic_bulboff.gif';
+}
+</script>
+
+<!---------------------------------------------------------->
+
+<h2>Fonction</h2>
+
+<p>Fonctionnement sur une fonction JS</p>
+
+<button onclick="allumerLumiere()">Allumer la lumière</button>
+
+<img id="MyImage"
+     src="https://www.w3schools.com/js/pic_bulboff.gif"
+     style="width:100px">
+
+<button onclick="eteindreLumiere()">Éteindre la lumière</button>
+
+
+
+
+
+    
+</body>
+</html>

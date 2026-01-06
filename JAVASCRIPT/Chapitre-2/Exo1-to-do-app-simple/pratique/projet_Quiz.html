@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>quiz Projet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .question {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .reponse {
+            display: block;
+            padding: 10px;
+            margin: 10px 0;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .reponse:hover {
+            background: #e0e0e0;
+        }
+        .correct {
+            background: #d4edda !important;
+            border-color: #28a745 !important;
+        }
+        .incorrect {
+            background: #f8d7da !important;
+            border-color: #dc3545 !important;
+        }
+        #resultat {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz JavaScript</h1>
+    <div id="score">Score : 0 / 0</div>
+    <div id="contenuQuiz"></div>
+    <div id="resultat"></div>
+    <button id="btnRecommencer" style="display: none;">Recommencer</button>
+    
+    <script>
+        // Données du quiz
+        let questions = [
+            {
+                question: "Quel mot-clé permet de déclarer une constante en JavaScript ?",
+                reponses: ["var", "let", "const", "constant"],
+                correcte: 2
+            },
+            {
+                question: "Que retourne 5 === '5' ?",
+                reponses: ["true", "false", "undefined", "error"],
+                correcte: 1
+            },
+            {
+                question: "En JS l'index du tableau commence à partir de ? ",
+                reponses: [
+                    "Index 1",
+                    "Index 3",
+                    "Index 0",
+                    "Index 2"
+                ],
+                correcte: 3
+            },
+
+             {
+                question: "Comment sélectionner un élément par son ID ?",
+                reponses: [
+                    "document.querySelector('#id')",
+                    "document.getElementById('id')",
+                    "document.select('id')",
+                    "Les deux premières réponses"
+                ],
+                correcte: 3
+            }
+        ];
+        
+        let score = 0;
+        let questionActuelle = 0;
+        
+        let contenuQuiz = document.getElementById("contenuQuiz");
+        let affichageScore = document.getElementById("score");
+        let resultatFinal = document.getElementById("resultat");
+        let btnRecommencer = document.getElementById("btnRecommencer");
+        
+        function afficherQuestion() {
+            if (questionActuelle < questions.length) {
+                let q = questions[questionActuelle];
+                
+                let html = `
+                    <div class="question">
+                        <h3>Question ${questionActuelle + 1} / ${questions.length}</h3>
+                        <p>${q.question}</p>
+                `;
+                
+                q.reponses.forEach((reponse, index) => {
+                    html += `
+                        <button class="reponse" onclick="verifierReponse(${index})">
+                            ${reponse}
+                        </button>
+                    `;
+                });
+                
+                html += `</div>`;
+                contenuQuiz.innerHTML = html;
+            } else {
+                afficherResultat();
+            }
+        }
+        
+        function verifierReponse(indexReponse) {
+            let q = questions[questionActuelle];
+            let boutons = document.querySelectorAll(".reponse");
+            
+            // Désactiver tous les boutons
+            boutons.forEach(btn => btn.disabled = true);
+            
+            // Marquer la bonne réponse
+            boutons[q.correcte].classList.add("correct");
+            
+            // Si la réponse est incorrecte, la marquer
+            if (indexReponse !== q.correcte) {
+                boutons[indexReponse].classList.add("incorrect");
+            } else {
+                score++;
+            }
+            
+            // Mettre à jour le score
+            affichageScore.textContent = `Score : ${score} / ${questions.length}`;
+            
+            // Passer à la question suivante après 1,5 secondes
+            setTimeout(() => {
+                questionActuelle++;
+                afficherQuestion();
+            }, 1500);
+        }
+        
+        function afficherResultat() {
+            contenuQuiz.innerHTML = "";
+            
+            let pourcentage = (score / questions.length) * 100;
+            let message = "";
+            
+            if (pourcentage === 100) {
+                message = " Parfait ! Excellent travail !";
+            } else if (pourcentage >= 70) {
+                message = " Très bien ! Bon résultat !";
+            } else if (pourcentage >= 50) {
+                message = " Pas mal, mais vous pouvez mieux faire !";
+            } else {
+                message = " Continuez à apprendre !";
+            }
+            
+            resultatFinal.innerHTML = `
+                ${message}<br>
+                Vous avez obtenu ${score} / ${questions.length}
+            `;
+            
+            btnRecommencer.style.display = "block";
+        }
+        
+        btnRecommencer.addEventListener("click", function() {
+            score = 0;
+            questionActuelle = 0;
+            affichageScore.textContent = "Score : 0 / 0";
+            resultatFinal.innerHTML = "";
+            btnRecommencer.style.display = "none";
+            afficherQuestion();
+        });
+        
+        // Lancer le quiz
+        afficherQuestion();
+    </script>
+</body>
+</html>

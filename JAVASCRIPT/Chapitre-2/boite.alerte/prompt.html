@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boîte de Dialogue avec Champ de Saisie</title>
+</head>
+<body>
+
+<script>
+  // La fonction prompt() affiche une boîte de dialogue avec un champ de saisie
+  var userInput = prompt("Entrez quelque chose :");
+
+//var userInput = prompt("Entrez quelque chose :"); : La fonction prompt() affiche une boîte de dialogue avec un champ de saisie. La saisie de l'utilisateur est stockée dans la variable userInput.
+
+  // Déclaration de la variable message
+  var message;
+
+  //var message; : Déclaration de la variable message qui sera utilisée pour construire le message à afficher dans la boîte de dialogue.
+
+  // Vérification si l'utilisateur a cliqué sur OK (saisie non nulle)
+
+  //La structure if-else : Vérifie si l'utilisateur a cliqué sur "OK" (la saisie n'est pas nulle) ou sur "Annuler" (saisie nulle ou boîte de dialogue fermée).
+
+  if (userInput !== null) {
+    message = "Vous avez saisi : " + userInput;
+
+    //"Vous avez saisi : " + userInput; : Si l'utilisateur a saisi quelque chose, un message est créé avec la valeur saisie.
+
+  } else {
+    // Si l'utilisateur a cliqué sur Annuler ou a fermé la boîte de dialogue
+    message = "Vous avez annulé la saisie.";
+
+//"Vous avez annulé la saisie."; : Si l'utilisateur a annulé la saisie, un message différent est créé.
+
+  }
+
+  // Affichage de la boîte de dialogue avec le message
+  alert(message);
+
+  ////alert(message); : La fonction alert() affiche la boîte de dialogue avec le message construit.
+  
+</script>
+
+</body>
+</html>
+
+

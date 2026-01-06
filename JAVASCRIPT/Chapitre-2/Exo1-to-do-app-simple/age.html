@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>majorité</title>
+</head>
+<body>
+
+<script> 
+  // Demander l'âge de l'utilisateur
+  var age = prompt("Quel est votre âge ?");
+  //La fonction prompt() est utilisée pour demander à l'utilisateur son âge.
+
+  // Convertir l'âge en nombre
+  age = parseInt(age);
+  //La fonction parseInt() est utilisée pour convertir la valeur entrée en nombre entier.
+
+  // Vérifier si l'utilisateur est majeur ou mineur
+  //Une condition if est utilisée pour vérifier si l'utilisateur est majeur (âge >= 18) et afficher un message correspondant.
+  if (!isNaN(age) && age >= 18) {
+    alert("Vous êtes majeur.");
+  } else if (!isNaN(age) && age > 0) {
+    //Une condition else if est utilisée pour vérifier si l'utilisateur est mineur (âge > 0) et afficher un message correspondant.
+    alert("Vous êtes mineur.");
+  } else {
+    //Une condition else est utilisée pour afficher un message d'erreur si l'âge n'est pas un nombre valide.
+    alert("Veuillez entrer un âge valide.");
+  }
+</script>
+
+</body>
+</html>

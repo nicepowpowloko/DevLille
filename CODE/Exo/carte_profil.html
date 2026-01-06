@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Carte de profil</title>
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f4f4f4;
+      font-family: Arial, sans-serif;
+    }
+
+    .profile-card {
+      width: 300px;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .profile-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+
+    .profile-image {
+      height: 200px;
+      background-image: url("../Exemple_Boostr/IMG/gratisography-augmented-reality-800x525.jpg");
+      background-size: cover;
+      background-position: center;
+      transition: filter 0.3s ease, transform 0.3s ease;
+    }
+
+    .profile-card:hover .profile-image {
+      filter: brightness(0.8);
+      transform: scale(1.05);
+    }
+
+    .profile-content {
+      padding: 16px 20px 20px;
+      text-align: center;
+    }
+
+    .profile-name {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+
+    .profile-job {
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 12px;
+    }
+
+    .profile-bio {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 16px;
+    }
+
+    .profile-btn {
+      display: inline-block;
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: none;
+      background: #007bff;
+      color: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .profile-card:hover .profile-btn {
+      background: #0056b3;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-card">
+    <div class="profile-image"></div>
+    <div class="profile-content">
+      <h2 class="profile-name">Jean Dupont</h2>
+      <p class="profile-job">Développeur Front-End</p>
+      <p class="profile-bio">
+        Passionné par le web, le design et l’expérience utilisateur.
+      </p>
+      <button class="profile-btn">Contacter</button>
+    </div>
+  </div>
+</body>
+</html>

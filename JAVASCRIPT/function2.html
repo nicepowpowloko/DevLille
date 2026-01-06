@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>convertisseur m-c</title>
+</head>
+<body>
+    
+<script>
+
+
+
+// function avec plusieurs arguments
+
+function conversion2(unite1, taux2, unite2)
+{
+    // La fonction conversion2 prend trois paramètres : unite1, taux2, et unite2. Ces paramètres représentent respectivement l'unité d'origine, le taux de conversion, et l'unité de destination.
+
+    // À l'intérieur de la fonction :
+var valeur2 = prompt("Entrez la valeur à convertir, en " + unite1);
+    // La variable valeur2 utilise la fonction prompt pour demander à l'utilisateur d'entrer une valeur dans l'unité d'origine (unite1).
+var resultat2 = valeur2 * taux2;
+    // La variable resultat2 calcule la conversion en multipliant la valeur entrée par l'utilisateur (valeur2) par le taux de conversion (taux2).
+alert(valeur2 + ' ' + unite1 + '\n' + resultat2 + ' ' + unite2);
+}
+    // Enfin, une boîte de dialogue (alert) est utilisée pour afficher la valeur entrée par l'utilisateur (valeur2), l'unité d'origine (unite1), la valeur convertie (resultat2), et l'unité de destination (unite2).
+
+</script>
+
+<!-- function à deux argument-->
+<p>
+    <img src="../IMG/skate.jpg" width="200px" height="200px" alt="" <a href="#" onclick="conversion2('m',100,
+    'cm')">Conversion mètres &gt; centimètres</a> /> <br />
+
+    <!-- L'attribut onclick est utilisé pour appeler la fonction conversion2 lorsque l'utilisateur clique sur l'image. Dans cet exemple, la fonction est appelée avec les paramètres -->
+    
+</p>
+
+</body>
+</html>

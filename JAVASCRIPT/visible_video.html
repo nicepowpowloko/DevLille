@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apparition_Vidéos</title>
+
+
+  <style>
+    /* Style pour masquer les vidéos par défaut */
+    .video {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Icône ou image 1 -->
+<img src="icone1.png" alt="Icone 1" onclick="toggleVideo('video1')">
+
+<!-- Icône ou image 2 -->
+<img src="icone2.png" alt="Icone 2" onclick="toggleVideo('video2')">
+
+<!-- Zone pour afficher les vidéos -->
+<div id="video1" class="video">
+  <iframe src="../VIDEO/ability_0875_Q1.webm" frameborder="0"  loop allowfullscreen autoplay></iframe>
+</div>
+
+
+<div id="video2" class="video">
+  <iframe width="560" height="315" src="https://www.youtube.com/watch?v=YhZvM0a9lgk?autoplay=1" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<script>
+function toggleVideo(videoId) {
+  // Masquer toutes les vidéos
+  hideAllVideos();
+
+  // Afficher la vidéo correspondante
+  var video = document.getElementById(videoId);
+  if (video) {
+    video.style.display = 'block';
+  }
+}
+
+function hideAllVideos() {
+  // Masquer toutes les vidéos
+  var videos = document.querySelectorAll('.video');
+  videos.forEach(function(video) {
+    video.style.display = 'none';
+  });
+}
+</script>
+
+</body>
+</html>

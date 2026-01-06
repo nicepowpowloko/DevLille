@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>slider_JS</title>
+</head>
+<body>
+
+
+
+<style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+body {
+  height: 100vh;
+  background-color: #121111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 6px solid red;
+}
+
+.img-container {
+  position: relative;
+  height: 500px;
+  width: 700px;
+  perspective: 500px;
+  transform-style: preserve-3d;
+}
+.box {
+  box-shadow: 0 0 10px rgb(0 0 0 / 30%);
+  width: 600px;
+  height: 440px;
+  border-radius: 25px;
+  overflow: hidden;
+  border: 1px solid #bbb;
+  position: absolute;
+  top: 50%;
+  transition: 800ms ease-in-out;
+}
+
+.box img {
+  width: 100%;
+  height: 100%;
+}
+
+.box:first-of-type {
+  z-index: 5;
+  opacity: 0;
+  left: 15%;
+  transform: translate(-50%, -50%) rotateY(-10deg);
+}
+
+.box:nth-of-type(2) {
+  opacity: 1;
+  left: 20%;
+  transform: translate(-50%, -50%) rotateY(-10deg);
+  z-index: 5;
+
+}
+.box:nth-of-type(3) {
+  left: 25%;
+  opacity: 0.75;
+  color: #eee;
+  z-index: 10;
+  transform: translate(-50%, -50%) rotateY(-10deg) translateZ(-50px);
+}
+
+.box:nth-of-type(4) {
+  z-index: 5;
+  opacity: 0.5;
+  left:30%;
+  transform: translate(-50%, -50%) rotateY(-10deg) translateZ(-100px);
+}
+.box:nth-of-type(5) {
+  z-index: 2;
+  opacity: 0.25;
+  left: 35%;
+  transform: translate(-50%, -50%) rotateY(-10deg) translateZ(-150px);
+}
+
+.box:nth-of-type(6) {
+  z-index: 2;
+  opacity: 0.0;
+  left: 40%;
+  transform: translate(-50%, -50%) rotateY(-10deg) translateZ(-200px);
+}
+
+</style>
+
+
+
+    <div class="img-container">
+        <div class="box">
+          <img src="../IMG/jordan_5.webp" alt="" srcset="">
+        </div>
+        <div class="box">
+         <img src="../IMG/nike_1_low.brooklyn.jpeg" alt="" srcset="">
+        </div>
+        <div class="box">
+         <img src="../IMG/jordan_brave.jpg" alt="" srcset="">
+        </div>
+        <div class="box">
+         <img src="../IMG/nike_custom.webp" alt="" srcset="">
+        </div>
+        <div class="box">
+         <img src="../IMG/nike_1_low.webp" alt="" srcset="">
+        </div>
+        <div class="box">
+        <img src="../IMG/puma_lamelo.jpg" alt="" srcset="">
+        </div>
+      </div>
+
+
+<script>
+           let imgContainer = document.querySelector(".img-container");
+
+           //Cette ligne de code utilise document.querySelector pour sélectionner l'élément avec la classe CSS .img-container. Cet élément est le conteneur des images qui seront animées.
+ 
+ setInterval(() => {
+    //La fonction setInterval est utilisée pour exécuter une fonction de manière répétée à intervalles réguliers. Dans ce cas, la fonction est exécutée toutes les 2500 millisecondes (2,5 secondes).
+         let last = imgContainer.firstElementChild;
+         //À chaque itération de l'intervalle, la première image (firstElementChild) du conteneur (imgContainer) est extraite avec last = imgContainer.firstElementChild.
+         last.remove();
+         //Ensuite, la fonction remove() est utilisée pour retirer cette première image du DOM.
+         imgContainer.appendChild(last);
+         //Enfin, la première image retirée est ajoutée à la fin du conteneur avec imgContainer.appendChild(last). Cela a pour effet de déplacer la première image à la fin, créant ainsi une rotation circulaire des images dans le conteneur.
+       }, 2500);
+
+       //En résumé, ce code crée une animation de rotation d'images dans un conteneur en déplaçant périodiquement la première image du début à la fin du conteneur. Cette rotation continue toutes les 2,5 secondes (2500 millisecondes), créant un effet de diaporama circulaire si plusieurs images sont présentes dans le conteneur.
+
+
+       
+</script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dark</title>
+  <style>
+    body {
+      transition: background-color 0.5s;
+      text-align: center;
+      padding: 50px;
+    }
+
+    .toggle-btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* Styles pour le mode nuit */
+    body.dark-mode {
+      background-color: #161616;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="toggle-btn" onclick="toggleMode()"> 🧟  </div>
+   
+
+<script>
+  function toggleMode() {
+     //La fonction toggleMode est appelée lorsque le bouton est cliqué. Cette fonction utilise classList.toggle pour ajouter ou supprimer la classe .dark-mode du corps de la page, basculant ainsi entre le mode nuit et le mode jour.
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+  }
+</script>
+
+</body>
+</html>

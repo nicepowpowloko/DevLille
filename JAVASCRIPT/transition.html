@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>transition</title>
+ 
+</head>
+<body>
+
+<style>
+    #loading-bar {
+  width: 0;
+  height: 5px;
+  background-color: #4CAF50;
+  transition: width 1s ease;
+}
+
+</style>
+
+
+<button onclick="startLoading()">Cliquez pour charger</button>
+
+<div id="loading-bar"></div>
+
+
+<script>
+    function startLoading() {
+  // Afficher la barre de chargement
+  var loadingBar = document.getElementById('loading-bar');
+  //On récupère l'élément avec l'ID loading-bar. Cet élément représente la barre de chargement dans le HTML.
+  loadingBar.style.width = '100%';
+  //On modifie la propriété width de la barre de chargement pour la faire passer à 100%. Cela simule visuellement le chargement complet en étirant la barre de chargement.
+
+  // Simuler un délai de chargement avec setTimeout
+  setTimeout(function() {
+    //On utilise setTimeout pour simuler un délai de chargement de 1000 millisecondes (1 seconde). Pendant ce délai, la barre de chargement reste à 100%. Après le délai, la fonction fournie à setTimeout est exécutée, redirigeant l'utilisateur vers la page transition_1.html.
+    // Rediriger vers la page après le chargement
+    window.location.href = 'transition_1.html';
+  }, 1000); // Le délai est d'une seconde (1000 millisecondes). Vous pouvez ajuster selon vos besoins.
+}
+
+</script>
+
+
+</body>
+</html>

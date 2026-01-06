@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Déclaration du charset pour l'encodage des caractères -->
+    <meta charset="UTF-8">
+    
+    <!-- Assure que le site est responsive, s'adapte à la taille de l'écran de l'appareil -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Titre de la page qui apparaît dans l'onglet du navigateur -->
+    <title>barre-de-nav</title>
+    
+    <!-- Lien vers la feuille de style externe (CSS) pour personnaliser l'apparence du menu -->
+    <link rel="stylesheet" href="./nav.css">
+</head>
+<body>
+    
+
+    <!-- Le conteneur principal du menu de navigation avec une classe "dropdownmenu" -->
+    <nav class="dropdownmenu">
+        <!-- Liste non ordonnée (ul) contenant les éléments de menu -->
+        <ul>
+          
+          <!-- Premier élément de menu : un lien vers la page d'accueil -->
+          <li><a href="http://www.jochaho.com/wordpress/">Home</a></li>
+          
+          <!-- Deuxième élément de menu : un lien vers la page "About Me" -->
+          <li><a href="http://www.jochaho.com/wordpress/about-pritesh-badge/">About Me</a></li>
+          
+          <!-- Troisième élément de menu avec un sous-menu (dropdown) -->
+          <li><a href="#">Html Css Template</a>
+            <!-- Sous-menu caché qui s'affiche au survol ou au clic -->
+            <ul id="submenu">
+              <!-- Lien vers un article expliquant la différence entre SVG et Canvas -->
+              <li><a href="http://www.jochaho.com/wordpress/difference-between-svg-vs-canvas/">Difference CMS et module</a></li>
+              <!-- Lien vers un article sur les nouvelles fonctionnalités de HTML5 -->
+              <li><a href="http://www.jochaho.com/wordpress/new-features-in-html5/">HTML5</a></li>
+              <!-- Lien vers un article avec un exemple de code C# -->
+              <li><a href="http://www.jochaho.com/wordpress/creating-links-to-sections-within-a-webpage/">Exemple C#</a></li>
+            </ul>
+          </li>
+          
+          <!-- Quatrième élément de menu : un lien vers la page des actualités -->
+          <li><a href="http://www.jochaho.com/wordpress/category/news/">News</a></li>
+          
+          <!-- Cinquième élément de menu : un lien vers la page de contact -->
+          <li><a href="http://www.jochaho.com/wordpress/about-pritesh-badge/">Contact</a></li>
+        </ul>
+      </nav>
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple Responsive Complet</title>
+
+    <style>
+      
+        /* ------- STYLES DE BASE ------ */
+       
+
+        body {
+            margin: 0;                         /* Retire les marges par défaut du navigateur */
+            font-family: Arial, sans-serif;    /* Définit la police utilisée sur la page */
+            background: #f0f0f0;               /* Couleur de fond claire */
+            padding: 20px;                     /* Ajoute un espace interne autour du contenu */
+        }
+
+        /* Titre principal */
+        .titre {
+            font-size: 24px;                   /* Taille du texte pour les petits écrans (mobile) */
+            text-align: center;                /* Centre le texte */
+            color: #333;                       /* Couleur foncée */
+            margin-bottom: 20px;               /* Ajoute un espace sous le titre */
+        }
+
+        /* Paragraphe */
+        .texte {
+            font-size: 16px;                   /* Taille standard du texte sur mobile */
+            text-align: center;                /* Centre le texte */
+            color: #555;                       /* Couleur grise */
+        }
+
+
+
+        /* ----- MEDIA QUERY TABLETTE ---------- */
+        /* s'applique à partir de 600px -------- */
+        
+
+        @media (min-width: 600px) {             /* Cette zone s'active sur tablette */
+
+            .titre {
+                font-size: 32px;               /* Titre plus grand */
+                text-align: left;              /* Aligné à gauche */
+                color: #c90ab9;                /* Couleur bleue */
+                text-align: center;             /* texte centrer */
+            }
+
+            .texte {
+                font-size: 18px;               /* Texte plus grand */
+                text-align: left;              /* Aligné à gauche */
+                max-width: 600px;              /* Largeur max du bloc */
+                margin: auto;                  /* Centre le bloc texte */
+                text-align: center;
+                color: #de0303;
+            }
+
+            body{
+                background-color: aqua;
+            }
+        }
+
+
+
+        /* ----- MEDIA QUERY DESKTOP ----------- */
+        /* s'applique à partir de 900px -------- */
+      
+
+        @media (min-width: 900px) {             /* Zone active sur ordinateur */
+
+            body {
+                padding: 60px;                 /* Ajoute plus d’espace autour du contenu */
+                background-color: #555;
+            }
+
+            .titre {
+                font-size: 40px;               /* Titre encore plus grand */
+                color: #003399;                /* Bleu plus foncé */
+            }
+
+            .texte {
+                font-size: 20px;               /* Texte encore plus lisible */
+                max-width: 800px;              /* Largeur plus large sur grand écran */
+                color: yellow;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Titre principal -->
+    <h1 class="titre">Bienvenue sur le Responsive Design</h1>
+
+    <!-- Texte explicatif -->
+    <p class="texte">
+        Ce texte et ce titre changent de taille, de couleur et d'alignement
+        selon la taille de votre écran grâce aux media queries.
+    </p>
+
+</body>
+</html>

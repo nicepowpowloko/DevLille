@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple panier Boucles</title>
+</head>
+<body>
+    
+<div id="root3"></div>
+
+
+
+<script>
+    const panier = [
+  { nom: "T-shirt", prix: 20 },
+  { nom: "Casquette", prix: 15 },
+  { nom: "Chaussures", prix: 60 }
+];
+
+let total = 0;
+let affichage = "<h3>Contenu du panier :</h3>";
+
+for (let i = 0; i < panier.length; i++) {
+  affichage += `
+    <p>
+      Article ${i + 1} : ${panier[i].nom} – ${panier[i].prix} €
+    </p>
+  `;
+
+  total += panier[i].prix;
+
+  affichage += `
+    <p style="color: gray; margin-left: 20px;">
+      ➜ Total provisoire : ${total} €
+    </p>
+  `;
+}
+
+affichage += `<h3>Total du panier : ${total} €</h3>`;
+
+document.getElementById("root3").innerHTML = affichage;
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html> <!-- Indique que le document est en HTML5 -->
+<html lang="fr"> <!-- Langue du document : français -->
+<head> <!-- Début de l'en-tête -->
+
+<meta charset="UTF-8"> <!-- Encodage UTF-8 pour caractères spéciaux -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Rendre la page responsive -->
+<title>EXO_Responsive</title> <!-- Nom de l'onglet -->
+
+<style>
+/* ----------- BODY ----------- */
+body {
+    margin: 0; /* Supprime marge par défaut */
+    font-family: Arial, sans-serif; /* Police globale */
+    background: #f5f5f5; /* Couleur de fond */
+    color: #333; /* Couleur du texte */
+}
+
+/* ----------- HEADER / NAVBAR ----------- */
+header {
+    background: #2c3e50; /* Fond de l'en-tête */
+    color: white; /* Couleur du texte */
+    display: flex; /* Mise en ligne des éléments */
+    justify-content: space-between; /* Espacement max entre éléments */
+    align-items: center; /* Alignement vertical */
+    padding: 10px 20px; /* Espacement interne */
+    position: relative; /* Nécessaire pour le menu mobile */
+}
+
+/* Logo gauche */
+.logo {
+    height: 50px; /* Hauteur fixe du logo */
+   
+}
+
+/* Menu principal centré */
+.nav-center {
+    display: flex; /* Menu en ligne */
+    align-items: center; /* Alignement vertical */
+    gap: 30px; /* Espacement entre éléments */
+    justify-content: center; /* Centre horizontalement */
+    flex: 1; /* Prend l'espace disponible */
+}
+
+/* Lien menu principal */
+.nav-center a {
+    color: white; /* Couleur texte */
+    text-decoration: none; /* Pas de soulignement */
+    font-size: 18px; /* Taille du texte */
+    position: relative; /* Pour effets potentiels */
+    padding: 5px 0; /* Espacement vertical */
+}
+
+/* Parent du dropdown */
+.dropdown {
+    position: relative; /* Pour placer le menu déroulant */
+}
+
+/* Contenu du dropdown */
+.dropdown-content {
+    display: none; /* Caché par défaut */
+    position: absolute; /* Positionné par rapport au parent */
+    background: white; /* Fond blanc */
+    color: #333; /* Texte foncé */
+    min-width: 160px; /* Largeur mini */
+    top: 100%; /* Sous l'élément parent */
+    left: 0; /* Aligné à gauche */
+    border-radius: 6px; /* Coins arrondis */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2); /* Ombre */
+    z-index: 10; /* Au-dessus du reste */
+}
+
+/* Style des liens dans dropdown */
+.dropdown-content a {
+    display: block; /* Chaque lien prend toute la largeur */
+    padding: 10px 15px; /* Espacement interne */
+    text-decoration: none; /* Pas de soulignement */
+    color: #333; /* Texte gris foncé */
+}
+
+/* Effet hover dropdown */
+.dropdown-content a:hover {
+    background: #eee; /* Fond gris clair au survol */
+}
+
+/* Affiche le dropdown au survol */
+.dropdown:hover .dropdown-content {
+    display: block; /* Montre le menu */
+}
+
+/* Bouton */
+.btn {
+    background: #2727ae; /* Bleu */
+    padding: 20px 16px; /* Espacement interne large */
+    border-radius: 6px; /* Arrondis */
+    color: white; /* Texte blanc */
+    text-decoration: none; /* Pas de soulignement */
+    font-size: 16px; /* Taille texte */
+    white-space: nowrap; /* Empêche de couper le texte */
+}
+
+/* Menu hamburger mobile */
+.menu-toggle {
+    display: none; /* Caché sauf en mobile */
+    flex-direction: column; /* Barres en colonne */
+    cursor: pointer; /* Curseur clic */
+    gap: 5px; /* Espacement barres */
+}
+
+.menu-toggle span {
+    width: 25px; /* Largeur barre */
+    height: 3px; /* Épaisseur barre */
+    background: white; /* Couleur barre */
+    display: block; /* Barre = bloc */
+    border-radius: 2px; /* Coins arrondis */
+}
+
+/* ----------- HERO ----------- */
+.hero {
+    text-align: center; /* Texte centré */
+    padding: 60px 20px; /* Marges internes */
+    background: #ecf0f1; /* Fond gris clair */
+}
+
+.hero h1 {
+    font-size: 32px; /* Taille titre */
+    margin-bottom: 10px; /* Marge dessous */
+}
+
+.hero p {
+    font-size: 18px; /* Texte sous-titre */
+    margin-top: 0; /* Pas de marge au-dessus */
+}
+
+/* ----------- GALERIE ----------- */
+.galerie {
+    display: flex; /* Organisation en flex */
+    flex-direction: column; /* Colonne par défaut */
+    gap: 20px; /* Espacement cartes */
+    padding: 30px; /* Marges internes */
+}
+
+.carte {
+    background: white; /* Fond blanc */
+    border-radius: 10px; /* Coins arrondis */
+    overflow: hidden; /* Cache ce qui dépasse */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Ombre */
+}
+
+.carte img {
+    width: 100%; /* Image prend toute la largeur */
+    height: 200px; /* Hauteur fixe */
+    object-fit: cover; /* Coupe l'image pour remplir */
+}
+
+.carte h3 {
+    margin: 15px; /* Marges internes */
+    font-size: 20px; /* Taille titre */
+}
+
+.carte p {
+    margin: 0 15px 20px 15px; /* Marges */
+    color: #555; /* Texte gris */
+}
+
+/* ----------- FOOTER ----------- */
+footer {
+    text-align: center; /* Texte centré */
+    padding: 20px; /* Marges internes */
+    background: #2c3e50; /* Fond sombre */
+    color: white; /* Texte blanc */
+    margin-top: 40px; /* Espacement au-dessus */
+}
+
+/* ----------- RESPONSIVE TABLETTE ----------- */
+@media (min-width: 700px) {
+    .galerie {
+        flex-direction: row; /* Passe en lignes */
+        flex-wrap: wrap; /* Retour à la ligne */
+        justify-content: center; /* Centré */
+    }
+
+    .carte {
+        width: 45%; /* Deux cartes par ligne */
+    }
+}
+
+/* ----------- RESPONSIVE DESKTOP ----------- */
+@media (min-width: 1000px) {
+    .carte {
+        width: 30%; /* Trois cartes par ligne */
+    }
+
+    .hero h1 {
+        font-size: 40px; /* Titre plus grand */
+    }
+
+    .hero p {
+        font-size: 22px; /* Texte plus grand */
+    }
+}
+
+/* ----------- RESPONSIVE MOBILE NAV ----------- */
+@media (max-width: 700px) {
+    .nav-center {
+        display: none; /* Menu caché sur mobile */
+        flex-direction: column; /* En colonne */
+        gap: 10px; /* Espacement */
+        background: #2c3e50; /* Fond */
+        position: absolute; /* Position flottante */
+        top: 60px; /* Sous l'en-tête */
+        left: 0;
+        width: 100%; /* Largeur totale */
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    .nav-center.active {
+        display: flex; /* S'affiche quand .active */
+    }
+
+    .menu-toggle {
+        display: flex; /* Icône hamburger visible */
+    }
+
+    .btn {
+        display: block; /* Bouton centré */
+        margin: 10px auto;
+    }
+}
+</style>
+</head>
+<body> <!-- Début du contenu visible -->
+
+<header> <!-- En-tête -->
+
+    <!-- Logo -->
+    <img src="./IMG/Ark.png" class="logo" alt="Logo"> <!-- Image logo -->
+
+    <!-- Menu hamburger mobile -->
+    <div class="menu-toggle" onclick="toggleMenu()"> <!-- Au clic, ouvre le menu mobile -->
+        <span></span> <!-- Barre du hamburger -->
+        <span></span> <!-- Barre -->
+        <span></span> <!-- Barre -->
+    </div>
+
+    <!-- Menu principal -->
+    <nav class="nav-center"> <!-- Conteneur du menu -->
+
+        <a href="#">Accueil</a> <!-- Lien simple -->
+
+        <!-- Dropdown -->
+        <div class="dropdown"> <!-- Parent du menu déroulant -->
+            <a href="#">Services ▼</a> <!-- Lien parent -->
+            <div class="dropdown-content"> <!-- Menu déroulant caché -->
+                <a href="#">Web Design</a> <!-- Lien dropdown -->
+                <a href="#">Développement</a>
+                <a href="#">SEO</a>
+            </div>
+        </div>
+
+        <a href="#">Contact</a> <!-- Lien simple -->
+
+        <!-- Bouton -->
+        <a href="#" class="btn">Connexion</a> <!-- Bouton stylisé -->
+    </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero"> <!-- Section d'introduction -->
+    <h1>Bienvenue sur le Test Développeur Web</h1> <!-- Titre -->
+    <p>Reproduisez cette page pour évaluer vos compétences.</p> <!-- Sous-titre -->
+</section>
+
+<!-- GALERIE FLEX -->
+<section class="galerie"> <!-- Conteneur des cartes -->
+    <div class="carte"> <!-- Carte 1 -->
+        <img src="./IMG/clair-obscur.jpg" alt=""> <!-- Image carte -->
+        <h3>Projet 1</h3> <!-- Titre carte -->
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p> <!-- Texte carte -->
+    </div>
+
+    <div class="carte"> <!-- Carte 2 -->
+        <img src="./IMG/diablo.jpg" alt="">
+        <h3>Projet 2</h3>
+        <p>Integer vel turpis nec nulla facilisis luctus.</p>
+    </div>
+
+    <div class="carte"> <!-- Carte 3 -->
+        <img src="./IMG/horizon.jpg" alt="">
+        <h3>Projet 3</h3>
+        <p>Pellentesque habitant morbi tristique senectus et netus.</p>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer> <!-- Pied de page -->
+     Test Stagiaires Développeur Web Lille 09/12/2025
+</footer>
+
+<script>
+    // Fonction toggle menu mobile
+    function toggleMenu() {
+        const nav = document.querySelector('.nav-center'); /* Trouve le menu */
+        nav.classList.toggle('active'); /* Ajoute / retire la classe active */
+    }
+</script>
+
+</body>
+</html>

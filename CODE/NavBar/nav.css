@@ -1,0 +1,74 @@
+/* Réinitialisation des marges et des espacements de la liste et des éléments de la liste */
+.dropdownmenu ul, .dropdownmenu li {
+    margin: 0; /* Supprime les marges par défaut des éléments */
+    padding: 0; /* Supprime les espacements par défaut des éléments */
+}
+
+/* Style pour la liste principale */
+.dropdownmenu ul {
+    background: gray; /* Définit un fond gris pour la barre de navigation */
+    list-style: none; /* Supprime les puces de la liste */
+    width: 100%; /* La largeur de la barre de navigation prend 100% de l'espace disponible */
+}
+
+/* Style pour les éléments de la liste de la barre de navigation */
+.dropdownmenu li {
+    float: left; /* Dispose les éléments horizontalement, les fait flotter à gauche */
+    position: relative; /* Positionnement relatif pour permettre le positionnement absolu du sous-menu */
+    width: auto; /* L'élément prend la largeur qui lui est nécessaire */
+}
+
+/* Style pour les liens (ancre) dans la barre de navigation */
+.dropdownmenu a {
+    background: #30A6E6; /* Fond bleu pour le lien */
+    color: #FFFFFF; /* Couleur du texte en blanc */
+    display: block; /* Le lien prend toute la largeur de l'élément parent (li) */
+    font: bold 12px/20px sans-serif; /* Police en gras, taille 12px et hauteur de ligne de 20px */
+    padding: 10px 25px; /* Espacement intérieur du lien (10px vertical, 25px horizontal) */
+    text-align: center; /* Centrer le texte */
+    text-decoration: none; /* Supprime la décoration du lien (le soulignement) */
+    -webkit-transition: all .25s ease; /* Transition pour les changements de style, pour les navigateurs Webkit (ex. Chrome) */
+    -moz-transition: all .25s ease; /* Transition pour Firefox */
+    -ms-transition: all .25s ease; /* Transition pour Internet Explorer */
+    -o-transition: all .25s ease; /* Transition pour les anciens navigateurs Opera */
+    transition: all .25s ease; /* Transition standard pour tous les navigateurs */
+    border-bottom: 2px solid red; /* Bordure rouge en bas du lien pour un effet de survol */
+}
+
+/* Effet au survol des éléments de la barre de navigation */
+.dropdownmenu li:hover a {
+    background: #000000; /* Change le fond en noir lorsque l'on survole le lien */
+}
+
+/* Style pour le sous-menu (affiché au survol du parent) */
+#submenu {
+    left: 0; /* Positionne le sous-menu à gauche du parent */
+    opacity: 0; /* Cache initialement le sous-menu (opacité 0) */
+    position: absolute; /* Positionnement absolu par rapport au parent li */
+    top: 35px; /* Place le sous-menu à 35px sous l'élément parent */
+    visibility: hidden; /* Cache le sous-menu au départ */
+    z-index: 1; /* Place le sous-menu au-dessus des autres éléments */
+}
+
+/* Effet de survol du parent : affichage du sous-menu */
+li:hover ul#submenu {
+    opacity: 1; /* Rends le sous-menu visible (opacité 1) */
+    top: 40px; /* Déplace le sous-menu légèrement plus bas (ajuster en fonction du design) */
+    visibility: visible; /* Rend le sous-menu visible */
+}
+
+/* Style pour les éléments de la liste dans le sous-menu */
+#submenu li {
+    float: none; /* Enlève l'effet de flottement, pour que les éléments s'affichent en bloc sous le parent */
+    width: 100%; /* Les éléments du sous-menu prennent toute la largeur disponible */
+}
+
+/* Effet de survol des liens dans le sous-menu */
+#submenu a:hover {
+    background: #DF4B05; /* Change le fond des liens du sous-menu en orange vif au survol */
+}
+
+/* Style de base des liens dans le sous-menu */
+#submenu a {
+    background-color: #000000; /* Fond noir pour les liens du sous-menu */
+}

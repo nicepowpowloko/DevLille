@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barre de Recherche</title>
+ 
+</head>
+<body>
+
+<style>
+    /* Style de base pour la liste */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Style des éléments de la liste */
+li {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin: 5px;
+  cursor: pointer;
+}
+
+/* Style de la barre de recherche */
+#searchInput {
+  margin: 10px;
+  padding: 5px;
+}
+
+</style>
+
+
+  <input type="text" id="searchInput" oninput="searchFunction()" placeholder="Rechercher...">
+  
+  <ul id="searchList">
+    <li>Apple</li>
+    <li>Banana</li>
+    <li>Cherry</li>
+    <li>Orange</li>
+    <li>Grape</li>
+  </ul>
+
+ <script>
+function searchFunction() {
+  var input, filter, ul, li, txtValue;
+  input = document.getElementById('searchInput');
+  //input = document.getElementById('searchInput'); : Récupère l'élément d'entrée de recherche par son identifiant ('searchInput').
+  filter = input.value.toUpperCase();
+  //filter = input.value.toUpperCase(); : Récupère la valeur de l'entrée de recherche et la convertit en majuscules pour effectuer une recherche insensible à la casse.
+  ul = document.getElementById('searchList');
+  //ul = document.getElementById('searchList'); : Récupère l'élément de la liste à filtrer par son identifiant ('searchList').
+  li = ul.getElementsByTagName('li');
+  //li = ul.getElementsByTagName('li'); : Récupère tous les éléments de la liste (éléments <li>) dans une collection.
+
+  // Parcours de la liste et affichage/masquage des éléments en fonction de la recherche
+  //La boucle for parcourt chaque élément de la liste.
+  for (var i = 0; i < li.length; i++) {
+    txtValue = li[i].textContent || li[i].innerText;
+    //txtValue = li[i].textContent || li[i].innerText; : Récupère le texte de l'élément de la liste, en prenant en compte la compatibilité avec différents navigateurs.
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      li[i].style.display = '';
+    } else {
+      li[i].style.display = 'none';
+    }
+    //La condition if (txtValue.toUpperCase().indexOf(filter) > -1) compare le texte de l'élément avec le filtre de recherche. Si le texte de l'élément contient la chaîne de recherche, l'élément est affiché (li[i].style.display = '';), sinon, il est masqué (li[i].style.display = 'none';).
+  }
+}
+
+ </script>
+</body>
+</html>

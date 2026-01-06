@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuit jour</title>
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            color: #333;
+            transition: all 0.3s;
+        }
+        .mode-nuit {
+            background: #222;
+            color: #f4f4f4;
+        }
+        .clik-btn {
+            padding: 10px 20px;
+            background: #e107d2;
+            color: rgb(5, 5, 5);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Transition nuit / jour </h1>
+    <button class="clik-btn">clic</button>
+
+    <script>
+        const toggleBtn = document.querySelector('.clik-btn');
+
+         //Sélection du bouton via sa classe CSS
+        // Stocké dans la variable toggleBtn
+
+        const body = document.body;
+
+        // Récupère l’élément <body>
+        // Permet de modifier ses classes
+
+       
+        toggleBtn.addEventListener('click', () => {
+
+            //clic de l’utilisateur sur le bouton
+            //Déclenche une fonction au clic
+            //Permet d’activer/désactiver le mode nuit
+            body.classList.toggle('mode-nuit');
+            //Ajoute la classe mode-nuit
+            const isDarkMode = body.classList.contains('mode-nuit');
+            //Vérifie si le mode nuit est actif
+            toggleBtn.textContent = isDarkMode ? 'jour' : 'nuit';
+            // change le texte avec l'action possible
+
+        });
+    </script>
+</body>
+</html>
