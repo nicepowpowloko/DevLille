@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de Notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 40px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .section-titre {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e609b6;
+            margin-bottom: 15px;
+        }
+        
+        .info-ligne {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .valeur {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .moyenne-box {
+            background: #059644;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .moyenne-valeur {
+            font-size: 48px;
+            font-weight: bold;
+        }
+        
+        .resultat {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .admis {
+            background: #d1fae5;
+            color: #065f46;
+            border: 3px solid #10b981;
+        }
+        
+        .refuse {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 3px solid #ef4444;
+        }
+        
+        .mention {
+            color: #92400e;
+            border: 2px solid #f59e0b;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculateur de Notes</h1>
+        <div id="affichage"></div>
+    </div>
+
+    <script>
+        // === PARTIE 1 : INFORMATIONS DE L'ÉTUDIANT ===
+        
+        // 1. prenomEtudiant : Le prénom de l'étudiant
+        // On utilise "let" car c'est une variable qui peut changer
+        let prenomEtudiant = "Thomas";
+        
+        // 2. nomEtudiant : Le nom de famille de l'étudiant
+        let nomEtudiant = "Darras";
+        
+        // 3. classe : La formation suivie par l'étudiant
+        let classe = "Développeur Web";
+
+        // === PARTIE 2 : LES NOTES ===
+        
+        // 4. noteHTML : Note obtenue en HTML sur 20
+        let noteHTML = 15;
+        
+        // 5. noteCSS : Note obtenue en CSS sur 20
+        let noteCSS = 14;
+        
+        // 6. noteJavaScript : Note obtenue en JavaScript sur 20
+        let noteJavaScript = 16;
+
+        // === PARTIE 3 : CALCULS ===
+        
+        // 7. Calcul de la moyenne
+        // On additionne les trois notes et on divise par 3
+        // (15 + 14 + 16) / 3 = 45 / 3 = 15
+        let moyenne = (noteHTML + noteCSS + noteJavaScript) / 3;
+        
+        // Pour arrondir à 2 décimales (exemple: 15.00)
+        // toFixed(2) transforme le nombre en texte avec 2 décimales
+        // parseFloat() le retransforme en nombre
+        moyenne = parseFloat(moyenne.toFixed(2));
+        
+        // 8. Vérification si l'étudiant est admis
+        // admis est un booléen (true ou false)
+        // Il est true si la moyenne est supérieure ou égale à 10
+        let admis = moyenne >= 10;
+        
+        // 9. Vérification si l'étudiant a une mention
+        // aMention est true si la moyenne est >= 14
+        let aMention = moyenne >= 14;
+
+        // === PARTIE 4 : AFFICHAGE ===
+        
+        // Récupération de la zone d'affichage
+        let affichage = document.getElementById('affichage');
+        
+        // Affichage des informations de l'étudiant
+        affichage.innerHTML += `
+            <div class="section">
+                <div class="section-titre"> Informations de l'étudiant</div>
+                <div class="info-ligne">
+                    <span class="label">Prénom :</span>
+                    <span class="valeur">${prenomEtudiant}</span>
+                </div>
+                <div class="info-ligne">
+                    <span class="label">Nom :</span>
+                    <span class="valeur">${nomEtudiant}</span>
+                </div>
+                <div class="info-ligne">
+                    <span class="label">Formation :</span>
+                    <span class="valeur">${classe}</span>
+                </div>
+            </div>
+        `;
+        
+        // Affichage des notes
+        affichage.innerHTML += `
+            <div class="section">
+                <div class="section-titre"> Notes obtenues</div>
+                <div class="info-ligne">
+                    <span class="label">HTML :</span>
+                    <span class="valeur">${noteHTML}/20</span>
+                </div>
+                <div class="info-ligne">
+                    <span class="label">CSS :</span>
+                    <span class="valeur">${noteCSS}/20</span>
+                </div>
+                <div class="info-ligne">
+                    <span class="label">JavaScript :</span>
+                    <span class="valeur">${noteJavaScript}/20</span>
+                </div>
+            </div>
+        `;
+        
+        // Affichage de la moyenne
+        affichage.innerHTML += `
+            <div class="moyenne-box">
+                <div>MOYENNE GÉNÉRALE</div>
+                <div class="moyenne-valeur">${moyenne}/20</div>
+            </div>
+        `;
+        
+        // Affichage du résultat (admis ou refusé)
+        // Opérateur ternaire : condition ? siVrai : siFaux
+        // Si admis est true, on utilise la classe "admis", sinon "refuse"
+        let classeResultat = admis ? 'admis' : 'refuse';
+        let icone = admis ? '' : '';
+        let texteResultat = admis ? 'ADMIS' : 'REFUSÉ';
+        
+        affichage.innerHTML += `
+            <div class="resultat ${classeResultat}">
+                ${icone} ${texteResultat}
+            </div>
+        `;
+        
+        // Si l'étudiant a une mention (moyenne >= 14)
+        // On affiche un message bonus
+        if (aMention) {
+            affichage.innerHTML += `
+                <div class="resultat mention">
+                     Félicitations ! Vous avez obtenu une mention !
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

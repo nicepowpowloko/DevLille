@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exo Intro</title>
+</head>
+<body>
+    <h1>Exercice JavaScript</h1>
+    
+    
+    <div id="conteneur-bouton"></div>
+    
+    <script>
+
+// J'affiche "Hello World" dans la console
+console.log("Hello World");
+
+// Je modifie le titre de la page
+document.title = "test intro exo ";
+
+// J'ajoute un bouton qui affiche une alerte
+
+let bouton = document.createElement("button");
+bouton.textContent = "Cliquez ici";
+
+// J'ajoute l'événement au clic
+bouton.addEventListener("click", function() {
+    alert("Bonjour ! création d'un événement via le JS !");
+});
+
+// Ajouter le bouton dans la page
+document.getElementById("conteneur-bouton").appendChild(bouton);
+
+
+
+function maFonction() {
+    // Variable locale à la fonction elle reste ici
+    let local = "accessible seulement ici";
+    console.log(local); // OK
+}
+
+maFonction();
+console.log(local); // ReferenceError
+
+
+
+
+
+
+
+
+    </script>
+
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+<script>
+    // Données du formulaire
+    let nom = "Thomas";
+    let email = "thomas@example.com";
+    let age = 34;
+    let accepteConditions = true;
+    let newsletter = false;
+    
+    // Validations (retournent des booléens)
+    let nomValide = nom.length >= 2;
+    let emailValide = email.includes("@") && email.includes(".");
+    let ageValide = age >= 18;
+    
+    // Vérifier si le formulaire est complet
+    let formulaireValide = nomValide && emailValide && ageValide && accepteConditions;
+    
+    if (formulaireValide) {
+        console.log("Inscription réussie !");
+        console.log(`Bienvenue ${nom}`);
+    
+        if (newsletter) {
+            console.log("Vous recevrez notre newsletter");
+        }
+    } else {
+        console.log("Veuillez corriger les erreurs :");
+    
+        if (!nomValide) {
+            console.log("- Le nom doit contenir au moins 2 caractères");
+        }
+        if (!emailValide) {
+            console.log("- Email invalide");
+        }
+        if (!ageValide) {
+            console.log("- Vous devez avoir au moins 18 ans");
+        }
+        if (!accepteConditions) {
+            console.log("- Vous devez accepter les conditions d'utilisation");
+        }
+    }
+    
+    
+    // Résultat :
+    
+    // Inscription réussie !
+
+    // Bienvenue Thomas
+</script>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple Console</title>
+</head>
+<body>
+    <h1>Exemple d'utilisation de console.log()</h1>
+    <p>Ouvrez la console du navigateur (F12 ou clic droit > Inspecter > Console)</p>
+
+    <script>
+        let nom = "Jean";
+        let age = 30;
+        console.log("Nom:", nom); // Nom: Jean
+        console.log("Age:", age); // Age: 30
+
+        // Template literals (plus lisible)
+        console.log(`L'utilisateur ${nom} a ${age} ans`);
+
+        // Afficher un objet
+        let personne = {nom: "Paul", age: 25};
+        console.log(personne); // {nom: "Paul", age: 25}
+
+        /* Résultats attendus dans la console:
+        Nom: Jean
+        Age: 30
+        L'utilisateur Jean a 30 ans
+        {nom: "Paul", age: 25}
+        */
+
+        
+    </script>
+</body>
+</html>
