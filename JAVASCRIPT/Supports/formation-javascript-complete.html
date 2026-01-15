@@ -1,0 +1,3607 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formation JavaScript Complète - 15 Modules</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f7eb02;
+            --secondary: #004E89;
+            --accent: #F7B801;
+            --dark: #1A1A2E;
+            --light: #F8F9FA;
+            --code-bg: #2D2D44;
+            --success: #06D6A0;
+            --warning: #FFB703;
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Karla', sans-serif;
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+nav {
+    background: var(--conseil);
+    backdrop-filter: blur(10px);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* CHANGÉ: space-between → flex-start */
+    padding: 0 2rem;
+    gap: 3rem; /* AJOUTÉ: espace entre logo et menu */
+}
+
+.logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 1.2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo::before {
+    content: '{ JS }';
+    color: var(--primary);
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    gap: 0;
+}
+
+.nav-item {
+    position: relative;
+    display: inline-block; /* AJOUTÉ */
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 1.5rem 1.2rem;
+    display: block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.nav-link:hover {
+    background: var(--real);
+    color: white;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%; 
+    left: 0; 
+    background: rgba(26, 26, 46, 0.98);
+    backdrop-filter: blur(10px);
+    min-width: 280px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    border-top: 3px solid white;
+    animation: slideDown 0.3s ease;
+    max-height: 70vh;
+    overflow-y: auto;
+    z-index: 1001; 
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nav-item:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 0.9rem 1.5rem;
+    text-decoration: none;
+    display: block;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    font-size: 0.9rem;
+    white-space: nowrap; /* AJOUTÉ - empêche le retour à la ligne */
+}
+
+.dropdown-content a:hover {
+    background: var(--real);
+    padding-left: 2rem;
+}
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #161616 10%, #f0ede9 60%);
+            color: rgb(21, 21, 21);
+            padding: 4rem 2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.95;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .module {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .module.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .module h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            border-bottom: 4px solid var(--real);
+            padding-bottom: 0.5rem;
+        }
+
+        .module h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            color: var(--real);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .module h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .concept {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border-left: 5px solid var(--secondary);
+        }
+
+        .example {
+            background: var(--code-bg);
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            border: 2px solid var(--real);
+        }
+
+        .example-title {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-family: 'Syne', sans-serif;
+        }
+
+        pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background: rgba(236, 233, 232, 0.998);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: red;
+            font-size: 0.9em;
+        }
+
+        .exercise {
+            background: linear-gradient(135deg, #fff5e6 0%, var(--real) 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border-left: 5px solid var(--conseil);
+        }
+
+        .exercise-title {
+            color: var(--dark);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .note {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--success);
+        }
+
+        .warning {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--warning);
+        }
+
+        /* Demo Output */
+        .demo-output {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            min-height: 100px;
+        }
+
+        .demo-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .demo-button:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background: var(--secondary);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        /* Welcome Screen */
+        #welcome {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        #welcome h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .module-card {
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .module-card h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .module-card p {
+            opacity: 0.9;
+        }
+
+        footer {
+            background: var(--conseil);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .module {
+                padding: 1.5rem;
+            }
+            
+            .module h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="showModule('welcome')"></a>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Fondamentaux ▼</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showModule('module1')">Module 1: Variables & Types</a>
+                        <a href="#" onclick="showModule('module2')">Module 2: Opérateurs</a>
+                        <a href="#" onclick="showModule('module3')">Module 3: Conditions</a>
+                        <a href="#" onclick="showModule('module4')">Module 4: Boucles</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Fonctions & Arrays ▼</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showModule('module5')">Module 5: Fonctions</a>
+                        <a href="#" onclick="showModule('module6')">Module 6: Tableaux (Arrays)</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Objets & DOM ▼</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showModule('module7')">Module 7: Objets</a>
+                        <a href="#" onclick="showModule('module8')">Module 8: DOM Manipulation</a>
+                        <a href="#" onclick="showModule('module9')">Module 9: Événements</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Avancé ▼</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showModule('module10')">Module 10: Asynchrone</a>
+                        <a href="#" onclick="showModule('module11')">Module 11: APIs & Fetch</a>
+                        <a href="#" onclick="showModule('module12')">Module 12: Gestion Erreurs</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">ES6+ ▼</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showModule('module13')">Module 13: ES6+ Classes</a>
+                        <a href="#" onclick="showModule('module14')">Module 14: ES6+ Features</a>
+                        <a href="#" onclick="showModule('module15')">Module 15: Modules</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="hero">
+         <img src="./IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil" class="hero-logo">
+        <h1>JAVASCRIPT</h1>
+        <p>JavaScript de A à Z avec 15 modules et exercices pratiques.</p>
+    </div>
+
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcome" class="module active">
+            <h2>DWWM Supports JAVASCRIPT</h2>
+            <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto;">
+                Ces supports ouvrent tous les aspects du JavaScript moderne, des bases aux concepts avancés ES6+. 
+                <br>
+                Chaque catégorie contient des modules progressifs.
+            </p>
+            
+            <div class="module-grid">
+                <div class="module-card" onclick="showModule('module1')">
+                    <h3> Fondamentaux</h3>
+                    <p>Modules 1-4: Variables, opérateurs, conditions et boucles</p>
+                </div>
+                <div class="module-card" onclick="showModule('module5')">
+                    <h3> Fonctions & Arrays</h3>
+                    <p>Modules 5-6: Maîtrisez les fonctions et les tableaux</p>
+                </div>
+                <div class="module-card" onclick="showModule('module7')">
+                    <h3> Objets & DOM</h3>
+                    <p>Modules 7-9: Objets, manipulation DOM et événements</p>
+                </div>
+                <div class="module-card" onclick="showModule('module10')">
+                    <h3> Avancé</h3>
+                    <p>Modules 10-12: Asynchrone, APIs et gestion d'erreurs</p>
+                </div>
+                <div class="module-card" onclick="showModule('module13')">
+                    <h3> ES6+</h3>
+                    <p>Modules 13-15: JavaScript moderne et modules</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 1: Variables et Types de Données -->
+        <div id="module1" class="module">
+            <h2>Module 1: Variables et Types de Données</h2>
+            
+            <div class="concept">
+                <h3>Concepts Clés</h3>
+                <p><strong>Les variables</strong> sont des conteneurs qui stockent des données. En JavaScript, on peut déclarer des variables avec <code>var</code>, <code>let</code>, ou <code>const</code>.</p>
+            </div>
+
+            <h3>1. Déclaration de Variables</h3>
+            
+            <h4>var (ancienne méthode, à éviter)</h4>
+            <div class="example">
+                <div class="example-title">Exemple avec var:</div>
+                <pre>
+var nom = "Thomas";
+var age = 30;
+console.log(nom); // Affiche: Thomas
+console.log(age); // Affiche: 30
+                </pre>
+            </div>
+
+            <h4>let (moderne, valeur modifiable)</h4>
+            <div class="example">
+                <div class="example-title">Exemple avec let:</div>
+                <pre>
+let prenom = "Marie";
+prenom = "Sophie"; // On peut modifier
+console.log(prenom); // Affiche: Sophie
+                </pre>
+            </div>
+
+            <h4>const (moderne, valeur constante)</h4>
+            <div class="example">
+                <div class="example-title">Exemple avec const:</div>
+                <pre>
+const PI = 3.14159;
+// PI = 3.14; Erreur! On ne peut pas modifier une constante
+console.log(PI); // Affiche: 3.14159
+                </pre>
+            </div>
+
+            <h3>2. Types de Données Primitifs</h3>
+
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Exemple</th>
+                </tr>
+                <tr>
+                    <td><strong>String</strong></td>
+                    <td>Chaîne de caractères (texte)</td>
+                    <td><code>"Bonjour"</code>, <code>'Hello'</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Number</strong></td>
+                    <td>Nombres (entiers ou décimaux)</td>
+                    <td><code>42</code>, <code>3.14</code>, <code>-17</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Boolean</strong></td>
+                    <td>Valeur vraie ou fausse</td>
+                    <td><code>true</code>, <code>false</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Undefined</strong></td>
+                    <td>Variable déclarée mais non assignée</td>
+                    <td><code>let x;</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Null</strong></td>
+                    <td>Absence intentionnelle de valeur</td>
+                    <td><code>let x = null;</code></td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <div class="example-title">Démonstration des types:</div>
+                <pre>
+// String
+let message = "Bienvenue en JavaScript!";
+let citation = 'JavaScript est génial';
+
+// Number
+let age = 25;
+let prix = 19.99;
+let temperature = -5;
+
+// Boolean
+let estConnecte = true;
+let aUnCompte = false;
+
+// Undefined
+let nonDefini;
+console.log(nonDefini); // undefined
+
+// Null
+let vide = null;
+                </pre>
+            </div>
+
+            <h3>3. Vérifier le Type d'une Variable</h3>
+            
+            <div class="example">
+                <div class="example-title">Utilisation de typeof:</div>
+                <pre>
+let nom = "Alice";
+let age = 30;
+let estActif = true;
+
+console.log(typeof nom);      // "string"
+console.log(typeof age);      // "number"
+console.log(typeof estActif); // "boolean"
+                </pre>
+            </div>
+
+            <h3>4. Exemple Interactif</h3>
+            
+            <div class="example">
+                <div class="example-title">Code complet à tester:</div>
+                <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Variables et Types&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Démonstration des Variables&lt;/h1&gt;
+    &lt;div id="resultat"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        // Déclaration de variables
+        const prenom = "Thomas";
+        const age = 32;
+        const estFormateur = true;
+        const specialite = "JavaScript";
+        
+        // Affichage dans la page
+        let html = `
+            &lt;h2&gt;Informations:&lt;/h2&gt;
+            &lt;p&gt;&lt;strong&gt;Prénom:&lt;/strong&gt; ${prenom}&lt;/p&gt;
+                    // Utilisation de l'interpolation pour insérer la variable
+            &lt;p&gt;&lt;strong&gt;Âge:&lt;/strong&gt; ${age} ans&lt;/p&gt;
+            &lt;p&gt;&lt;strong&gt;Est formateur:&lt;/strong&gt; ${estFormateur}&lt;/p&gt;
+            &lt;p&gt;&lt;strong&gt;Spécialité:&lt;/strong&gt; ${specialite}&lt;/p&gt;
+            &lt;hr&gt;
+            &lt;h3&gt;Types de données:&lt;/h3&gt;
+            &lt;p&gt;Type de prenom: ${typeof prenom}&lt;/p&gt; 
+                    // typeof retourne une chaîne indiquant le type de la variable
+            &lt;p&gt;Type de age: ${typeof age}&lt;/p&gt;
+            &lt;p&gt;Type de estFormateur: ${typeof estFormateur}&lt;/p&gt;
+        `;
+        
+        document.getElementById('resultat').innerHTML = html;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </pre>
+            </div>
+
+            <div class="exercise">
+                <div class="exercise-title">Exercices Pratiques</div>
+                <ol>
+                    <li>Créez une variable <code>prenom</code> avec votre prénom</li>
+                    <li>Créez une variable <code>age</code> avec votre âge</li>
+                    <li>Créez une variable <code>ville</code> avec votre ville</li>
+                    <li>Affichez ces trois variables avec <code>typeof</code></li>
+                    <li>Créez une constante <code>PAYS</code> avec la valeur "France"</li>
+                </ol>
+            </div>
+
+            <div class="note">
+                <strong>Bonne pratique:</strong> Utilisez <code>const</code> par défaut. N'utilisez <code>let</code> que si vous devez modifier la valeur. N'utilisez jamais <code>var</code>.
+            </div>
+        </div>
+
+        <!-- MODULE 2: Opérateurs -->
+        <div id="module2" class="module">
+            <h2>Module 2: Opérateurs</h2>
+            
+            <div class="concept">
+                <h3> Concepts Clés</h3>
+                <p>Les <strong>opérateurs</strong> permettent d'effectuer des opérations sur les variables et les valeurs. JavaScript propose plusieurs types d'opérateurs.</p>
+            </div>
+
+            <h3>1. Opérateurs Arithmétiques</h3>
+            
+            <table>
+                <tr>
+                    <th>Opérateur</th>
+                    <th>Description</th>
+                    <th>Exemple</th>
+                    <th>Résultat</th>
+                </tr>
+                <tr>
+                    <td><code>+</code></td>
+                    <td>Addition</td>
+                    <td><code>5 + 3</code></td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <td><code>-</code></td>
+                    <td>Soustraction</td>
+                    <td><code>10 - 4</code></td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <td><code>*</code></td>
+                    <td>Multiplication</td>
+                    <td><code>6 * 7</code></td>
+                    <td>42</td>
+                </tr>
+                <tr>
+                    <td><code>/</code></td>
+                    <td>Division</td>
+                    <td><code>20 / 4</code></td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td><code>%</code></td>
+                    <td>Modulo (reste)</td>
+                    <td><code>10 % 3</code></td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td><code>**</code></td>
+                    <td>Puissance</td>
+                    <td><code>2 ** 3</code></td>
+                    <td>8</td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <div class="example-title">Exemples d'opérations arithmétiques:</div>
+                <pre>
+let a = 10;
+let b = 3;
+
+console.log(a + b);  // 13
+console.log(a - b);  // 7
+console.log(a * b);  // 30
+console.log(a / b);  // 3.333...
+console.log(a % b);  // 1 (reste de 10 divisé par 3)
+console.log(a ** b); // 1000 (10 puissance 3)
+                </pre>
+            </div>
+
+            <h3>2. Opérateurs d'Assignation</h3>
+            
+            <table>
+                <tr>
+                    <th>Opérateur</th>
+                    <th>Équivalent</th>
+                    <th>Exemple</th>
+                </tr>
+                <tr>
+                    <td><code>=</code></td>
+                    <td>Assignation simple</td>
+                    <td><code>x = 5</code></td>
+                </tr>
+                <tr>
+                    <td><code>+=</code></td>
+                    <td><code>x = x + y</code></td>
+                    <td><code>x += 3</code></td>
+                </tr>
+                <tr>
+                    <td><code>-=</code></td>
+                    <td><code>x = x - y</code></td>
+                    <td><code>x -= 2</code></td>
+                </tr>
+                <tr>
+                    <td><code>*=</code></td>
+                    <td><code>x = x * y</code></td>
+                    <td><code>x *= 4</code></td>
+                </tr>
+                <tr>
+                    <td><code>/=</code></td>
+                    <td><code>x = x / y</code></td>
+                    <td><code>x /= 2</code></td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <div class="example-title">Utilisation des opérateurs d'assignation:</div>
+                <pre>
+let score = 100;
+
+score += 50;  // score = score + 50 → 150
+score -= 20;  // score = score - 20 → 130
+score *= 2;   // score = score * 2  → 260
+score /= 4;   // score = score / 4  → 65
+
+console.log(score); // 65
+                </pre>
+            </div>
+
+            <h3>3. Opérateurs de Comparaison</h3>
+            
+            <table>
+                <tr>
+                    <th>Opérateur</th>
+                    <th>Description</th>
+                    <th>Exemple</th>
+                    <th>Résultat</th>
+                </tr>
+                <tr>
+                    <td><code>==</code></td>
+                    <td>Égalité (valeur)</td>
+                    <td><code>5 == "5"</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>===</code></td>
+                    <td>Égalité stricte (valeur + type)</td>
+                    <td><code>5 === "5"</code></td>
+                    <td>false</td>
+                </tr>
+                <tr>
+                    <td><code>!=</code></td>
+                    <td>Différent (valeur)</td>
+                    <td><code>5 != "5"</code></td>
+                    <td>false</td>
+                </tr>
+                <tr>
+                    <td><code>!==</code></td>
+                    <td>Différent strict</td>
+                    <td><code>5 !== "5"</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>&gt;</code></td>
+                    <td>Supérieur à</td>
+                    <td><code>10 &gt; 5</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>&lt;</code></td>
+                    <td>Inférieur à</td>
+                    <td><code>3 &lt; 8</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>&gt;=</code></td>
+                    <td>Supérieur ou égal</td>
+                    <td><code>5 &gt;= 5</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>&lt;=</code></td>
+                    <td>Inférieur ou égal</td>
+                    <td><code>4 &lt;= 3</code></td>
+                    <td>false</td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <div class="example-title">Comparaisons en action:</div>
+                <pre>
+let age = 18;
+
+console.log(age == 18);   // true
+console.log(age == "18"); // true (compare seulement la valeur)
+console.log(age === "18");// false (compare valeur ET type)
+console.log(age > 15);    // true
+console.log(age < 20);    // true
+console.log(age >= 18);   // true
+                </pre>
+            </div>
+
+            <div class="note">
+                <strong>Bonne pratique:</strong> Utilisez toujours <code>===</code> et <code>!==</code> au lieu de <code>==</code> et <code>!=</code> pour éviter les comportements inattendus.
+            </div>
+
+            <h3>4. Opérateurs Logiques</h3>
+            
+            <table>
+                <tr>
+                    <th>Opérateur</th>
+                    <th>Description</th>
+                    <th>Exemple</th>
+                    <th>Résultat</th>
+                </tr>
+                <tr>
+                    <td><code>&&</code></td>
+                    <td>ET logique (AND)</td>
+                    <td><code>true && false</code></td>
+                    <td>false</td>
+                </tr>
+                <tr>
+                    <td><code>||</code></td>
+                    <td>OU logique (OR)</td>
+                    <td><code>true || false</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>!</code></td>
+                    <td>NON logique (NOT)</td>
+                    <td><code>!true</code></td>
+                    <td>false</td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <div class="example-title">Opérateurs logiques en pratique:</div>
+                <pre>
+let age = 25;
+let aPermis = true;
+
+// ET (&&) - Les deux conditions doivent être vraies
+let peutConduire = (age >= 18) && aPermis;
+console.log(peutConduire); // true
+
+// OU (||) - Au moins une condition doit être vraie
+let peutEntrer = (age >= 18) || (aPermis === false);
+console.log(peutEntrer); // true
+
+// NON (!) - Inverse la valeur
+let estMineur = !(age >= 18);
+console.log(estMineur); // false
+                </pre>
+            </div>
+
+            <h3>5. Opérateurs d'Incrémentation/Décrémentation</h3>
+            
+            <div class="example">
+                <div class="example-title">++ et --:</div>
+                <pre>
+let compteur = 0;
+
+compteur++;  // Incrémente de 1 → compteur = 1
+compteur++;  // Incrémente de 1 → compteur = 2
+compteur--;  // Décrémente de 1 → compteur = 1
+
+console.log(compteur); // 1
+
+// Différence entre pré et post incrémentation
+let x = 5;
+let y = x++;  // y = 5, puis x = 6 (post-incrémentation)
+let z = ++x;  // x = 7, puis z = 7 (pré-incrémentation)
+                </pre>
+            </div>
+
+            <h3>6. Exemple Interactif Complet</h3>
+            
+            <div class="example">
+                <div class="example-title">Calculatrice simple:</div>
+                <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Calculatrice&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Calculatrice JavaScript&lt;/h1&gt;
+    &lt;div id="calculatrice"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        const nombre1 = 20;
+        const nombre2 = 4;
+        
+        let html = `
+            &lt;h2&gt;Opérations avec ${nombre1} et ${nombre2}:&lt;/h2&gt;
+            &lt;p&gt;Addition: ${nombre1} + ${nombre2} = ${nombre1 + nombre2}&lt;/p&gt;
+            &lt;p&gt;Soustraction: ${nombre1} - ${nombre2} = ${nombre1 - nombre2}&lt;/p&gt;
+            &lt;p&gt;Multiplication: ${nombre1} × ${nombre2} = ${nombre1 * nombre2}&lt;/p&gt;
+            &lt;p&gt;Division: ${nombre1} ÷ ${nombre2} = ${nombre1 / nombre2}&lt;/p&gt;
+            &lt;p&gt;Modulo: ${nombre1} % ${nombre2} = ${nombre1 % nombre2}&lt;/p&gt;
+            &lt;p&gt;Puissance: ${nombre1} ** 2 = ${nombre1 ** 2}&lt;/p&gt;
+            &lt;hr&gt;
+            &lt;h2&gt;Comparaisons:&lt;/h2&gt;
+            &lt;p&gt;${nombre1} &gt; ${nombre2} = ${nombre1 > nombre2}&lt;/p&gt;
+            &lt;p&gt;${nombre1} === ${nombre2} = ${nombre1 === nombre2}&lt;/p&gt;
+            &lt;p&gt;${nombre1} !== ${nombre2} = ${nombre1 !== nombre2}&lt;/p&gt;
+        `;
+        
+        document.getElementById('calculatrice').innerHTML = html;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </pre>
+            </div>
+
+            <div class="exercise">
+                <div class="exercise-title">Exercices Pratiques</div>
+                <ol>
+                    <li>Créez deux variables <code>prix</code> et <code>quantite</code>, calculez le total</li>
+                    <li>Utilisez l'opérateur modulo pour vérifier si un nombre est pair</li>
+                    <li>Créez une variable <code>age</code> et vérifiez s'il est majeur (>= 18)</li>
+                    <li>Utilisez les opérateurs logiques pour vérifier plusieurs conditions</li>
+                    <li>Créez un compteur et incrémentez-le 5 fois</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- MODULE 3: Structures Conditionnelles -->
+        <div id="module3" class="module">
+            <h2>Module 3: Structures Conditionnelles</h2>
+            
+            <div class="concept">
+                <h3>Concepts Clés</h3>
+                <p>Les <strong>structures conditionnelles</strong> permettent d'exécuter du code selon certaines conditions. Elles sont essentielles pour créer une logique de programme.</p>
+            </div>
+
+            <h3>1. La Structure if</h3>
+            
+            <div class="example">
+                <div class="example-title">Syntaxe de base:</div>
+                <pre>
+let age = 20;
+
+if (age >= 18) {
+    console.log("Vous êtes majeur");
+}
+
+// Si la condition est vraie, le code entre {} s'exécute
+// Sinon, il est ignoré
+                </pre>
+            </div>
+
+            <h3>2. if...else</h3>
+            
+            <div class="example">
+                <div class="example-title">Avec une alternative:</div>
+                <pre>
+let temperature = 15;
+
+if (temperature > 25) {
+    console.log("Il fait chaud ");
+} else {
+    console.log("Il fait frais ");
+}
+
+// Résultat: "Il fait frais "
+                </pre>
+            </div>
+
+            <h3>3. if...else if...else</h3>
+            
+            <div class="example">
+                <div class="example-title">Conditions multiples:</div>
+                <pre>
+let note = 15;
+
+if (note >= 16) {
+    console.log("Très bien!");
+} else if (note >= 14) {
+    console.log("Bien");
+} else if (note >= 12) {
+    console.log("Assez bien");
+} else if (note >= 10) {
+    console.log("Passable");
+} else {
+    console.log("Insuffisant");
+}
+
+// Résultat: "Bien"
+                </pre>
+            </div>
+
+            <h3>4. Conditions avec Opérateurs Logiques</h3>
+            
+            <div class="example">
+                <div class="example-title">Combiner plusieurs conditions:</div>
+                <pre>
+let age = 25;
+let aPermis = true;
+
+// ET (&&) - Les deux doivent être vraies
+if (age >= 18 && aPermis) {
+    console.log("Vous pouvez conduire");
+}
+
+// OU (||) - Au moins une doit être vraie
+let estWeekend = true;
+let estVacances = false;
+
+if (estWeekend || estVacances) {
+    console.log("Pas de travail aujourd'hui!");
+}
+
+// NON (!) - Inverse la condition
+let estConnecte = false;
+
+if (!estConnecte) {
+    console.log("Veuillez vous connecter");
+}
+                </pre>
+            </div>
+
+            <h3>5. L'Opérateur Ternaire</h3>
+            
+            <div class="example">
+                <div class="example-title">Condition en une ligne:</div>
+                <pre>
+// Syntaxe: condition ? valeurSiVrai : valeurSiFaux
+
+let age = 20;
+let statut = (age >= 18) ? "majeur" : "mineur";
+console.log(statut); // "majeur"
+
+// Équivalent avec if/else:
+let statut2;
+if (age >= 18) {
+    statut2 = "majeur";
+} else {
+    statut2 = "mineur";
+}
+                </pre>
+            </div>
+
+            <h3>6. Switch Statement</h3>
+            
+            <div class="example">
+                <div class="example-title">Pour tester plusieurs valeurs spécifiques:</div>
+                <pre>
+let jour = "lundi";
+
+switch (jour) {
+    case "lundi":
+        console.log("Début de semaine");
+        break;
+    case "mercredi":
+        console.log("Milieu de semaine");
+        break;
+    case "vendredi":
+        console.log("Bientôt le weekend!");
+        break;
+    case "samedi":
+    case "dimanche":
+        console.log("Weekend! ");
+        break;
+    default:
+        console.log("Jour normal");
+}
+
+// Résultat: "Début de semaine"
+                </pre>
+            </div>
+
+            <div class="warning">
+                <strong>Important:</strong> N'oubliez pas le <code>break</code> dans les case du switch, sinon le code continuera à s'exécuter dans les cases suivants!
+            </div>
+
+            <h3>7. Exemple Interactif Complet</h3>
+            
+            <div class="example">
+                <div class="example-title">Système de notes avec affichage visuel:</div>
+                <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Système de Notes&lt;/title&gt;
+    &lt;style&gt;
+        .resultat {
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .excellent { background: #d4edda; color: #155724; }
+        .bien { background: #cce5ff; color: #004085; }
+        .passable { background: #fff3cd; color: #856404; }
+        .insuffisant { background: #f8d7da; color: #721c24; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Évaluation des Notes&lt;/h1&gt;
+    &lt;div id="resultats"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        // Fonction pour évaluer une note
+        function evaluerNote(nom, note) {
+            let appreciation, classe;
+            
+            if (note >= 16) {
+                appreciation = "Excellent!";
+                classe = "excellent";
+            } else if (note >= 14) {
+                appreciation = "Très bien";
+                classe = "bien";
+            } else if (note >= 12) {
+                appreciation = "Bien";
+                classe = "bien";
+            } else if (note >= 10) {
+                appreciation = "Passable";
+                classe = "passable";
+            } else {
+                appreciation = "Insuffisant";
+                classe = "insuffisant";
+            }
+            
+            return `
+                &lt;div class="resultat ${classe}"&gt;
+                    &lt;strong&gt;${nom}:&lt;/strong&gt; ${note}/20 - ${appreciation}
+                &lt;/div&gt;
+            `;
+        }
+        
+        // Évaluer plusieurs étudiants
+        let html = "";
+        html += evaluerNote("Alice", 17);
+        html += evaluerNote("Bob", 13);
+        html += evaluerNote("Charlie", 9);
+        html += evaluerNote("Diana", 15);
+        
+        // Vérification avec switch
+        let jourSemaine = 3; // Mercredi
+        let messageJour;
+        
+        switch(jourSemaine) {
+            case 1:
+                messageJour = "Lundi - Bon courage!";
+                break;
+            case 2:
+                messageJour = "Mardi";
+                break;
+            case 3:
+                messageJour = "Mercredi - Milieu de semaine!";
+                break;
+            case 4:
+                messageJour = "Jeudi";
+                break;
+            case 5:
+                messageJour = "Vendredi - Bientôt le weekend!";
+                break;
+            default:
+                messageJour = "Weekend!";
+        }
+        
+        html += `&lt;hr&gt;&lt;p&gt;&lt;strong&gt;Aujourd'hui:&lt;/strong&gt; ${messageJour}&lt;/p&gt;`;
+        
+        document.getElementById('resultats').innerHTML = html;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </pre>
+            </div>
+
+            <h3>8. Valeurs Truthy et Falsy</h3>
+            
+            <div class="concept">
+                <p>En JavaScript, certaines valeurs sont considérées comme "fausses" (falsy) dans un contexte booléen:</p>
+                <ul>
+                    <li><code>false</code></li>
+                    <li><code>0</code></li>
+                    <li><code>""</code> (chaîne vide)</li>
+                    <li><code>null</code></li>
+                    <li><code>undefined</code></li>
+                    <li><code>NaN</code></li>
+                </ul>
+                <p>Toutes les autres valeurs sont "vraies" (truthy).</p>
+            </div>
+
+            <div class="example">
+                <div class="example-title">Utilisation des valeurs truthy/falsy:</div>
+                <pre>
+let nom = "";
+
+if (nom) {
+    console.log("Bonjour " + nom);
+} else {
+    console.log("Nom non défini"); // Ce code s'exécute
+}
+
+let age = 0;
+
+if (age) {
+    console.log("Âge: " + age);
+} else {
+    console.log("Âge invalide"); // Ce code s'exécute
+}
+                </pre>
+            </div>
+
+            <div class="exercise">
+                <div class="exercise-title">Exercices Pratiques</div>
+                <ol>
+                    <li>Créez un programme qui vérifie si un nombre est positif, négatif ou nul</li>
+                    <li>Écrivez un système qui donne des réductions selon l'âge (enfant, adulte, senior)</li>
+                    <li>Créez un vérificateur de mot de passe avec plusieurs conditions (longueur, caractères spéciaux, etc.)</li>
+                    <li>Utilisez switch pour créer un menu de restaurant selon le jour</li>
+                    <li>Combinez plusieurs conditions avec && et || pour un système d'accès</li>
+                </ol>
+            </div>
+
+            <div class="note">
+                <strong>Bonne pratique:</strong> Utilisez des noms de variables explicites pour vos conditions. <code>if (estMajeur && aPermis)</code> est plus lisible que <code>if (x && y)</code>.
+            </div>
+        </div>
+
+        <!-- MODULE 4: Boucles -->
+        <div id="module4" class="module">
+            <h2>Module 4: Boucles (Loops)</h2>
+            
+            <div class="concept">
+                <h3>Concepts Clés</h3>
+                <p>Les <strong>boucles</strong> permettent de répéter du code plusieurs fois. Elles sont essentielles pour traiter des collections de données ou répéter des actions.</p>
+            </div>
+
+            <h3>1. La Boucle for</h3>
+            
+            <div class="example">
+                <div class="example-title">Syntaxe et utilisation:</div>
+                <pre>
+// Syntaxe: for (initialisation; condition; incrémentation)
+
+for (let i = 0; i < 5; i++) {
+    console.log("Itération numéro: " + i);
+}
+
+/* Affiche:
+Itération numéro: 0
+Itération numéro: 1
+Itération numéro: 2
+Itération numéro: 3
+Itération numéro: 4
+*/
+
+// Compter de 1 à 10
+for (let i = 1; i <= 10; i++) {
+    console.log(i);
+}
+
+// Compter à l'envers
+for (let i = 10; i >= 0; i--) {
+    console.log("Décompte: " + i);
+}
+                </pre>
+            </div>
+
+            <h3>2. La Boucle while</h3>
+            
+            <div class="example">
+                <div class="example-title">Répéter tant qu'une condition est vraie:</div>
+                <pre>
+let compteur = 0;
+
+while (compteur < 5) {
+    console.log("Compteur: " + compteur);
+    compteur++;
+}
+
+/* Affiche:
+Compteur: 0
+Compteur: 1
+Compteur: 2
+Compteur: 3
+Compteur: 4
+*/
+
+// Exemple pratique
+let essais = 0;
+let motDePasse = "";
+
+while (motDePasse !== "secret" && essais < 3) {
+    console.log("Essai numéro " + (essais + 1));
+    essais++;
+}
+                </pre>
+            </div>
+
+            <h3>3. La Boucle do...while</h3>
+            
+            <div class="example">
+                <div class="example-title">Exécuter au moins une fois:</div>
+                <pre>
+let nombre = 0;
+
+do {
+    console.log("Nombre: " + nombre);
+    nombre++;
+} while (nombre < 3);
+
+/* Affiche:
+Nombre: 0
+Nombre: 1
+Nombre: 2
+*/
+
+// Différence avec while: do...while s'exécute AU MOINS UNE FOIS
+let x = 10;
+
+do {
+    console.log("Ceci s'affiche!"); // S'affiche une fois
+} while (x < 5);
+
+while (x < 5) {
+    console.log("Ceci ne s'affiche pas"); //  Ne s'affiche jamais
+}
+                </pre>
+            </div>
+
+            <h3>4. break et continue</h3>
+            
+            <div class="example">
+                <div class="example-title">Contrôler le flux des boucles:</div>
+                <pre>
+// break - Arrête complètement la boucle
+for (let i = 0; i < 10; i++) {
+    if (i === 5) {
+        break; // Sort de la boucle
+    }
+    console.log(i); // Affiche: 0, 1, 2, 3, 4
+}
+
+// continue - Passe à l'itération suivante
+for (let i = 0; i < 10; i++) {
+    if (i % 2 === 0) {
+        continue; // Saute les nombres pairs
+    }
+    console.log(i); // Affiche: 1, 3, 5, 7, 9
+}
+
+// Exemple pratique
+for (let i = 1; i <= 20; i++) {
+    // Sauter les nombres divisibles par 3
+    if (i % 3 === 0) {
+        continue;
+    }
+    // Arrêter à 15
+    if (i > 15) {
+        break;
+    }
+    console.log(i);
+}
+                </pre>
+            </div>
+
+            <h3>5. Boucles Imbriquées</h3>
+            
+            <div class="example">
+                <div class="example-title">Une boucle dans une autre boucle:</div>
+                <pre>
+// Table de multiplication
+for (let i = 1; i <= 5; i++) {
+    for (let j = 1; j <= 5; j++) {
+        console.log(`${i} × ${j} = ${i * j}`);
+    }
+    console.log("---");
+}
+
+// Créer un motif
+for (let ligne = 1; ligne <= 5; ligne++) {
+    let motif = "";
+    for (let etoile = 1; etoile <= ligne; etoile++) {
+        motif += "★ ";
+    }
+    console.log(motif);
+}
+
+/* Affiche:
+★ 
+★ ★ 
+★ ★ ★ 
+★ ★ ★ ★ 
+★ ★ ★ ★ ★ 
+*/
+                </pre>
+            </div>
+
+            <h3>6. for...of (Parcourir des Arrays)</h3>
+            
+            <div class="example">
+                <div class="example-title">Boucle moderne pour les tableaux:</div>
+                <pre>
+let fruits = ["Pomme", "Banane", "Orange", "Fraise"];
+
+// Parcourir chaque élément
+for (let fruit of fruits) {
+    console.log("J'aime les " + fruit + "s");
+}
+
+/* Affiche:
+J'aime les Pommes
+J'aime les Bananes
+J'aime les Oranges
+J'aime les Fraises
+*/
+
+// Avec les strings
+let mot = "JavaScript";
+for (let lettre of mot) {
+    console.log(lettre);
+}
+                </pre>
+            </div>
+
+            <h3>7. Exemple Interactif Complet</h3>
+            
+            <div class="example">
+                <div class="example-title">Générateur de liste avec boucles:</div>
+                <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Boucles JavaScript&lt;/title&gt;
+    &lt;style&gt;
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .section {
+            background: #f0f0f0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        td, th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .star-pattern {
+            font-size: 24px;
+            line-height: 1.5;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Démonstration des Boucles&lt;/h1&gt;
+    
+    &lt;div class="section"&gt;
+        &lt;h2&gt;1. Compteur Simple (for)&lt;/h2&gt;
+        &lt;div id="compteur"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="section"&gt;
+        &lt;h2&gt;2. Table de Multiplication&lt;/h2&gt;
+        &lt;div id="table"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="section"&gt;
+        &lt;h2&gt;3. Nombres Pairs et Impairs&lt;/h2&gt;
+        &lt;div id="pairs-impairs"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="section"&gt;
+        &lt;h2&gt;4. Motif d'Étoiles&lt;/h2&gt;
+        &lt;div id="motif" class="star-pattern"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        // 1. Compteur simple
+        let compteurHTML = "&lt;p&gt;Comptage de 1 à 10: ";
+        for (let i = 1; i <= 10; i++) {
+            compteurHTML += i;
+            if (i < 10) compteurHTML += ", ";
+        }
+        compteurHTML += "&lt;/p&gt;";
+        document.getElementById('compteur').innerHTML = compteurHTML;
+
+        // 2. Table de multiplication de 5
+        let tableHTML = "&lt;table&gt;&lt;tr&gt;&lt;th&gt;Opération&lt;/th&gt;&lt;th&gt;Résultat&lt;/th&gt;&lt;/tr&gt;";
+        for (let i = 1; i <= 10; i++) {
+            tableHTML += `&lt;tr&gt;&lt;td&gt;5 × ${i}&lt;/td&gt;&lt;td&gt;${5 * i}&lt;/td&gt;&lt;/tr&gt;`;
+        }
+        tableHTML += "&lt;/table&gt;";
+        document.getElementById('table').innerHTML = tableHTML;
+
+        // 3. Séparer pairs et impairs
+        let pairs = [];
+        let impairs = [];
+        
+        for (let i = 1; i <= 20; i++) {
+            if (i % 2 === 0) {
+                pairs.push(i);
+            } else {
+                impairs.push(i);
+            }
+        }
+        
+        let pairsImpa irsHTML = `
+            &lt;p&gt;&lt;strong&gt;Nombres pairs:&lt;/strong&gt; ${pairs.join(", ")}&lt;/p&gt;
+            &lt;p&gt;&lt;strong&gt;Nombres impairs:&lt;/strong&gt; ${impairs.join(", ")}&lt;/p&gt;
+        `;
+        document.getElementById('pairs-impairs').innerHTML = pairsImpapirsHTML;
+
+        // 4. Motif d'étoiles
+        let motifHTML = "";
+        for (let ligne = 1; ligne <= 5; ligne++) {
+            for (let etoile = 1; etoile <= ligne; etoile++) {
+                motifHTML += " ";
+            }
+            motifHTML += "&lt;br&gt;";
+        }
+        document.getElementById('motif').innerHTML = motifHTML;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </pre>
+            </div>
+
+            <h3>8. Choisir la Bonne Boucle</h3>
+            
+            <table>
+                <tr>
+                    <th>Boucle</th>
+                    <th>Quand l'utiliser</th>
+                </tr>
+                <tr>
+                    <td><strong>for</strong></td>
+                    <td>Quand vous connaissez le nombre d'itérations</td>
+                </tr>
+                <tr>
+                    <td><strong>while</strong></td>
+                    <td>Quand vous ne connaissez pas le nombre d'itérations à l'avance</td>
+                </tr>
+                <tr>
+                    <td><strong>do...while</strong></td>
+                    <td>Quand vous devez exécuter le code au moins une fois</td>
+                </tr>
+                <tr>
+                    <td><strong>for...of</strong></td>
+                    <td>Pour parcourir des arrays ou des strings</td>
+                </tr>
+            </table>
+
+            <div class="exercise">
+                <div class="exercise-title"> Exercices Pratiques</div>
+                <ol>
+                    <li>Créez une boucle qui affiche les nombres de 1 à 100</li>
+                    <li>Affichez uniquement les multiples de 5 entre 1 et 50</li>
+                    <li>Créez une table de multiplication complète (de 1 à 10)</li>
+                    <li>Faites un compte à rebours de 10 à 0</li>
+                    <li>Créez un motif de triangle avec des astérisques (5 lignes)</li>
+                    <li>Trouvez la somme des nombres de 1 à 100 avec une boucle</li>
+                    <li>Parcourez un tableau de prénoms et affichez chacun</li>
+                </ol>
+            </div>
+
+            <div class="warning">
+                <strong>Attention aux boucles infinies!</strong> Assurez-vous que votre condition de boucle puisse devenir fausse, sinon votre programme se bloquera.
+            </div>
+
+            <div class="note">
+                <strong>Bonne pratique:</strong> Utilisez des noms de variables significatifs comme <code>i</code> pour index, <code>ligne</code>, <code>colonne</code>, etc. Cela rend votre code plus lisible.
+            </div>
+        </div>
+
+        <!-- Placeholder pour les autres modules (5-15) -->
+        <!-- Je vais continuer avec les modules 5-15... -->
+        
+        <!-- MODULE 5: Fonctions -->
+        <div id="module5" class="module">
+            <h2>Module 5: Fonctions</h2>
+            
+            <div class="concept">
+                <h3>Concepts Clés</h3>
+                <p>Les <strong>fonctions</strong> sont des blocs de code réutilisables qui effectuent une tâche spécifique. Elles permettent d'organiser et de structurer votre code.</p>
+            </div>
+
+            <h3>1. Déclarer une Fonction</h3>
+            
+            <div class="example">
+                <div class="example-title">Syntaxe de base:</div>
+                <pre>
+// Déclaration de fonction
+function direBonjour() {
+    console.log("Bonjour!");
+}
+
+// Appel de la fonction
+direBonjour(); // Affiche: Bonjour!
+
+// Fonction avec paramètres
+function saluer(nom) {
+    console.log("Bonjour " + nom + "!");
+}
+
+saluer("Thomas"); // Affiche: Bonjour Thomas!
+saluer("Marie");  // Affiche: Bonjour Marie!
+                </pre>
+            </div>
+
+            <h3>2. Paramètres et Arguments</h3>
+            
+            <div class="example">
+                <div class="example-title">Passer des valeurs aux fonctions:</div>
+                <pre>
+// Fonction avec plusieurs paramètres
+function additionner(a, b) {
+    let resultat = a + b;
+    console.log(resultat);
+}
+
+additionner(5, 3);  // Affiche: 8
+additionner(10, 20); // Affiche: 30
+
+// Paramètres par défaut (ES6)
+function saluerAvecTitre(nom, titre = "M.") {
+    console.log(`Bonjour ${titre} ${nom}`);
+}
+
+saluerAvecTitre("Dupont");          // Bonjour M. Dupont
+saluerAvecTitre("Martin", "Mme");   // Bonjour Mme Martin
+                </pre>
+            </div>
+
+            <h3>3. Return - Retourner des Valeurs</h3>
+            
+            <div class="example">
+                <div class="example-title">Récupérer le résultat d'une fonction:</div>
+                <pre>
+function multiplier(a, b) {
+    return a * b;
+}
+
+let resultat = multiplier(4, 5);
+console.log(resultat); // 20
+
+// Utiliser directement le résultat
+console.log(multiplier(3, 7)); // 21
+
+// Fonction de calcul complexe
+function calculerAire(longueur, largeur) {
+    let aire = longueur * largeur;
+    return aire;
+}
+
+let aireSalon = calculerAire(5, 4);
+console.log("L'aire est: " + aireSalon + " m²");
+                </pre>
+            </div>
+
+            <div class="note">
+                <strong>Important:</strong> Le code après <code>return</code> ne s'exécute jamais. <code>return</code> termine immédiatement la fonction.
+            </div>
+
+            <h3>4. Fonctions Expressions</h3>
+            
+            <div class="example">
+                <div class="example-title">Assigner une fonction à une variable:</div>
+                <pre>
+// Expression de fonction
+const soustraire = function(a, b) {
+    return a - b;
+};
+
+console.log(soustraire(10, 3)); // 7
+
+// Différence: le hoisting
+//  Fonctionne (déclaration de fonction)
+direBonjour();
+function direBonjour() {
+    console.log("Bonjour!");
+}
+
+//  Erreur (expression de fonction)
+// direAuRevoir(); // Erreur!
+const direAuRevoir = function() {
+    console.log("Au revoir!");
+};
+                </pre>
+            </div>
+
+            <h3>5. Arrow Functions (ES6)</h3>
+            
+            <div class="example">
+                <div class="example-title">Syntaxe moderne et concise:</div>
+                <pre>
+// Syntaxe traditionnelle
+const addition = function(a, b) {
+    return a + b;
+};
+
+// Arrow function équivalente
+const additionFlecha = (a, b) => {
+    return a + b;
+};
+
+// Encore plus concis (return implicite)
+const additionCourt = (a, b) => a + b;
+
+console.log(additionCourt(5, 3)); // 8
+
+// Un seul paramètre (parenthèses optionnelles)
+const double = x => x * 2;
+console.log(double(5)); // 10
+
+// Sans paramètre
+const direBonjour = () => console.log("Bonjour!");
+direBonjour();
+                </pre>
+            </div>
+
+            <h3>6. Scope (Portée) des Variables</h3>
+            
+            <div class="example">
+                <div class="example-title">Variables locales vs globales:</div>
+                <pre>
+// Variable globale
+let nomGlobal = "Thomas";
+
+function afficherNom() {
+    // Variable locale
+    let nomLocal = "Marie";
+    console.log(nomGlobal); //  Accessible
+    console.log(nomLocal);  //  Accessible
+}
+
+afficherNom();
+console.log(nomGlobal); //  Accessible
+// console.log(nomLocal); //  Erreur! n'existe pas ici
+
+// Block scope avec let et const
+if (true) {
+    let x = 10;
+    const y = 20;
+    var z = 30;
+}
+
+// console.log(x); //  Erreur
+// console.log(y); //  Erreur
+console.log(z);    //  30 (var n'a pas de block scope!)
+                </pre>
+            </div>
+
+            <h3>7. Exemple Interactif Complet</h3>
+            
+            <div class="example">
+                <div class="example-title">Calculatrice avec fonctions:</div>
+                <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Calculatrice avec Fonctions&lt;/title&gt;
+    &lt;style&gt;
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .calculatrice {
+            background: #f0f0f0;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        .operation {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        h2 {
+            color: #333;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="calculatrice"&gt;
+        &lt;h1&gt;Calculatrice JavaScript&lt;/h1&gt;
+        &lt;div id="resultats"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        // Fonction addition
+        function additionner(a, b) {
+            return a + b;
+        }
+
+        // Fonction soustraction
+        function soustraire(a, b) {
+            return a - b;
+        }
+
+        // Fonction multiplication
+        function multiplier(a, b) {
+            return a * b;
+        }
+
+        // Fonction division
+        function diviser(a, b) {
+            if (b === 0) {
+                return "Erreur: Division par zéro!";
+            }
+            return a / b;
+        }
+
+        // Fonction puissance
+        const puissance = (base, exposant) => base ** exposant;
+
+        // Fonction calculer pourcentage
+        const calculerPourcentage = (nombre, pourcentage) => {
+            return (nombre * pourcentage) / 100;
+        };
+
+        // Fonction vérifier nombre pair
+        const estPair = (nombre) => nombre % 2 === 0;
+
+        // Afficher les résultats
+        const num1 = 20;
+        const num2 = 4;
+
+        let html = `
+            &lt;h2&gt;Calculs avec ${num1} et ${num2}:&lt;/h2&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;Addition:&lt;/strong&gt; ${num1} + ${num2} = ${additionner(num1, num2)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;Soustraction:&lt;/strong&gt; ${num1} - ${num2} = ${soustraire(num1, num2)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;Multiplication:&lt;/strong&gt; ${num1} × ${num2} = ${multiplier(num1, num2)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;Division:&lt;/strong&gt; ${num1} ÷ ${num2} = ${diviser(num1, num2)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;Puissance:&lt;/strong&gt; ${num1}² = ${puissance(num1, 2)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;20% de ${num1}:&lt;/strong&gt; ${calculerPourcentage(num1, 20)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;${num1} est pair?&lt;/strong&gt; ${estPair(num1) ? "Oui" : "Non"}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;${num2} est pair?&lt;/strong&gt; ${estPair(num2) ? "Oui" : "Non"}
+            &lt;/div&gt;
+        `;
+
+        document.getElementById('resultats').innerHTML = html;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </pre>
+            </div>
+
+            <div class="exercise">
+                <div class="exercise-title"> Exercices Pratiques</div>
+                <ol>
+                    <li>Créez une fonction qui calcule l'aire d'un rectangle</li>
+                    <li>Créez une fonction qui convertit des Celsius en Fahrenheit</li>
+                    <li>Écrivez une fonction qui retourne le plus grand de deux nombres</li>
+                    <li>Créez une arrow function qui vérifie si un nombre est positif</li>
+                    <li>Faites une fonction qui calcule la moyenne de 3 nombres</li>
+                    <li>Créez une fonction avec paramètres par défaut pour saluer quelqu'un</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Continuer avec les modules 6-15... -->
+        <!-- Pour garder ce fichier gérable, je vais ajouter des placeholders -->
+        
+ 
+
+
+
+<!-- MODULE 6: Tableaux (Arrays) - COMPLET -->
+<div id="module6" class="module">
+    <h2>Module 6: Tableaux (Arrays)</h2>
+    
+    <div class="concept">
+        <h3> Concepts Clés</h3>
+        <p>Les <strong>tableaux (arrays)</strong> sont des structures de données qui permettent de stocker plusieurs valeurs dans une seule variable.</p>
+    </div>
+
+    <h3>1. Créer des Tableaux</h3>
+    <div class="example">
+        <div class="example-title">Différentes façons de créer un array:</div>
+        <pre>
+// Méthode littérale (recommandée)
+let fruits = ["Pomme", "Banane", "Orange"];
+
+// Tableau vide
+let vide = [];
+
+// Accéder aux éléments
+console.log(fruits[0]); // "Pomme"
+console.log(fruits.length); // 3
+        </pre>
+    </div>
+
+    <h3>2. Méthodes Essentielles</h3>
+    <table>
+        <tr>
+            <th>Méthode</th>
+            <th>Description</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>push()</code></td>
+            <td>Ajoute à la fin</td>
+            <td><code>arr.push("Nouveau")</code></td>
+        </tr>
+        <tr>
+            <td><code>pop()</code></td>
+            <td>Enlève le dernier</td>
+            <td><code>arr.pop()</code></td>
+        </tr>
+        <tr>
+            <td><code>map()</code></td>
+            <td>Transforme chaque élément</td>
+            <td><code>arr.map(x => x * 2)</code></td>
+        </tr>
+        <tr>
+            <td><code>filter()</code></td>
+            <td>Filtre les éléments</td>
+            <td><code>arr.filter(x => x > 5)</code></td>
+        </tr>
+        <tr>
+            <td><code>reduce()</code></td>
+            <td>Réduit à une valeur</td>
+            <td><code>arr.reduce((a,b) => a+b)</code></td>
+        </tr>
+    </table>
+
+    <div class="example">
+        <div class="example-title">Manipulation complète:</div>
+        <pre>
+let nombres = [1, 2, 3, 4, 5];
+
+// map - transformer
+let doubles = nombres.map(n => n * 2);
+// [2, 4, 6, 8, 10]
+
+// filter - filtrer
+let pairs = nombres.filter(n => n % 2 === 0);
+// [2, 4]
+
+// reduce - réduire
+let somme = nombres.reduce((acc, n) => acc + n, 0);
+// 15
+
+// find - trouver
+let premierGrand = nombres.find(n => n > 3);
+// 4
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Créez un array de 5 prénoms et affichez-les</li>
+            <li>Utilisez map() pour doubler tous les nombres d'un array</li>
+            <li>Filtrez les nombres > 10 dans un array</li>
+            <li>Calculez la somme d'un array avec reduce()</li>
+            <li>Créez un array d'objets (produits) et filtrez par prix</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 7: Objets -->
+<div id="module7" class="module">
+    <h2>Module 7: Objets</h2>
+    
+    <div class="concept">
+        <h3> Concepts Clés</h3>
+        <p>Les <strong>objets</strong> permettent de regrouper des données et des fonctionnalités. Ils utilisent des paires clé-valeur.</p>
+    </div>
+
+    <h3>1. Créer des Objets</h3>
+    <div class="example">
+        <div class="example-title">Syntaxe de base:</div>
+        <pre>
+// Objet littéral
+let personne = {
+    nom: "Dupont",
+    prenom: "Marie",
+    age: 30,
+    ville: "Paris"
+};
+
+// Accéder aux propriétés
+console.log(personne.nom);        // "Dupont"
+console.log(personne["prenom"]);  // "Marie"
+
+// Modifier
+personne.age = 31;
+
+// Ajouter
+personne.email = "marie@email.com";
+        </pre>
+    </div>
+
+    <h3>2. Méthodes d'Objet</h3>
+    <div class="example">
+        <div class="example-title">Fonctions dans les objets:</div>
+        <pre>
+let voiture = {
+    marque: "Toyota",
+    modele: "Corolla",
+    annee: 2020,
+    
+    // Méthode
+    demarrer: function() {
+        console.log("La voiture démarre!");
+    },
+    
+    // Syntaxe ES6
+    klaxonner() {
+        console.log("Beep beep!");
+    },
+    
+    // Utiliser 'this'
+    afficherInfo() {
+        console.log(this.marque + " " + this.modele);
+    }
+};
+
+voiture.demarrer();      // "La voiture démarre!"
+voiture.afficherInfo();  // "Toyota Corolla"
+        </pre>
+    </div>
+
+    <h3>3. Parcourir un Objet</h3>
+    <div class="example">
+        <div class="example-title">Boucles sur les objets:</div>
+        <pre>
+let etudiant = {
+    nom: "Martin",
+    age: 22,
+    note: 15
+};
+
+// for...in
+for (let cle in etudiant) {
+    console.log(cle + ": " + etudiant[cle]);
+}
+
+// Object.keys()
+let cles = Object.keys(etudiant);
+console.log(cles); // ["nom", "age", "note"]
+
+// Object.values()
+let valeurs = Object.values(etudiant);
+console.log(valeurs); // ["Martin", 22, 15]
+
+// Object.entries()
+let entrees = Object.entries(etudiant);
+console.log(entrees);
+// [["nom", "Martin"], ["age", 22], ["note", 15]]
+        </pre>
+    </div>
+
+    <h3>4. Destructuration (ES6)</h3>
+    <div class="example">
+        <div class="example-title">Extraire des propriétés:</div>
+        <pre>
+let personne = {
+    nom: "Dubois",
+    age: 28,
+    ville: "Lyon"
+};
+
+// Destructuration
+let {nom, age, ville} = personne;
+console.log(nom);   // "Dubois"
+console.log(age);   // 28
+console.log(ville); // "Lyon"
+
+// Avec renommage
+let {nom: nomPersonne, age: agePersonne} = personne;
+console.log(nomPersonne); // "Dubois"
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Créez un objet 'livre' avec titre, auteur, pages, lu</li>
+            <li>Ajoutez une méthode qui affiche les infos du livre</li>
+            <li>Créez un array d'objets (produits) avec nom et prix</li>
+            <li>Parcourez l'array et affichez chaque produit</li>
+            <li>Utilisez la destructuration sur un objet utilisateur</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 8: DOM Manipulation -->
+<div id="module8" class="module">
+    <h2>Module 8: Manipulation du DOM</h2>
+    
+    <div class="concept">
+        <h3> Concepts Clés</h3>
+        <p>Le <strong>DOM (Document Object Model)</strong> représente la structure HTML d'une page. JavaScript peut modifier le DOM pour créer des pages interactives.</p>
+    </div>
+
+    <h3>1. Sélectionner des Éléments</h3>
+    <div class="example">
+        <div class="example-title">Méthodes de sélection:</div>
+        <pre>
+// Par ID
+let element = document.getElementById("monId");
+
+// Par classe
+let elements = document.getElementsByClassName("maClasse");
+
+// Par tag
+let paragraphes = document.getElementsByTagName("p");
+
+// Query Selector (moderne, recommandé)
+let premier = document.querySelector(".maClasse");
+let tous = document.querySelectorAll(".maClasse");
+
+// Exemples
+let titre = document.querySelector("h1");
+let boutons = document.querySelectorAll(".btn");
+        </pre>
+    </div>
+
+    <h3>2. Modifier le Contenu</h3>
+    <div class="example">
+        <div class="example-title">Changer texte et HTML:</div>
+        <pre>
+let div = document.querySelector("#contenu");
+
+// Modifier le texte
+div.textContent = "Nouveau texte";
+
+// Modifier le HTML
+div.innerHTML = "&lt;strong&gt;Texte en gras&lt;/strong&gt;";
+
+// Modifier un attribut
+div.setAttribute("class", "nouvelle-classe");
+
+// Ajouter/Supprimer des classes
+div.classList.add("active");
+div.classList.remove("hidden");
+div.classList.toggle("visible");
+        </pre>
+    </div>
+
+    <h3>3. Créer et Ajouter des Éléments</h3>
+    <div class="example">
+        <div class="example-title">Création dynamique:</div>
+        <pre>
+// Créer un élément
+let nouveauP = document.createElement("p");
+nouveauP.textContent = "Nouveau paragraphe";
+nouveauP.classList.add("paragraphe");
+
+// Ajouter à la page
+let container = document.querySelector("#container");
+container.appendChild(nouveauP);
+
+// Insérer avant un élément
+let premier = container.firstChild;
+container.insertBefore(nouveauP, premier);
+
+// Supprimer un élément
+let aSupprimer = document.querySelector("#vieux");
+aSupprimer.remove();
+        </pre>
+    </div>
+
+    <h3>4. Modifier les Styles</h3>
+    <div class="example">
+        <div class="example-title">CSS avec JavaScript:</div>
+        <pre>
+let element = document.querySelector(".box");
+
+// Style inline
+element.style.color = "red";
+element.style.backgroundColor = "blue";
+element.style.fontSize = "20px";
+
+// Plusieurs styles
+element.style.cssText = `
+    color: white;
+    background: black;
+    padding: 20px;
+`;
+        </pre>
+    </div>
+
+    <h3>5. Exemple Complet</h3>
+    <div class="example">
+        <div class="example-title">Application de liste de tâches:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Liste de Tâches&lt;/title&gt;
+    &lt;style&gt;
+        .tache { padding: 10px; margin: 5px; background: #f0f0f0; }
+        .completee { text-decoration: line-through; color: gray; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Ma Liste de Tâches&lt;/h1&gt;
+    &lt;input type="text" id="nouvelleTache" placeholder="Nouvelle tâche"&gt;
+    &lt;button id="ajouterBtn"&gt;Ajouter&lt;/button&gt;
+    &lt;div id="listeTaches"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let input = document.getElementById("nouvelleTache");
+        let bouton = document.getElementById("ajouterBtn");
+        let liste = document.getElementById("listeTaches");
+
+        bouton.addEventListener("click", function() {
+            let texte = input.value;
+            if (texte !== "") {
+                // Créer la tâche
+                let tache = document.createElement("div");
+                tache.classList.add("tache");
+                tache.textContent = texte;
+                
+                // Clic pour marquer comme complétée
+                tache.addEventListener("click", function() {
+                    this.classList.toggle("completee");
+                });
+                
+                // Ajouter à la liste
+                liste.appendChild(tache);
+                
+                // Vider l'input
+                input.value = "";
+            }
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Sélectionnez tous les paragraphes et changez leur couleur</li>
+            <li>Créez un bouton qui ajoute un div à la page</li>
+            <li>Faites un compteur qui augmente quand on clique</li>
+            <li>Créez un système de tabs/onglets</li>
+            <li>Faites une galerie d'images interactive</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 9: Événements -->
+<div id="module9" class="module">
+    <h2>Module 9: Événements</h2>
+    
+    <div class="concept">
+        <h3>📚 Concepts Clés</h3>
+        <p>Les <strong>événements</strong> permettent de réagir aux actions de l'utilisateur (clics, saisie clavier, mouvements de souris, etc.).</p>
+    </div>
+
+    <h3>1. addEventListener()</h3>
+    <div class="example">
+        <div class="example-title">Écouter les événements:</div>
+        <pre>
+// Syntaxe
+element.addEventListener("type", function);
+
+// Exemple: Click
+let bouton = document.querySelector("#monBouton");
+bouton.addEventListener("click", function() {
+    console.log("Bouton cliqué!");
+});
+
+// Avec arrow function
+bouton.addEventListener("click", () => {
+    console.log("Cliqué!");
+});
+
+// Fonction nommée
+function gererClic() {
+    console.log("Clic géré!");
+}
+bouton.addEventListener("click", gererClic);
+        </pre>
+    </div>
+
+    <h3>2. Événements Courants</h3>
+    <table>
+        <tr>
+            <th>Événement</th>
+            <th>Description</th>
+            <th>Usage</th>
+        </tr>
+        <tr>
+            <td><code>click</code></td>
+            <td>Clic de souris</td>
+            <td>Boutons, liens</td>
+        </tr>
+        <tr>
+            <td><code>dblclick</code></td>
+            <td>Double-clic</td>
+            <td>Actions spéciales</td>
+        </tr>
+        <tr>
+            <td><code>mouseover</code></td>
+            <td>Souris sur l'élément</td>
+            <td>Tooltips, hover</td>
+        </tr>
+        <tr>
+            <td><code>keydown</code></td>
+            <td>Touche pressée</td>
+            <td>Saisie clavier</td>
+        </tr>
+        <tr>
+            <td><code>submit</code></td>
+            <td>Soumission formulaire</td>
+            <td>Validation</td>
+        </tr>
+        <tr>
+            <td><code>change</code></td>
+            <td>Changement de valeur</td>
+            <td>Inputs, selects</td>
+        </tr>
+    </table>
+
+    <h3>3. L'Objet Event</h3>
+    <div class="example">
+        <div class="example-title">Informations sur l'événement:</div>
+        <pre>
+bouton.addEventListener("click", function(event) {
+    console.log(event.type);       // "click"
+    console.log(event.target);     // L'élément cliqué
+    console.log(event.clientX);    // Position X de la souris
+    console.log(event.clientY);    // Position Y de la souris
+});
+
+// Empêcher le comportement par défaut
+lien.addEventListener("click", function(e) {
+    e.preventDefault();
+    console.log("Lien désactivé");
+});
+
+// Stopper la propagation
+div.addEventListener("click", function(e) {
+    e.stopPropagation();
+});
+        </pre>
+    </div>
+
+    <h3>4. Événements Formulaire</h3>
+    <div class="example">
+        <div class="example-title">Gérer les formulaires:</div>
+        <pre>
+let formulaire = document.querySelector("#monForm");
+
+formulaire.addEventListener("submit", function(e) {
+    e.preventDefault(); // Empêcher l'envoi
+    
+    let nom = document.querySelector("#nom").value;
+    let email = document.querySelector("#email").value;
+    
+    if (nom === "" || email === "") {
+        alert("Veuillez remplir tous les champs");
+        return;
+    }
+    
+    console.log("Nom:", nom);
+    console.log("Email:", email);
+});
+
+// Input en temps réel
+let input = document.querySelector("#recherche");
+input.addEventListener("input", function(e) {
+    console.log("Recherche:", e.target.value);
+});
+        </pre>
+    </div>
+
+    <h3>5. Événements Clavier</h3>
+    <div class="example">
+        <div class="example-title">Gérer le clavier:</div>
+        <pre>
+document.addEventListener("keydown", function(e) {
+    console.log("Touche:", e.key);
+    console.log("Code:", e.keyCode);
+    
+    if (e.key === "Enter") {
+        console.log("Entrée pressée!");
+    }
+    
+    if (e.key === "Escape") {
+        console.log("Échap pressée!");
+    }
+    
+    // Combinaisons
+    if (e.ctrlKey && e.key === "s") {
+        e.preventDefault();
+        console.log("Ctrl+S pressé!");
+    }
+});
+        </pre>
+    </div>
+
+    <h3>6. Exemple Complet: Calculatrice</h3>
+    <div class="example">
+        <div class="example-title">Application interactive:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Calculatrice&lt;/title&gt;
+    &lt;style&gt;
+        .calc { max-width: 300px; margin: 50px auto; }
+        #display { 
+            width: 100%; 
+            padding: 20px; 
+            font-size: 24px; 
+            text-align: right;
+            border: 2px solid #333;
+        }
+        .buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+        button { padding: 20px; font-size: 18px; cursor: pointer; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="calc"&gt;
+        &lt;input type="text" id="display" readonly&gt;
+        &lt;div class="buttons"&gt;
+            &lt;button class="nombre"&gt;7&lt;/button&gt;
+            &lt;button class="nombre"&gt;8&lt;/button&gt;
+            &lt;button class="nombre"&gt;9&lt;/button&gt;
+            &lt;button class="operateur"&gt;/&lt;/button&gt;
+            &lt;button class="nombre"&gt;4&lt;/button&gt;
+            &lt;button class="nombre"&gt;5&lt;/button&gt;
+            &lt;button class="nombre"&gt;6&lt;/button&gt;
+            &lt;button class="operateur"&gt;*&lt;/button&gt;
+            &lt;button class="nombre"&gt;1&lt;/button&gt;
+            &lt;button class="nombre"&gt;2&lt;/button&gt;
+            &lt;button class="nombre"&gt;3&lt;/button&gt;
+            &lt;button class="operateur"&gt;-&lt;/button&gt;
+            &lt;button class="nombre"&gt;0&lt;/button&gt;
+            &lt;button id="effacer"&gt;C&lt;/button&gt;
+            &lt;button id="egal"&gt;=&lt;/button&gt;
+            &lt;button class="operateur"&gt;+&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        let display = document.getElementById("display");
+        let nombres = document.querySelectorAll(".nombre");
+        let operateurs = document.querySelectorAll(".operateur");
+        let egal = document.getElementById("egal");
+        let effacer = document.getElementById("effacer");
+
+        // Ajouter un nombre
+        nombres.forEach(btn => {
+            btn.addEventListener("click", function() {
+                display.value += this.textContent;
+            });
+        });
+
+        // Ajouter un opérateur
+        operateurs.forEach(btn => {
+            btn.addEventListener("click", function() {
+                display.value += " " + this.textContent + " ";
+            });
+        });
+
+        // Calculer
+        egal.addEventListener("click", function() {
+            try {
+                display.value = eval(display.value);
+            } catch(e) {
+                display.value = "Erreur";
+            }
+        });
+
+        // Effacer
+        effacer.addEventListener("click", function() {
+            display.value = "";
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Créez un bouton qui change de couleur au clic</li>
+            <li>Faites un compteur de clics avec affichage</li>
+            <li>Créez un formulaire avec validation en temps réel</li>
+            <li>Faites une div qui suit la souris</li>
+            <li>Créez un jeu simple (pierre-papier-ciseaux)</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 10: JavaScript Asynchrone -->
+<div id="module10" class="module">
+    <h2>Module 10: JavaScript Asynchrone</h2>
+    
+    <div class="concept">
+        <h3>📚 Concepts Clés</h3>
+        <p>Le JavaScript <strong>asynchrone</strong> permet d'exécuter du code sans bloquer le reste du programme. Essentiel pour les appels API, les timers, etc.</p>
+    </div>
+
+    <h3>1. setTimeout et setInterval</h3>
+    <div class="example">
+        <div class="example-title">Délais et intervalles:</div>
+        <pre>
+// setTimeout - Exécute une fois après un délai
+setTimeout(function() {
+    console.log("Exécuté après 2 secondes");
+}, 2000);
+
+// Avec arrow function
+setTimeout(() => {
+    console.log("Hello!");
+}, 1000);
+
+// setInterval - Répète à intervalles réguliers
+let compteur = 0;
+let interval = setInterval(() => {
+    compteur++;
+    console.log(compteur);
+    
+    if (compteur === 5) {
+        clearInterval(interval); // Arrête l'intervalle
+    }
+}, 1000);
+
+// clearTimeout - Annule un setTimeout
+let timer = setTimeout(() => console.log("Jamais exécuté"), 5000);
+clearTimeout(timer);
+        </pre>
+    </div>
+
+    <h3>2. Callbacks</h3>
+    <div class="example">
+        <div class="example-title">Fonctions de rappel:</div>
+        <pre>
+// Callback simple
+function faireQuelqueChose(callback) {
+    console.log("Début...");
+    setTimeout(() => {
+        callback();
+    }, 1000);
+}
+
+faireQuelqueChose(function() {
+    console.log("Terminé!");
+});
+
+// Callback avec paramètres
+function chargerDonnees(url, callback) {
+    setTimeout(() => {
+        let donnees = {id: 1, nom: "Test"};
+        callback(donnees);
+    }, 1000);
+}
+
+chargerDonnees("api/users", function(data) {
+    console.log(data);
+});
+        </pre>
+    </div>
+
+    <h3>3. Promises (Promesses)</h3>
+    <div class="example">
+        <div class="example-title">Gestion moderne de l'asynchrone:</div>
+        <pre>
+// Créer une Promise
+let maPromesse = new Promise((resolve, reject) => {
+    let succes = true;
+    
+    setTimeout(() => {
+        if (succes) {
+            resolve("Succès!");
+        } else {
+            reject("Erreur!");
+        }
+    }, 1000);
+});
+
+// Utiliser une Promise
+maPromesse
+    .then(resultat => {
+        console.log(resultat); // "Succès!"
+    })
+    .catch(erreur => {
+        console.error(erreur);
+    });
+
+// Chaînage de Promises
+fetch("https://api.example.com/data")
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+        </pre>
+    </div>
+
+    <h3>4. Async/Await (ES2017)</h3>
+    <div class="example">
+        <div class="example-title">Syntaxe moderne et lisible:</div>
+        <pre>
+// Fonction async
+async function chargerDonnees() {
+    try {
+        let response = await fetch("https://api.example.com/users");
+        let data = await response.json();
+        console.log(data);
+        return data;
+    } catch (error) {
+        console.error("Erreur:", error);
+    }
+}
+
+// Appel
+chargerDonnees();
+
+// Exemple avec plusieurs appels
+async function chargerTout() {
+    try {
+        let users = await fetch("/api/users").then(r => r.json());
+        let posts = await fetch("/api/posts").then(r => r.json());
+        
+        console.log("Users:", users);
+        console.log("Posts:", posts);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// Promise.all - Attendre plusieurs promises
+async function chargerParallele() {
+    try {
+        let [users, posts] = await Promise.all([
+            fetch("/api/users").then(r => r.json()),
+            fetch("/api/posts").then(r => r.json())
+        ]);
+        
+        console.log(users, posts);
+    } catch (error) {
+        console.error(error);
+    }
+}
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Créez un compte à rebours avec setInterval</li>
+            <li>Faites une fonction qui retourne une Promise</li>
+            <li>Utilisez async/await pour charger des données</li>
+            <li>Créez un système de chargement avec délai</li>
+            <li>Faites une animation avec setTimeout</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 11: APIs et Fetch -->
+<div id="module11" class="module">
+    <h2>Module 11: APIs et Fetch</h2>
+    
+    <div class="concept">
+        <h3>Concepts Clés</h3>
+        <p><strong>Fetch API</strong> permet de faire des requêtes HTTP pour récupérer ou envoyer des données à un serveur.</p>
+    </div>
+
+    <h3>1. Fetch Basique</h3>
+    <div class="example">
+        <div class="example-title">GET Request:</div>
+        <pre>
+// Simple GET
+fetch("https://jsonplaceholder.typicode.com/users")
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error("Erreur:", error);
+    });
+
+// Avec async/await
+async function getUsers() {
+    try {
+        let response = await fetch("https://jsonplaceholder.typicode.com/users");
+        let users = await response.json();
+        console.log(users);
+        return users;
+    } catch (error) {
+        console.error("Erreur:", error);
+    }
+}
+
+getUsers();
+        </pre>
+    </div>
+
+    <h3>2. POST, PUT, DELETE</h3>
+    <div class="example">
+        <div class="example-title">Autres méthodes HTTP:</div>
+        <pre>
+// POST - Créer
+async function creerUser(userData) {
+    try {
+        let response = await fetch("https://jsonplaceholder.typicode.com/users", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(userData)
+        });
+        
+        let data = await response.json();
+        console.log("Créé:", data);
+    } catch (error) {
+        console.error("Erreur:", error);
+    }
+}
+
+// PUT - Modifier
+async function modifierUser(id, userData) {
+    let response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData)
+    });
+    return response.json();
+}
+
+// DELETE - Supprimer
+async function supprimerUser(id) {
+    await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+        method: "DELETE"
+    });
+}
+        </pre>
+    </div>
+
+    <h3>3. Exemple Complet</h3>
+    <div class="example">
+        <div class="example-title">Application de blog:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Blog Posts&lt;/title&gt;
+    &lt;style&gt;
+        .post {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .loading { text-align: center; font-size: 20px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Articles de Blog&lt;/h1&gt;
+    &lt;button id="chargerBtn"&gt;Charger les articles&lt;/button&gt;
+    &lt;div id="container"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let container = document.getElementById("container");
+        let bouton = document.getElementById("chargerBtn");
+
+        async function chargerPosts() {
+            try {
+                // Afficher loading
+                container.innerHTML = '&lt;p class="loading"&gt;Chargement...&lt;/p&gt;';
+                
+                // Récupérer les données
+                let response = await fetch("https://jsonplaceholder.typicode.com/posts");
+                let posts = await response.json();
+                
+                // Limiter à 5 posts
+                posts = posts.slice(0, 5);
+                
+                // Afficher
+                container.innerHTML = "";
+                posts.forEach(post => {
+                    let postDiv = document.createElement("div");
+                    postDiv.classList.add("post");
+                    postDiv.innerHTML = `
+                        &lt;h2&gt;${post.title}&lt;/h2&gt;
+                        &lt;p&gt;${post.body}&lt;/p&gt;
+                        &lt;small&gt;Post #${post.id}&lt;/small&gt;
+                    `;
+                    container.appendChild(postDiv);
+                });
+                
+            } catch (error) {
+                container.innerHTML = `&lt;p style="color: red;"&gt;Erreur: ${error.message}&lt;/p&gt;`;
+            }
+        }
+
+        bouton.addEventListener("click", chargerPosts);
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Récupérez une liste d'utilisateurs et affichez-les</li>
+            <li>Créez un formulaire qui envoie des données en POST</li>
+            <li>Faites une recherche en temps réel avec une API</li>
+            <li>Affichez des photos depuis une API</li>
+            <li>Créez un système de pagination pour les résultats</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 12: Gestion des Erreurs -->
+<div id="module12" class="module">
+    <h2>Module 12: Gestion des Erreurs</h2>
+    
+    <div class="concept">
+        <h3>📚 Concepts Clés</h3>
+        <p>La <strong>gestion des erreurs</strong> permet de gérer les problèmes sans faire planter l'application.</p>
+    </div>
+
+    <h3>1. Try...Catch</h3>
+    <div class="example">
+        <div class="example-title">Capturer les erreurs:</div>
+        <pre>
+// Syntaxe de base
+try {
+    // Code qui peut causer une erreur
+    let resultat = riskyFunction();
+    console.log(resultat);
+} catch (error) {
+    // Gérer l'erreur
+    console.error("Une erreur est survenue:", error.message);
+} finally {
+    // Toujours exécuté
+    console.log("Nettoyage...");
+}
+
+// Exemple concret
+try {
+    let data = JSON.parse('{"nom": "Test"}');
+    console.log(data.nom);
+} catch (error) {
+    console.error("JSON invalide:", error);
+}
+        </pre>
+    </div>
+
+    <h3>2. Throw - Lancer des Erreurs</h3>
+    <div class="example">
+        <div class="example-title">Créer ses propres erreurs:</div>
+        <pre>
+function diviser(a, b) {
+    if (b === 0) {
+        throw new Error("Division par zéro impossible!");
+    }
+    return a / b;
+}
+
+try {
+    let resultat = diviser(10, 0);
+    console.log(resultat);
+} catch (error) {
+    console.error("Erreur:", error.message);
+}
+
+// Types d'erreurs
+throw new Error("Erreur générique");
+throw new TypeError("Mauvais type");
+throw new RangeError("Hors limites");
+throw new ReferenceError("Variable inexistante");
+        </pre>
+    </div>
+
+    <h3>3. Async Error Handling</h3>
+    <div class="example">
+        <div class="example-title">Erreurs avec async/await:</div>
+        <pre>
+async function chargerDonnees() {
+    try {
+        let response = await fetch("https://api.example.com/data");
+        
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
+        
+        let data = await response.json();
+        return data;
+        
+    } catch (error) {
+        console.error("Erreur de chargement:", error.message);
+        // Gérer l'erreur (afficher message, réessayer, etc.)
+        return null;
+    }
+}
+
+// Avec Promise
+fetch("https://api.example.com/data")
+    .then(response => {
+        if (!response.ok) throw new Error("Erreur HTTP");
+        return response.json();
+    })
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title">Exercices Pratiques</div>
+        <ol>
+            <li>Créez une fonction de validation avec throw</li>
+            <li>Gérez les erreurs d'un appel API</li>
+            <li>Faites un système de retry en cas d'erreur</li>
+            <li>Créez des erreurs personnalisées</li>
+            <li>Loggez les erreurs dans la console</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 13: ES6+ Classes -->
+<div id="module13" class="module">
+    <h2>Module 13: Classes ES6+</h2>
+    
+    <div class="concept">
+        <h3> Concepts Clés</h3>
+        <p>Les <strong>classes</strong> ES6+ offrent une syntaxe moderne pour la programmation orientée objet en JavaScript.</p>
+    </div>
+
+    <h3>1. Créer une Classe</h3>
+    <div class="example">
+        <div class="example-title">Syntaxe de base:</div>
+        <pre>
+class Personne {
+    // Constructeur
+    constructor(nom, age) {
+        this.nom = nom;
+        this.age = age;
+    }
+    
+    // Méthode
+    sePresenter() {
+        console.log(`Je suis ${this.nom}, j'ai ${this.age} ans`);
+    }
+    
+    // Méthode
+    vieillir() {
+        this.age++;
+    }
+}
+
+// Créer une instance
+let marie = new Personne("Marie", 30);
+marie.sePresenter(); // "Je suis Marie, j'ai 30 ans"
+marie.vieillir();
+console.log(marie.age); // 31
+        </pre>
+    </div>
+
+    <h3>2. Héritage</h3>
+    <div class="example">
+        <div class="example-title">Étendre une classe:</div>
+        <pre>
+class Animal {
+    constructor(nom) {
+        this.nom = nom;
+    }
+    
+    parler() {
+        console.log(`${this.nom} fait du bruit`);
+    }
+}
+
+class Chien extends Animal {
+    constructor(nom, race) {
+        super(nom); // Appelle le constructeur parent
+        this.race = race;
+    }
+    
+    parler() {
+        console.log(`${this.nom} aboie: Woof!`);
+    }
+    
+    courir() {
+        console.log(`${this.nom} court vite`);
+    }
+}
+
+let rex = new Chien("Rex", "Labrador");
+rex.parler();  // "Rex aboie: Woof!"
+rex.courir();  // "Rex court vite"
+        </pre>
+    </div>
+
+    <h3>3. Getters et Setters</h3>
+    <div class="example">
+        <div class="example-title">Propriétés calculées:</div>
+        <pre>
+class Rectangle {
+    constructor(largeur, hauteur) {
+        this.largeur = largeur;
+        this.hauteur = hauteur;
+    }
+    
+    // Getter
+    get aire() {
+        return this.largeur * this.hauteur;
+    }
+    
+    // Setter
+    set dimensions({largeur, hauteur}) {
+        this.largeur = largeur;
+        this.hauteur = hauteur;
+    }
+    
+    // Getter
+    get perimetre() {
+        return 2 * (this.largeur + this.hauteur);
+    }
+}
+
+let rect = new Rectangle(10, 5);
+console.log(rect.aire);      // 50
+console.log(rect.perimetre); // 30
+
+rect.dimensions = {largeur: 20, hauteur: 10};
+console.log(rect.aire);      // 200
+        </pre>
+    </div>
+
+    <h3>4. Méthodes Statiques</h3>
+    <div class="example">
+        <div class="example-title">Méthodes de classe:</div>
+        <pre>
+class MathUtils {
+    static addition(a, b) {
+        return a + b;
+    }
+    
+    static multiplication(a, b) {
+        return a * b;
+    }
+    
+    static PI = 3.14159;
+}
+
+// Appel sans instance
+console.log(MathUtils.addition(5, 3));       // 8
+console.log(MathUtils.multiplication(4, 2)); // 8
+console.log(MathUtils.PI);                   // 3.14159
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title">Exercices Pratiques</div>
+        <ol>
+            <li>Créez une classe Voiture avec propriétés et méthodes</li>
+            <li>Créez une classe Etudiant qui hérite de Personne</li>
+            <li>Ajoutez des getters/setters à une classe</li>
+            <li>Créez une classe avec méthodes statiques</li>
+            <li>Faites un système de compte bancaire avec classes</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 14: ES6+ Features -->
+<div id="module14" class="module">
+    <h2>Module 14: Fonctionnalités ES6+ Avancées</h2>
+    
+    <div class="concept">
+        <h3> Concepts Clés</h3>
+        <p>ES6+ apporte de nombreuses fonctionnalités modernes qui simplifient le code JavaScript.</p>
+    </div>
+
+    <h3>1. Destructuration</h3>
+    <div class="example">
+        <div class="example-title">Arrays et objets:</div>
+        <pre>
+// Destructuration d'array
+let nombres = [1, 2, 3, 4, 5];
+let [premier, deuxieme, ...reste] = nombres;
+console.log(premier);  // 1
+console.log(deuxieme); // 2
+console.log(reste);    // [3, 4, 5]
+
+// Destructuration d'objet
+let personne = {
+    nom: "Dupont",
+    age: 30,
+    ville: "Paris"
+};
+let {nom, age, ville} = personne;
+console.log(nom);  // "Dupont"
+
+// Avec renommage
+let {nom: nomPersonne, age: agePersonne} = personne;
+
+// Valeurs par défaut
+let {nom, pays = "France"} = personne;
+console.log(pays); // "France"
+        </pre>
+    </div>
+
+    <h3>2. Spread Operator (...)</h3>
+    <div class="example">
+        <div class="example-title">Étendre des arrays/objets:</div>
+        <pre>
+// Avec arrays
+let arr1 = [1, 2, 3];
+let arr2 = [4, 5, 6];
+let fusion = [...arr1, ...arr2];
+console.log(fusion); // [1, 2, 3, 4, 5, 6]
+
+// Copier un array
+let copie = [...arr1];
+
+// Avec objets
+let obj1 = {a: 1, b: 2};
+let obj2 = {c: 3, d: 4};
+let fusionObj = {...obj1, ...obj2};
+console.log(fusionObj); // {a: 1, b: 2, c: 3, d: 4}
+
+// Modifier en copiant
+let personne = {nom: "Marie", age: 30};
+let nouvellePersonne = {...personne, age: 31};
+        </pre>
+    </div>
+
+    <h3>3. Template Literals</h3>
+    <div class="example">
+        <div class="example-title">Strings avancés:</div>
+        <pre>
+let nom = "Thomas";
+let age = 32;
+
+// Interpolation
+let message = `Bonjour, je suis ${nom} et j'ai ${age} ans`;
+
+// Multi-lignes
+let texte = `
+    Ceci est un texte
+    sur plusieurs lignes
+    très facilement
+`;
+
+// Expressions
+let prix = 100;
+let total = `Le total avec TVA est: ${prix * 1.2}€`;
+
+// Tagged templates
+function tag(strings, ...values) {
+    console.log(strings);
+    console.log(values);
+}
+tag`Hello ${nom}, tu as ${age} ans`;
+        </pre>
+    </div>
+
+    <h3>4. Optional Chaining (?.)</h3>
+    <div class="example">
+        <div class="example-title">Accès sécurisé aux propriétés:</div>
+        <pre>
+let user = {
+    nom: "Marie",
+    adresse: {
+        ville: "Paris"
+    }
+};
+
+// Sans optional chaining (risque d'erreur)
+// let code = user.adresse.codePostal.numero; // Erreur!
+
+// Avec optional chaining
+let code = user.adresse?.codePostal?.numero;
+console.log(code); // undefined (pas d'erreur)
+
+// Avec méthodes
+let resultat = user.getInfo?.();
+
+// Avec arrays
+let premier = users?.[0]?.nom;
+        </pre>
+    </div>
+
+    <h3>5. Nullish Coalescing (??)</h3>
+    <div class="example">
+        <div class="example-title">Valeur par défaut:</div>
+        <pre>
+// ?? retourne la valeur de droite si gauche est null/undefined
+let nom = null;
+let nomDefaut = nom ?? "Anonyme";
+console.log(nomDefaut); // "Anonyme"
+
+// Différence avec ||
+let count = 0;
+let resultat1 = count || 10;  // 10 (car 0 est falsy)
+let resultat2 = count ?? 10;  // 0 (car 0 n'est pas null/undefined)
+
+// Chaînage
+let valeur = null;
+let result = valeur ?? "défaut 1" ?? "défaut 2";
+console.log(result); // "défaut 1"
+        </pre>
+    </div>
+
+    <h3>6. Map et Set</h3>
+    <div class="example">
+        <div class="example-title">Nouvelles structures de données:</div>
+        <pre>
+// Map - Clés/valeurs
+let map = new Map();
+map.set("nom", "Marie");
+map.set("age", 30);
+map.set(1, "un");
+
+console.log(map.get("nom")); // "Marie"
+console.log(map.size);       // 3
+map.delete("age");
+console.log(map.has("age")); // false
+
+// Itération
+for (let [cle, valeur] of map) {
+    console.log(`${cle}: ${valeur}`);
+}
+
+// Set - Valeurs uniques
+let set = new Set([1, 2, 3, 3, 4]);
+console.log(set); // Set {1, 2, 3, 4}
+
+set.add(5);
+set.delete(2);
+console.log(set.has(3)); // true
+
+// Convertir en array
+let arr = [...set];
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title">Exercices Pratiques</div>
+        <ol>
+            <li>Utilisez la destructuration sur un objet complexe</li>
+            <li>Fusionnez plusieurs objets avec spread</li>
+            <li>Créez un template literal avec expressions</li>
+            <li>Utilisez optional chaining dans un objet imbriqué</li>
+            <li>Créez une Map pour stocker des utilisateurs</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 15: Modules JavaScript -->
+<div id="module15" class="module">
+    <h2>Module 15: Modules JavaScript</h2>
+    
+    <div class="concept">
+        <h3> Concepts Clés</h3>
+        <p>Les <strong>modules</strong> permettent d'organiser le code en fichiers séparés et réutilisables.</p>
+    </div>
+
+    <h3>1. Export et Import</h3>
+    <div class="example">
+        <div class="example-title">Export nommé:</div>
+        <pre>
+// fichier: math.js
+export const PI = 3.14159;
+
+export function addition(a, b) {
+    return a + b;
+}
+
+export function multiplication(a, b) {
+    return a * b;
+}
+
+// fichier: main.js
+import { PI, addition, multiplication } from './math.js';
+
+console.log(PI);              // 3.14159
+console.log(addition(5, 3));  // 8
+        </pre>
+    </div>
+
+    <h3>2. Export Default</h3>
+    <div class="example">
+        <div class="example-title">Export par défaut:</div>
+        <pre>
+// fichier: Personne.js
+export default class Personne {
+    constructor(nom, age) {
+        this.nom = nom;
+        this.age = age;
+    }
+    
+    sePresenter() {
+        return `Je suis ${this.nom}`;
+    }
+}
+
+// fichier: main.js
+import Personne from './Personne.js';
+
+let marie = new Personne("Marie", 30);
+console.log(marie.sePresenter());
+        </pre>
+    </div>
+
+    <h3>3. Import/Export Mixte</h3>
+    <div class="example">
+        <div class="example-title">Combiner les deux:</div>
+        <pre>
+// fichier: utils.js
+export const VERSION = "1.0.0";
+
+export function log(message) {
+    console.log(`[LOG] ${message}`);
+}
+
+export default class Logger {
+    constructor(prefix) {
+        this.prefix = prefix;
+    }
+    
+    log(message) {
+        console.log(`[${this.prefix}] ${message}`);
+    }
+}
+
+// fichier: main.js
+import Logger, { VERSION, log } from './utils.js';
+
+console.log(VERSION);
+log("Hello");
+
+let logger = new Logger("APP");
+logger.log("Démarrage");
+        </pre>
+    </div>
+
+    <h3>4. Import tout</h3>
+    <div class="example">
+        <div class="example-title">Importer un module entier:</div>
+        <pre>
+// fichier: math.js
+export const PI = 3.14159;
+export function addition(a, b) { return a + b; }
+export function multiplication(a, b) { return a * b; }
+
+// fichier: main.js
+import * as Math from './math.js';
+
+console.log(Math.PI);
+console.log(Math.addition(5, 3));
+console.log(Math.multiplication(4, 2));
+        </pre>
+    </div>
+
+    <h3>5. Utiliser les Modules dans HTML</h3>
+    <div class="example">
+        <div class="example-title">Script type module:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Modules Demo&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Application avec Modules&lt;/h1&gt;
+    
+    &lt;!-- Importer le module principal --&gt;
+    &lt;script type="module" src="main.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <h3>6. Structure de Projet</h3>
+    <div class="example">
+        <div class="example-title">Organisation recommandée:</div>
+        <pre>
+projet/
+│
+├── index.html
+│
+├── js/
+│   ├── main.js
+│   │
+│   ├── utils/
+│   │   ├── math.js
+│   │   └── string.js
+│   │
+│   ├── components/
+│   │   ├── Header.js
+│   │   └── Footer.js
+│   │
+│   └── services/
+│       ├── api.js
+│       └── storage.js
+│
+└── css/
+    └── style.css
+
+// Exemple d'import dans main.js:
+import { addition } from './utils/math.js';
+import Header from './components/Header.js';
+import { fetchUsers } from './services/api.js';
+        </pre>
+    </div>
+
+    <div class="note">
+        <strong> Important:</strong> Les modules nécessitent un serveur web pour fonctionner. Vous ne pouvez pas les utiliser en ouvrant directement un fichier HTML (file://). Utilisez un serveur local comme Live Server.
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title">Exercices Pratiques</div>
+        <ol>
+            <li>Créez un module math.js avec des fonctions mathématiques</li>
+            <li>Créez une classe dans un module et importez-la</li>
+            <li>Organisez une petite application en plusieurs modules</li>
+            <li>Créez un module utils.js avec des fonctions utilitaires</li>
+            <li>Faites un système de composants réutilisables</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <strong>Félicitations!</strong> Vous avez terminé les 15 modules de la formation JavaScript. Vous maîtrisez maintenant les bases et les concepts avancés du JavaScript moderne!
+    </div>
+</div>
+
+<!-- FIN DES MODULES 6 À 15 -->
+
+
+
+    <footer>
+        <p>2026 Formation DWWM développeur web web mobile Lille</p>
+        <p>Thomas ( formateur realConseil ) cours de JavaScript</p>
+    </footer>
+
+    <script>
+        function showModule(moduleId) {
+            // Cacher tous les modules
+            const modules = document.querySelectorAll('.module');
+            modules.forEach(module => {
+                module.classList.remove('active');
+            });
+
+            // Afficher le module sélectionné
+            const selectedModule = document.getElementById(moduleId);
+            if (selectedModule) {
+                selectedModule.classList.add('active');
+                // Scroll vers le haut
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Empêcher le comportement par défaut des liens
+        document.querySelectorAll('a[href="#"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+            });
+        });
+    </script>
+
+
+
+
+</body>
+</html>

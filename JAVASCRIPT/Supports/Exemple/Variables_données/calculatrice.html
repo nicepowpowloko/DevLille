@@ -1,0 +1,37 @@
+
+Calculatrice simple:
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculatrice</title>
+</head>
+<body>
+    <h1>Calculatrice JavaScript</h1>
+    <div id="calculatrice"></div>
+
+    <script>
+        const nombre1 = 20;
+        const nombre2 = 4;
+        
+        let html = `
+            <h2>Opérations avec ${nombre1} et ${nombre2}:</h2>
+            <p>Addition: ${nombre1} + ${nombre2} = ${nombre1 + nombre2}</p>
+            <p>Soustraction: ${nombre1} - ${nombre2} = ${nombre1 - nombre2}</p>
+            <p>Multiplication: ${nombre1} × ${nombre2} = ${nombre1 * nombre2}</p>
+            <p>Division: ${nombre1} ÷ ${nombre2} = ${nombre1 / nombre2}</p>
+            <p>Modulo: ${nombre1} % ${nombre2} = ${nombre1 % nombre2}</p>
+            <p>Puissance: ${nombre1} ** 2 = ${nombre1 ** 2}</p>
+            <hr>
+            <h2>Comparaisons:</h2>
+            <p>${nombre1} > ${nombre2} = ${nombre1 > nombre2}</p>
+            <p>${nombre1} === ${nombre2} = ${nombre1 === nombre2}</p>
+            <p>${nombre1} !== ${nombre2} = ${nombre1 !== nombre2}</p>
+        `;
+        
+        document.getElementById('calculatrice').innerHTML = html;
+    </script>
+</body>
+</html>
+                
+
