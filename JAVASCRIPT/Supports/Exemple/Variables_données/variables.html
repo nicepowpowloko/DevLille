@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Variables et Types</title>
+</head>
+<body>
+    <h1>Démonstration des Variables</h1>
+    <div id="resultat"></div>
+
+    <script>
+        // Déclaration de variables
+        const prenom = "Thomas";
+        const age = 32;
+        const estFormateur = true;
+        const specialite = "JavaScript";
+        
+        // Affichage dans la page
+        let html = `
+            <h2>Informations:</h2>
+            <p><strong>Prénom:</strong> ${prenom}</p>
+                    // Utilisation de l'interpolation pour insérer la variable
+            <p><strong>Âge:</strong> ${age} ans</p>
+            <p><strong>Est formateur:</strong> ${estFormateur}</p>
+            <p><strong>Spécialité:</strong> ${specialite}</p>
+            <hr>
+            <h3>Types de données:</h3>
+            <p>Type de prenom: ${typeof prenom}</p> 
+                    // typeof retourne une chaîne indiquant le type de la variable
+            <p>Type de age: ${typeof age}</p>
+            <p>Type de estFormateur: ${typeof estFormateur}</p>
+        `;
+        
+        document.getElementById('resultat').innerHTML = html;
+    </script>
+</body>
+</html>
