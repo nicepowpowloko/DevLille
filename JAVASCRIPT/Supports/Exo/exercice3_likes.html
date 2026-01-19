@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 3 - Compteur de likes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+       
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Exercice 3 : Compteur de likes</h1>
+        
+        <div id="resultats"></div>
+    </div>
+
+    <script>
+        // 1. Créer une variable likes qui commence à 0
+        let likes = 0;
+
+        let html = `
+            <div class="result">
+                <h2>Simulation de likes sur un post</h2>
+                <div class="step">
+                     État initial : <span class="like-count">${likes} likes</span>
+                </div>
+            </div>
+            <div class="result">
+                <h3> Actions des utilisateurs :</h3>
+        `;
+
+        // 2. Simuler 3 personnes qui cliquent sur "J'aime" (incrémenter 3 fois)
+        // 3. Afficher le nombre de likes après chaque clic
+
+        // Premier like
+        likes++;
+        html += `
+            <div class="like-action">
+                <span class="like-button"></span>
+                <span>Personne 1 a aimé le post</span>
+                <span class="like-count">→ ${likes} like${likes > 1 ? 's' : ''}</span>
+            </div>
+        `;
+
+        // Deuxième like
+        likes++;
+        html += `
+            <div class="like-action">
+                <span class="like-button"></span>
+                <span>Personne 2 a aimé le post</span>
+                <span class="like-count">→ ${likes} likes</span>
+            </div>
+        `;
+
+        // Troisième like
+        likes++;
+        html += `
+            <div class="like-action">
+                <span class="like-button"></span>
+                <span>Personne 3 a aimé le post</span>
+                <span class="like-count">→ ${likes} likes</span>
+            </div>
+        `;
+
+        // 4. 1 personne retire son like (décrémenter 1 fois)
+        likes--;
+        html += `
+            <div class="like-action" style="border-color: #ffcdd2;">
+                <span class="like-button"></span>
+                <span>Personne 1 a retiré son like</span>
+                <span class="like-count">→ ${likes} likes</span>
+            </div>
+        `;
+
+        html += `</div>`;
+
+        // 5. Afficher le nombre final de likes
+        html += `
+            <div class="final-result">
+                 NOMBRE FINAL DE LIKES : ${likes} 
+            </div>
+        `;
+
+        // Afficher le code utilisé
+        html += `
+            <div class="result">
+                <h3> Code JavaScript utilisé :</h3>
+                <div class="code">
+// 1. Initialisation<br>
+let likes = 0;<br>
+console.log("État initial:", likes);<br>
+<br>
+// 2 & 3. Trois personnes aiment le post<br>
+likes++; // Incrémentation (likes = likes + 1)<br>
+console.log("Après like 1:", likes);<br>
+<br>
+likes++;<br>
+console.log("Après like 2:", likes);<br>
+<br>
+likes++;<br>
+console.log("Après like 3:", likes);<br>
+<br>
+// 4. Une personne retire son like<br>
+likes--; // Décrémentation (likes = likes - 1)<br>
+console.log("Après retrait:", likes);<br>
+<br>
+// 5. Résultat final<br>
+console.log("Nombre final de likes:", likes);
+                </div>
+            </div>
+        `;
+
+        // Afficher dans la page
+        document.getElementById('resultats').innerHTML = html;
+
+        // Afficher aussi dans la console
+        console.log("=== COMPTEUR DE LIKES ===");
+        console.log("État initial : 0 likes");
+        console.log("Après 3 likes : 3 likes");
+        console.log("Après 1 retrait : 2 likes");
+        console.log(`RÉSULTAT FINAL : ${likes} likes`);
+    </script>
+</body>
+</html>

@@ -1,0 +1,5583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réseaux</title>
+    <style>
+
+ :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #28146f 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .logo {
+            font-size: 0.9em;
+            margin-top: 15px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        nav {
+            background: var(--conseil);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        nav li {
+            position: relative;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: block;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            background: var(--real);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: var(--conseil);
+            min-width: 280px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            z-index: 1001;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .dropdown-content a {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .content {
+            padding: 40px;
+            line-height: 1.8;
+        }
+
+        .module {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .module.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: #667eea;
+            margin: 30px 0 20px 0;
+            font-size: 2em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin: 25px 0 15px 0;
+            font-size: 1.5em;
+        }
+
+        h4 {
+            color: #2c3e50;
+            margin: 20px 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .example {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .code {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .command {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+            }
+
+            nav li {
+                width: 100%;
+            }
+
+            .dropdown-content {
+                position: static;
+                display: none;
+                width: 100%;
+            }
+
+            .dropdown.active .dropdown-content {
+                display: block;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Réseaux & DevOps</h1>
+            <p>Administration système</p>
+            <div class="logo"><img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="80px" alt=""></div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#" onclick="showModule('accueil')"> Accueil</a></li>
+                
+                <li class="dropdown">
+                    <a href="#" onclick="showModule('linux')"> Linux</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showModule('linux')">Introduction à Linux</a>
+                        <a href="#" onclick="showModule('linux-commandes')">Commandes essentielles</a>
+                        <a href="#" onclick="showModule('linux-permissions')">Permissions et utilisateurs</a>
+                    </div>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" onclick="showModule('windows-server')"> Windows Server</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showModule('windows-server')">Windows Server 2022</a>
+                        <a href="#" onclick="showModule('active-directory')">Active Directory</a>
+                        <a href="#" onclick="showModule('powershell')">PowerShell</a>
+                    </div>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" onclick="showModule('reseaux')"> Réseaux</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showModule('reseaux')">Fondamentaux TCP/IP</a>
+                        <a href="#" onclick="showModule('protocoles')">Protocoles réseau</a>
+                        <a href="#" onclick="showModule('securite-reseau')">Sécurité réseau</a>
+                    </div>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" onclick="showModule('virtualisation')"> Virtualisation</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showModule('virtualisation')">VM et Hyperviseurs</a>
+                        <a href="#" onclick="showModule('docker')">Docker</a>
+                        <a href="#" onclick="showModule('kubernetes')">Kubernetes</a>
+                    </div>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" onclick="showModule('devops')"> DevOps</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showModule('devops')">Introduction DevOps</a>
+                        <a href="#" onclick="showModule('cicd')">CI/CD</a>
+                        <a href="#" onclick="showModule('monitoring')">Monitoring</a>
+                    </div>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" onclick="showModule('securite')"> Sécurité</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showModule('securite')">Sécurité système</a>
+                        <a href="#" onclick="showModule('pare-feu')">Pare-feu</a>
+                        <a href="#" onclick="showModule('vpn')">VPN</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <!-- MODULE ACCUEIL -->
+            <div id="accueil" class="module active">
+                <h2>Développeur Web Web Mobile, Réseaux & DevOps</h2>
+                
+                <h3> Objectifs</h3>
+                <ul>
+                    <li><strong>Administrer des systèmes Linux et Windows Server</strong> efficacement</li>
+                    <li><strong>Comprendre et configurer les réseaux</strong> TCP/IP, routage, sécurité</li>
+                    <li><strong>Maîtriser la virtualisation</strong> avec VMware, VirtualBox, Docker et Kubernetes</li>
+                    <li><strong>Implémenter des pratiques DevOps</strong> : CI/CD, automatisation, monitoring</li>
+                    <li><strong>Sécuriser les infrastructures</strong> : pare-feu, VPN, hardening</li>
+                </ul>
+
+                <h3>Contenu</h3>
+                
+                <div class="example">
+                    <h4>Module 1 : Linux Administration</h4>
+                    <ul>
+                        <li>Installation et configuration de distributions Linux</li>
+                        <li>Commandes essentielles et scripts Bash</li>
+                        <li>Gestion des utilisateurs et permissions</li>
+                        <li>Services et processus</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>Module 2 : Windows Server</h4>
+                    <ul>
+                        <li>Installation et configuration Windows Server 2022</li>
+                        <li>Active Directory et gestion des domaines</li>
+                        <li>PowerShell pour l'automatisation</li>
+                        <li>Services DNS, DHCP, File Server</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>Module 3 : Réseaux</h4>
+                    <ul>
+                        <li>Modèle OSI et TCP/IP</li>
+                        <li>Adressage IP et sous-réseaux</li>
+                        <li>Protocoles : HTTP, DNS, SMTP, FTP</li>
+                        <li>Architecture réseau et routage</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>Module 4 : Virtualisation & Conteneurisation</h4>
+                    <ul>
+                        <li>Hyperviseurs : VMware ESXi, Hyper-V, VirtualBox</li>
+                        <li>Docker : images, conteneurs, volumes</li>
+                        <li>Docker Compose pour applications multi-conteneurs</li>
+                        <li>Kubernetes : orchestration et déploiement</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>Module 5 : DevOps</h4>
+                    <ul>
+                        <li>Philosophie et culture DevOps</li>
+                        <li>Git et GitHub/GitLab</li>
+                        <li>CI/CD avec Jenkins, GitLab CI, GitHub Actions</li>
+                        <li>Infrastructure as Code (Terraform, Ansible)</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>Module 6 : Sécurité</h4>
+                    <ul>
+                        <li>Hardening Linux et Windows</li>
+                        <li>Pare-feu : iptables, firewalld, Windows Firewall</li>
+                        <li>VPN : OpenVPN, WireGuard</li>
+                        <li>Certificats SSL/TLS et chiffrement</li>
+                    </ul>
+                </div>
+
+                <h3>Compétences</h3>
+                <div class="success">
+                    <p><strong>À l'issue de cette formation, vous serez capable de :</strong></p>
+                    <ul>
+                        <li>Installer, configurer et maintenir des serveurs Linux et Windows</li>
+                        <li>Concevoir et administrer des architectures réseau</li>
+                        <li>Déployer et gérer des infrastructures virtualisées</li>
+                        <li>Automatiser les déploiements avec des outils DevOps</li>
+                        <li>Sécuriser les systèmes et les réseaux</li>
+                        <li>Mettre en place du monitoring et de l'alerting</li>
+                    </ul>
+                </div>
+
+                <h3>Public</h3>
+                <ul>
+                    <li>Administrateurs système débutants ou confirmés</li>
+                    <li>Développeurs souhaitant comprendre l'infrastructure</li>
+                    <li>Professionnels IT en reconversion</li>
+                    <li>Étudiants en informatique</li>
+                </ul>
+
+              
+            </div>
+
+            <!-- MODULE LINUX -->
+            <div id="linux" class="module">
+                <h2>Introduction à Linux</h2>
+                
+                <h3>Qu'est-ce que Linux ?</h3>
+                <p>Linux est un système d'exploitation open-source basé sur Unix, largement utilisé pour les serveurs, le cloud computing et les systèmes embarqués.</p>
+
+                <h3>Principales distributions</h3>
+                <table>
+                    <tr>
+                        <th>Distribution</th>
+                        <th>Type</th>
+                        <th>Usage principal</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Ubuntu Server</strong></td>
+                        <td>Debian-based</td>
+                        <td>Serveurs web, cloud, débutants</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CentOS / Rocky Linux</strong></td>
+                        <td>RedHat-based</td>
+                        <td>Entreprises, production</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Debian</strong></td>
+                        <td>Communautaire</td>
+                        <td>Stabilité, serveurs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fedora</strong></td>
+                        <td>RedHat-based</td>
+                        <td>Technologies récentes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Alpine Linux</strong></td>
+                        <td>Indépendant</td>
+                        <td>Conteneurs Docker</td>
+                    </tr>
+                </table>
+
+                <h3> Architecture Linux</h3>
+                <div class="example">
+                    <h4>Structure du système</h4>
+                    <ul>
+                        <li><strong>Kernel (Noyau)</strong> : Cœur du système, gère matériel et ressources</li>
+                        <li><strong>Shell</strong> : Interface en ligne de commande (bash, zsh, fish)</li>
+                        <li><strong>Système de fichiers</strong> : Tout est fichier sous Linux</li>
+                        <li><strong>Processus</strong> : Programmes en cours d'exécution</li>
+                    </ul>
+                </div>
+
+                <h3>Arborescence des répertoires</h3>
+                <div class="code">
+/               # Racine du système
+├── bin/        # Binaires essentiels (ls, cp, mv)
+├── boot/       # Fichiers de démarrage, kernel
+├── dev/        # Fichiers de périphériques
+├── etc/        # Fichiers de configuration
+├── home/       # Répertoires personnels des utilisateurs
+├── lib/        # Bibliothèques système
+├── mnt/        # Points de montage temporaires
+├── opt/        # Applications optionnelles
+├── proc/       # Informations système (virtuel)
+├── root/       # Répertoire de l'administrateur
+├── sbin/       # Binaires système (admin)
+├── tmp/        # Fichiers temporaires
+├── usr/        # Applications utilisateur
+└── var/        # Données variables (logs, cache)
+                </div>
+
+                <h3>Installation d'Ubuntu Server</h3>
+                <div class="example">
+                    <h4>Étapes d'installation</h4>
+                    <ol>
+                        <li>Télécharger l'ISO depuis ubuntu.com</li>
+                        <li>Créer une clé USB bootable (Rufus, balenaEtcher)</li>
+                        <li>Booter sur la clé USB</li>
+                        <li>Choisir la langue et le clavier</li>
+                        <li>Configurer le réseau (DHCP ou IP fixe)</li>
+                        <li>Partitionner le disque (automatique ou manuel)</li>
+                        <li>Créer un utilisateur administrateur</li>
+                        <li>Installer OpenSSH pour accès distant</li>
+                        <li>Redémarrer le système</li>
+                    </ol>
+                </div>
+
+                <h3>Première connexion SSH</h3>
+                <div class="code">
+# Depuis Windows (PowerShell) ou Linux/Mac
+ssh utilisateur@adresse-ip-serveur
+
+# Exemple
+ssh <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fe8a9691939f8dbecfc7ccd0cfc8c6d0cfd0cfcece">[email&#160;protected]</a>
+
+# Avec un port personnalisé
+ssh -p 2222 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="deaab6b1b3bfad9eefe7ecf0efe8e6f0eff0efeeee">[email&#160;protected]</a>
+                </div>
+
+                <div class="warning">
+                    <p><strong> Sécurité SSH :</strong> Changez toujours le port par défaut (22), désactivez l'accès root, et utilisez des clés SSH plutôt que des mots de passe !</p>
+                </div>
+
+                <h3> Génération de clés SSH</h3>
+                <div class="code">
+# Sur votre machine locale
+ssh-keygen -t ed25519 -C "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="75031a010710351018141c195b161a18">[email&#160;protected]</a>"
+
+# Copier la clé sur le serveur
+ssh-copy-id utilisateur@serveur
+
+# Connexion sans mot de passe
+ssh utilisateur@serveur
+                </div>
+
+                <h3> Gestionnaire de paquets</h3>
+                <div class="example">
+                    <h4>APT (Debian/Ubuntu)</h4>
+                    <div class="code">
+# Mettre à jour la liste des paquets
+sudo apt update
+
+# Mettre à jour les paquets installés
+sudo apt upgrade
+
+# Installer un paquet
+sudo apt install nginx
+
+# Rechercher un paquet
+apt search apache
+
+# Supprimer un paquet
+sudo apt remove nginx
+
+# Supprimer avec les fichiers de config
+sudo apt purge nginx
+
+# Nettoyer les paquets inutiles
+sudo apt autoremove
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>YUM/DNF (RedHat/CentOS/Fedora)</h4>
+                    <div class="code">
+# Mettre à jour
+sudo dnf update
+
+# Installer
+sudo dnf install httpd
+
+# Rechercher
+dnf search nginx
+
+# Supprimer
+sudo dnf remove httpd
+                    </div>
+                </div>
+
+                <div class="success">
+                    <p><strong> Bonnes pratiques :</strong></p>
+                    <ul>
+                        <li>Toujours faire <span class="command">sudo apt update</span> avant d'installer</li>
+                        <li>Planifier des mises à jour régulières de sécurité</li>
+                        <li>Documenter les paquets installés</li>
+                        <li>Tester sur un environnement de dev avant production</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE LINUX COMMANDES -->
+            <div id="linux-commandes" class="module">
+                <h2>Commandes Linux essentielles</h2>
+
+                <h3>Navigation et fichiers</h3>
+                <div class="code">
+# Afficher le répertoire courant
+pwd
+
+# Lister les fichiers
+ls                    # Liste simple
+ls -l                 # Liste détaillée
+ls -la                # Inclut fichiers cachés
+ls -lh                # Tailles lisibles (K, M, G)
+
+# Changer de répertoire
+cd /var/www           # Répertoire absolu
+cd ..                 # Répertoire parent
+cd ~                  # Répertoire personnel
+cd -                  # Répertoire précédent
+
+# Créer un répertoire
+mkdir mon-dossier
+mkdir -p parent/enfant/petit-enfant  # Récursif
+
+# Copier
+cp fichier.txt copie.txt
+cp -r dossier/ copie-dossier/        # Récursif
+
+# Déplacer / Renommer
+mv ancien.txt nouveau.txt
+mv fichier.txt /autre/dossier/
+
+# Supprimer
+rm fichier.txt
+rm -r dossier/                       # Récursif
+rm -rf dossier/                      # Force (attention !)
+
+# Afficher le contenu d'un fichier
+cat fichier.txt                      # Tout le fichier
+less fichier.txt                     # Navigation (q pour quitter)
+head fichier.txt                     # 10 premières lignes
+tail fichier.txt                     # 10 dernières lignes
+tail -f /var/log/syslog             # Suivi en temps réel
+                </div>
+
+                <h3> Recherche</h3>
+                <div class="code">
+# Rechercher un fichier
+find /var -name "*.log"
+find . -type f -name "config*"
+find /home -user thomas
+
+# Rechercher du texte dans des fichiers
+grep "erreur" /var/log/syslog
+grep -r "TODO" /var/www/           # Récursif
+grep -i "error" fichier.txt        # Insensible à la casse
+grep -n "function" script.js       # Avec numéros de ligne
+
+# Localiser rapidement (base de données)
+updatedb                           # Mettre à jour la base
+locate nginx.conf
+                </div>
+
+                <h3> Gestion des processus</h3>
+                <div class="code">
+# Lister les processus
+ps aux                             # Tous les processus
+ps aux | grep nginx                # Filtrer
+
+# Processus en temps réel
+top                                # Classique
+htop                               # Amélioré (à installer)
+
+# Tuer un processus
+kill 1234                          # Par PID
+kill -9 1234                       # Force
+killall nginx                      # Par nom
+
+# Processus en arrière-plan
+./script.sh &                      # Lancer en arrière-plan
+jobs                               # Lister
+fg %1                              # Ramener au premier plan
+bg %1                              # Continuer en arrière-plan
+
+# Exécution persistante
+nohup ./script.sh &                # Continue après déconnexion
+                </div>
+
+                <h3> Réseau</h3>
+                <div class="code">
+# Afficher la configuration réseau
+ip addr                            # Moderne
+ifconfig                           # Ancien (deprecated)
+
+# Tester la connectivité
+ping google.com
+ping -c 4 8.8.8.8                  # 4 paquets seulement
+
+# Ports ouverts
+netstat -tuln                      # Ancien
+ss -tuln                           # Moderne
+ss -tlnp                           # Avec noms de processus
+
+# Télécharger
+wget https://example.com/file.zip
+curl -O https://example.com/file.zip
+
+# Transfert de fichiers
+scp fichier.txt user@serveur:/home/user/
+scp -r dossier/ user@serveur:/home/user/
+                </div>
+
+                <h3> Informations système</h3>
+                <div class="code">
+# Informations générales
+uname -a                           # Système
+hostname                           # Nom de la machine
+uptime                             # Temps de fonctionnement
+
+# CPU et mémoire
+lscpu                              # Info CPU
+free -h                            # Mémoire RAM
+df -h                              # Espace disque
+du -sh *                           # Taille des dossiers
+
+# Utilisateurs connectés
+who                                # Qui est connecté
+w                                  # Détails
+last                               # Historique connexions
+                </div>
+
+                <h3> Édition de texte</h3>
+                <div class="example">
+                    <h4>Nano (simple, recommandé pour débutants)</h4>
+                    <div class="code">
+nano fichier.txt
+
+# Raccourcis clavier
+Ctrl + O    # Sauvegarder
+Ctrl + X    # Quitter
+Ctrl + K    # Couper ligne
+Ctrl + U    # Coller
+Ctrl + W    # Rechercher
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Vim (puissant, courbe d'apprentissage)</h4>
+                    <div class="code">
+vim fichier.txt
+
+# Modes
+i           # Mode insertion (écrire)
+Esc         # Mode normal (commandes)
+:w          # Sauvegarder
+:q          # Quitter
+:wq         # Sauvegarder et quitter
+:q!         # Quitter sans sauvegarder
+
+# Commandes utiles (mode normal)
+dd          # Supprimer ligne
+yy          # Copier ligne
+p           # Coller
+u           # Annuler
+/texte      # Rechercher
+                    </div>
+                </div>
+
+                <h3> Permissions (voir module suivant)</h3>
+                <div class="code">
+# Changer propriétaire
+sudo chown utilisateur:groupe fichier.txt
+
+# Changer permissions
+chmod 755 script.sh
+chmod +x script.sh                 # Rendre exécutable
+                </div>
+
+                <h3> Archives et compression</h3>
+                <div class="code">
+# Créer une archive tar
+tar -cvf archive.tar dossier/
+
+# Créer archive compressée gzip
+tar -czvf archive.tar.gz dossier/
+
+# Créer archive compressée bzip2
+tar -cjvf archive.tar.bz2 dossier/
+
+# Extraire
+tar -xvf archive.tar
+tar -xzvf archive.tar.gz
+
+# Zip
+zip -r archive.zip dossier/
+unzip archive.zip
+                </div>
+
+                <div class="note">
+                    <p><strong> Astuce :</strong> Utilisez <span class="command">man</span> ou <span class="command">--help</span> pour obtenir l'aide sur n'importe quelle commande !</p>
+                    <div class="code">
+man ls
+ls --help
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE LINUX PERMISSIONS -->
+            <div id="linux-permissions" class="module">
+                <h2>Permissions et utilisateurs Linux</h2>
+
+                <h3>Gestion des utilisateurs</h3>
+                <div class="code">
+# Créer un utilisateur
+sudo useradd -m -s /bin/bash thomas
+# -m : crée le répertoire home
+# -s : définit le shell
+
+# Définir un mot de passe
+sudo passwd thomas
+
+# Créer utilisateur interactif (Ubuntu/Debian)
+sudo adduser thomas
+
+# Modifier un utilisateur
+sudo usermod -aG sudo thomas       # Ajouter au groupe sudo
+sudo usermod -s /bin/zsh thomas    # Changer le shell
+
+# Supprimer un utilisateur
+sudo userdel thomas                # Sans supprimer son home
+sudo userdel -r thomas             # Avec son home
+
+# Lister les utilisateurs
+cat /etc/passwd
+getent passwd
+
+# Voir les groupes d'un utilisateur
+groups thomas
+id thomas
+                </div>
+
+                <h3> Gestion des groupes</h3>
+                <div class="code">
+# Créer un groupe
+sudo groupadd developpeurs
+
+# Ajouter utilisateur à un groupe
+sudo usermod -aG developpeurs thomas
+
+# Voir les groupes
+cat /etc/group
+getent group
+
+# Supprimer un groupe
+sudo groupdel developpeurs
+
+# Changer le groupe principal
+sudo usermod -g nouveaugroupe thomas
+                </div>
+
+                <h3>Comprendre les permissions</h3>
+                <div class="example">
+                    <h4>Format des permissions</h4>
+                    <div class="code">
+-rwxr-xr--  1 thomas developpeurs 4096 Jan 15 10:30 script.sh
+│││││││││
+│└┬┘└┬┘└┬┘
+│ │  │  └─> Autres (others) : r-- (lecture seulement)
+│ │  └────> Groupe : r-x (lecture + exécution)
+│ └───────> Propriétaire : rwx (lecture + écriture + exécution)
+└─────────> Type : - (fichier), d (dossier), l (lien)
+                    </div>
+                </div>
+
+                <h3>Types de permissions</h3>
+                <table>
+                    <tr>
+                        <th>Permission</th>
+                        <th>Symbole</th>
+                        <th>Valeur</th>
+                        <th>Fichier</th>
+                        <th>Dossier</th>
+                    </tr>
+                    <tr>
+                        <td>Lecture</td>
+                        <td>r</td>
+                        <td>4</td>
+                        <td>Lire le contenu</td>
+                        <td>Lister les fichiers</td>
+                    </tr>
+                    <tr>
+                        <td>Écriture</td>
+                        <td>w</td>
+                        <td>2</td>
+                        <td>Modifier le fichier</td>
+                        <td>Créer/supprimer fichiers</td>
+                    </tr>
+                    <tr>
+                        <td>Exécution</td>
+                        <td>x</td>
+                        <td>1</td>
+                        <td>Exécuter le fichier</td>
+                        <td>Entrer dans le dossier</td>
+                    </tr>
+                </table>
+
+                <h3>Notation octale</h3>
+                <div class="example">
+                    <div class="code">
+# Calcul : r(4) + w(2) + x(1)
+
+rwx = 4 + 2 + 1 = 7
+rw- = 4 + 2 + 0 = 6
+r-x = 4 + 0 + 1 = 5
+r-- = 4 + 0 + 0 = 4
+-wx = 0 + 2 + 1 = 3
+-w- = 0 + 2 + 0 = 2
+--x = 0 + 0 + 1 = 1
+--- = 0 + 0 + 0 = 0
+
+# Exemples de chmod
+chmod 755 script.sh    # rwxr-xr-x (propriétaire tout, autres lecture+exec)
+chmod 644 fichier.txt  # rw-r--r-- (propriétaire rw, autres lecture)
+chmod 600 cle.pem      # rw------- (propriétaire seulement)
+chmod 777 public/      # rwxrwxrwx (tout le monde tout - DANGEREUX!)
+                    </div>
+                </div>
+
+                <h3>Modifier les permissions</h3>
+                <div class="code">
+# Notation symbolique
+chmod u+x script.sh              # Ajouter exécution pour user
+chmod g+w fichier.txt            # Ajouter écriture pour groupe
+chmod o-r secret.txt             # Retirer lecture pour others
+chmod a+x script.sh              # Ajouter exécution pour all
+
+# Notation octale
+chmod 755 script.sh              # rwxr-xr-x
+chmod 644 config.txt             # rw-r--r--
+
+# Récursif
+chmod -R 755 /var/www/html/      # Tous les fichiers/dossiers
+
+# Combinaisons
+chmod u=rwx,g=rx,o=r fichier     # Définir précisément
+                </div>
+
+                <h3>Changer propriétaire et groupe</h3>
+                <div class="code">
+# Changer le propriétaire
+sudo chown thomas fichier.txt
+
+# Changer propriétaire et groupe
+sudo chown thomas:developpeurs fichier.txt
+
+# Changer seulement le groupe
+sudo chgrp developpeurs fichier.txt
+
+# Récursif
+sudo chown -R www-data:www-data /var/www/html/
+
+# Exemples pratiques
+sudo chown thomas:www-data /var/www/monsite/
+sudo chmod 755 /var/www/monsite/
+                </div>
+
+                <h3>Permissions spéciales</h3>
+                <div class="example">
+                    <h4>SUID (Set User ID) - 4xxx</h4>
+                    <p>Le fichier s'exécute avec les droits du propriétaire</p>
+                    <div class="code">
+chmod 4755 /usr/bin/passwd
+# -rwsr-xr-x (le 's' remplace le 'x')
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>SGID (Set Group ID) - 2xxx</h4>
+                    <p>Les fichiers créés héritent du groupe du dossier</p>
+                    <div class="code">
+chmod 2775 /var/www/shared/
+# drwxrwsr-x
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Sticky Bit - 1xxx</h4>
+                    <p>Seul le propriétaire peut supprimer ses fichiers</p>
+                    <div class="code">
+chmod 1777 /tmp/
+# drwxrwxrwt (le 't' à la fin)
+                    </div>
+                </div>
+
+                <h3> Scénarios pratiques</h3>
+                <div class="example">
+                    <h4>Serveur web (Nginx/Apache)</h4>
+                    <div class="code">
+# Structure
+sudo chown -R www-data:www-data /var/www/html/
+sudo find /var/www/html/ -type d -exec chmod 755 {} \;
+sudo find /var/www/html/ -type f -exec chmod 644 {} \;
+
+# Dossier uploads (écriture web)
+sudo chmod 775 /var/www/html/uploads/
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Scripts d'administration</h4>
+                    <div class="code">
+# Propriétaire seulement
+chmod 700 ~/scripts/backup.sh
+
+# Exécutable par le groupe
+chmod 750 /opt/scripts/deploy.sh
+sudo chown root:admins /opt/scripts/deploy.sh
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Fichiers de configuration sensibles</h4>
+                    <div class="code">
+# Lecture seule propriétaire
+chmod 600 ~/.ssh/id_rsa
+chmod 600 /etc/mysql/mysql.conf.d/credentials.cnf
+
+# Lecture propriétaire et groupe
+chmod 640 /etc/nginx/sites-available/default
+                    </div>
+                </div>
+
+                <h3> Vérifier les permissions</h3>
+                <div class="code">
+# Permissions détaillées
+ls -l fichier.txt
+
+# Voir qui peut accéder
+namei -l /var/www/html/index.php
+
+# Permissions effectives
+getfacl fichier.txt
+                </div>
+
+                <div class="warning">
+                    <p><strong> Erreurs courantes à éviter :</strong></p>
+                    <ul>
+                        <li><strong>chmod 777</strong> : JAMAIS en production ! Risque de sécurité majeur</li>
+                        <li><strong>chown -R root:root /</strong> : Ne JAMAIS faire sur la racine !</li>
+                        <li>Permissions trop restrictives sur les clés SSH (doivent être 600 ou 400)</li>
+                        <li>Oublier le <code>-R</code> pour les changements récursifs</li>
+                    </ul>
+                </div>
+
+                <div class="success">
+                    <p><strong> Bonnes pratiques :</strong></p>
+                    <ul>
+                        <li>Principe du moindre privilège : donner uniquement les droits nécessaires</li>
+                        <li>Documenter les permissions spéciales</li>
+                        <li>Utiliser des groupes pour gérer les accès collectifs</li>
+                        <li>Vérifier régulièrement les permissions des fichiers sensibles</li>
+                        <li>Utiliser sudo au lieu de se connecter en root</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE WINDOWS SERVER -->
+            <div id="windows-server" class="module">
+                <h2> Windows Server 2022</h2>
+                
+                <h3>Qu'est-ce que Windows Server ?</h3>
+                <p>Windows Server est un système d'exploitation serveur de Microsoft, optimisé pour gérer des réseaux d'entreprise, héberger des applications et services, et administrer des infrastructures IT.</p>
+
+                <h3>Éditions Windows Server 2022</h3>
+                <table>
+                    <tr>
+                        <th>Édition</th>
+                        <th>Caractéristiques</th>
+                        <th>Usage</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Essentials</strong></td>
+                        <td>25 utilisateurs max, 1 serveur</td>
+                        <td>Petites entreprises</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Standard</strong></td>
+                        <td>2 VMs, fonctionnalités complètes</td>
+                        <td>Environnements physiques/virtuels limités</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Datacenter</strong></td>
+                        <td>VMs illimitées, fonctionnalités avancées</td>
+                        <td>Datacenters, cloud privé</td>
+                    </tr>
+                </table>
+
+                <h3> Rôles principaux</h3>
+                <div class="example">
+                    <ul>
+                        <li><strong>Active Directory Domain Services (AD DS)</strong> : Gestion centralisée des utilisateurs et ordinateurs</li>
+                        <li><strong>DNS Server</strong> : Résolution de noms de domaine</li>
+                        <li><strong>DHCP Server</strong> : Attribution automatique d'adresses IP</li>
+                        <li><strong>File and Storage Services</strong> : Partage de fichiers et stockage</li>
+                        <li><strong>Web Server (IIS)</strong> : Hébergement de sites web</li>
+                        <li><strong>Remote Desktop Services</strong> : Accès distant aux applications</li>
+                        <li><strong>Hyper-V</strong> : Virtualisation</li>
+                    </ul>
+                </div>
+
+                <h3> Installation Windows Server 2022</h3>
+                <div class="example">
+                    <h4>Options d'installation</h4>
+                    <ol>
+                        <li><strong>Desktop Experience</strong> : Interface graphique complète (recommandé pour débuter)</li>
+                        <li><strong>Server Core</strong> : Ligne de commande uniquement (plus léger, plus sécurisé)</li>
+                    </ol>
+                </div>
+
+                <div class="code">
+# Étapes d'installation
+1. Booter sur l'ISO Windows Server 2022
+2. Choisir la langue et le clavier
+3. Sélectionner l'édition (Standard/Datacenter)
+4. Accepter les termes de licence
+5. Choisir installation personnalisée
+6. Partitionner le disque
+7. L'installation se lance (10-15 min)
+8. Définir le mot de passe Administrateur (complexe !)
+9. Premier démarrage et configuration initiale
+                </div>
+
+                <h3> Configuration initiale</h3>
+                <div class="code">
+# Server Manager s'ouvre automatiquement
+# Onglet "Local Server"
+
+1. Définir le nom du serveur
+   - Clic sur le nom actuel → "Change" → Entrer nouveau nom → Redémarrer
+
+2. Configurer le réseau
+   - Clic sur "Ethernet" → Properties
+   - IPv4 → Adresse IP fixe recommandée
+   - Exemple : 192.168.1.10, masque 255.255.255.0, passerelle 192.168.1.1
+
+3. Joindre un domaine (si applicable)
+   - System → Change settings → Domain → Entrer nom de domaine
+
+4. Activer les mises à jour Windows Update
+
+5. Configurer le pare-feu Windows Defender
+                </div>
+
+                <h3> Ajouter des rôles et fonctionnalités</h3>
+                <div class="example">
+                    <h4>Via Server Manager (GUI)</h4>
+                    <div class="code">
+1. Server Manager → Manage → Add Roles and Features
+2. Next sur "Before you begin"
+3. Sélectionner "Role-based or feature-based installation"
+4. Sélectionner le serveur cible
+5. Cocher les rôles souhaités (ex: DNS Server, DHCP)
+6. Next → Next → Install
+7. Attendre la fin de l'installation
+8. Redémarrer si nécessaire
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Via PowerShell</h4>
+                    <div class="code">
+# Lister les rôles disponibles
+Get-WindowsFeature
+
+# Installer un rôle
+Install-WindowsFeature -Name DNS -IncludeManagementTools
+
+# Installer plusieurs rôles
+Install-WindowsFeature -Name DHCP,DNS,Web-Server -IncludeManagementTools
+
+# Vérifier l'installation
+Get-WindowsFeature | Where-Object {$_.Installed -eq $True}
+                    </div>
+                </div>
+
+                <h3> Configuration réseau de base</h3>
+                <div class="code">
+# PowerShell - Configuration IP statique
+New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress 192.168.1.10 `
+    -PrefixLength 24 -DefaultGateway 192.168.1.1
+
+# Définir les serveurs DNS
+Set-DnsClientServerAddress -InterfaceAlias "Ethernet" `
+    -ServerAddresses ("8.8.8.8","8.8.4.4")
+
+# Renommer la carte réseau
+Rename-NetAdapter -Name "Ethernet" -NewName "LAN"
+
+# Voir la configuration
+Get-NetIPAddress
+Get-NetAdapter
+                </div>
+
+                <h3> Sécurité de base</h3>
+                <div class="example">
+                    <h4>Politique de mots de passe</h4>
+                    <div class="code">
+# Via GUI
+1. Server Manager → Tools → Group Policy Management
+2. Default Domain Policy → Edit
+3. Computer Configuration → Policies → Windows Settings → Security Settings
+4. Account Policies → Password Policy
+
+# Recommandations
+- Longueur minimale : 12 caractères
+- Complexité : Activée
+- Durée de vie maximale : 90 jours
+- Historique : 24 mots de passe
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Pare-feu Windows Defender</h4>
+                    <div class="code">
+# PowerShell - Activer le pare-feu
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
+
+# Autoriser une application
+New-NetFirewallRule -DisplayName "Mon Application" `
+    -Direction Inbound -Program "C:\App\app.exe" -Action Allow
+
+# Autoriser un port
+New-NetFirewallRule -DisplayName "Port 8080" `
+    -Direction Inbound -Protocol TCP -LocalPort 8080 -Action Allow
+
+# Lister les règles
+Get-NetFirewallRule | Where-Object {$_.Enabled -eq $True}
+                    </div>
+                </div>
+
+                <h3> Monitoring et performances</h3>
+                <div class="code">
+# PowerShell - Informations système
+Get-ComputerInfo
+systeminfo
+
+# Performances CPU et RAM
+Get-Counter '\Processor(_Total)\% Processor Time'
+Get-Counter '\Memory\Available MBytes'
+
+# Espace disque
+Get-PSDrive -PSProvider FileSystem
+
+# Services en cours
+Get-Service | Where-Object {$_.Status -eq "Running"}
+
+# Démarrer/Arrêter un service
+Start-Service -Name "W3SVC"
+Stop-Service -Name "W3SVC"
+Restart-Service -Name "W3SVC"
+                </div>
+
+                <h3> Partage de fichiers</h3>
+                <div class="code">
+# Créer un partage SMB
+New-SmbShare -Name "Documents" -Path "D:\Shares\Documents" `
+    -FullAccess "Domain\Admins" -ReadAccess "Domain\Users"
+
+# Lister les partages
+Get-SmbShare
+
+# Supprimer un partage
+Remove-SmbShare -Name "Documents"
+
+# Permissions NTFS
+icacls "D:\Shares\Documents" /grant "Domain\Users:(R)"
+icacls "D:\Shares\Documents" /grant "Domain\Admins:(F)"
+                </div>
+
+                <div class="note">
+                    <p><strong> Conseils d'administration :</strong></p>
+                    <ul>
+                        <li>Utilisez PowerShell pour automatiser les tâches répétitives</li>
+                        <li>Planifiez des sauvegardes régulières avec Windows Server Backup</li>
+                        <li>Documentez toutes les configurations et changements</li>
+                        <li>Testez les mises à jour sur un environnement de test d'abord</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE ACTIVE DIRECTORY -->
+            <div id="active-directory" class="module">
+                <h2> Active Directory (AD DS)</h2>
+                
+                <h3>Qu'est-ce qu'Active Directory ?</h3>
+                <p>Active Directory Domain Services (AD DS) est un service d'annuaire de Microsoft permettant la gestion centralisée des utilisateurs, ordinateurs, groupes et ressources réseau dans un domaine Windows.</p>
+
+                <h3>Concepts fondamentaux</h3>
+                <div class="example">
+                    <ul>
+                        <li><strong>Domaine</strong> : Unité administrative de base (ex: entreprise.local)</li>
+                        <li><strong>Forêt</strong> : Collection de domaines partageant le même schéma</li>
+                        <li><strong>Arbre</strong> : Hiérarchie de domaines partageant un espace de noms</li>
+                        <li><strong>OU (Organizational Unit)</strong> : Container pour organiser objets</li>
+                        <li><strong>Contrôleur de domaine (DC)</strong> : Serveur hébergeant AD</li>
+                        <li><strong>GPO (Group Policy Object)</strong> : Politique de groupe</li>
+                        <li><strong>Schema</strong> : Définition des objets et attributs</li>
+                    </ul>
+                </div>
+
+                <h3> Installation d'Active Directory</h3>
+                <div class="code">
+# PowerShell - Installer le rôle AD DS
+Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools
+
+# Promouvoir le serveur en contrôleur de domaine
+Install-ADDSForest `
+    -DomainName "entreprise.local" `
+    -DomainNetbiosName "ENTREPRISE" `
+    -ForestMode "WinThreshold" `
+    -DomainMode "WinThreshold" `
+    -InstallDns:$true `
+    -Force:$true
+
+# Le serveur redémarre automatiquement
+                </div>
+
+                <div class="note">
+                    <p><strong> Recommandations :</strong></p>
+                    <ul>
+                        <li>Utilisez une IP fixe pour le contrôleur de domaine</li>
+                        <li>Configurez DNS correctement (critique pour AD)</li>
+                        <li>Choisissez un nom de domaine en .local ou .lan (pas .com en interne)</li>
+                        <li>Planifiez toujours au moins 2 DC pour la redondance</li>
+                    </ul>
+                </div>
+
+                <h3> Gestion des utilisateurs</h3>
+                <div class="code">
+# Créer un utilisateur
+New-ADUser -Name "Thomas Dupont" `
+    -GivenName "Thomas" `
+    -Surname "Dupont" `
+    -SamAccountName "tdupont" `
+    -UserPrincipalName "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7b0f1f0e0b14150f3b1e150f091e0b0912081e551714181a17">[email&#160;protected]</a>" `
+    -Path "OU=Utilisateurs,DC=entreprise,DC=local" `
+    -AccountPassword (ConvertTo-SecureString "P@ssw0rd123!" -AsPlainText -Force) `
+    -Enabled $true `
+    -ChangePasswordAtLogon $true
+
+# Lister les utilisateurs
+Get-ADUser -Filter * | Select-Object Name,SamAccountName,Enabled
+
+# Rechercher un utilisateur
+Get-ADUser -Identity "tdupont" -Properties *
+
+# Modifier un utilisateur
+Set-ADUser -Identity "tdupont" -Title "Développeur Web" -Department "IT"
+
+# Désactiver un compte
+Disable-ADAccount -Identity "tdupont"
+
+# Réinitialiser mot de passe
+Set-ADAccountPassword -Identity "tdupont" `
+    -Reset -NewPassword (ConvertTo-SecureString "NewP@ss123!" -AsPlainText -Force)
+
+# Supprimer un utilisateur
+Remove-ADUser -Identity "tdupont" -Confirm:$false
+                </div>
+
+                <h3>Gestion des groupes</h3>
+                <div class="code">
+# Créer un groupe
+New-ADGroup -Name "Developpeurs" `
+    -GroupScope Global `
+    -GroupCategory Security `
+    -Path "OU=Groupes,DC=entreprise,DC=local"
+
+# Types de groupes
+# - Global : Utilisateurs du même domaine
+# - Universal : Utilisateurs de plusieurs domaines (forêt)
+# - DomainLocal : Permissions sur ressources locales
+
+# Ajouter un membre
+Add-ADGroupMember -Identity "Developpeurs" -Members "tdupont","jmartin"
+
+# Lister les membres
+Get-ADGroupMember -Identity "Developpeurs"
+
+# Retirer un membre
+Remove-ADGroupMember -Identity "Developpeurs" -Members "tdupont" -Confirm:$false
+
+# Voir les groupes d'un utilisateur
+Get-ADPrincipalGroupMembership -Identity "tdupont" | Select-Object Name
+                </div>
+
+                <h3> Organizational Units (OU)</h3>
+                <div class="code">
+# Créer une OU
+New-ADOrganizationalUnit -Name "Utilisateurs" `
+    -Path "DC=entreprise,DC=local" `
+    -ProtectedFromAccidentalDeletion $true
+
+# Structure recommandée
+New-ADOrganizationalUnit -Name "Entreprise" -Path "DC=entreprise,DC=local"
+New-ADOrganizationalUnit -Name "Utilisateurs" -Path "OU=Entreprise,DC=entreprise,DC=local"
+New-ADOrganizationalUnit -Name "Ordinateurs" -Path "OU=Entreprise,DC=entreprise,DC=local"
+New-ADOrganizationalUnit -Name "Groupes" -Path "OU=Entreprise,DC=entreprise,DC=local"
+New-ADOrganizationalUnit -Name "Serveurs" -Path "OU=Entreprise,DC=entreprise,DC=local"
+
+# Par département
+New-ADOrganizationalUnit -Name "IT" -Path "OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=local"
+New-ADOrganizationalUnit -Name "RH" -Path "OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=local"
+                </div>
+
+                <h3> Gestion des ordinateurs</h3>
+                <div class="code">
+# Lister les ordinateurs du domaine
+Get-ADComputer -Filter * | Select-Object Name,OperatingSystem
+
+# Rechercher un ordinateur
+Get-ADComputer -Identity "PC-THOMAS" -Properties *
+
+# Déplacer un ordinateur vers une OU
+Move-ADObject -Identity "CN=PC-THOMAS,CN=Computers,DC=entreprise,DC=local" `
+    -TargetPath "OU=Ordinateurs,OU=Entreprise,DC=entreprise,DC=local"
+
+# Désactiver un ordinateur
+Disable-ADAccount -Identity "PC-THOMAS$"
+
+# Supprimer un ordinateur
+Remove-ADComputer -Identity "PC-THOMAS" -Confirm:$false
+                </div>
+
+                <h3> Group Policy (GPO)</h3>
+                <div class="example">
+                    <h4>Créer une GPO via GUI</h4>
+                    <div class="code">
+1. Server Manager → Tools → Group Policy Management
+2. Clic droit sur l'OU cible → Create a GPO in this domain
+3. Nommer la GPO (ex: "Politique Bureau")
+4. Clic droit sur la GPO → Edit
+5. Configurer les paramètres
+6. La GPO s'applique au prochain gpupdate
+                    </div>
+                </div>
+
+                <div class="code">
+# PowerShell - Créer une GPO
+New-GPO -Name "Politique Sécurité" -Comment "Politique de sécurité IT"
+
+# Lier une GPO à une OU
+New-GPLink -Name "Politique Sécurité" `
+    -Target "OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=local"
+
+# Lister les GPO
+Get-GPO -All | Select-Object DisplayName,GpoStatus
+
+# Forcer l'application sur un poste
+gpupdate /force
+
+# Voir les GPO appliquées
+gpresult /r
+gpresult /h rapport.html
+                </div>
+
+                <div class="example">
+                    <h4>Exemples de GPO courantes</h4>
+                    <table>
+                        <tr>
+                            <th>GPO</th>
+                            <th>Chemin</th>
+                            <th>Usage</th>
+                        </tr>
+                        <tr>
+                            <td>Fond d'écran</td>
+                            <td>User Config → Policies → Administrative Templates → Desktop → Desktop</td>
+                            <td>Imposer un fond d'écran</td>
+                        </tr>
+                        <tr>
+                            <td>Mappage lecteurs</td>
+                            <td>User Config → Preferences → Windows Settings → Drive Maps</td>
+                            <td>Monter des partages réseau</td>
+                        </tr>
+                        <tr>
+                            <td>Politique mot de passe</td>
+                            <td>Computer Config → Policies → Windows Settings → Security Settings</td>
+                            <td>Complexité, durée</td>
+                        </tr>
+                        <tr>
+                            <td>Pare-feu</td>
+                            <td>Computer Config → Policies → Windows Settings → Security Settings</td>
+                            <td>Règles firewall</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3> Sécurité Active Directory</h3>
+                <div class="success">
+                    <p><strong> Bonnes pratiques :</strong></p>
+                    <ul>
+                        <li>Avoir au minimum 2 contrôleurs de domaine</li>
+                        <li>Sauvegarder régulièrement l'AD (Windows Server Backup)</li>
+                        <li>Utiliser des comptes de service dédiés (pas d'admin)</li>
+                        <li>Implémenter LAPS pour les mots de passe admin locaux</li>
+                        <li>Activer la corbeille AD (restauration facile)</li>
+                        <li>Auditer les connexions et modifications</li>
+                        <li>Protéger les OUs contre suppression accidentelle</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <p><strong>Attention :</strong></p>
+                    <ul>
+                        <li>Ne jamais utiliser le compte Administrateur pour un usage quotidien</li>
+                        <li>Ne jamais supprimer le DC principal sans plan de migration</li>
+                        <li>Les GPO mal configurées peuvent bloquer l'accès au réseau</li>
+                        <li>Testez toujours les GPO sur une OU de test d'abord</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE POWERSHELL -->
+            <div id="powershell" class="module">
+                <h2>PowerShell - Automatisation Windows</h2>
+                
+                <h3>Qu'est-ce que PowerShell ?</h3>
+                <p>PowerShell est un shell en ligne de commande et un langage de script orienté objet développé par Microsoft pour l'automatisation et la gestion des systèmes Windows.</p>
+
+                <h3>Avantages de PowerShell</h3>
+                <ul>
+                    <li><strong>Orienté objet</strong> : Manipule des objets .NET, pas seulement du texte</li>
+                    <li><strong>Cmdlets</strong> : Commandes puissantes (Verb-Noun)</li>
+                    <li><strong>Pipeline</strong> : Enchaîner les commandes efficacement</li>
+                    <li><strong>Cross-platform</strong> : PowerShell Core fonctionne sur Linux/Mac</li>
+                    <li><strong>Intégration</strong> : Accès à .NET, WMI, COM, etc.</li>
+                </ul>
+
+                <h3>Commandes de base</h3>
+                <div class="code">
+# Aide
+Get-Help Get-Process
+Get-Help Get-Process -Examples
+Get-Help Get-Process -Full
+
+# Lister les cmdlets disponibles
+Get-Command
+Get-Command *Process*
+Get-Command -Verb Get
+Get-Command -Noun Service
+
+# Alias (raccourcis)
+Get-Alias
+Get-Alias -Definition Get-ChildItem  # ls, dir, gci
+
+# Variables
+$nom = "Thomas"
+$age = 30
+$serveur = "SRV-DC01"
+Write-Host "Bonjour $nom, vous avez $age ans"
+
+# Tableaux
+$servers = @("SRV01", "SRV02", "SRV03")
+$servers[0]                          # Premier élément
+$servers.Count                       # Nombre d'éléments
+
+# Hashtables (dictionnaires)
+$user = @{
+    Name = "Thomas"
+    Role = "Admin"
+    Department = "IT"
+}
+$user.Name                           # Accès par clé
+                </div>
+
+                <h3>Gestion des fichiers</h3>
+                <div class="code">
+# Navigation
+Get-Location                         # pwd
+Set-Location C:\Users                # cd
+Set-Location ..                      # Remonter
+
+# Lister fichiers
+Get-ChildItem                        # ls, dir
+Get-ChildItem -Path C:\Windows
+Get-ChildItem -Recurse               # Récursif
+Get-ChildItem -Filter *.txt          # Filtrer
+Get-ChildItem -File                  # Fichiers seulement
+Get-ChildItem -Directory             # Dossiers seulement
+
+# Créer
+New-Item -ItemType Directory -Path "C:\Test"
+New-Item -ItemType File -Path "C:\Test\fichier.txt"
+
+# Copier
+Copy-Item -Path "fichier.txt" -Destination "copie.txt"
+Copy-Item -Path "C:\Source\*" -Destination "C:\Dest" -Recurse
+
+# Déplacer/Renommer
+Move-Item -Path "ancien.txt" -Destination "nouveau.txt"
+Rename-Item -Path "fichier.txt" -NewName "document.txt"
+
+# Supprimer
+Remove-Item -Path "fichier.txt"
+Remove-Item -Path "C:\Dossier" -Recurse -Force
+
+# Lire contenu
+Get-Content -Path "fichier.txt"
+Get-Content -Path "log.txt" -Tail 10     # 10 dernières lignes
+
+# Écrire contenu
+Set-Content -Path "fichier.txt" -Value "Contenu"
+Add-Content -Path "log.txt" -Value "Nouvelle ligne"
+                </div>
+
+                <h3>Pipeline et filtres</h3>
+                <div class="code">
+# Le pipeline (|) passe des objets entre commandes
+
+# Exemple 1 : Processus utilisant le plus de mémoire
+Get-Process | Sort-Object -Property WorkingSet -Descending | Select-Object -First 10
+
+# Exemple 2 : Services arrêtés
+Get-Service | Where-Object {$_.Status -eq "Stopped"} | Select-Object Name,Status
+
+# Exemple 3 : Fichiers de plus de 100 MB
+Get-ChildItem -Recurse | Where-Object {$_.Length -gt 100MB} | Select-Object Name,Length
+
+# Where-Object (filtrer)
+Get-Service | Where-Object {$_.Status -eq "Running"}
+Get-Process | Where-Object {$_.CPU -gt 10}
+
+# Select-Object (sélectionner propriétés)
+Get-Process | Select-Object Name,CPU,WorkingSet
+Get-Service | Select-Object -First 5
+
+# Sort-Object (trier)
+Get-ChildItem | Sort-Object -Property Length -Descending
+Get-Process | Sort-Object -Property CPU
+
+# ForEach-Object (itérer)
+Get-ChildItem *.txt | ForEach-Object { $_.Name.ToUpper() }
+1..10 | ForEach-Object { Write-Host "Nombre : $_" }
+
+# Measure-Object (mesurer)
+Get-ChildItem | Measure-Object -Property Length -Sum -Average
+Get-Process | Measure-Object -Property WorkingSet -Sum
+                </div>
+
+                <h3>Gestion des services</h3>
+                <div class="code">
+# Lister les services
+Get-Service
+Get-Service | Where-Object {$_.Status -eq "Running"}
+
+# Détails d'un service
+Get-Service -Name "W3SVC"
+
+# Démarrer un service
+Start-Service -Name "W3SVC"
+
+# Arrêter un service
+Stop-Service -Name "W3SVC"
+
+# Redémarrer un service
+Restart-Service -Name "W3SVC"
+
+# Définir le démarrage automatique
+Set-Service -Name "W3SVC" -StartupType Automatic
+
+# Créer un service
+New-Service -Name "MonService" `
+    -BinaryPathName "C:\App\service.exe" `
+    -DisplayName "Mon Service" `
+    -StartupType Automatic
+                </div>
+
+                <h3>Gestion des processus</h3>
+                <div class="code">
+# Lister les processus
+Get-Process
+Get-Process -Name "chrome"
+
+# Trier par utilisation CPU
+Get-Process | Sort-Object -Property CPU -Descending | Select-Object -First 10
+
+# Trier par mémoire
+Get-Process | Sort-Object -Property WorkingSet -Descending | Select-Object -First 10
+
+# Démarrer un processus
+Start-Process notepad.exe
+Start-Process "https://google.com"     # Ouvre le navigateur
+
+# Arrêter un processus
+Stop-Process -Name "notepad"
+Stop-Process -Id 1234
+Get-Process chrome | Stop-Process      # Tous les Chrome
+                </div>
+
+                <h3>Informations système</h3>
+                <div class="code">
+# Informations ordinateur
+Get-ComputerInfo
+
+# Système d'exploitation
+Get-CimInstance -ClassName Win32_OperatingSystem
+
+# Processeur
+Get-CimInstance -ClassName Win32_Processor
+
+# Mémoire
+Get-CimInstance -ClassName Win32_PhysicalMemory
+
+# Disques
+Get-CimInstance -ClassName Win32_LogicalDisk
+
+# Réseau
+Get-NetIPAddress
+Get-NetIPConfiguration
+
+# Événements
+Get-EventLog -LogName System -Newest 10
+Get-WinEvent -LogName Application -MaxEvents 20
+                </div>
+
+                <h3>Structures de contrôle</h3>
+                <div class="code">
+# If / Else
+$nombre = 10
+if ($nombre -gt 5) {
+    Write-Host "Supérieur à 5"
+} elseif ($nombre -eq 5) {
+    Write-Host "Égal à 5"
+} else {
+    Write-Host "Inférieur à 5"
+}
+
+# Switch
+$jour = "Lundi"
+switch ($jour) {
+    "Lundi" { Write-Host "Début de semaine" }
+    "Vendredi" { Write-Host "Bientôt le weekend" }
+    Default { Write-Host "Jour normal" }
+}
+
+# For
+for ($i = 1; $i -le 10; $i++) {
+    Write-Host "Nombre : $i"
+}
+
+# ForEach
+$serveurs = @("SRV01", "SRV02", "SRV03")
+foreach ($serveur in $serveurs) {
+    Write-Host "Vérification de $serveur"
+    Test-Connection -ComputerName $serveur -Count 1 -Quiet
+}
+
+# While
+$compteur = 0
+while ($compteur -lt 5) {
+    Write-Host "Compteur : $compteur"
+    $compteur++
+}
+
+# Do...While
+do {
+    $reponse = Read-Host "Continuer ? (O/N)"
+} while ($reponse -ne "N")
+                </div>
+
+                <h3>Fonctions</h3>
+                <div class="code">
+# Fonction simple
+function Get-Greeting {
+    param (
+        [string]$Name
+    )
+    Write-Host "Bonjour $Name !"
+}
+Get-Greeting -Name "Thomas"
+
+# Fonction avec retour
+function Get-Square {
+    param (
+        [int]$Number
+    )
+    return $Number * $Number
+}
+$resultat = Get-Square -Number 5
+
+# Fonction avancée
+function Get-DiskSpace {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$ComputerName
+    )
+    
+    Get-CimInstance -ClassName Win32_LogicalDisk `
+        -ComputerName $ComputerName `
+        -Filter "DriveType=3" |
+        Select-Object DeviceID, 
+                      @{Name="Size(GB)";Expression={[math]::Round($_.Size/1GB,2)}},
+                      @{Name="Free(GB)";Expression={[math]::Round($_.FreeSpace/1GB,2)}}
+}
+Get-DiskSpace -ComputerName "localhost"
+                </div>
+
+                <h3>Scripts PowerShell</h3>
+                <div class="example">
+                    <h4>Backup automatique</h4>
+                    <div class="code">
+# backup-files.ps1
+param (
+    [string]$SourcePath = "C:\Data",
+    [string]$DestPath = "D:\Backups"
+)
+
+$date = Get-Date -Format "yyyy-MM-dd_HHmm"
+$backupFolder = "$DestPath\Backup_$date"
+
+Write-Host "Démarrage du backup..." -ForegroundColor Green
+New-Item -ItemType Directory -Path $backupFolder -Force | Out-Null
+
+Copy-Item -Path "$SourcePath\*" -Destination $backupFolder -Recurse -Force
+
+Write-Host "Backup terminé : $backupFolder" -ForegroundColor Green
+
+# Lancement
+.\backup-files.ps1 -SourcePath "C:\Important" -DestPath "E:\Backups"
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Rapport de services</h4>
+                    <div class="code">
+# service-report.ps1
+$services = Get-Service | Where-Object {$_.Status -eq "Stopped"}
+
+$rapport = @"
+RAPPORT DES SERVICES ARRÊTÉS
+Date: $(Get-Date)
+Nombre de services arrêtés: $($services.Count)
+
+Liste des services:
+$($services | Format-Table Name, DisplayName -AutoSize | Out-String)
+"@
+
+$rapport | Out-File "C:\Reports\Services_$(Get-Date -Format 'yyyy-MM-dd').txt"
+Write-Host "Rapport généré avec succès" -ForegroundColor Green
+                    </div>
+                </div>
+
+                <h3> Gestion à distance</h3>
+                <div class="code">
+# Activer WinRM (Windows Remote Management)
+Enable-PSRemoting -Force
+
+# Se connecter à un serveur distant
+Enter-PSSession -ComputerName "SRV-WEB01"
+
+# Exécuter une commande à distance
+Invoke-Command -ComputerName "SRV-WEB01" -ScriptBlock {
+    Get-Service | Where-Object {$_.Status -eq "Running"}
+}
+
+# Sur plusieurs serveurs
+$serveurs = @("SRV01", "SRV02", "SRV03")
+Invoke-Command -ComputerName $serveurs -ScriptBlock {
+    Get-Process | Sort-Object CPU -Descending | Select-Object -First 5
+}
+
+# Copier un fichier vers serveur distant
+Copy-Item -Path "C:\script.ps1" -Destination "\\SRV01\C$\Scripts\" -Force
+                </div>
+
+                <div class="success">
+                    <p><strong> Bonnes pratiques :</strong></p>
+                    <ul>
+                        <li>Utilisez des noms de variables explicites ($serverName, pas $s)</li>
+                        <li>Commentez vos scripts</li>
+                        <li>Gérez les erreurs avec Try/Catch</li>
+                        <li>Testez dans un environnement de dev d'abord</li>
+                        <li>Utilisez -WhatIf pour simuler les changements</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE RÉSEAUX -->
+            <div id="reseaux" class="module">
+                <h2>Fondamentaux des Réseaux TCP/IP</h2>
+                
+                <h3> Le modèle OSI (7 couches)</h3>
+                <table>
+                    <tr>
+                        <th>Couche</th>
+                        <th>Nom</th>
+                        <th>Fonction</th>
+                        <th>Exemples</th>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Application</td>
+                        <td>Interface utilisateur</td>
+                        <td>HTTP, FTP, SMTP, DNS</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Présentation</td>
+                        <td>Formatage, chiffrement</td>
+                        <td>SSL/TLS, JPEG, ASCII</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Session</td>
+                        <td>Gestion des sessions</td>
+                        <td>NetBIOS, RPC</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Transport</td>
+                        <td>Communication bout-en-bout</td>
+                        <td>TCP, UDP</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Réseau</td>
+                        <td>Routage, adressage logique</td>
+                        <td>IP, ICMP, ARP</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Liaison</td>
+                        <td>Adressage physique, trames</td>
+                        <td>Ethernet, WiFi, Switch</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Physique</td>
+                        <td>Transmission binaire</td>
+                        <td>Câbles, Hub, signaux</td>
+                    </tr>
+                </table>
+
+                <h3> Modèle TCP/IP (4 couches)</h3>
+                <div class="example">
+                    <table>
+                        <tr>
+                            <th>Couche TCP/IP</th>
+                            <th>Équivalent OSI</th>
+                            <th>Protocoles</th>
+                        </tr>
+                        <tr>
+                            <td>Application</td>
+                            <td>7, 6, 5</td>
+                            <td>HTTP, FTP, DNS, SMTP</td>
+                        </tr>
+                        <tr>
+                            <td>Transport</td>
+                            <td>4</td>
+                            <td>TCP, UDP</td>
+                        </tr>
+                        <tr>
+                            <td>Internet</td>
+                            <td>3</td>
+                            <td>IP, ICMP, ARP</td>
+                        </tr>
+                        <tr>
+                            <td>Accès réseau</td>
+                            <td>2, 1</td>
+                            <td>Ethernet, WiFi</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3> Adressage IPv4</h3>
+                <div class="example">
+                    <h4>Format d'une adresse IPv4</h4>
+                    <div class="code">
+# Format : 4 octets séparés par des points
+192.168.1.100
+
+# En binaire
+11000000.10101000.00000001.01100100
+
+# Plage : 0.0.0.0 à 255.255.255.255
+                    </div>
+                </div>
+
+                <h3>Classes d'adresses IPv4</h3>
+                <table>
+                    <tr>
+                        <th>Classe</th>
+                        <th>Plage</th>
+                        <th>Masque par défaut</th>
+                        <th>Usage</th>
+                    </tr>
+                    <tr>
+                        <td>A</td>
+                        <td>1.0.0.0 - 126.255.255.255</td>
+                        <td>255.0.0.0 (/8)</td>
+                        <td>Très grands réseaux</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>128.0.0.0 - 191.255.255.255</td>
+                        <td>255.255.0.0 (/16)</td>
+                        <td>Moyens réseaux</td>
+                    </tr>
+                    <tr>
+                        <td>C</td>
+                        <td>192.0.0.0 - 223.255.255.255</td>
+                        <td>255.255.255.0 (/24)</td>
+                        <td>Petits réseaux</td>
+                    </tr>
+                    <tr>
+                        <td>D</td>
+                        <td>224.0.0.0 - 239.255.255.255</td>
+                        <td>-</td>
+                        <td>Multicast</td>
+                    </tr>
+                    <tr>
+                        <td>E</td>
+                        <td>240.0.0.0 - 255.255.255.255</td>
+                        <td>-</td>
+                        <td>Expérimental</td>
+                    </tr>
+                </table>
+
+                <h3> Adresses privées (RFC 1918)</h3>
+                <div class="code">
+# Plages réservées pour réseaux privés (non routables sur Internet)
+
+Classe A : 10.0.0.0       - 10.255.255.255    (/8)
+Classe B : 172.16.0.0     - 172.31.255.255    (/12)
+Classe C : 192.168.0.0    - 192.168.255.255   (/16)
+
+# Adresses spéciales
+127.0.0.0/8    : Loopback (localhost)
+169.254.0.0/16 : APIPA (auto-configuration)
+0.0.0.0        : Toute interface
+255.255.255.255: Broadcast
+                </div>
+
+                <h3>Masques de sous-réseau (Subnet Mask)</h3>
+                <div class="example">
+                    <h4>Notation CIDR</h4>
+                    <div class="code">
+# Format : adresse/nombre_de_bits
+
+192.168.1.0/24
+# /24 = 255.255.255.0
+# 24 bits pour le réseau, 8 bits pour les hôtes
+# 2^8 - 2 = 254 hôtes utilisables
+
+192.168.1.0/25
+# /25 = 255.255.255.128
+# 2^7 - 2 = 126 hôtes utilisables
+
+192.168.1.0/26
+# /26 = 255.255.255.192
+# 2^6 - 2 = 62 hôtes utilisables
+                    </div>
+                </div>
+
+                <h3>Table de conversion CIDR</h3>
+                <table>
+                    <tr>
+                        <th>CIDR</th>
+                        <th>Masque</th>
+                        <th>Hôtes</th>
+                        <th>Usage courant</th>
+                    </tr>
+                    <tr>
+                        <td>/8</td>
+                        <td>255.0.0.0</td>
+                        <td>16 777 214</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>/16</td>
+                        <td>255.255.0.0</td>
+                        <td>65 534</td>
+                        <td>Grande entreprise</td>
+                    </tr>
+                    <tr>
+                        <td>/24</td>
+                        <td>255.255.255.0</td>
+                        <td>254</td>
+                        <td>LAN standard</td>
+                    </tr>
+                    <tr>
+                        <td>/25</td>
+                        <td>255.255.255.128</td>
+                        <td>126</td>
+                        <td>Petit bureau</td>
+                    </tr>
+                    <tr>
+                        <td>/26</td>
+                        <td>255.255.255.192</td>
+                        <td>62</td>
+                        <td>Petit réseau</td>
+                    </tr>
+                    <tr>
+                        <td>/27</td>
+                        <td>255.255.255.224</td>
+                        <td>30</td>
+                        <td>Très petit réseau</td>
+                    </tr>
+                    <tr>
+                        <td>/28</td>
+                        <td>255.255.255.240</td>
+                        <td>14</td>
+                        <td>Mini réseau</td>
+                    </tr>
+                    <tr>
+                        <td>/30</td>
+                        <td>255.255.255.252</td>
+                        <td>2</td>
+                        <td>Liaison point-à-point</td>
+                    </tr>
+                </table>
+
+                <h3>Calcul de sous-réseau</h3>
+                <div class="example">
+                    <h4>Exemple : 192.168.1.0/26</h4>
+                    <div class="code">
+# Informations
+Adresse réseau : 192.168.1.0
+Masque         : 255.255.255.192 (/26)
+Bits hôtes     : 6 (32 - 26)
+Nombre hôtes   : 2^6 - 2 = 62
+
+# Adresses spéciales
+Adresse réseau : 192.168.1.0   (première adresse)
+Passerelle     : 192.168.1.1   (généralement la première utilisable)
+Plage hôtes    : 192.168.1.1 - 192.168.1.62
+Broadcast      : 192.168.1.63  (dernière adresse)
+
+# Sous-réseaux suivants
+192.168.1.0/26   → .0   à .63
+192.168.1.64/26  → .64  à .127
+192.168.1.128/26 → .128 à .191
+192.168.1.192/26 → .192 à .255
+                    </div>
+                </div>
+
+                <h3>Protocoles couche Transport</h3>
+                <div class="example">
+                    <h4>TCP (Transmission Control Protocol)</h4>
+                    <ul>
+                        <li><strong>Fiable</strong> : Garantit la livraison des paquets</li>
+                        <li><strong>Orienté connexion</strong> : Établit une connexion (3-way handshake)</li>
+                        <li><strong>Contrôle de flux</strong> : Adapte le débit</li>
+                        <li><strong>Ordre garanti</strong> : Les données arrivent dans l'ordre</li>
+                        <li>Plus lent qu'UDP</li>
+                        <li><strong>Usage</strong> : HTTP, HTTPS, FTP, SSH, SMTP</li>
+                    </ul>
+
+                    <div class="code">
+# 3-Way Handshake TCP
+Client → Serveur : SYN (demande de connexion)
+Serveur → Client : SYN-ACK (acceptation)
+Client → Serveur : ACK (confirmation)
+→ Connexion établie
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>UDP (User Datagram Protocol)</h4>
+                    <ul>
+                        <li><strong>Rapide</strong> : Pas de vérification</li>
+                        <li><strong>Léger</strong> : Faible overhead</li>
+                        <li><strong>Non fiable</strong> : Pas de garantie de livraison</li>
+                        <li><strong>Sans connexion</strong> : Envoie directement</li>
+                        <li><strong>Pas d'ordre</strong> : Peut arriver dans le désordre</li>
+                        <li><strong>Usage</strong> : DNS, DHCP, streaming vidéo, jeux en ligne</li>
+                    </ul>
+                </div>
+
+                <h3>Ports réseau</h3>
+                <table>
+                    <tr>
+                        <th>Port</th>
+                        <th>Protocole</th>
+                        <th>Service</th>
+                    </tr>
+                    <tr>
+                        <td>20/21</td>
+                        <td>TCP</td>
+                        <td>FTP (File Transfer)</td>
+                    </tr>
+                    <tr>
+                        <td>22</td>
+                        <td>TCP</td>
+                        <td>SSH (Secure Shell)</td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td>TCP</td>
+                        <td>Telnet (non sécurisé)</td>
+                    </tr>
+                    <tr>
+                        <td>25</td>
+                        <td>TCP</td>
+                        <td>SMTP (envoi email)</td>
+                    </tr>
+                    <tr>
+                        <td>53</td>
+                        <td>TCP/UDP</td>
+                        <td>DNS</td>
+                    </tr>
+                    <tr>
+                        <td>67/68</td>
+                        <td>UDP</td>
+                        <td>DHCP</td>
+                    </tr>
+                    <tr>
+                        <td>80</td>
+                        <td>TCP</td>
+                        <td>HTTP</td>
+                    </tr>
+                    <tr>
+                        <td>110</td>
+                        <td>TCP</td>
+                        <td>POP3 (réception email)</td>
+                    </tr>
+                    <tr>
+                        <td>143</td>
+                        <td>TCP</td>
+                        <td>IMAP (réception email)</td>
+                    </tr>
+                    <tr>
+                        <td>443</td>
+                        <td>TCP</td>
+                        <td>HTTPS (HTTP sécurisé)</td>
+                    </tr>
+                    <tr>
+                        <td>3306</td>
+                        <td>TCP</td>
+                        <td>MySQL</td>
+                    </tr>
+                    <tr>
+                        <td>3389</td>
+                        <td>TCP</td>
+                        <td>RDP (Remote Desktop)</td>
+                    </tr>
+                    <tr>
+                        <td>5432</td>
+                        <td>TCP</td>
+                        <td>PostgreSQL</td>
+                    </tr>
+                </table>
+
+                <h3>Commandes de diagnostic réseau</h3>
+                <div class="code">
+# Linux
+# Afficher configuration réseau
+ip addr show
+ifconfig                           # Ancien
+
+# Ping (test connectivité)
+ping 8.8.8.8                      # Google DNS
+ping -c 4 google.com              # 4 paquets seulement
+
+# Traceroute (chemin des paquets)
+traceroute google.com
+tracepath google.com              # Alternative
+
+# DNS lookup
+nslookup google.com
+dig google.com                    # Plus détaillé
+host google.com
+
+# Ports ouverts
+netstat -tuln                     # Ancien
+ss -tuln                          # Moderne
+ss -tlnp                          # Avec processus
+
+# Table de routage
+ip route show
+route -n                          # Ancien
+
+# ARP (adresses MAC)
+ip neigh show
+arp -a                            # Ancien
+
+# Test de port spécifique
+telnet google.com 80
+nc -zv google.com 80              # Netcat
+
+# Capture réseau
+tcpdump -i eth0                   # Interface eth0
+tcpdump -i eth0 port 80           # Port 80 seulement
+                </div>
+
+                <div class="code">
+# Windows
+# Configuration réseau
+ipconfig
+ipconfig /all                     # Détails complets
+
+# Ping
+ping 8.8.8.8
+ping -n 4 google.com              # 4 paquets
+
+# Traceroute
+tracert google.com
+
+# DNS
+nslookup google.com
+ipconfig /displaydns              # Cache DNS
+ipconfig /flushdns                # Vider cache DNS
+
+# Ports et connexions
+netstat -ano                      # Tous les ports
+netstat -ano | findstr :80        # Port 80
+
+# Table de routage
+route print
+
+# ARP
+arp -a
+
+# Test de port
+Test-NetConnection google.com -Port 443
+
+# Statistiques réseau
+netstat -s
+                </div>
+
+                <h3>IPv6 - Aperçu</h3>
+                <div class="example">
+                    <div class="code">
+# Format IPv6 (128 bits, 8 groupes de 4 chiffres hexa)
+2001:0db8:85a3:0000:0000:8a2e:0370:7334
+
+# Simplification (suppression des 0)
+2001:db8:85a3::8a2e:370:7334
+
+# Types d'adresses
+::1                               # Loopback (équivalent 127.0.0.1)
+fe80::/10                         # Link-local (équivalent 169.254.x.x)
+2000::/3                          # Global unicast (routables)
+ff00::/8                          # Multicast
+
+# Avantages IPv6
+- Espace d'adressage quasi-illimité (3.4×10^38)
+- Plus besoin de NAT
+- Configuration automatique (SLAAC)
+- Sécurité intégrée (IPsec obligatoire)
+                    </div>
+                </div>
+
+                <div class="note">
+                    <p><strong>Astuce réseau :</strong> Pour retenir le modèle OSI, utilisez le moyen mnémotechnique : <strong>"Ah, Peu Se Tromper, Rarement Le Physicien"</strong> (Application, Présentation, Session, Transport, Réseau, Liaison, Physique)</p>
+                </div>
+            </div>
+
+            <!-- MODULE PROTOCOLES -->
+            <div id="protocoles" class="module">
+                <h2>Protocoles réseau essentiels</h2>
+                
+                <h3>DNS (Domain Name System)</h3>
+                <p>Le DNS traduit les noms de domaine (google.com) en adresses IP (142.250.74.78).</p>
+
+                <div class="example">
+                    <h4>Hiérarchie DNS</h4>
+                    <div class="code">
+.                                  # Racine
+├── com.                          # TLD (Top Level Domain)
+│   ├── google.com.              # Domaine
+│   │   ├── www.google.com.     # Sous-domaine
+│   │   └── mail.google.com.
+│   └── facebook.com.
+├── fr.
+│   └── google.fr.
+└── org.
+    └── wikipedia.org.
+                    </div>
+                </div>
+
+                <h3>Types d'enregistrements DNS</h3>
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Exemple</th>
+                    </tr>
+                    <tr>
+                        <td>A</td>
+                        <td>IPv4 address</td>
+                        <td>example.com → 93.184.216.34</td>
+                    </tr>
+                    <tr>
+                        <td>AAAA</td>
+                        <td>IPv6 address</td>
+                        <td>example.com → 2606:2800:220:1::</td>
+                    </tr>
+                    <tr>
+                        <td>CNAME</td>
+                        <td>Alias (canonical name)</td>
+                        <td>www → example.com</td>
+                    </tr>
+                    <tr>
+                        <td>MX</td>
+                        <td>Mail exchange</td>
+                        <td>mail.example.com (priorité 10)</td>
+                    </tr>
+                    <tr>
+                        <td>TXT</td>
+                        <td>Texte (SPF, DKIM, etc.)</td>
+                        <td>"v=spf1 include:_spf.google.com"</td>
+                    </tr>
+                    <tr>
+                        <td>NS</td>
+                        <td>Name server</td>
+                        <td>ns1.example.com</td>
+                    </tr>
+                    <tr>
+                        <td>PTR</td>
+                        <td>Reverse DNS (IP → nom)</td>
+                        <td>34.216.184.93.in-addr.arpa</td>
+                    </tr>
+                </table>
+
+                <div class="code">
+# Linux - Interroger DNS
+dig google.com                    # Requête A
+dig google.com AAAA              # IPv6
+dig google.com MX                # Serveurs mail
+dig google.com ANY               # Tous les enregistrements
+dig @8.8.8.8 google.com          # Serveur DNS spécifique
+
+nslookup google.com              # Alternative
+host google.com                  # Simple
+
+# Windows
+nslookup google.com
+nslookup -type=MX google.com
+                </div>
+
+                <h3>DHCP (Dynamic Host Configuration Protocol)</h3>
+                <p>DHCP attribue automatiquement des adresses IP et configurations réseau aux clients.</p>
+
+                <div class="example">
+                    <h4>Processus DORA</h4>
+                    <div class="code">
+1. DISCOVER : Client diffuse "Qui peut me donner une IP ?"
+2. OFFER    : Serveur DHCP propose une IP
+3. REQUEST  : Client demande officiellement cette IP
+4. ACK      : Serveur confirme l'attribution
+
+# Informations fournies par DHCP
+- Adresse IP
+- Masque de sous-réseau
+- Passerelle par défaut (gateway)
+- Serveurs DNS
+- Durée du bail (lease time)
+                    </div>
+                </div>
+
+                <div class="code">
+# Linux - Renouveler le bail DHCP
+sudo dhclient -r                 # Release
+sudo dhclient                    # Renew
+
+# Voir le bail actuel
+cat /var/lib/dhcp/dhclient.leases
+
+# Windows
+ipconfig /release                # Libérer
+ipconfig /renew                  # Renouveler
+ipconfig /all                    # Voir config DHCP
+                </div>
+
+                <h3>SMTP, POP3, IMAP (Email)</h3>
+                <div class="example">
+                    <h4>SMTP (Simple Mail Transfer Protocol) - Port 25, 587</h4>
+                    <ul>
+                        <li><strong>Fonction</strong> : Envoi d'emails</li>
+                        <li><strong>Port 25</strong> : Serveur à serveur</li>
+                        <li><strong>Port 587</strong> : Client à serveur (avec authentification)</li>
+                        <li><strong>Port 465</strong> : SMTPS (SSL/TLS)</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>POP3 (Post Office Protocol) - Port 110, 995</h4>
+                    <ul>
+                        <li><strong>Fonction</strong> : Réception d'emails (téléchargement)</li>
+                        <li>Télécharge et supprime du serveur</li>
+                        <li>Un seul appareil principalement</li>
+                        <li><strong>Port 995</strong> : POP3S (SSL/TLS)</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>IMAP (Internet Message Access Protocol) - Port 143, 993</h4>
+                    <ul>
+                        <li><strong>Fonction</strong> : Réception d'emails (synchronisation)</li>
+                        <li>Emails restent sur le serveur</li>
+                        <li>Multi-appareils (sync)</li>
+                        <li>Dossiers, flags, recherche côté serveur</li>
+                        <li><strong>Port 993</strong> : IMAPS (SSL/TLS)</li>
+                    </ul>
+                </div>
+
+                <h3>FTP, SFTP, FTPS (Transfert fichiers)</h3>
+                <table>
+                    <tr>
+                        <th>Protocole</th>
+                        <th>Port</th>
+                        <th>Sécurité</th>
+                        <th>Usage</th>
+                    </tr>
+                    <tr>
+                        <td>FTP</td>
+                        <td>20, 21</td>
+                        <td> Non chiffré</td>
+                        <td>À éviter</td>
+                    </tr>
+                    <tr>
+                        <td>FTPS</td>
+                        <td>21, 990</td>
+                        <td> SSL/TLS</td>
+                        <td>FTP sécurisé</td>
+                    </tr>
+                    <tr>
+                        <td>SFTP</td>
+                        <td>22</td>
+                        <td>SSH</td>
+                        <td>Recommandé</td>
+                    </tr>
+                </table>
+
+                <div class="code">
+# FTP (non sécurisé - à éviter)
+ftp ftp.example.com
+
+# SFTP (recommandé)
+sftp <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="720701170032170a131f021e175c111d1f">[email&#160;protected]</a>
+sftp> put fichier.txt            # Upload
+sftp> get fichier.txt            # Download
+sftp> ls                         # Lister
+sftp> exit                       # Quitter
+
+# SCP (copie via SSH)
+scp fichier.txt user@serveur:/home/user/
+scp -r dossier/ user@serveur:/home/user/
+                </div>
+
+                <h3>HTTP/HTTPS</h3>
+                <div class="example">
+                    <h4>HTTP (HyperText Transfer Protocol) - Port 80</h4>
+                    <ul>
+                        <li>Protocole du Web</li>
+                        <li>Non chiffré (éviter)</li>
+                        <li>Méthodes : GET, POST, PUT, DELETE, etc.</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>HTTPS (HTTP Secure) - Port 443</h4>
+                    <ul>
+                        <li>HTTP + SSL/TLS (chiffré)</li>
+                        <li>Certificat SSL requis</li>
+                        <li>Obligatoire aujourd'hui</li>
+                    </ul>
+
+                    <div class="code">
+# Requête HTTP avec curl
+curl http://example.com
+curl -I https://google.com       # Headers seulement
+curl -X POST https://api.com/data -d '{"key":"value"}'
+
+# Tester un certificat SSL
+openssl s_client -connect google.com:443
+                    </div>
+                </div>
+
+                <h3>ICMP (Internet Control Message Protocol)</h3>
+                <p>ICMP est utilisé pour les diagnostics réseau et messages d'erreur.</p>
+
+                <div class="code">
+# Ping utilise ICMP
+ping google.com
+
+# Traceroute utilise ICMP (ou UDP)
+traceroute google.com
+
+# Types de messages ICMP
+Type 0  : Echo Reply (réponse ping)
+Type 3  : Destination Unreachable
+Type 5  : Redirect
+Type 8  : Echo Request (ping)
+Type 11 : Time Exceeded (traceroute)
+                </div>
+
+                <h3>ARP (Address Resolution Protocol)</h3>
+                <p>ARP traduit les adresses IP en adresses MAC (physiques).</p>
+
+                <div class="code">
+# Afficher la table ARP
+# Linux
+ip neigh show
+arp -a
+
+# Windows
+arp -a
+
+# Vider le cache ARP
+# Linux
+sudo ip neigh flush all
+
+# Windows
+arp -d
+
+# Exemple de résolution ARP
+PC veut communiquer avec 192.168.1.100
+1. PC broadcast : "Qui a 192.168.1.100 ?"
+2. Machine 192.168.1.100 répond : "C'est moi, MAC = aa:bb:cc:dd:ee:ff"
+3. PC enregistre dans sa table ARP
+4. Communication directe via MAC
+                </div>
+
+                <h3>NAT (Network Address Translation)</h3>
+                <p>NAT traduit les adresses IP privées en adresses publiques pour accéder à Internet.</p>
+
+                <div class="example">
+                    <div class="code">
+# Scénario typique
+Réseau local : 192.168.1.0/24 (privé)
+Routeur WAN  : 203.0.113.10 (public)
+
+PC1 (192.168.1.100) → Internet
+├─> Routeur traduit 192.168.1.100:54321 → 203.0.113.10:54321
+└─> Internet voit 203.0.113.10:54321
+
+# Types de NAT
+- SNAT (Source NAT) : Modifie l'IP source (sortie Internet)
+- DNAT (Destination NAT) : Modifie l'IP destination (port forwarding)
+- PAT (Port Address Translation) : NAT avec ports (le plus courant)
+                    </div>
+                </div>
+
+                <div class="note">
+                    <p><strong>Port Forwarding :</strong> Permet d'accéder à un serveur local depuis Internet en redirigeant un port public vers un port privé.</p>
+                    <div class="code">
+Exemple : Serveur web local
+Internet (port 80) → Routeur → PC local (192.168.1.50:8080)
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE SÉCURITÉ RÉSEAU -->
+            <div id="securite-reseau" class="module">
+                <h2>Sécurité réseau</h2>
+                
+                <h3>Principes de sécurité réseau</h3>
+                <div class="example">
+                    <ul>
+                        <li><strong>CIA Triad</strong> :
+                            <ul>
+                                <li><strong>Confidentialité</strong> : Seules les personnes autorisées accèdent aux données</li>
+                                <li><strong>Intégrité</strong> : Les données ne sont pas modifiées</li>
+                                <li><strong>Disponibilité</strong> : Les services sont accessibles</li>
+                            </ul>
+                        </li>
+                        <li><strong>Défense en profondeur</strong> : Plusieurs couches de sécurité</li>
+                        <li><strong>Principe du moindre privilège</strong> : Accès minimal nécessaire</li>
+                        <li><strong>Segmentation réseau</strong> : Isoler les zones sensibles</li>
+                    </ul>
+                </div>
+
+                <h3>Types d'attaques réseau</h3>
+                <table>
+                    <tr>
+                        <th>Attaque</th>
+                        <th>Description</th>
+                        <th>Protection</th>
+                    </tr>
+                    <tr>
+                        <td><strong>DDoS</strong></td>
+                        <td>Saturation de ressources</td>
+                        <td>Firewall, CDN, limitation débit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Man-in-the-Middle</strong></td>
+                        <td>Interception communications</td>
+                        <td>HTTPS, VPN, certificats</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ARP Spoofing</strong></td>
+                        <td>Usurpation d'adresse MAC</td>
+                        <td>ARP statique, port security</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Port Scanning</strong></td>
+                        <td>Reconnaissance des services</td>
+                        <td>Firewall, IDS/IPS</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DNS Spoofing</strong></td>
+                        <td>Falsification réponses DNS</td>
+                        <td>DNSSEC, serveurs DNS fiables</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Packet Sniffing</strong></td>
+                        <td>Capture de paquets réseau</td>
+                        <td>Chiffrement (TLS/SSL)</td>
+                    </tr>
+                </table>
+
+                <h3>Segmentation réseau (VLANs)</h3>
+                <p>Les VLANs permettent de créer des réseaux logiques séparés sur la même infrastructure physique.</p>
+
+                <div class="example">
+                    <div class="code">
+# Exemple d'architecture VLAN
+VLAN 10 : Management (192.168.10.0/24)
+VLAN 20 : Serveurs (192.168.20.0/24)
+VLAN 30 : Utilisateurs (192.168.30.0/24)
+VLAN 40 : Invités (192.168.40.0/24)
+VLAN 50 : VoIP (192.168.50.0/24)
+
+# Avantages
+Isolation du trafic
+Sécurité renforcée
+Meilleure performance
+Gestion simplifiée
+                    </div>
+                </div>
+
+                <h3>Chiffrement réseau</h3>
+                <div class="example">
+                    <h4>SSL/TLS (Secure Sockets Layer / Transport Layer Security)</h4>
+                    <ul>
+                        <li>Chiffre les communications HTTP → HTTPS</li>
+                        <li>Certificats délivrés par CA (Certificate Authority)</li>
+                        <li>TLS 1.2 et 1.3 recommandés (SSL obsolète)</li>
+                    </ul>
+
+                    <div class="code">
+# Générer un certificat auto-signé (test)
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout server.key -out server.crt
+
+# Vérifier un certificat
+openssl x509 -in server.crt -text -noout
+
+# Tester une connexion SSL
+openssl s_client -connect google.com:443 -servername google.com
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>IPsec (Internet Protocol Security)</h4>
+                    <ul>
+                        <li>Chiffrement au niveau IP (couche 3)</li>
+                        <li>Utilisé pour les VPNs site-to-site</li>
+                        <li>Modes : Transport (données) et Tunnel (données + en-tête IP)</li>
+                    </ul>
+                </div>
+
+                <h3>IDS/IPS (Intrusion Detection/Prevention System)</h3>
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Fonction</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr>
+                        <td><strong>IDS</strong></td>
+                        <td>Détecte les intrusions</td>
+                        <td>Alerte seulement</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IPS</strong></td>
+                        <td>Détecte + bloque</td>
+                        <td>Bloque automatiquement</td>
+                    </tr>
+                </table>
+
+                <div class="code">
+# Snort (IDS/IPS populaire)
+# Installation Ubuntu
+sudo apt install snort
+
+# Lancer Snort en mode IDS
+sudo snort -A console -q -c /etc/snort/snort.conf -i eth0
+
+# Règle Snort exemple
+alert tcp any any -> 192.168.1.0/24 22 (msg:"SSH Connection Attempt"; sid:1000001;)
+                </div>
+
+                <h3>Audit de sécurité réseau</h3>
+                <div class="code">
+# Nmap - Scanner de ports (légal sur vos propres réseaux seulement!)
+sudo apt install nmap
+
+# Scan basique
+nmap 192.168.1.1
+
+# Scan intensif
+nmap -A 192.168.1.1              # OS detection, version, scripts
+nmap -p- 192.168.1.1             # Tous les ports
+nmap -sV 192.168.1.1             # Détection de versions
+
+# Scan réseau complet
+nmap 192.168.1.0/24              # Tout le sous-réseau
+
+# Scan furtif
+nmap -sS 192.168.1.1             # SYN scan
+
+# Scripts NSE
+nmap --script vuln 192.168.1.1   # Vulnérabilités
+                </div>
+
+                <div class="warning">
+                    <p><strong>ATTENTION :</strong> Le scan de ports de réseaux dont vous n'êtes pas propriétaire est illégal dans de nombreux pays. Utilisez Nmap uniquement sur vos propres systèmes ou avec autorisation écrite.</p>
+                </div>
+
+                <h3>Bonnes pratiques sécurité réseau</h3>
+                <div class="success">
+                    <ul>
+                        <li>Segmenter le réseau en VLANs</li>
+                        <li>Chiffrer toutes les communications (TLS/SSL)</li>
+                        <li>Changer les mots de passe par défaut</li>
+                        <li>Désactiver les services inutiles</li>
+                        <li>Mettre à jour régulièrement (firmware, OS)</li>
+                        <li>Surveiller les logs (SIEM)</li>
+                        <li>Implémenter un pare-feu efficace</li>
+                        <li>Utiliser l'authentification forte (2FA)</li>
+                        <li>Sauvegarder régulièrement les configurations</li>
+                        <li>Former les utilisateurs (phishing, social engineering)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE VIRTUALISATION -->
+            <div id="virtualisation" class="module">
+                <h2>Virtualisation et Hyperviseurs</h2>
+                
+                <h3>Qu'est-ce que la virtualisation ?</h3>
+                <p>La virtualisation permet de faire fonctionner plusieurs systèmes d'exploitation (machines virtuelles) sur une seule machine physique, en partageant ses ressources matérielles.</p>
+
+                <h3>Avantages de la virtualisation</h3>
+                <ul>
+                    <li><strong>Consolidation</strong> : Moins de serveurs physiques</li>
+                    <li><strong>Isolation</strong> : Les VMs sont indépendantes</li>
+                    <li><strong>Économies</strong> : Réduction coûts matériel et énergie</li>
+                    <li><strong>Flexibilité</strong> : Créer/supprimer des VMs facilement</li>
+                    <li><strong>Snapshots</strong> : Sauvegardes instantanées</li>
+                    <li><strong>Migration</strong> : Déplacer des VMs entre hôtes</li>
+                    <li><strong>Tests</strong> : Environnements de dev/test isolés</li>
+                </ul>
+
+                <h3>Types d'hyperviseurs</h3>
+                <div class="example">
+                    <h4>Type 1 - Bare Metal (sur le matériel directement)</h4>
+                    <table>
+                        <tr>
+                            <th>Hyperviseur</th>
+                            <th>Éditeur</th>
+                            <th>Usage</th>
+                        </tr>
+                        <tr>
+                            <td>VMware ESXi</td>
+                            <td>VMware (Broadcom)</td>
+                            <td>Production, entreprise</td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft Hyper-V</td>
+                            <td>Microsoft</td>
+                            <td>Environnements Windows</td>
+                        </tr>
+                        <tr>
+                            <td>Proxmox VE</td>
+                            <td>Open Source</td>
+                            <td>Alternative gratuite</td>
+                        </tr>
+                        <tr>
+                            <td>KVM</td>
+                            <td>Linux/Open Source</td>
+                            <td>Cloud, Linux natif</td>
+                        </tr>
+                        <tr>
+                            <td>Xen</td>
+                            <td>Open Source</td>
+                            <td>AWS, cloud providers</td>
+                        </tr>
+                    </table>
+                    <p><strong>Avantages</strong> : Meilleures performances, accès direct au matériel</p>
+                </div>
+
+                <div class="example">
+                    <h4>Type 2 - Hosted (sur un OS existant)</h4>
+                    <table>
+                        <tr>
+                            <th>Hyperviseur</th>
+                            <th>Éditeur</th>
+                            <th>Usage</th>
+                        </tr>
+                        <tr>
+                            <td>VMware Workstation</td>
+                            <td>VMware</td>
+                            <td>Dev, tests (payant)</td>
+                        </tr>
+                        <tr>
+                            <td>VirtualBox</td>
+                            <td>Oracle (Open Source)</td>
+                            <td>Dev, tests (gratuit)</td>
+                        </tr>
+                        <tr>
+                            <td>Parallels Desktop</td>
+                            <td>Parallels</td>
+                            <td>macOS (payant)</td>
+                        </tr>
+                        <tr>
+                            <td>QEMU</td>
+                            <td>Open Source</td>
+                            <td>Émulation, tests</td>
+                        </tr>
+                    </table>
+                    <p><strong>Avantages</strong> : Facile à installer, gratuits, bons pour le dev</p>
+                </div>
+
+                <h3>VirtualBox - Pratique</h3>
+                <div class="code">
+# Installation Ubuntu
+sudo apt install virtualbox virtualbox-ext-pack
+
+# Créer une VM en ligne de commande
+VBoxManage createvm --name "Ubuntu-Server" --ostype "Ubuntu_64" --register
+
+# Configurer la RAM (4 GB)
+VBoxManage modifyvm "Ubuntu-Server" --memory 4096
+
+# Créer un disque virtuel (50 GB)
+VBoxManage createhd --filename "Ubuntu-Server.vdi" --size 51200
+
+# Attacher le disque
+VBoxManage storagectl "Ubuntu-Server" --name "SATA Controller" --add sata
+VBoxManage storageattach "Ubuntu-Server" --storagectl "SATA Controller" \
+    --port 0 --device 0 --type hdd --medium "Ubuntu-Server.vdi"
+
+# Attacher l'ISO
+VBoxManage storageattach "Ubuntu-Server" --storagectl "SATA Controller" \
+    --port 1 --device 0 --type dvddrive --medium /path/to/ubuntu.iso
+
+# Démarrer la VM
+VBoxManage startvm "Ubuntu-Server"
+
+# Lister les VMs
+VBoxManage list vms
+VBoxManage list runningvms
+
+# Arrêter une VM
+VBoxManage controlvm "Ubuntu-Server" poweroff
+                </div>
+
+                <h3>VMware ESXi - Vue d'ensemble</h3>
+                <div class="example">
+                    <h4>Caractéristiques</h4>
+                    <ul>
+                        <li>Hyperviseur Type 1 professionnel</li>
+                        <li>Version gratuite disponible (limitée)</li>
+                        <li>vCenter pour gestion centralisée (payant)</li>
+                        <li>vMotion : Migration à chaud des VMs</li>
+                        <li>HA (High Availability) : Redondance automatique</li>
+                        <li>DRS (Distributed Resource Scheduler) : Équilibrage</li>
+                    </ul>
+
+                    <div class="code">
+# Configuration minimale recommandée
+CPU  : 2 cœurs (64-bit)
+RAM  : 4 GB minimum (8 GB+ recommandé)
+Disk : 32 GB minimum
+Réseau : Carte réseau Gigabit
+
+# Installation
+1. Télécharger ESXi ISO depuis VMware
+2. Booter sur l'ISO
+3. Suivre l'assistant d'installation
+4. Configurer réseau et mot de passe root
+5. Accéder via navigateur https://IP-ESXi
+                    </div>
+                </div>
+
+                <h3>Hyper-V - Windows Server</h3>
+                <div class="code">
+# PowerShell - Installer Hyper-V
+Install-WindowsFeature -Name Hyper-V -IncludeManagementTools -Restart
+
+# Créer un switch virtuel
+New-VMSwitch -Name "External-Switch" -NetAdapterName "Ethernet" -AllowManagementOS $true
+
+# Créer une VM
+New-VM -Name "VM-Ubuntu" -MemoryStartupBytes 4GB -NewVHDPath "C:\VMs\Ubuntu.vhdx" -NewVHDSizeBytes 50GB
+
+# Configurer la VM
+Set-VM -Name "VM-Ubuntu" -ProcessorCount 2
+Connect-VMNetworkAdapter -VMName "VM-Ubuntu" -SwitchName "External-Switch"
+
+# Démarrer la VM
+Start-VM -Name "VM-Ubuntu"
+
+# Lister les VMs
+Get-VM
+
+# Créer un snapshot (checkpoint)
+Checkpoint-VM -Name "VM-Ubuntu" -SnapshotName "Avant mise à jour"
+                </div>
+
+                <h3>KVM (Kernel-based Virtual Machine)</h3>
+                <div class="code">
+# Installation Ubuntu
+sudo apt update
+sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager
+
+# Vérifier support virtualisation
+egrep -c '(vmx|svm)' /proc/cpuinfo   # Doit être > 0
+kvm-ok                                # Doit dire "KVM acceleration can be used"
+
+# Ajouter utilisateur au groupe libvirt
+sudo usermod -aG libvirt $USER
+sudo usermod -aG kvm $USER
+
+# Créer une VM avec virt-install
+sudo virt-install \
+    --name ubuntu-server \
+    --ram 4096 \
+    --disk path=/var/lib/libvirt/images/ubuntu.qcow2,size=50 \
+    --vcpus 2 \
+    --os-type linux \
+    --os-variant ubuntu22.04 \
+    --network bridge=virbr0 \
+    --graphics none \
+    --console pty,target_type=serial \
+    --location /path/to/ubuntu-22.04.iso \
+    --extra-args 'console=ttyS0,115200n8'
+
+# Gérer les VMs avec virsh
+virsh list --all                     # Lister toutes les VMs
+virsh start ubuntu-server            # Démarrer
+virsh shutdown ubuntu-server         # Arrêter proprement
+virsh destroy ubuntu-server          # Forcer l'arrêt
+virsh undefine ubuntu-server         # Supprimer
+
+# Snapshots
+virsh snapshot-create-as ubuntu-server snap1 "Avant config"
+virsh snapshot-list ubuntu-server
+virsh snapshot-revert ubuntu-server snap1
+
+# Interface graphique
+virt-manager                         # Ouvrir l'interface graphique
+                </div>
+
+                <h3>Proxmox VE - Alternative open source</h3>
+                <div class="example">
+                    <h4>Caractéristiques</h4>
+                    <ul>
+                        <li>Hyperviseur Type 1 gratuit et open source</li>
+                        <li>Interface web intuitive</li>
+                        <li>Support KVM (VMs) et LXC (conteneurs)</li>
+                        <li>Cluster HA natif</li>
+                        <li>Sauvegarde intégrée</li>
+                        <li>Basé sur Debian Linux</li>
+                    </ul>
+
+                    <div class="code">
+# Installation
+1. Télécharger l'ISO Proxmox VE
+2. Installer sur serveur dédié
+3. Accéder via https://IP:8006
+4. Login : root / mot de passe défini
+
+# Créer une VM via CLI
+qm create 100 --memory 4096 --name ubuntu-server --net0 virtio,bridge=vmbr0
+qm importdisk 100 ubuntu-22.04.qcow2 local-lvm
+qm set 100 --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-100-disk-0
+qm set 100 --boot c --bootdisk scsi0
+qm set 100 --ide2 local-lvm:cloudinit
+qm start 100
+
+# Lister les VMs
+qm list
+
+# Snapshot
+qm snapshot 100 snap1
+                    </div>
+                </div>
+
+                <h3>📸 Snapshots et clonage</h3>
+                <div class="example">
+                    <h4>Snapshots (instantanés)</h4>
+                    <ul>
+                        <li>Capture l'état complet de la VM</li>
+                        <li>Permet de revenir en arrière</li>
+                        <li>Utile avant mises à jour</li>
+                        <li>Ne remplace pas les sauvegardes !</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>Clonage</h4>
+                    <ul>
+                        <li><strong>Lié</strong> : Clone partage le disque parent (rapide, économe)</li>
+                        <li><strong>Complet</strong> : Copie indépendante (plus lent, plus d'espace)</li>
+                    </ul>
+                </div>
+
+                <h3>Gestion des ressources</h3>
+                <div class="example">
+                    <h4>CPU</h4>
+                    <ul>
+                        <li>Surallocation possible (ex: 8 vCPUs sur 4 physiques)</li>
+                        <li>Ratio recommandé : 2:1 à 4:1 selon la charge</li>
+                        <li>CPU pinning pour performances critiques</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>RAM</h4>
+                    <ul>
+                        <li>Pas de surallocation (risque de crash)</li>
+                        <li>Balloon driver pour optimisation dynamique</li>
+                        <li>Réserver 10-20% pour l'hyperviseur</li>
+                    </ul>
+                </div>
+
+                <div class="example">
+                    <h4>Stockage</h4>
+                    <ul>
+                        <li>Thin provisioning vs Thick provisioning</li>
+                        <li>SSD recommandé pour meilleures performances</li>
+                        <li>RAID pour redondance</li>
+                    </ul>
+                </div>
+
+                <div class="success">
+                    <p><strong> Bonnes pratiques virtualisation :</strong></p>
+                    <ul>
+                        <li>Installer les VMware Tools / Guest Additions</li>
+                        <li>Sauvegarder les VMs régulièrement</li>
+                        <li>Monitorer les performances (CPU, RAM, IO)</li>
+                        <li>Mettre à jour l'hyperviseur et les VMs</li>
+                        <li>Utiliser des templates pour déploiements rapides</li>
+                        <li>Documenter la configuration des VMs</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE KUBERNETES -->
+            <div id="kubernetes" class="module">
+                <h2>Kubernetes - Orchestration de conteneurs</h2>
+                
+                <h3>Qu'est-ce que Kubernetes (K8s) ?</h3>
+                <p>Kubernetes est une plateforme open-source d'orchestration de conteneurs qui automatise le déploiement, la mise à l'échelle et la gestion d'applications conteneurisées.</p>
+
+                <h3>Pourquoi Kubernetes ?</h3>
+                <div class="example">
+                    <h4>Problèmes sans orchestration</h4>
+                    <ul>
+                        <li>Déploiement manuel de conteneurs sur plusieurs serveurs</li>
+                        <li>Pas de redémarrage automatique en cas de crash</li>
+                        <li>Mise à l'échelle manuelle fastidieuse</li>
+                        <li>Pas de load balancing automatique</li>
+                        <li>Gestion des mises à jour complexe</li>
+                    </ul>
+
+                    <h4>Solutions avec Kubernetes</h4>
+                    <ul>
+                        <li>Déploiement automatisé et déclaratif</li>
+                        <li>Auto-healing (redémarre les conteneurs crashés)</li>
+                        <li>Auto-scaling horizontal</li>
+                        <li>Load balancing intégré</li>
+                        <li>Rolling updates et rollbacks</li>
+                        <li>Gestion des secrets et configurations</li>
+                    </ul>
+                </div>
+
+                <h3>Architecture Kubernetes</h3>
+                <div class="example">
+                    <h4>Control Plane (Master)</h4>
+                    <ul>
+                        <li><strong>API Server</strong> : Point d'entrée, gère les requêtes</li>
+                        <li><strong>etcd</strong> : Base de données clé-valeur (état du cluster)</li>
+                        <li><strong>Scheduler</strong> : Place les pods sur les nœuds</li>
+                        <li><strong>Controller Manager</strong> : Gère les contrôleurs (Deployment, ReplicaSet, etc.)</li>
+                    </ul>
+
+                    <h4>Worker Nodes</h4>
+                    <ul>
+                        <li><strong>Kubelet</strong> : Agent sur chaque nœud, gère les pods</li>
+                        <li><strong>Kube-proxy</strong> : Gère le réseau et load balancing</li>
+                        <li><strong>Container Runtime</strong> : Docker, containerd, CRI-O</li>
+                    </ul>
+                </div>
+
+                <h3>Objets Kubernetes fondamentaux</h3>
+                <table>
+                    <tr>
+                        <th>Objet</th>
+                        <th>Description</th>
+                        <th>Usage</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Pod</strong></td>
+                        <td>Plus petite unité déployable (1+ conteneurs)</td>
+                        <td>Conteneur(s) applicatif</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Deployment</strong></td>
+                        <td>Gère des ReplicaSets (pods répliqués)</td>
+                        <td>Applications stateless</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Service</strong></td>
+                        <td>Expose les pods sur le réseau</td>
+                        <td>Load balancing, DNS</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ConfigMap</strong></td>
+                        <td>Stocke configuration non sensible</td>
+                        <td>Fichiers config, variables</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Secret</strong></td>
+                        <td>Stocke données sensibles (mots de passe)</td>
+                        <td>Credentials, tokens</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Namespace</strong></td>
+                        <td>Isolation logique des ressources</td>
+                        <td>Multi-tenancy, environnements</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ingress</strong></td>
+                        <td>Gère l'accès externe HTTP/HTTPS</td>
+                        <td>Routing, SSL termination</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PersistentVolume</strong></td>
+                        <td>Stockage persistant</td>
+                        <td>Bases de données, fichiers</td>
+                    </tr>
+                </table>
+
+                <h3>Installation (Minikube - Local)</h3>
+                <div class="code">
+# Installation Minikube (cluster local)
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+# Démarrer Minikube
+minikube start
+
+# Installer kubectl (client Kubernetes)
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install kubectl /usr/local/bin/kubectl
+
+# Vérifier
+kubectl version
+kubectl cluster-info
+kubectl get nodes
+                </div>
+
+                <h3>Premiers pas avec kubectl</h3>
+                <div class="code">
+# Lister les ressources
+kubectl get pods                     # Pods
+kubectl get deployments              # Deployments
+kubectl get services                 # Services
+kubectl get all                      # Tout
+
+# Détails d'une ressource
+kubectl describe pod mon-pod
+kubectl describe deployment mon-app
+
+# Créer depuis un fichier YAML
+kubectl apply -f deployment.yaml
+
+# Supprimer
+kubectl delete pod mon-pod
+kubectl delete -f deployment.yaml
+
+# Logs
+kubectl logs mon-pod
+kubectl logs -f mon-pod              # Suivi en temps réel
+
+# Shell dans un pod
+kubectl exec -it mon-pod -- /bin/bash
+
+# Port forwarding
+kubectl port-forward pod/mon-pod 8080:80
+                </div>
+
+                <h3>Deployment YAML</h3>
+                <div class="example">
+                    <h4>Exemple : Application Nginx</h4>
+                    <div class="code">
+# nginx-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3                        # 3 pods
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+                    </div>
+
+                    <div class="code">
+# Appliquer
+kubectl apply -f nginx-deployment.yaml
+
+# Vérifier
+kubectl get deployments
+kubectl get pods
+kubectl get rs                       # ReplicaSets
+
+# Scaler
+kubectl scale deployment nginx-deployment --replicas=5
+
+# Mise à jour (rolling update)
+kubectl set image deployment/nginx-deployment nginx=nginx:1.26
+kubectl rollout status deployment/nginx-deployment
+
+# Rollback
+kubectl rollout undo deployment/nginx-deployment
+                    </div>
+                </div>
+
+                <h3> Service - Exposer l'application</h3>
+                <div class="code">
+# nginx-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer               # ClusterIP, NodePort, LoadBalancer
+                </div>
+
+                <div class="code">
+# Types de services
+ClusterIP   : IP interne seulement (par défaut)
+NodePort    : Expose sur un port des nœuds (30000-32767)
+LoadBalancer: Expose via load balancer externe (cloud)
+ExternalName: Alias DNS vers service externe
+
+# Appliquer
+kubectl apply -f nginx-service.yaml
+
+# Accéder (Minikube)
+minikube service nginx-service
+                </div>
+
+                <h3>ConfigMap et Secrets</h3>
+                <div class="example">
+                    <h4>ConfigMap</h4>
+                    <div class="code">
+# configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  database_url: "postgresql://db:5432"
+  log_level: "info"
+  config.json: |
+    {
+      "feature_flags": {
+        "new_ui": true
+      }
+    }
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Secret</h4>
+                    <div class="code">
+# Créer un secret depuis la ligne de commande
+kubectl create secret generic db-secret \
+  --from-literal=username=admin \
+  --from-literal=password=P@ssw0rd
+
+# Ou depuis YAML (base64 encodé)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque
+data:
+  username: YWRtaW4=               # admin en base64
+  password: UEBzc3cwcmQ=           # P@ssw0rd en base64
+                    </div>
+
+                    <div class="code">
+# Utiliser dans un Deployment
+spec:
+  containers:
+  - name: app
+    image: monapp:1.0
+    env:
+    - name: DB_USER
+      valueFrom:
+        secretKeyRef:
+          name: db-secret
+          key: username
+    - name: DB_PASS
+      valueFrom:
+        secretKeyRef:
+          name: db-secret
+          key: password
+    - name: DATABASE_URL
+      valueFrom:
+        configMapKeyRef:
+          name: app-config
+          key: database_url
+                    </div>
+                </div>
+
+                <h3>Volumes persistants</h3>
+                <div class="code">
+# PersistentVolumeClaim (demande de stockage)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+                </div>
+
+                <div class="code">
+# Utiliser dans un Pod
+spec:
+  containers:
+  - name: mysql
+    image: mysql:8
+    volumeMounts:
+    - name: mysql-storage
+      mountPath: /var/lib/mysql
+  volumes:
+  - name: mysql-storage
+    persistentVolumeClaim:
+      claimName: mysql-pvc
+                </div>
+
+                <h3>StatefulSet (pour bases de données)</h3>
+                <div class="code">
+# StatefulSet pour MySQL
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  serviceName: mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+                </div>
+
+                <h3>Ingress (exposition HTTP/HTTPS)</h3>
+                <div class="code">
+# Installer Ingress Controller (Nginx)
+minikube addons enable ingress
+
+# ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: monapp.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-service
+            port:
+              number: 80
+                </div>
+
+                <h3>Monitoring et Logs</h3>
+                <div class="code">
+# Voir les événements
+kubectl get events
+
+# Logs d'un pod
+kubectl logs mon-pod
+kubectl logs -f mon-pod              # Suivi temps réel
+kubectl logs mon-pod --previous      # Logs du conteneur précédent (crash)
+
+# Logs de tous les pods d'un deployment
+kubectl logs -l app=nginx
+
+# Ressources utilisées
+kubectl top nodes
+kubectl top pods
+
+# Dashboard Kubernetes (Minikube)
+minikube dashboard
+                </div>
+
+                <h3>Helm - Gestionnaire de packages K8s</h3>
+                <div class="code">
+# Installer Helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+# Ajouter un repository
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Installer une application (ex: WordPress)
+helm install my-wordpress bitnami/wordpress
+
+# Lister les installations
+helm list
+
+# Désinstaller
+helm uninstall my-wordpress
+
+# Créer son propre chart
+helm create mon-app
+                </div>
+
+                <div class="success">
+                    <p><strong>Bonnes pratiques Kubernetes :</strong></p>
+                    <ul>
+                        <li>Utilisez des namespaces pour isoler les environnements</li>
+                        <li>Définissez toujours des limits et requests de ressources</li>
+                        <li>Utilisez des health checks (liveness, readiness probes)</li>
+                        <li>Ne stockez jamais de secrets en clair dans les YAML</li>
+                        <li>Versionnez vos manifestes YAML dans Git</li>
+                        <li>Utilisez des labels et annotations de manière cohérente</li>
+                        <li>Activez RBAC (Role-Based Access Control)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE DEVOPS -->
+            <div id="devops" class="module">
+                <h2>Introduction au DevOps</h2>
+                
+                <h3>Qu'est-ce que DevOps ?</h3>
+                <p>DevOps est une culture, un ensemble de pratiques et d'outils qui visent à unifier le développement logiciel (Dev) et l'administration système (Ops) pour livrer des applications plus rapidement et de manière plus fiable.</p>
+
+                <h3>Principes DevOps</h3>
+                <div class="example">
+                    <ul>
+                        <li><strong>Culture de collaboration</strong> : Dev et Ops travaillent ensemble</li>
+                        <li><strong>Automatisation</strong> : Tests, déploiements, infrastructure</li>
+                        <li><strong>Mesure</strong> : Métriques et monitoring continus</li>
+                        <li><strong>Partage</strong> : Connaissance, responsabilités, succès/échecs</li>
+                        <li><strong>Amélioration continue</strong> : Itération, feedback, apprentissage</li>
+                    </ul>
+                </div>
+
+                <h3>Le cycle DevOps</h3>
+                <div class="code">
+┌─────────────────────────────────────────────┐
+│         CYCLE DEVOPS INFINI                 │
+└─────────────────────────────────────────────┘
+
+    PLAN → CODE → BUILD → TEST
+      ↑                        ↓
+   MONITOR ←  OPERATE ← DEPLOY ← RELEASE
+
+1. PLAN     : Planification, user stories
+2. CODE     : Développement, versioning (Git)
+3. BUILD    : Compilation, création artefacts
+4. TEST     : Tests automatisés (unit, intégration)
+5. RELEASE  : Validation, préparation release
+6. DEPLOY   : Déploiement automatisé
+7. OPERATE  : Monitoring, incidents
+8. MONITOR  : Métriques, logs, alertes
+                </div>
+
+                <h3>Outils DevOps essentiels</h3>
+                <table>
+                    <tr>
+                        <th>Catégorie</th>
+                        <th>Outils populaires</th>
+                        <th>Usage</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Version Control</strong></td>
+                        <td>Git, GitHub, GitLab, Bitbucket</td>
+                        <td>Gestion du code source</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CI/CD</strong></td>
+                        <td>Jenkins, GitLab CI, GitHub Actions, CircleCI</td>
+                        <td>Intégration et déploiement continus</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conteneurisation</strong></td>
+                        <td>Docker, Podman</td>
+                        <td>Empaquetage applications</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Orchestration</strong></td>
+                        <td>Kubernetes, Docker Swarm, Nomad</td>
+                        <td>Gestion conteneurs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IaC</strong></td>
+                        <td>Terraform, Ansible, Puppet, Chef</td>
+                        <td>Infrastructure as Code</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Monitoring</strong></td>
+                        <td>Prometheus, Grafana, ELK, Datadog</td>
+                        <td>Supervision, métriques, logs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cloud</strong></td>
+                        <td>AWS, Azure, GCP</td>
+                        <td>Infrastructure cloud</td>
+                    </tr>
+                </table>
+
+                <h3>Git - Fondamentaux</h3>
+                <div class="code">
+# Configuration initiale
+git config --global user.name "Thomas Dupont"
+git config --global user.email "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="780c101715190b381d001d1508141d561b1715">[email&#160;protected]</a>"
+
+# Initialiser un repo
+git init
+git clone https://github.com/user/repo.git
+
+# Workflow de base
+git status                           # État des fichiers
+git add fichier.txt                  # Ajouter au staging
+git add .                            # Ajouter tous les fichiers
+git commit -m "Message du commit"    # Commiter
+git push origin main                 # Pousser vers remote
+
+# Branches
+git branch                           # Lister les branches
+git branch feature-login             # Créer une branche
+git checkout feature-login           # Changer de branche
+git checkout -b feature-signup       # Créer et changer
+git merge feature-login              # Fusionner dans branche actuelle
+
+# Historique
+git log                              # Historique des commits
+git log --oneline                    # Version compacte
+git diff                             # Voir les changements
+
+# Remote
+git remote -v                        # Voir les remotes
+git pull                             # Récupérer et merger
+git fetch                            # Récupérer sans merger
+
+# Annuler
+git reset HEAD fichier.txt           # Unstage
+git checkout -- fichier.txt          # Annuler modifications
+git revert HEAD                      # Annuler dernier commit (créé nouveau commit)
+                </div>
+
+                <h3>Stratégies de branching</h3>
+                <div class="example">
+                    <h4>Git Flow</h4>
+                    <div class="code">
+main        : Code production stable
+develop     : Branche de développement
+feature/*   : Nouvelles fonctionnalités
+release/*   : Préparation release
+hotfix/*    : Corrections urgentes en production
+
+# Exemple
+git checkout -b feature/login develop
+# ... développement ...
+git checkout develop
+git merge feature/login
+git branch -d feature/login
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>GitHub Flow (plus simple)</h4>
+                    <div class="code">
+main            : Code production
+feature-branch  : Toute nouvelle fonctionnalité ou fix
+
+# Workflow
+1. Créer une branche depuis main
+2. Développer et commiter
+3. Ouvrir une Pull Request
+4. Code review et discussions
+5. Merger dans main
+6. Déployer automatiquement
+                    </div>
+                </div>
+
+                <h3>Infrastructure as Code (IaC)</h3>
+                <p>L'IaC permet de gérer l'infrastructure via du code, apportant versioning, reproductibilité et automatisation.</p>
+
+                <div class="example">
+                    <h4>Terraform - Exemple basique</h4>
+                    <div class="code">
+# main.tf - Créer une VM sur Azure
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 3.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+}
+
+resource "azurerm_resource_group" "example" {
+  name     = "monapp-resources"
+  location = "West Europe"
+}
+
+resource "azurerm_virtual_network" "example" {
+  name                = "monapp-network"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+}
+
+resource "azurerm_linux_virtual_machine" "example" {
+  name                = "monapp-vm"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  size                = "Standard_B2s"
+  admin_username      = "adminuser"
+  
+  network_interface_ids = [
+    azurerm_network_interface.example.id,
+  ]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
+    version   = "latest"
+  }
+}
+                    </div>
+
+                    <div class="code">
+# Commandes Terraform
+terraform init                       # Initialiser
+terraform plan                       # Prévisualiser changements
+terraform apply                      # Appliquer changements
+terraform destroy                    # Détruire infrastructure
+terraform fmt                        # Formater le code
+terraform validate                   # Valider syntaxe
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Ansible - Configuration management</h4>
+                    <div class="code">
+# playbook.yml - Installer Nginx
+---
+- name: Configuration serveur web
+  hosts: webservers
+  become: yes
+  
+  tasks:
+    - name: Mettre à jour apt
+      apt:
+        update_cache: yes
+    
+    - name: Installer Nginx
+      apt:
+        name: nginx
+        state: present
+    
+    - name: Démarrer Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+    
+    - name: Copier fichier de config
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/nginx.conf
+      notify: Redémarrer Nginx
+  
+  handlers:
+    - name: Redémarrer Nginx
+      service:
+        name: nginx
+        state: restarted
+                    </div>
+
+                    <div class="code">
+# Exécuter le playbook
+ansible-playbook -i inventory playbook.yml
+
+# inventory (fichier des hôtes)
+[webservers]
+web1.example.com
+web2.example.com
+
+[databases]
+db1.example.com
+                    </div>
+                </div>
+
+                <h3>Les 3 pilliers de l'observabilité</h3>
+                <div class="example">
+                    <ul>
+                        <li><strong>Logs</strong> : Enregistrements d'événements (ELK, Loki)</li>
+                        <li><strong>Metrics</strong> : Mesures quantitatives (Prometheus, Grafana)</li>
+                        <li><strong>Traces</strong> : Parcours de requêtes (Jaeger, Zipkin)</li>
+                    </ul>
+                </div>
+
+                <div class="success">
+                    <p><strong>Bonnes pratiques DevOps :</strong></p>
+                    <ul>
+                        <li>Automatiser tout ce qui est répétitif</li>
+                        <li>Versioner l'infrastructure comme le code</li>
+                        <li>Tester en continu (shift-left testing)</li>
+                        <li>Déployer fréquemment en petits incréments</li>
+                        <li>Monitorer et logger tout</li>
+                        <li>Documenter les processus et décisions</li>
+                        <li>Favoriser la culture du "fail fast, learn faster"</li>
+                        <li>Implémenter des rollbacks rapides</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE CI/CD -->
+            <div id="cicd" class="module">
+                <h2>CI/CD - Intégration et Déploiement Continus</h2>
+                
+                <h3>Qu'est-ce que CI/CD ?</h3>
+                <div class="example">
+                    <h4>CI (Continuous Integration)</h4>
+                    <p>Intégration automatique et fréquente du code dans la branche principale avec tests automatisés.</p>
+                    <ul>
+                        <li>Détection précoce des bugs</li>
+                        <li>Code toujours dans un état déployable</li>
+                        <li>Moins de conflits de merge</li>
+                    </ul>
+
+                    <h4>CD (Continuous Delivery/Deployment)</h4>
+                    <p><strong>Continuous Delivery</strong> : Déploiement automatique jusqu'à la prod (avec validation manuelle finale)</p>
+                    <p><strong>Continuous Deployment</strong> : Déploiement automatique complet en production</p>
+                    <ul>
+                        <li>Releases fréquentes et rapides</li>
+                        <li>Réduction des risques</li>
+                        <li>Feedback rapide des utilisateurs</li>
+                    </ul>
+                </div>
+
+                <h3>Pipeline CI/CD typique</h3>
+                <div class="code">
+┌──────────────────────────────────────────────────┐
+│         PIPELINE CI/CD                           │
+└──────────────────────────────────────────────────┘
+
+1. CODE        : Developer push code to Git
+   │
+   ▼
+2. BUILD       : Compile, package application
+   │
+   ▼
+3. TEST        : Unit tests, integration tests
+   │
+   ▼
+4. ANALYZE     : Code quality, security scan
+   │
+   ▼
+5. PACKAGE     : Create Docker image, artifacts
+   │
+   ▼
+6. DEPLOY DEV  : Deploy to dev environment
+   │
+   ▼
+7. TEST E2E    : End-to-end tests
+   │
+   ▼
+8. DEPLOY STAGING : Deploy to staging
+   │
+   ▼
+9. DEPLOY PROD : Deploy to production
+   │
+   ▼
+10. MONITOR    : Logs, metrics, alerts
+                </div>
+
+                <h3>GitHub Actions</h3>
+                <div class="example">
+                    <h4>Workflow Node.js</h4>
+                    <div class="code">
+# .github/workflows/ci.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run linter
+      run: npm run lint
+    
+    - name: Run tests
+      run: npm test
+    
+    - name: Build application
+      run: npm run build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: dist/
+
+  docker:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: username/monapp:latest
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Deploy to server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          docker pull username/monapp:latest
+          docker stop monapp || true
+          docker rm monapp || true
+          docker run -d --name monapp -p 80:3000 username/monapp:latest
+                    </div>
+                </div>
+
+                <h3>GitLab CI/CD</h3>
+                <div class="example">
+                    <h4>Pipeline Python/Flask</h4>
+                    <div class="code">
+# .gitlab-ci.yml
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_IMAGE: registry.gitlab.com/username/monapp
+
+before_script:
+  - echo "Pipeline démarré"
+
+build:
+  stage: build
+  image: python:3.11
+  script:
+    - pip install -r requirements.txt
+    - python -m py_compile app.py
+  artifacts:
+    paths:
+      - app.py
+
+test:
+  stage: test
+  image: python:3.11
+  script:
+    - pip install -r requirements.txt
+    - pip install pytest pytest-cov
+    - pytest --cov=. tests/
+  coverage: '/TOTAL.*\s+(\d+%)$/'
+
+docker-build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker build -t $DOCKER_IMAGE:latest .
+    - docker push $DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker push $DOCKER_IMAGE:latest
+  only:
+    - main
+
+deploy-production:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "
+        docker pull $DOCKER_IMAGE:latest &&
+        docker stop monapp || true &&
+        docker rm monapp || true &&
+        docker run -d --name monapp -p 80:5000 $DOCKER_IMAGE:latest
+      "
+  only:
+    - main
+  when: manual
+                    </div>
+                </div>
+
+                <h3>Jenkins Pipeline</h3>
+                <div class="code">
+// Jenkinsfile
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_IMAGE = "monapp"
+        DOCKER_TAG = "${BUILD_NUMBER}"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/user/monapp.git'
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh 'npm install'
+                sh 'npm run build'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+            post {
+                always {
+                    junit 'reports/**/*.xml'
+                }
+            }
+        }
+        
+        stage('Code Quality') {
+            steps {
+                sh 'npm run lint'
+            }
+        }
+        
+        stage('Docker Build') {
+            steps {
+                script {
+                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                    docker.build("${DOCKER_IMAGE}:latest")
+                }
+            }
+        }
+        
+        stage('Docker Push') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-credentials') {
+                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push()
+                        docker.image("${DOCKER_IMAGE}:latest").push()
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy to Dev') {
+            steps {
+                sh '''
+                    ssh user@dev-server "
+                        docker pull ${DOCKER_IMAGE}:latest &&
+                        docker stop monapp-dev || true &&
+                        docker rm monapp-dev || true &&
+                        docker run -d --name monapp-dev -p 8080:3000 ${DOCKER_IMAGE}:latest
+                    "
+                '''
+            }
+        }
+        
+        stage('Deploy to Production') {
+            when {
+                branch 'main'
+            }
+            input {
+                message "Déployer en production ?"
+                ok "Déployer"
+            }
+            steps {
+                sh '''
+                    ssh user@prod-server "
+                        docker pull ${DOCKER_IMAGE}:${DOCKER_TAG} &&
+                        docker stop monapp || true &&
+                        docker rm monapp || true &&
+                        docker run -d --name monapp -p 80:3000 ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    "
+                '''
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Pipeline réussi !'
+            // Envoyer notification Slack, email, etc.
+        }
+        failure {
+            echo 'Pipeline échoué !'
+            // Alerter l'équipe
+        }
+    }
+}
+                </div>
+
+                <h3>Tests automatisés</h3>
+                <table>
+                    <tr>
+                        <th>Type de test</th>
+                        <th>Niveau</th>
+                        <th>Quand</th>
+                        <th>Outils</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Unit Tests</strong></td>
+                        <td>Fonctions/méthodes</td>
+                        <td>À chaque commit</td>
+                        <td>Jest, pytest, JUnit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Integration Tests</strong></td>
+                        <td>Modules/services</td>
+                        <td>Après build</td>
+                        <td>Testcontainers, pytest</td>
+                    </tr>
+                    <tr>
+                        <td><strong>E2E Tests</strong></td>
+                        <td>Application complète</td>
+                        <td>Avant déploiement</td>
+                        <td>Cypress, Selenium, Playwright</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Performance Tests</strong></td>
+                        <td>Charge système</td>
+                        <td>Périodique</td>
+                        <td>JMeter, k6, Gatling</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Security Tests</strong></td>
+                        <td>Vulnérabilités</td>
+                        <td>À chaque build</td>
+                        <td>OWASP ZAP, Snyk, Trivy</td>
+                    </tr>
+                </table>
+
+                <h3>Métriques CI/CD</h3>
+                <div class="example">
+                    <ul>
+                        <li><strong>Deployment Frequency</strong> : Fréquence des déploiements</li>
+                        <li><strong>Lead Time for Changes</strong> : Temps commit → production</li>
+                        <li><strong>Mean Time to Recovery (MTTR)</strong> : Temps de récupération après incident</li>
+                        <li><strong>Change Failure Rate</strong> : % de déploiements causant des incidents</li>
+                    </ul>
+                </div>
+
+                <div class="success">
+                    <p><strong>Bonnes pratiques CI/CD :</strong></p>
+                    <ul>
+                        <li>Commit fréquemment (plusieurs fois par jour)</li>
+                        <li>Maintenir un build rapide (< 10 minutes idéalement)</li>
+                        <li>Tout tester automatiquement</li>
+                        <li>Déployer en production fréquemment</li>
+                        <li>Pouvoir rollback rapidement</li>
+                        <li>Utiliser feature flags pour désactiver fonctionnalités</li>
+                        <li>Monitor les déploiements en temps réel</li>
+                        <li>Environnements de staging identiques à la prod</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE MONITORING -->
+            <div id="monitoring" class="module">
+                <h2>Monitoring et Observabilité</h2>
+                
+                <h3>Pourquoi le monitoring ?</h3>
+                <p>Le monitoring permet de surveiller la santé des systèmes, détecter les problèmes avant qu'ils n'affectent les utilisateurs, et analyser les performances.</p>
+
+                <h3>Types de monitoring</h3>
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Focus</th>
+                        <th>Exemples de métriques</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Infrastructure</strong></td>
+                        <td>Serveurs, réseau</td>
+                        <td>CPU, RAM, disk, network I/O</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Application</strong></td>
+                        <td>Code applicatif</td>
+                        <td>Requêtes/sec, temps réponse, erreurs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Business</strong></td>
+                        <td>Métriques métier</td>
+                        <td>Transactions, conversions, chiffre d'affaires</td>
+                    </tr>
+                    <tr>
+                        <td><strong>User Experience</strong></td>
+                        <td>Expérience utilisateur</td>
+                        <td>Page load time, erreurs JS, disponibilité</td>
+                    </tr>
+                </table>
+
+                <h3>Stack Prometheus + Grafana</h3>
+                <div class="example">
+                    <h4>Architecture</h4>
+                    <div class="code">
+Application + Exporter → Prometheus (stockage métriques)
+                              ↓
+                         Grafana (visualisation)
+                              ↓
+                    Alertmanager (alertes)
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Installation avec Docker Compose</h4>
+                    <div class="code">
+# docker-compose.yml
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    ports:
+      - "9100:9100"
+
+volumes:
+  prometheus-data:
+  grafana-data:
+                    </div>
+
+                    <div class="code">
+# prometheus.yml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  - job_name: 'my-app'
+    static_configs:
+      - targets: ['app:8080']
+                    </div>
+                </div>
+
+                <h3>Métriques Prometheus (PromQL)</h3>
+                <div class="code">
+# Requêtes PromQL courantes
+
+# Utilisation CPU
+100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+
+# Utilisation RAM
+(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100
+
+# Espace disque utilisé
+100 - ((node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100)
+
+# Requêtes HTTP par seconde
+rate(http_requests_total[5m])
+
+# Taux d'erreur HTTP
+rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m])
+
+# Latence moyenne (P95)
+histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))
+                </div>
+
+                <h3>Grafana - Dashboards</h3>
+                <div class="code">
+# Accès Grafana
+http://localhost:3000
+Login: admin / admin
+
+# Configuration data source
+1. Configuration → Data Sources → Add data source
+2. Choisir Prometheus
+3. URL: http://prometheus:9090
+4. Save & Test
+
+# Importer des dashboards prêts
+1. + → Import
+2. ID dashboards populaires:
+   - Node Exporter Full: 1860
+   - Docker: 893
+   - Nginx: 12708
+   - MySQL: 7362
+
+# Créer un dashboard personnalisé
+1. + → Dashboard → Add new panel
+2. Query: Écrire requête PromQL
+3. Configurer visualisation (Graph, Gauge, Table, etc.)
+4. Save dashboard
+                </div>
+
+                <h3>Alertes avec Alertmanager</h3>
+                <div class="code">
+# prometheus-rules.yml
+groups:
+  - name: system_alerts
+    interval: 30s
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU élevé sur {{ $labels.instance }}"
+          description: "CPU à {{ $value }}%"
+
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Espace disque faible sur {{ $labels.instance }}"
+          description: "Seulement {{ $value }}% disponible"
+
+      - alert: ServiceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} DOWN"
+          description: "Instance {{ $labels.instance }} inaccessible"
+                </div>
+
+                <div class="code">
+# alertmanager.yml
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c6a7aaa3b4b2afa8a186a3bea7abb6aaa3e8a5a9ab">[email&#160;protected]</a>'
+  smtp_auth_username: '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="40212c253234292e27002538212d302c256e232f2d">[email&#160;protected]</a>'
+  smtp_auth_password: 'password'
+
+route:
+  receiver: 'email-notifications'
+  group_by: ['alertname', 'instance']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+
+receivers:
+  - name: 'email-notifications'
+    email_configs:
+      - to: '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aacbcec7c3c4eacfd2cbc7dac6cf84c9c5c7">[email&#160;protected]</a>'
+        headers:
+          Subject: 'Alerte: {{ .GroupLabels.alertname }}'
+
+  - name: 'slack-notifications'
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/WEBHOOK/URL'
+        channel: '#alerts'
+        title: '{{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+                </div>
+
+                <h3>ELK Stack (Logs)</h3>
+                <div class="example">
+                    <h4>Elasticsearch + Logstash + Kibana</h4>
+                    <div class="code">
+# docker-compose.yml pour ELK
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.10.0
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.0
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+volumes:
+  es-data:
+                    </div>
+                </div>
+
+                <h3>Métriques importantes à surveiller</h3>
+                <div class="success">
+                    <p><strong>Infrastructure :</strong></p>
+                    <ul>
+                        <li>CPU : Utilisation moyenne et pics</li>
+                        <li>RAM : Utilisation, swap</li>
+                        <li>Disque : Utilisation, IOPS, latence</li>
+                        <li>Réseau : Bande passante, paquets perdus, latence</li>
+                        <li>Température serveurs (datacenters)</li>
+                    </ul>
+
+                    <p><strong>Application :</strong></p>
+                    <ul>
+                        <li>Temps de réponse (P50, P95, P99)</li>
+                        <li>Taux d'erreur (4xx, 5xx)</li>
+                        <li>Throughput (requêtes/seconde)</li>
+                        <li>Saturation (files d'attente)</li>
+                        <li>Disponibilité (uptime)</li>
+                    </ul>
+
+                    <p><strong>Base de données :</strong></p>
+                    <ul>
+                        <li>Connexions actives</li>
+                        <li>Temps requêtes (slow queries)</li>
+                        <li>Cache hit ratio</li>
+                        <li>Locks et deadlocks</li>
+                        <li>Taille des tables</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE PARE-FEU -->
+            <div id="pare-feu" class="module">
+                <h2>Pare-feu (Firewall)</h2>
+                
+                <h3>Qu'est-ce qu'un pare-feu ?</h3>
+                <p>Un pare-feu filtre le trafic réseau entrant et sortant selon des règles de sécurité définies, protégeant ainsi le système des accès non autorisés.</p>
+
+                <h3>Types de pare-feu</h3>
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Niveau OSI</th>
+                        <th>Fonction</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Packet Filtering</strong></td>
+                        <td>3 (Réseau)</td>
+                        <td>Filtre par IP, port, protocole</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stateful</strong></td>
+                        <td>3-4</td>
+                        <td>Suit les connexions établies</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Application</strong></td>
+                        <td>7 (Application)</td>
+                        <td>Inspecte contenu applicatif</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Next-Gen (NGFW)</strong></td>
+                        <td>Toutes</td>
+                        <td>DPI, IPS, anti-malware intégrés</td>
+                    </tr>
+                </table>
+
+                <h3>iptables (Linux)</h3>
+                <div class="code">
+# Voir les règles actuelles
+sudo iptables -L -n -v
+
+# Politique par défaut (BLOQUER tout)
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT ACCEPT
+
+# Autoriser loopback
+sudo iptables -A INPUT -i lo -j ACCEPT
+
+# Autoriser connexions établies
+sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Autoriser SSH (port 22)
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# Autoriser HTTP et HTTPS
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Autoriser ping (ICMP)
+sudo iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+
+# Bloquer une IP spécifique
+sudo iptables -A INPUT -s 192.168.1.100 -j DROP
+
+# Limiter les connexions SSH (anti brute-force)
+sudo iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set
+sudo iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 4 -j DROP
+
+# Sauvegarder les règles
+# Ubuntu/Debian
+sudo apt install iptables-persistent
+sudo netfilter-persistent save
+
+# CentOS/RHEL
+sudo service iptables save
+
+# Supprimer une règle
+sudo iptables -D INPUT 3              # Supprimer règle n°3
+sudo iptables -F                      # Vider toutes les règles
+                </div>
+
+                <h3>firewalld (CentOS/RHEL/Fedora)</h3>
+                <div class="code">
+# Vérifier le statut
+sudo systemctl status firewalld
+sudo firewall-cmd --state
+
+# Lister les zones
+sudo firewall-cmd --get-zones
+sudo firewall-cmd --get-default-zone
+sudo firewall-cmd --list-all
+
+# Autoriser un service
+sudo firewall-cmd --add-service=http --permanent
+sudo firewall-cmd --add-service=https --permanent
+sudo firewall-cmd --add-service=ssh --permanent
+
+# Autoriser un port
+sudo firewall-cmd --add-port=8080/tcp --permanent
+sudo firewall-cmd --add-port=3000/tcp --permanent
+
+# Autoriser une plage de ports
+sudo firewall-cmd --add-port=30000-32767/tcp --permanent
+
+# Bloquer une IP
+sudo firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.1.100" reject' --permanent
+
+# Autoriser une IP spécifique sur un port
+sudo firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.1.50" port port="3306" protocol="tcp" accept' --permanent
+
+# Recharger les règles
+sudo firewall-cmd --reload
+
+# Supprimer une règle
+sudo firewall-cmd --remove-service=http --permanent
+sudo firewall-cmd --remove-port=8080/tcp --permanent
+sudo firewall-cmd --reload
+                </div>
+
+                <h3>Windows Firewall</h3>
+                <div class="code">
+# PowerShell - Afficher les règles
+Get-NetFirewallRule | Where-Object {$_.Enabled -eq $True} | Select-Object DisplayName,Direction,Action
+
+# Autoriser un port entrant
+New-NetFirewallRule -DisplayName "Allow Port 8080" `
+    -Direction Inbound -Protocol TCP -LocalPort 8080 -Action Allow
+
+# Autoriser une application
+New-NetFirewallRule -DisplayName "Allow MyApp" `
+    -Direction Inbound -Program "C:\App\myapp.exe" -Action Allow
+
+# Bloquer une IP
+New-NetFirewallRule -DisplayName "Block IP" `
+    -Direction Inbound -RemoteAddress 192.168.1.100 -Action Block
+
+# Activer/Désactiver le pare-feu
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+
+# Supprimer une règle
+Remove-NetFirewallRule -DisplayName "Allow Port 8080"
+
+# GUI
+# Windows Defender Firewall → Advanced Settings
+                </div>
+
+                <h3>UFW (Uncomplicated Firewall) - Ubuntu</h3>
+                <div class="code">
+# Installer UFW
+sudo apt install ufw
+
+# Activer UFW
+sudo ufw enable
+sudo ufw status
+
+# Politique par défaut
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+# Autoriser SSH (IMPORTANT avant d'activer!)
+sudo ufw allow 22/tcp
+sudo ufw allow ssh
+
+# Autoriser HTTP/HTTPS
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow 'Nginx Full'
+
+# Autoriser depuis une IP
+sudo ufw allow from 192.168.1.50
+
+# Autoriser une IP vers un port
+sudo ufw allow from 192.168.1.50 to any port 3306
+
+# Limiter SSH (anti brute-force)
+sudo ufw limit ssh
+
+# Supprimer une règle
+sudo ufw delete allow 80/tcp
+sudo ufw status numbered
+sudo ufw delete 3
+
+# Désactiver UFW
+sudo ufw disable
+
+# Reset complet
+sudo ufw reset
+                </div>
+
+                <div class="warning">
+                    <p><strong>ATTENTION :</strong> Avant d'activer un pare-feu sur un serveur distant, assurez-vous d'autoriser SSH sinon vous perdrez l'accès !</p>
+                    <div class="code">
+# TOUJOURS faire avant d'activer :
+sudo ufw allow 22/tcp
+# OU
+sudo firewall-cmd --add-service=ssh --permanent
+                    </div>
+                </div>
+
+                <div class="success">
+                    <p><strong>Bonnes pratiques pare-feu :</strong></p>
+                    <ul>
+                        <li>Principe du "deny by default" (bloquer par défaut)</li>
+                        <li>N'autoriser que les ports nécessaires</li>
+                        <li>Limiter les connexions SSH (rate limiting)</li>
+                        <li>Utiliser des règles spécifiques (éviter "allow all")</li>
+                        <li>Documenter chaque règle ajoutée</li>
+                        <li>Auditer régulièrement les règles</li>
+                        <li>Combiner avec fail2ban pour bannir les IPs malveillantes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE VPN -->
+            <div id="vpn" class="module">
+                <h2>VPN (Virtual Private Network)</h2>
+                
+                <h3>Qu'est-ce qu'un VPN ?</h3>
+                <p>Un VPN crée un tunnel chiffré entre deux points sur un réseau public (Internet), permettant une communication sécurisée et privée.</p>
+
+                <h3>Usages des VPN</h3>
+                <ul>
+                    <li><strong>Accès distant</strong> : Employés se connectant au réseau d'entreprise</li>
+                    <li><strong>Site-to-Site</strong> : Connecter deux bureaux/datacenters</li>
+                    <li><strong>Confidentialité</strong> : Masquer son IP et chiffrer le trafic</li>
+                    <li><strong>Sécurité Wi-Fi public</strong> : Protection sur réseaux non fiables</li>
+                    <li><strong>Contournement géo-blocage</strong> : Accès à contenus restreints</li>
+                </ul>
+
+                <h3>Types de VPN</h3>
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Protocole</th>
+                        <th>Usage</th>
+                        <th>Sécurité</th>
+                    </tr>
+                    <tr>
+                        <td><strong>OpenVPN</strong></td>
+                        <td>SSL/TLS</td>
+                        <td>Accès distant, flexible</td>
+                        <td>Très élevée</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WireGuard</strong></td>
+                        <td>Moderne, léger</td>
+                        <td>Performances, simplicité</td>
+                        <td>Très élevée</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IPsec</strong></td>
+                        <td>Natif IP</td>
+                        <td>Site-to-Site, entreprise</td>
+                        <td>Élevée</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L2TP/IPsec</strong></td>
+                        <td>Layer 2 + IPsec</td>
+                        <td>Mobile, compatible</td>
+                        <td>Moyenne</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PPTP</strong></td>
+                        <td>Point-to-Point</td>
+                        <td>Ancien, déprécié</td>
+                        <td>Faible (à éviter)</td>
+                    </tr>
+                </table>
+
+                <h3>WireGuard - Installation</h3>
+                <div class="code">
+# Ubuntu - Installation
+sudo apt update
+sudo apt install wireguard
+
+# Générer les clés (serveur)
+wg genkey | tee server_private.key | wg pubkey > server_public.key
+
+# Générer les clés (client)
+wg genkey | tee client_private.key | wg pubkey > client_public.key
+
+# Configuration serveur (/etc/wireguard/wg0.conf)
+[Interface]
+Address = 10.0.0.1/24
+ListenPort = 51820
+PrivateKey = <SERVER_PRIVATE_KEY>
+PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+[Peer]
+# Client 1
+PublicKey = <CLIENT_PUBLIC_KEY>
+AllowedIPs = 10.0.0.2/32
+
+# Configuration client (/etc/wireguard/wg0.conf)
+[Interface]
+Address = 10.0.0.2/24
+PrivateKey = <CLIENT_PRIVATE_KEY>
+DNS = 1.1.1.1
+
+[Peer]
+PublicKey = <SERVER_PUBLIC_KEY>
+Endpoint = SERVER_IP:51820
+AllowedIPs = 0.0.0.0/0           # Tout le trafic via VPN
+PersistentKeepalive = 25
+
+# Activer IP forwarding (serveur)
+echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
+# Démarrer WireGuard
+sudo wg-quick up wg0
+sudo systemctl enable wg-quick@wg0
+
+# Vérifier
+sudo wg show
+
+# Arrêter
+sudo wg-quick down wg0
+                </div>
+
+                <h3>OpenVPN - Installation</h3>
+                <div class="code">
+# Ubuntu - Installation serveur
+sudo apt install openvpn easy-rsa
+
+# Configuration avec script automatique
+wget https://git.io/vpn -O openvpn-install.sh
+chmod +x openvpn-install.sh
+sudo ./openvpn-install.sh
+
+# Répondre aux questions:
+# - IP publique du serveur
+# - Port (1194 par défaut)
+# - DNS (1.1.1.1 ou 8.8.8.8)
+# - Nom du client
+
+# Le script génère un fichier .ovpn pour le client
+
+# Démarrer OpenVPN
+sudo systemctl start openvpn@server
+sudo systemctl enable openvpn@server
+
+# Vérifier
+sudo systemctl status openvpn@server
+
+# Ajouter un nouveau client
+sudo ./openvpn-install.sh
+# Choisir option 1 (Add new client)
+                </div>
+
+                <h3>Client VPN</h3>
+                <div class="code">
+# Linux - WireGuard
+sudo wg-quick up wg0
+sudo wg-quick down wg0
+
+# Linux - OpenVPN
+sudo openvpn --config client.ovpn
+
+# Windows - WireGuard
+# Installer WireGuard GUI
+# Importer le fichier wg0.conf
+# Activer la connexion
+
+# Windows - OpenVPN
+# Installer OpenVPN GUI
+# Copier client.ovpn dans C:\Program Files\OpenVPN\config\
+# Clic droit icône → Connect
+
+# macOS
+# WireGuard: App Store
+# OpenVPN: Tunnelblick
+                </div>
+
+                <h3>Tester le VPN</h3>
+                <div class="code">
+# Vérifier l'IP publique
+curl ifconfig.me
+curl ipinfo.io/ip
+
+# Ping vers le serveur VPN
+ping 10.0.0.1
+
+# Traceroute
+traceroute google.com
+
+# Test de fuite DNS
+# https://www.dnsleaktest.com
+
+# Test de fuite WebRTC
+# https://browserleaks.com/webrtc
+                </div>
+
+                <h3>Site-to-Site VPN (IPsec)</h3>
+                <div class="example">
+                    <div class="code">
+# Exemple de tunnel IPsec entre deux sites
+
+Site A : 192.168.1.0/24 (Public: 203.0.113.1)
+    ↓
+   VPN Tunnel (IPsec)
+    ↓
+Site B : 192.168.2.0/24 (Public: 203.0.113.2)
+
+# Strongswan (Linux)
+sudo apt install strongswan
+
+# /etc/ipsec.conf
+conn site-to-site
+    auto=start
+    type=tunnel
+    left=203.0.113.1
+    leftsubnet=192.168.1.0/24
+    right=203.0.113.2
+    rightsubnet=192.168.2.0/24
+    ike=aes256-sha2_256-modp2048!
+    esp=aes256-sha2_256!
+    keyexchange=ikev2
+
+# /etc/ipsec.secrets
+203.0.113.1 203.0.113.2 : PSK "PreSharedKeySecure123!"
+
+# Démarrer
+sudo ipsec start
+sudo ipsec status
+                    </div>
+                </div>
+
+                <div class="success">
+                    <p><strong>Bonnes pratiques VPN :</strong></p>
+                    <ul>
+                        <li>Utiliser WireGuard pour performances (moderne)</li>
+                        <li>OpenVPN pour compatibilité (universel)</li>
+                        <li>Changer le port par défaut</li>
+                        <li>Utiliser des certificats et clés forts</li>
+                        <li>Activer le kill switch (coupure si VPN déconnecté)</li>
+                        <li>Vérifier les fuites DNS et IP</li>
+                        <li>Monitorer les connexions actives</li>
+                        <li>Révoquer les accès des anciens employés</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE SÉCURITÉ SYSTÈME -->
+            <div id="securite" class="module">
+                <h2>Sécurité système (Hardening)</h2>
+                
+                <h3>Qu'est-ce que le hardening ?</h3>
+                <p>Le hardening (durcissement) est l'ensemble des pratiques visant à réduire la surface d'attaque d'un système en désactivant les services inutiles, en renforçant les configurations et en appliquant les meilleures pratiques de sécurité.</p>
+
+                <h3>Hardening Linux</h3>
+                <div class="example">
+                    <h4>1. Mises à jour de sécurité</h4>
+                    <div class="code">
+# Ubuntu/Debian - Mises à jour automatiques
+sudo apt install unattended-upgrades
+sudo dpkg-reconfigure --priority=low unattended-upgrades
+
+# Mises à jour manuelles
+sudo apt update && sudo apt upgrade -y
+
+# CentOS/RHEL
+sudo yum update -y
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>2. SSH sécurisé</h4>
+                    <div class="code">
+# /etc/ssh/sshd_config
+Port 2222                           # Changer le port par défaut
+PermitRootLogin no                  # Désactiver login root
+PasswordAuthentication no           # Forcer clés SSH
+PubkeyAuthentication yes
+MaxAuthTries 3
+MaxSessions 2
+ClientAliveInterval 300
+ClientAliveCountMax 2
+
+# Autoriser seulement certains utilisateurs
+AllowUsers thomas admin
+
+# Redémarrer SSH
+sudo systemctl restart sshd
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>3. Fail2ban - Anti brute-force</h4>
+                    <div class="code">
+# Installation
+sudo apt install fail2ban
+
+# Configuration (/etc/fail2ban/jail.local)
+[DEFAULT]
+bantime = 3600                      # 1 heure
+findtime = 600                      # 10 minutes
+maxretry = 3
+
+[sshd]
+enabled = true
+port = 2222
+logpath = /var/log/auth.log
+
+# Démarrer
+sudo systemctl start fail2ban
+sudo systemctl enable fail2ban
+
+# Vérifier les bannissements
+sudo fail2ban-client status sshd
+
+# Débannir une IP
+sudo fail2ban-client set sshd unbanip 192.168.1.100
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>4. Désactiver les services inutiles</h4>
+                    <div class="code">
+# Lister les services actifs
+systemctl list-units --type=service --state=running
+
+# Désactiver un service
+sudo systemctl stop avahi-daemon
+sudo systemctl disable avahi-daemon
+
+# Services souvent inutiles sur serveurs
+sudo systemctl disable bluetooth.service
+sudo systemctl disable cups.service
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>5. Audit avec Lynis</h4>
+                    <div class="code">
+# Installation
+sudo apt install lynis
+
+# Audit complet
+sudo lynis audit system
+
+# Le rapport indique:
+# - Warnings (avertissements)
+# - Suggestions d'amélioration
+# - Score de sécurité
+
+# Rapport sauvegardé dans /var/log/lynis.log
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>6. SELinux / AppArmor</h4>
+                    <div class="code">
+# SELinux (CentOS/RHEL)
+# Vérifier le statut
+getenforce                          # Enforcing, Permissive, Disabled
+
+# Activer
+sudo setenforce 1                   # Mode Enforcing
+
+# Permanent: /etc/selinux/config
+SELINUX=enforcing
+
+# AppArmor (Ubuntu)
+# Vérifier
+sudo aa-status
+
+# Activer un profil
+sudo aa-enforce /etc/apparmor.d/usr.sbin.nginx
+                    </div>
+                </div>
+
+                <h3>Hardening Windows Server</h3>
+                <div class="code">
+# PowerShell
+
+# 1. Mises à jour automatiques
+Install-Module PSWindowsUpdate
+Get-WindowsUpdate
+Install-WindowsUpdate -AcceptAll -AutoReboot
+
+# 2. Désactiver SMBv1 (vulnérable)
+Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol
+
+# 3. Activer BitLocker (chiffrement disque)
+Enable-BitLocker -MountPoint "C:" -EncryptionMethod XtsAes256
+
+# 4. Politique de mots de passe
+# GUI: secpol.msc → Account Policies → Password Policy
+
+# 5. Audit de sécurité
+# GUI: secpol.msc → Advanced Audit Policy Configuration
+
+# 6. Désactiver comptes inutilisés
+Disable-LocalUser -Name "Guest"
+
+# 7. Windows Defender
+Set-MpPreference -DisableRealtimeMonitoring $false
+Update-MpSignature
+
+# 8. Logs de sécurité
+# Event Viewer → Windows Logs → Security
+Get-EventLog -LogName Security -Newest 100 | Where-Object {$_.EntryType -eq "FailureAudit"}
+                </div>
+
+                <h3>Gestion des mots de passe</h3>
+                <div class="success">
+                    <p><strong>Règles de mots de passe robustes :</strong></p>
+                    <ul>
+                        <li>Minimum 12 caractères (idéalement 16+)</li>
+                        <li>Majuscules, minuscules, chiffres, symboles</li>
+                        <li>Pas de mots du dictionnaire</li>
+                        <li>Unique pour chaque compte</li>
+                        <li>Changer les mots de passe par défaut</li>
+                        <li>Utiliser un gestionnaire de mots de passe</li>
+                        <li>Activer l'authentification multi-facteurs (2FA)</li>
+                    </ul>
+                </div>
+
+                <h3>Checklist de sécurité</h3>
+                <div class="success">
+                    <p><strong>Checklist système :</strong></p>
+                    <ul>
+                        <li>Mises à jour de sécurité automatiques</li>
+                        <li>Pare-feu activé et configuré</li>
+                        <li>SSH sécurisé (port non standard, clés uniquement)</li>
+                        <li>Fail2ban ou équivalent installé</li>
+                        <li>Services inutiles désactivés</li>
+                        <li>Utilisateur non-root pour usage quotidien</li>
+                        <li>Logs centralisés et monitorés</li>
+                        <li>Sauvegardes automatiques et testées</li>
+                        <li>Chiffrement des données sensibles</li>
+                        <li>Audit de sécurité régulier</li>
+                        <li>Documentation des configurations</li>
+                        <li>Plan de réponse aux incidents</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <p><strong>Erreurs courantes de sécurité :</strong></p>
+                    <ul>
+                        <li>Mots de passe par défaut non changés</li>
+                        <li>Root login SSH activé</li>
+                        <li>Pas de pare-feu</li>
+                        <li>Services inutiles exposés</li>
+                        <li>Mises à jour négligées</li>
+                        <li>Pas de sauvegardes</li>
+                        <li>Logs non surveillés</li>
+                        <li>Permissions trop permissives (chmod 777)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MODULE DOCKER (déjà créé) -->
+
+            <!-- MODULE DOCKER -->
+            <div id="docker" class="module">
+                <h2>Docker - Conteneurisation</h2>
+                
+                <h3>Qu'est-ce que Docker ?</h3>
+                <p>Docker est une plateforme de conteneurisation qui permet d'empaqueter des applications avec toutes leurs dépendances dans des conteneurs légers, portables et isolés.</p>
+
+                <h3>Avantages de Docker</h3>
+                <ul>
+                    <li><strong>Portabilité</strong> : "Fonctionne sur ma machine" → Fonctionne partout</li>
+                    <li><strong>Isolation</strong> : Chaque conteneur est isolé</li>
+                    <li><strong>Légèreté</strong> : Plus léger qu'une VM (secondes vs minutes)</li>
+                    <li><strong>Reproductibilité</strong> : Même environnement dev/prod</li>
+                    <li><strong>Scalabilité</strong> : Déployer rapidement plusieurs instances</li>
+                </ul>
+
+                <h3>Concepts clés</h3>
+                <div class="example">
+                    <ul>
+                        <li><strong>Image</strong> : Template en lecture seule (ex: ubuntu:22.04, nginx:latest)</li>
+                        <li><strong>Conteneur</strong> : Instance en cours d'exécution d'une image</li>
+                        <li><strong>Dockerfile</strong> : Recette pour créer une image</li>
+                        <li><strong>Registry</strong> : Dépôt d'images (Docker Hub, GitHub Container Registry)</li>
+                        <li><strong>Volume</strong> : Stockage persistant pour les données</li>
+                        <li><strong>Network</strong> : Réseau pour connecter les conteneurs</li>
+                    </ul>
+                </div>
+
+                <h3>Installation Docker</h3>
+                <div class="code">
+# Ubuntu/Debian
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Ajouter l'utilisateur au groupe docker
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Vérifier l'installation
+docker --version
+docker run hello-world
+
+# Activer au démarrage
+sudo systemctl enable docker
+sudo systemctl start docker
+                </div>
+
+                <h3>Commandes Docker essentielles</h3>
+                <div class="code">
+# Images
+docker images                          # Lister les images locales
+docker pull nginx:latest               # Télécharger une image
+docker rmi nginx:latest                # Supprimer une image
+docker build -t monapp:1.0 .          # Créer une image depuis Dockerfile
+
+# Conteneurs
+docker ps                              # Conteneurs en cours
+docker ps -a                           # Tous les conteneurs
+docker run nginx                       # Lancer un conteneur
+docker run -d nginx                    # En arrière-plan (detached)
+docker run -d -p 8080:80 nginx        # Avec mapping de port
+docker run -d --name monserveur nginx  # Avec un nom
+docker stop monserveur                 # Arrêter
+docker start monserveur                # Démarrer
+docker restart monserveur              # Redémarrer
+docker rm monserveur                   # Supprimer
+docker logs monserveur                 # Voir les logs
+docker exec -it monserveur bash        # Shell interactif
+
+# Nettoyage
+docker system prune                    # Nettoyer les ressources inutilisées
+docker volume prune                    # Nettoyer les volumes
+docker image prune                     # Nettoyer les images
+                </div>
+
+                <h3>Créer un Dockerfile</h3>
+                <div class="example">
+                    <h4>Application Node.js</h4>
+                    <div class="code">
+# Dockerfile
+FROM node:18-alpine
+
+# Répertoire de travail
+WORKDIR /app
+
+# Copier les dépendances
+COPY package*.json ./
+
+# Installer les dépendances
+RUN npm install --production
+
+# Copier le code source
+COPY . .
+
+# Exposer le port
+EXPOSE 3000
+
+# Commande de démarrage
+CMD ["node", "server.js"]
+                    </div>
+
+                    <div class="code">
+# Construire l'image
+docker build -t monapp-node:1.0 .
+
+# Lancer le conteneur
+docker run -d -p 3000:3000 --name monapp monapp-node:1.0
+
+# Vérifier
+curl http://localhost:3000
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Application Python Flask</h4>
+                    <div class="code">
+# Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+                    </div>
+                </div>
+
+                <h3>Volumes Docker</h3>
+                <div class="code">
+# Créer un volume
+docker volume create mes-donnees
+
+# Lancer avec un volume
+docker run -d -v mes-donnees:/var/lib/mysql --name db mysql:8
+
+# Monter un dossier local
+docker run -d -v /home/thomas/data:/app/data --name app monapp
+
+# Lister les volumes
+docker volume ls
+
+# Inspecter un volume
+docker volume inspect mes-donnees
+
+# Supprimer un volume
+docker volume rm mes-donnees
+                </div>
+
+                <h3>Réseaux Docker</h3>
+                <div class="code">
+# Créer un réseau
+docker network create mon-reseau
+
+# Lancer des conteneurs sur ce réseau
+docker run -d --name db --network mon-reseau mysql:8
+docker run -d --name app --network mon-reseau monapp
+
+# Dans monapp, on peut accéder à la DB via "db:3306"
+
+# Lister les réseaux
+docker network ls
+
+# Inspecter un réseau
+docker network inspect mon-reseau
+
+# Supprimer un réseau
+docker network rm mon-reseau
+                </div>
+
+                <h3>🎼 Docker Compose</h3>
+                <p>Docker Compose permet de gérer des applications multi-conteneurs avec un fichier YAML.</p>
+
+                <div class="example">
+                    <h4>Application LAMP Stack</h4>
+                    <div class="code">
+# docker-compose.yml
+version: '3.8'
+
+services:
+  web:
+    image: php:8.1-apache
+    ports:
+      - "8080:80"
+    volumes:
+      - ./www:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - lamp-network
+
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: monsite
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass123
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - lamp-network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root123
+    depends_on:
+      - db
+    networks:
+      - lamp-network
+
+volumes:
+  db-data:
+
+networks:
+  lamp-network:
+                    </div>
+
+                    <div class="code">
+# Commandes Docker Compose
+docker-compose up -d              # Lancer tous les services
+docker-compose down               # Arrêter et supprimer
+docker-compose ps                 # État des services
+docker-compose logs web           # Logs d'un service
+docker-compose exec web bash      # Shell dans un service
+docker-compose restart            # Redémarrer tous les services
+docker-compose build              # Reconstruire les images
+                    </div>
+                </div>
+
+                <h3>Bonnes pratiques</h3>
+                <div class="success">
+                    <ul>
+                        <li>Utilisez des images officielles de Docker Hub</li>
+                        <li>Versionnez vos images (évitez `:latest` en production)</li>
+                        <li>Un processus par conteneur (principe Unix)</li>
+                        <li>Utilisez des images Alpine pour réduire la taille</li>
+                        <li>Ne stockez jamais de secrets dans les images</li>
+                        <li>Utilisez .dockerignore pour exclure les fichiers inutiles</li>
+                        <li>Optimisez les couches du Dockerfile (mettez les moins changeantes en premier)</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <p><strong>À éviter :</strong></p>
+                    <ul>
+                        <li>Exécuter en tant que root dans le conteneur</li>
+                        <li>Installer des outils de développement en production</li>
+                        <li>Utiliser `docker commit` (préférer Dockerfile)</li>
+                        <li>Stockez des données importantes sans volumes</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            <p>Formation DWWM Lille Thomas, Réseaux & DevOps</p>
+        
+        </footer>
+    </div>
+
+    <script>
+        function showModule(moduleId) {
+            console.log('Affichage du module:', moduleId);
+            
+            // Cacher tous les modules
+            const modules = document.querySelectorAll('.module');
+            modules.forEach(module => {
+                module.classList.remove('active');
+            });
+
+            // Afficher le module sélectionné
+            const selectedModule = document.getElementById(moduleId);
+            if (selectedModule) {
+                selectedModule.classList.add('active');
+                console.log('Module affiché avec succès');
+            } else {
+                console.error('Module non trouvé:', moduleId);
+            }
+
+            // Scroll en haut
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            return false;
+        }
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page chargée - initialisation');
+            
+            // Gestion mobile du dropdown
+            if (window.innerWidth <= 768) {
+                const dropdowns = document.querySelectorAll('.dropdown > a');
+                dropdowns.forEach(dropdown => {
+                    dropdown.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.parentElement.classList.toggle('active');
+                    });
+                });
+            }
+            
+            // Afficher le module d'accueil par défaut
+            showModule('accueil');
+        });
+    </script>
+</body>
+</html>

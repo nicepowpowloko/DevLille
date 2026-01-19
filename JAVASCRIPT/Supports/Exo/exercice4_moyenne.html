@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 4 - Calcul de moyenne et admissibilité</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+       
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Exercice 4 : Calcul de moyenne et admissibilité</h1>
+        
+        <div id="resultats"></div>
+    </div>
+
+    <script>
+        // 1. Créer trois variables avec des notes sur 20
+        let note1 = 12;
+        let note2 = 15;
+        let note3 = 14;
+
+        // 2. Calculer la moyenne des trois notes
+        let moyenne = (note1 + note2 + note3) / 3;
+
+        // 3. Créer une variable estPresent (true ou false)
+        let estPresent = true;
+
+        // 4. Vérifier si l'étudiant est admis : moyenne >= 10 ET présent
+        let estAdmis = moyenne >= 10 && estPresent;
+
+        // 5. Vérifier s'il a une mention : moyenne >= 14 ET présent
+        let aMention = moyenne >= 14 && estPresent;
+
+        // 6. Afficher tous les résultats
+        let html = `
+            <div class="result">
+                <h2>Notes de l'étudiant</h2>
+                <div class="note-line">
+                    <span>Note 1 (Mathématiques)</span>
+                    <span class="note-value">${note1} / 20</span>
+                </div>
+                <div class="note-line">
+                    <span>Note 2 (Français)</span>
+                    <span class="note-value">${note2} / 20</span>
+                </div>
+                <div class="note-line">
+                    <span>Note 3 (Histoire)</span>
+                    <span class="note-value">${note3} / 20</span>
+                </div>
+            </div>
+
+            <div class="moyenne">
+                MOYENNE : ${moyenne.toFixed(2)} / 20
+            </div>
+
+            <div class="presence">
+                ${estPresent ? 'Étudiant PRÉSENT aux examens' : '❌ Étudiant ABSENT aux examens'}
+            </div>
+        `;
+
+        // Afficher le résultat de l'admission
+        if (estAdmis) {
+            html += `
+                <div class="success">
+                    FÉLICITATIONS ! L'étudiant est ADMIS<br>
+                    ✓ Moyenne : ${moyenne.toFixed(2)} / 20 (≥ 10)<br>
+                    ✓ Présent : Oui
+                </div>
+            `;
+        } else {
+            if (!estPresent) {
+                html += `
+                    <div class="error">
+                        NON ADMIS : L'étudiant était ABSENT aux examens<br>
+                        La présence est obligatoire pour être admis.
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="error">
+                        NON ADMIS : Moyenne insuffisante<br>
+                        Moyenne : ${moyenne.toFixed(2)} / 20 (< 10)
+                    </div>
+                `;
+            }
+        }
+
+        // Afficher le résultat de la mention
+        if (aMention) {
+            html += `
+                <div class="success">
+                    L'étudiant obtient une MENTION !<br>
+                    ✓ Moyenne : ${moyenne.toFixed(2)} / 20 (≥ 14)<br>
+                    ✓ Présent : Oui
+                </div>
+            `;
+        } else if (estAdmis) {
+            html += `
+                <div class="mention">
+                    ℹPas de mention<br>
+                    Moyenne : ${moyenne.toFixed(2)} / 20 (< 14)
+                </div>
+            `;
+        }
+
+        // Afficher le code utilisé
+        html += `
+            <div class="result">
+                <h3>Code JavaScript utilisé :</h3>
+                <div class="code">
+// 1. Créer les variables de notes<br>
+let note1 = 12;<br>
+let note2 = 15;<br>
+let note3 = 14;<br>
+<br>
+// 2. Calculer la moyenne<br>
+let moyenne = (note1 + note2 + note3) / 3;<br>
+<br>
+// 3. Présence de l'étudiant<br>
+let estPresent = true;<br>
+<br>
+// 4. Vérifier l'admission (ET logique &&)<br>
+let estAdmis = moyenne >= 10 && estPresent;<br>
+<br>
+// 5. Vérifier la mention<br>
+let aMention = moyenne >= 14 && estPresent;<br>
+<br>
+// 6. Afficher les résultats<br>
+console.log("Moyenne:", moyenne.toFixed(2));<br>
+console.log("Présent:", estPresent);<br>
+console.log("Admis:", estAdmis);<br>
+console.log("Mention:", aMention);
+                </div>
+            </div>
+        `;
+
+        // Afficher dans la page
+        document.getElementById('resultats').innerHTML = html;
+
+        // Afficher aussi dans la console
+        console.log("=== RÉSULTATS SCOLAIRES ===");
+        console.log(`Note 1 : ${note1}/20`);
+        console.log(`Note 2 : ${note2}/20`);
+        console.log(`Note 3 : ${note3}/20`);
+        console.log(`Moyenne : ${moyenne.toFixed(2)}/20`);
+        console.log(`Présent : ${estPresent}`);
+        console.log(`Admis : ${estAdmis}`);
+        console.log(`Mention : ${aMention}`);
+    </script>
+</body>
+</html>

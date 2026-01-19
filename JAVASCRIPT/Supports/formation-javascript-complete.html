@@ -857,7 +857,7 @@ console.log(score); // 65
                     <td><code>===</code></td>
                     <td>Égalité stricte (valeur + type)</td>
                     <td><code>5 === "5"</code></td>
-                    <td>false</td>
+                    <td>true</td>
                 </tr>
                 <tr>
                     <td><code>!=</code></td>
@@ -2005,11 +2005,11 @@ console.log(z);    //  30 (var n'a pas de block scope!)
 
 <!-- MODULE 6: Tableaux (Arrays) - COMPLET -->
 <div id="module6" class="module">
-    <h2>Module 6: Tableaux (Arrays)</h2>
+    <h2>Module 6: Tableaux Avancés (Arrays)</h2>
     
     <div class="concept">
         <h3> Concepts Clés</h3>
-        <p>Les <strong>tableaux (arrays)</strong> sont des structures de données qui permettent de stocker plusieurs valeurs dans une seule variable.</p>
+        <p>Les <strong>tableaux (arrays)</strong> sont des structures de données essentielles. JavaScript moderne offre des méthodes puissantes pour les manipuler efficacement.</p>
     </div>
 
     <h3>1. Créer des Tableaux</h3>
@@ -2019,16 +2019,23 @@ console.log(z);    //  30 (var n'a pas de block scope!)
 // Méthode littérale (recommandée)
 let fruits = ["Pomme", "Banane", "Orange"];
 
+// Avec Array constructor
+let nombres = new Array(1, 2, 3, 4, 5);
+
 // Tableau vide
 let vide = [];
 
 // Accéder aux éléments
 console.log(fruits[0]); // "Pomme"
 console.log(fruits.length); // 3
+
+// Modifier un élément
+fruits[1] = "Fraise";
+console.log(fruits); // ["Pomme", "Fraise", "Orange"]
         </pre>
     </div>
 
-    <h3>2. Méthodes Essentielles</h3>
+    <h3>2. Méthodes de Base</h3>
     <table>
         <tr>
             <th>Méthode</th>
@@ -2046,71 +2053,467 @@ console.log(fruits.length); // 3
             <td><code>arr.pop()</code></td>
         </tr>
         <tr>
-            <td><code>map()</code></td>
-            <td>Transforme chaque élément</td>
-            <td><code>arr.map(x => x * 2)</code></td>
+            <td><code>unshift()</code></td>
+            <td>Ajoute au début</td>
+            <td><code>arr.unshift("Premier")</code></td>
         </tr>
         <tr>
-            <td><code>filter()</code></td>
-            <td>Filtre les éléments</td>
-            <td><code>arr.filter(x => x > 5)</code></td>
+            <td><code>shift()</code></td>
+            <td>Enlève le premier</td>
+            <td><code>arr.shift()</code></td>
         </tr>
         <tr>
-            <td><code>reduce()</code></td>
-            <td>Réduit à une valeur</td>
-            <td><code>arr.reduce((a,b) => a+b)</code></td>
+            <td><code>splice()</code></td>
+            <td>Ajoute/supprime n'importe où</td>
+            <td><code>arr.splice(1, 2)</code></td>
+        </tr>
+        <tr>
+            <td><code>slice()</code></td>
+            <td>Copie une portion</td>
+            <td><code>arr.slice(1, 3)</code></td>
         </tr>
     </table>
 
     <div class="example">
-        <div class="example-title">Manipulation complète:</div>
+        <div class="example-title">Exemples de manipulation de base:</div>
         <pre>
+let fruits = ["Pomme", "Banane", "Orange"];
+
+// Ajouter à la fin
+fruits.push("Fraise");
+console.log(fruits); // ["Pomme", "Banane", "Orange", "Fraise"]
+
+// Enlever le dernier
+let dernier = fruits.pop();
+console.log(dernier); // "Fraise"
+console.log(fruits); // ["Pomme", "Banane", "Orange"]
+
+// Ajouter au début
+fruits.unshift("Mangue");
+console.log(fruits); // ["Mangue", "Pomme", "Banane", "Orange"]
+
+// Enlever le premier
+let premier = fruits.shift();
+console.log(premier); // "Mangue"
+
+// Splice - Supprimer et ajouter
+fruits.splice(1, 1, "Kiwi", "Pêche"); // À l'index 1, supprime 1, ajoute 2
+console.log(fruits); // ["Pomme", "Kiwi", "Pêche", "Orange"]
+        </pre>
+    </div>
+
+    <h3>3. map() - Transformer Chaque Élément</h3>
+    
+    <div class="concept">
+        <p><strong>map()</strong> crée un NOUVEAU tableau en transformant chaque élément. C'est l'une des méthodes les plus utilisées en JavaScript moderne !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Utilisation de map():</div>
+        <pre>
+// Doubler tous les nombres
 let nombres = [1, 2, 3, 4, 5];
-
-// map - transformer
 let doubles = nombres.map(n => n * 2);
-// [2, 4, 6, 8, 10]
+console.log(doubles); // [2, 4, 6, 8, 10]
 
-// filter - filtrer
+// Mettre en majuscules
+let noms = ["alice", "bob", "charlie"];
+let majuscules = noms.map(nom => nom.toUpperCase());
+console.log(majuscules); // ["ALICE", "BOB", "CHARLIE"]
+
+// Extraire une propriété d'objets
+let users = [
+    { nom: "Alice", age: 25 },
+    { nom: "Bob", age: 30 },
+    { nom: "Charlie", age: 35 }
+];
+
+let nomsUsers = users.map(user => user.nom);
+console.log(nomsUsers); // ["Alice", "Bob", "Charlie"]
+
+// Créer du HTML
+let fruits = ["Pomme", "Banane", "Orange"];
+let html = fruits.map(fruit => `<li>${fruit}</li>`);
+console.log(html); // ["<li>Pomme</li>", "<li>Banane</li>", "<li>Orange</li>"]
+        </pre>
+    </div>
+
+    <h3>4. filter() - Filtrer les Éléments</h3>
+    
+    <div class="concept">
+        <p><strong>filter()</strong> crée un nouveau tableau avec seulement les éléments qui passent le test (condition vraie).</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Utilisation de filter():</div>
+        <pre>
+// Nombres pairs
+let nombres = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 let pairs = nombres.filter(n => n % 2 === 0);
-// [2, 4]
+console.log(pairs); // [2, 4, 6, 8, 10]
 
-// reduce - réduire
+// Nombres supérieurs à 5
+let grands = nombres.filter(n => n > 5);
+console.log(grands); // [6, 7, 8, 9, 10]
+
+// Filtrer des objets
+let produits = [
+    { nom: "Laptop", prix: 1000 },
+    { nom: "Souris", prix: 25 },
+    { nom: "Clavier", prix: 75 },
+    { nom: "Écran", prix: 300 }
+];
+
+let produitsAbordables = produits.filter(p => p.prix < 100);
+console.log(produitsAbordables);
+// [{ nom: "Souris", prix: 25 }, { nom: "Clavier", prix: 75 }]
+
+// Filtrer par nom
+let fruits = ["Pomme", "Banane", "Orange", "Poire"];
+let avecP = fruits.filter(fruit => fruit.startsWith("P"));
+console.log(avecP); // ["Pomme", "Poire"]
+        </pre>
+    </div>
+
+    <h3>5. reduce() - Réduire à Une Valeur</h3>
+    
+    <div class="concept">
+        <p><strong>reduce()</strong> réduit un tableau à une seule valeur en appliquant une fonction accumulateur.</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Utilisation de reduce():</div>
+        <pre>
+// Somme de nombres
+let nombres = [1, 2, 3, 4, 5];
 let somme = nombres.reduce((acc, n) => acc + n, 0);
-// 15
+console.log(somme); // 15
 
-// find - trouver
-let premierGrand = nombres.find(n => n > 3);
-// 4
+// Produit
+let produit = nombres.reduce((acc, n) => acc * n, 1);
+console.log(produit); // 120
+
+// Trouver le maximum
+let max = nombres.reduce((acc, n) => n > acc ? n : acc, nombres[0]);
+console.log(max); // 5
+
+// Compter les occurrences
+let fruits = ["pomme", "banane", "pomme", "orange", "banane", "pomme"];
+let compte = fruits.reduce((acc, fruit) => {
+    acc[fruit] = (acc[fruit] || 0) + 1;
+    return acc;
+}, {});
+console.log(compte); 
+// { pomme: 3, banane: 2, orange: 1 }
+
+// Calculer un total de prix
+let produits = [
+    { nom: "Laptop", prix: 1000 },
+    { nom: "Souris", prix: 25 },
+    { nom: "Clavier", prix: 75 }
+];
+
+let total = produits.reduce((acc, p) => acc + p.prix, 0);
+console.log(total); // 1100
+        </pre>
+    </div>
+
+    <h3>6.  Autres Méthodes Essentielles</h3>
+
+    <table>
+        <tr>
+            <th>Méthode</th>
+            <th>Description</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>find()</code></td>
+            <td>Trouve le premier élément qui passe le test</td>
+            <td><code>arr.find(x => x > 5)</code></td>
+        </tr>
+        <tr>
+            <td><code>findIndex()</code></td>
+            <td>Trouve l'index du premier élément</td>
+            <td><code>arr.findIndex(x => x > 5)</code></td>
+        </tr>
+        <tr>
+            <td><code>some()</code></td>
+            <td>Teste si AU MOINS UN élément passe le test</td>
+            <td><code>arr.some(x => x > 5)</code></td>
+        </tr>
+        <tr>
+            <td><code>every()</code></td>
+            <td>Teste si TOUS les éléments passent le test</td>
+            <td><code>arr.every(x => x > 0)</code></td>
+        </tr>
+        <tr>
+            <td><code>includes()</code></td>
+            <td>Vérifie si un élément existe</td>
+            <td><code>arr.includes("Pomme")</code></td>
+        </tr>
+        <tr>
+            <td><code>indexOf()</code></td>
+            <td>Trouve l'index d'un élément</td>
+            <td><code>arr.indexOf("Pomme")</code></td>
+        </tr>
+    </table>
+
+    <div class="example">
+        <div class="example-title">Exemples des méthodes:</div>
+        <pre>
+let nombres = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// find() - Trouve le premier nombre > 5
+let premierGrand = nombres.find(n => n > 5);
+console.log(premierGrand); // 6
+
+// findIndex() - Trouve l'index
+let indexGrand = nombres.findIndex(n => n > 5);
+console.log(indexGrand); // 5 (l'index de 6)
+
+// some() - Au moins un nombre pair ?
+let aPair = nombres.some(n => n % 2 === 0);
+console.log(aPair); // true
+
+// every() - Tous positifs ?
+let tousPositifs = nombres.every(n => n > 0);
+console.log(tousPositifs); // true
+
+// includes() - Contient 5 ?
+let contient5 = nombres.includes(5);
+console.log(contient5); // true
+
+// indexOf() - Position de 5
+let position = nombres.indexOf(5);
+console.log(position); // 4
+        </pre>
+    </div>
+
+    <h3>7. sort() et reverse()</h3>
+
+    <div class="example">
+        <div class="example-title">Trier et inverser:</div>
+        <pre>
+// Trier des nombres (ATTENTION au piège!)
+let nombres = [10, 5, 40, 25, 1000, 1];
+
+//  MAUVAIS - trie comme des strings
+nombres.sort();
+console.log(nombres); // [1, 10, 1000, 25, 40, 5]
+
+//  BON - trie numériquement
+nombres.sort((a, b) => a - b);
+console.log(nombres); // [1, 5, 10, 25, 40, 1000]
+
+// Ordre décroissant
+nombres.sort((a, b) => b - a);
+console.log(nombres); // [1000, 40, 25, 10, 5, 1]
+
+// Trier des strings (ordre alphabétique)
+let fruits = ["Banane", "Orange", "Pomme", "Kiwi"];
+fruits.sort();
+console.log(fruits); // ["Banane", "Kiwi", "Orange", "Pomme"]
+
+// Reverse - Inverser l'ordre
+fruits.reverse();
+console.log(fruits); // ["Pomme", "Orange", "Kiwi", "Banane"]
+
+// Trier des objets par propriété
+let users = [
+    { nom: "Charlie", age: 35 },
+    { nom: "Alice", age: 25 },
+    { nom: "Bob", age: 30 }
+];
+
+users.sort((a, b) => a.age - b.age);
+console.log(users);
+// [{ nom: "Alice", age: 25 }, { nom: "Bob", age: 30 }, { nom: "Charlie", age: 35 }]
+        </pre>
+    </div>
+
+    <h3>8.  Spread Operator avec Arrays</h3>
+
+    <div class="example">
+        <div class="example-title">Utiliser ... (spread):</div>
+        <pre>
+// Fusionner des arrays
+let arr1 = [1, 2, 3];
+let arr2 = [4, 5, 6];
+let fusion = [...arr1, ...arr2];
+console.log(fusion); // [1, 2, 3, 4, 5, 6]
+
+// Copier un array (copie superficielle)
+let original = [1, 2, 3];
+let copie = [...original];
+copie.push(4);
+console.log(original); // [1, 2, 3] (pas modifié)
+console.log(copie);    // [1, 2, 3, 4]
+
+// Ajouter des éléments
+let fruits = ["Pomme", "Banane"];
+let nouveaux = ["Kiwi", ...fruits, "Orange"];
+console.log(nouveaux); // ["Kiwi", "Pomme", "Banane", "Orange"]
+
+// Trouver le maximum
+let nombres = [5, 2, 8, 1, 9, 3];
+let max = Math.max(...nombres);
+console.log(max); // 9
+
+// Convertir string en array de caractères
+let mot = "Hello";
+let lettres = [...mot];
+console.log(lettres); // ["H", "e", "l", "l", "o"]
+        </pre>
+    </div>
+
+    <h3>9. Chaîner les Méthodes</h3>
+
+    <div class="example">
+        <div class="example-title">Combiner plusieurs méthodes:</div>
+        <pre>
+let nombres = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// Filtrer les pairs, les doubler, puis calculer la somme
+let resultat = nombres
+    .filter(n => n % 2 === 0)  // [2, 4, 6, 8, 10]
+    .map(n => n * 2)            // [4, 8, 12, 16, 20]
+    .reduce((acc, n) => acc + n, 0); // 60
+
+console.log(resultat); // 60
+
+// Exemple avec des objets
+let produits = [
+    { nom: "Laptop", prix: 1000, categorie: "tech" },
+    { nom: "Souris", prix: 25, categorie: "tech" },
+    { nom: "Chaise", prix: 150, categorie: "mobilier" },
+    { nom: "Clavier", prix: 75, categorie: "tech" },
+    { nom: "Bureau", prix: 300, categorie: "mobilier" }
+];
+
+// Produits tech de moins de 100€, triés par prix
+let techAbordable = produits
+    .filter(p => p.categorie === "tech")
+    .filter(p => p.prix < 100)
+    .sort((a, b) => a.prix - b.prix)
+    .map(p => p.nom);
+
+console.log(techAbordable); // ["Souris", "Clavier"]
+        </pre>
+    </div>
+
+    <h3>10. Exemple Complet Interactif</h3>
+
+    <div class="example">
+        <div class="example-title">Gestion de produits avec toutes les méthodes:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Gestionnaire de Produits&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; }
+        .produit { border: 1px solid #ddd; padding: 15px; margin: 10px 0; }
+        .stats { background: #f0f0f0; padding: 15px; margin: 20px 0; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Catalogue de Produits&lt;/h1&gt;
+    &lt;div id="stats"&gt;&lt;/div&gt;
+    &lt;div id="produits"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let produits = [
+            { id: 1, nom: "Laptop Pro", prix: 1200, stock: 5, categorie: "tech" },
+            { id: 2, nom: "Souris Gaming", prix: 45, stock: 15, categorie: "tech" },
+            { id: 3, nom: "Chaise Bureau", prix: 250, stock: 8, categorie: "mobilier" },
+            { id: 4, nom: "Clavier Mécanique", prix: 120, stock: 0, categorie: "tech" },
+            { id: 5, nom: "Écran 27\"", prix: 350, stock: 3, categorie: "tech" },
+            { id: 6, nom: "Bureau Assis-Debout", prix: 500, stock: 2, categorie: "mobilier" }
+        ];
+
+        // STATISTIQUES avec reduce()
+        let stats = {
+            total: produits.length,
+            valeurTotale: produits.reduce((acc, p) => acc + (p.prix * p.stock), 0),
+            prixMoyen: produits.reduce((acc, p) => acc + p.prix, 0) / produits.length,
+            enStock: produits.filter(p => p.stock > 0).length,
+            rupture: produits.filter(p => p.stock === 0).length
+        };
+
+        document.getElementById('stats').innerHTML = `
+            &lt;div class="stats"&gt;
+                &lt;h2&gt;Statistiques&lt;/h2&gt;
+                &lt;p&gt;&lt;strong&gt;Total produits:&lt;/strong&gt; ${stats.total}&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Valeur totale stock:&lt;/strong&gt; ${stats.valeurTotale}€&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Prix moyen:&lt;/strong&gt; ${stats.prixMoyen.toFixed(2)}€&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;En stock:&lt;/strong&gt; ${stats.enStock} | &lt;strong&gt;Rupture:&lt;/strong&gt; ${stats.rupture}&lt;/p&gt;
+            &lt;/div&gt;
+        `;
+
+        // AFFICHER les produits tech en stock, triés par prix
+        let produitsAfficher = produits
+            .filter(p => p.categorie === "tech")
+            .filter(p => p.stock > 0)
+            .sort((a, b) => a.prix - b.prix);
+
+        let html = produitsAfficher
+            .map(p => `
+                &lt;div class="produit"&gt;
+                    &lt;h3&gt;${p.nom}&lt;/h3&gt;
+                    &lt;p&gt;&lt;strong&gt;Prix:&lt;/strong&gt; ${p.prix}€&lt;/p&gt;
+                    &lt;p&gt;&lt;strong&gt;Stock:&lt;/strong&gt; ${p.stock} unités&lt;/p&gt;
+                    &lt;p&gt;&lt;strong&gt;Catégorie:&lt;/strong&gt; ${p.categorie}&lt;/p&gt;
+                &lt;/div&gt;
+            `)
+            .join('');
+
+        document.getElementById('produits').innerHTML = 
+            '&lt;h2&gt;Produits Tech en Stock (triés par prix)&lt;/h2&gt;' + html;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
         </pre>
     </div>
 
     <div class="exercise">
-        <div class="exercise-title"> Exercices Pratiques</div>
+        <div class="exercise-title">Exercices Pratiques</div>
         <ol>
-            <li>Créez un array de 5 prénoms et affichez-les</li>
-            <li>Utilisez map() pour doubler tous les nombres d'un array</li>
-            <li>Filtrez les nombres > 10 dans un array</li>
-            <li>Calculez la somme d'un array avec reduce()</li>
-            <li>Créez un array d'objets (produits) et filtrez par prix</li>
+            <li>Créez un array de 10 nombres et utilisez map() pour les mettre au carré</li>
+            <li>Avec filter(), gardez seulement les nombres > 20</li>
+            <li>Utilisez reduce() pour calculer la somme d'un array de prix</li>
+            <li>Créez un array d'objets (étudiants avec nom et note) et :
+                <ul>
+                    <li>Filtrez ceux qui ont plus de 10/20</li>
+                    <li>Triez par note décroissante</li>
+                    <li>Extrayez seulement les noms avec map()</li>
+                </ul>
+            </li>
+            <li>Utilisez find() pour trouver le premier produit en rupture de stock</li>
+            <li>Combinez plusieurs méthodes pour résoudre un problème complexe</li>
         </ol>
+    </div>
+
+    <div class="note">
+        <strong> À retenir :</strong> map(), filter() et reduce() sont les 3 méthodes les plus importantes du JavaScript moderne. Maîtrise-les absolument !
     </div>
 </div>
 
+
 <!-- MODULE 7: Objets -->
 <div id="module7" class="module">
-    <h2>Module 7: Objets</h2>
+    <h2>Module 7: Objets Avancés</h2>
     
     <div class="concept">
         <h3> Concepts Clés</h3>
-        <p>Les <strong>objets</strong> permettent de regrouper des données et des fonctionnalités. Ils utilisent des paires clé-valeur.</p>
+        <p>Les <strong>objets</strong> sont des collections de propriétés (paires clé-valeur). JavaScript moderne offre de nombreuses fonctionnalités puissantes pour les manipuler.</p>
     </div>
 
     <h3>1. Créer des Objets</h3>
+    
     <div class="example">
-        <div class="example-title">Syntaxe de base:</div>
+        <div class="example-title">Différentes façons de créer des objets:</div>
         <pre>
-// Objet littéral
+// Objet littéral (le plus courant)
 let personne = {
     nom: "Dupont",
     prenom: "Marie",
@@ -2118,253 +2521,539 @@ let personne = {
     ville: "Paris"
 };
 
-// Accéder aux propriétés
-console.log(personne.nom);        // "Dupont"
-console.log(personne["prenom"]);  // "Marie"
+// Objet vide
+let vide = {};
 
-// Modifier
+// Avec new Object (rare)
+let obj = new Object();
+obj.nom = "Test";
+
+// Accéder aux propriétés
+console.log(personne.nom);        // "Dupont" (notation point)
+console.log(personne["prenom"]);  // "Marie" (notation crochet)
+
+// Modifier une propriété
 personne.age = 31;
 
-// Ajouter
+// Ajouter une propriété
 personne.email = "marie@email.com";
+
+// Supprimer une propriété
+delete personne.ville;
         </pre>
     </div>
 
-    <h3>2. Méthodes d'Objet</h3>
+    <h3>2. Méthodes dans les Objets</h3>
+    
     <div class="example">
-        <div class="example-title">Fonctions dans les objets:</div>
+        <div class="example-title">Fonctions à l'intérieur des objets:</div>
         <pre>
 let voiture = {
     marque: "Toyota",
     modele: "Corolla",
     annee: 2020,
+    km: 15000,
     
-    // Méthode
+    // Méthode classique
     demarrer: function() {
         console.log("La voiture démarre!");
     },
     
-    // Syntaxe ES6
+    // Syntaxe ES6 (recommandée)
     klaxonner() {
         console.log("Beep beep!");
     },
     
-    // Utiliser 'this'
+    // Utiliser 'this' pour accéder aux propriétés
     afficherInfo() {
-        console.log(this.marque + " " + this.modele);
+        console.log(`${this.marque} ${this.modele} (${this.annee})`);
+    },
+    
+    rouler(distance) {
+        this.km += distance;
+        console.log(`Vous avez roulé ${distance} km. Total: ${this.km} km`);
     }
 };
 
-voiture.demarrer();      // "La voiture démarre!"
-voiture.afficherInfo();  // "Toyota Corolla"
+voiture.demarrer();        // "La voiture démarre!"
+voiture.klaxonner();       // "Beep beep!"
+voiture.afficherInfo();    // "Toyota Corolla (2020)"
+voiture.rouler(50);        // "Vous avez roulé 50 km. Total: 15050 km"
         </pre>
     </div>
 
-    <h3>3. Parcourir un Objet</h3>
+    <h3>3.  Object.keys(), Object.values(), Object.entries()</h3>
+    
+    <div class="concept">
+        <p>Ces méthodes <strong>ESSENTIELLES</strong> permettent de transformer un objet en tableau pour pouvoir utiliser les méthodes d'array (map, filter, etc.)</p>
+    </div>
+
     <div class="example">
-        <div class="example-title">Boucles sur les objets:</div>
+        <div class="example-title">Les 3 méthodes indispensables:</div>
         <pre>
-let etudiant = {
+let utilisateur = {
     nom: "Martin",
-    age: 22,
-    note: 15
+    prenom: "Alice",
+    age: 28,
+    ville: "Lyon",
+    actif: true
 };
 
-// for...in
-for (let cle in etudiant) {
-    console.log(cle + ": " + etudiant[cle]);
-}
+// Object.keys() - Retourne un ARRAY des clés
+let cles = Object.keys(utilisateur);
+console.log(cles); 
+// ["nom", "prenom", "age", "ville", "actif"]
 
-// Object.keys()
-let cles = Object.keys(etudiant);
-console.log(cles); // ["nom", "age", "note"]
+// Object.values() - Retourne un ARRAY des valeurs
+let valeurs = Object.values(utilisateur);
+console.log(valeurs); 
+// ["Martin", "Alice", 28, "Lyon", true]
 
-// Object.values()
-let valeurs = Object.values(etudiant);
-console.log(valeurs); // ["Martin", 22, 15]
-
-// Object.entries()
-let entrees = Object.entries(etudiant);
+// Object.entries() - Retourne un ARRAY de paires [clé, valeur]
+let entrees = Object.entries(utilisateur);
 console.log(entrees);
-// [["nom", "Martin"], ["age", 22], ["note", 15]]
+// [
+//   ["nom", "Martin"],
+//   ["prenom", "Alice"],
+//   ["age", 28],
+//   ["ville", "Lyon"],
+//   ["actif", true]
+// ]
+
+// UTILISATION PRATIQUE - Afficher toutes les propriétés
+Object.keys(utilisateur).forEach(cle => {
+    console.log(`${cle}: ${utilisateur[cle]}`);
+});
+
+// Filtrer les propriétés
+let clesCourtes = Object.keys(utilisateur).filter(cle => cle.length < 5);
+console.log(clesCourtes); // ["nom", "age", "actif"]
+
+// Compter les propriétés
+let nombreProps = Object.keys(utilisateur).length;
+console.log(nombreProps); // 5
         </pre>
     </div>
 
-    <h3>4. Destructuration (ES6)</h3>
     <div class="example">
-        <div class="example-title">Extraire des propriétés:</div>
+        <div class="example-title">Cas d'usage avancés:</div>
+        <pre>
+let produits = {
+    laptop: 1000,
+    souris: 25,
+    clavier: 75,
+    ecran: 300
+};
+
+// Calculer le total avec reduce()
+let total = Object.values(produits).reduce((acc, prix) => acc + prix, 0);
+console.log(total); // 1400
+
+// Trouver le produit le plus cher
+let entries = Object.entries(produits);
+let plusCher = entries.reduce((max, [nom, prix]) => {
+    return prix > max[1] ? [nom, prix] : max;
+}, entries[0]);
+console.log(plusCher); // ["laptop", 1000]
+
+// Filtrer les produits < 100€
+let abordables = Object.entries(produits)
+    .filter(([nom, prix]) => prix < 100)
+    .map(([nom, prix]) => nom);
+console.log(abordables); // ["souris", "clavier"]
+
+// Créer un nouvel objet avec prix augmentés de 10%
+let nouveauxPrix = {};
+Object.entries(produits).forEach(([nom, prix]) => {
+    nouveauxPrix[nom] = prix * 1.1;
+});
+console.log(nouveauxPrix);
+// { laptop: 1100, souris: 27.5, clavier: 82.5, ecran: 330 }
+        </pre>
+    </div>
+
+    <h3>4. Parcourir un Objet</h3>
+    
+    <div class="example">
+        <div class="example-title">Différentes méthodes:</div>
+        <pre>
+let etudiant = {
+    nom: "Dubois",
+    age: 22,
+    note: 15,
+    classe: "Terminal"
+};
+
+// Méthode 1: for...in (classique)
+for (let cle in etudiant) {
+    console.log(`${cle}: ${etudiant[cle]}`);
+}
+
+// Méthode 2: Object.keys() + forEach (moderne)
+Object.keys(etudiant).forEach(cle => {
+    console.log(`${cle}: ${etudiant[cle]}`);
+});
+
+// Méthode 3: Object.entries() + for...of (ES6+)
+for (let [cle, valeur] of Object.entries(etudiant)) {
+    console.log(`${cle}: ${valeur}`);
+}
+
+// Méthode 4: Object.entries() + forEach
+Object.entries(etudiant).forEach(([cle, valeur]) => {
+    console.log(`${cle}: ${valeur}`);
+});
+        </pre>
+    </div>
+
+    <h3>5.  Destructuration d'Objets (ES6)</h3>
+    
+    <div class="concept">
+        <p>La <strong>destructuration</strong> permet d'extraire des propriétés d'un objet en une seule ligne. C'est ultra pratique et très utilisé !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Syntaxe et utilisation:</div>
         <pre>
 let personne = {
     nom: "Dubois",
+    prenom: "Sophie",
     age: 28,
-    ville: "Lyon"
+    ville: "Lyon",
+    pays: "France"
 };
 
-// Destructuration
-let {nom, age, ville} = personne;
+//  Méthode classique (longue)
+let nom = personne.nom;
+let age = personne.age;
+let ville = personne.ville;
+
+//  Avec destructuration (moderne)
+let { nom, age, ville } = personne;
 console.log(nom);   // "Dubois"
 console.log(age);   // 28
 console.log(ville); // "Lyon"
 
-// Avec renommage
-let {nom: nomPersonne, age: agePersonne} = personne;
+// Renommer les variables
+let { nom: nomPersonne, age: agePersonne } = personne;
 console.log(nomPersonne); // "Dubois"
+console.log(agePersonne); // 28
+
+// Valeurs par défaut
+let { nom, pays, profession = "Inconnu" } = personne;
+console.log(profession); // "Inconnu" (n'existe pas dans l'objet)
+
+// Destructuration partielle
+let { nom, prenom } = personne; // On prend juste ce qu'on veut
+
+// Rest operator (...)
+let { nom, age, ...reste } = personne;
+console.log(reste); // { ville: "Lyon", pays: "France" }
         </pre>
     </div>
 
-    <div class="exercise">
-        <div class="exercise-title"> Exercices Pratiques</div>
-        <ol>
-            <li>Créez un objet 'livre' avec titre, auteur, pages, lu</li>
-            <li>Ajoutez une méthode qui affiche les infos du livre</li>
-            <li>Créez un array d'objets (produits) avec nom et prix</li>
-            <li>Parcourez l'array et affichez chaque produit</li>
-            <li>Utilisez la destructuration sur un objet utilisateur</li>
-        </ol>
-    </div>
-</div>
+    <div class="example">
+        <div class="example-title">Destructuration dans les fonctions:</div>
+        <pre>
+// Au lieu de passer tout l'objet
+function afficherPersonne(personne) {
+    console.log(personne.nom + " " + personne.prenom);
+}
 
-<!-- MODULE 8: DOM Manipulation -->
-<div id="module8" class="module">
-    <h2>Module 8: Manipulation du DOM</h2>
+// On peut destructurer directement dans les paramètres
+function afficherPersonne({ nom, prenom }) {
+    console.log(nom + " " + prenom);
+}
+
+let user = { nom: "Martin", prenom: "Alice", age: 30 };
+afficherPersonne(user); // "Martin Alice"
+
+// Avec valeurs par défaut
+function creerUtilisateur({ nom, age, role = "user" }) {
+    console.log(`${nom}, ${age} ans, rôle: ${role}`);
+}
+
+creerUtilisateur({ nom: "Bob", age: 25 }); 
+// "Bob, 25 ans, rôle: user"
+
+creerUtilisateur({ nom: "Alice", age: 30, role: "admin" }); 
+// "Alice, 30 ans, rôle: admin"
+        </pre>
+    </div>
+
+    <h3>6.  Spread Operator avec Objets (...)</h3>
     
-    <div class="concept">
-        <h3> Concepts Clés</h3>
-        <p>Le <strong>DOM (Document Object Model)</strong> représente la structure HTML d'une page. JavaScript peut modifier le DOM pour créer des pages interactives.</p>
-    </div>
-
-    <h3>1. Sélectionner des Éléments</h3>
     <div class="example">
-        <div class="example-title">Méthodes de sélection:</div>
+        <div class="example-title">Copier et fusionner des objets:</div>
         <pre>
-// Par ID
-let element = document.getElementById("monId");
+// Copier un objet (copie superficielle)
+let original = { nom: "Alice", age: 30 };
+let copie = { ...original };
+copie.age = 31;
 
-// Par classe
-let elements = document.getElementsByClassName("maClasse");
+console.log(original.age); // 30 (pas modifié)
+console.log(copie.age);    // 31
 
-// Par tag
-let paragraphes = document.getElementsByTagName("p");
+// Fusionner des objets
+let obj1 = { a: 1, b: 2 };
+let obj2 = { c: 3, d: 4 };
+let fusion = { ...obj1, ...obj2 };
+console.log(fusion); // { a: 1, b: 2, c: 3, d: 4 }
 
-// Query Selector (moderne, recommandé)
-let premier = document.querySelector(".maClasse");
-let tous = document.querySelectorAll(".maClasse");
+// Écraser des propriétés
+let user = { nom: "Alice", age: 30, ville: "Paris" };
+let updatedUser = { ...user, age: 31, email: "alice@mail.com" };
+console.log(updatedUser);
+// { nom: "Alice", age: 31, ville: "Paris", email: "alice@mail.com" }
 
-// Exemples
-let titre = document.querySelector("h1");
-let boutons = document.querySelectorAll(".btn");
+// Cas pratique: Mise à jour immutable
+let state = { count: 0, user: "Alice" };
+// Au lieu de state.count++ (mute l'objet)
+state = { ...state, count: state.count + 1 }; // Crée un nouvel objet
+
+// Combiner plusieurs sources
+let defaults = { theme: "light", lang: "fr" };
+let userSettings = { lang: "en" };
+let settings = { ...defaults, ...userSettings };
+console.log(settings); // { theme: "light", lang: "en" }
         </pre>
     </div>
 
-    <h3>2. Modifier le Contenu</h3>
+    <h3>7. Object.assign()</h3>
+    
     <div class="example">
-        <div class="example-title">Changer texte et HTML:</div>
+        <div class="example-title">Méthode alternative pour fusionner:</div>
         <pre>
-let div = document.querySelector("#contenu");
+// Object.assign(cible, source1, source2, ...)
+let obj1 = { a: 1, b: 2 };
+let obj2 = { b: 3, c: 4 };
+let obj3 = { d: 5 };
 
-// Modifier le texte
-div.textContent = "Nouveau texte";
+let resultat = Object.assign({}, obj1, obj2, obj3);
+console.log(resultat); // { a: 1, b: 3, c: 4, d: 5 }
 
-// Modifier le HTML
-div.innerHTML = "&lt;strong&gt;Texte en gras&lt;/strong&gt;";
+// Si on ne met pas {} au début, obj1 est modifié !
+Object.assign(obj1, obj2);
+console.log(obj1); // { a: 1, b: 3, c: 4 } (modifié!)
 
-// Modifier un attribut
-div.setAttribute("class", "nouvelle-classe");
+// Cloner un objet
+let original = { nom: "Alice", age: 30 };
+let clone = Object.assign({}, original);
 
-// Ajouter/Supprimer des classes
-div.classList.add("active");
-div.classList.remove("hidden");
-div.classList.toggle("visible");
+// Note: Le spread operator est plus moderne et lisible
+let clone2 = { ...original }; // Préféré
         </pre>
     </div>
 
-    <h3>3. Créer et Ajouter des Éléments</h3>
+    <h3>8. Objets Imbriqués</h3>
+    
     <div class="example">
-        <div class="example-title">Création dynamique:</div>
+        <div class="example-title">Travailler avec des structures complexes:</div>
         <pre>
-// Créer un élément
-let nouveauP = document.createElement("p");
-nouveauP.textContent = "Nouveau paragraphe";
-nouveauP.classList.add("paragraphe");
+let entreprise = {
+    nom: "TechCorp",
+    adresse: {
+        rue: "123 Avenue Tech",
+        ville: "Paris",
+        codePostal: "75001",
+        pays: "France"
+    },
+    employes: [
+        { nom: "Alice", poste: "Dev", salaire: 50000 },
+        { nom: "Bob", poste: "Designer", salaire: 45000 },
+        { nom: "Charlie", poste: "Manager", salaire: 60000 }
+    ],
+    fondation: 2015
+};
 
-// Ajouter à la page
-let container = document.querySelector("#container");
-container.appendChild(nouveauP);
+// Accès aux propriétés imbriquées
+console.log(entreprise.adresse.ville); // "Paris"
+console.log(entreprise.employes[0].nom); // "Alice"
 
-// Insérer avant un élément
-let premier = container.firstChild;
-container.insertBefore(nouveauP, premier);
+// Destructuration imbriquée
+let { 
+    nom, 
+    adresse: { ville, pays },
+    employes 
+} = entreprise;
 
-// Supprimer un élément
-let aSupprimer = document.querySelector("#vieux");
-aSupprimer.remove();
+console.log(ville); // "Paris"
+console.log(pays); // "France"
+
+// Calculer le salaire total
+let totalSalaires = entreprise.employes
+    .reduce((acc, emp) => acc + emp.salaire, 0);
+console.log(totalSalaires); // 155000
+
+// Trouver un employé
+let manager = entreprise.employes
+    .find(emp => emp.poste === "Manager");
+console.log(manager); // { nom: "Charlie", poste: "Manager", salaire: 60000 }
+
+// Mettre à jour un employé (immutable)
+let nouvelleEntreprise = {
+    ...entreprise,
+    employes: entreprise.employes.map(emp => 
+        emp.nom === "Alice" 
+            ? { ...emp, salaire: 55000 } 
+            : emp
+    )
+};
         </pre>
     </div>
 
-    <h3>4. Modifier les Styles</h3>
+    <h3>9. Vérifier l'Existence de Propriétés</h3>
+    
     <div class="example">
-        <div class="example-title">CSS avec JavaScript:</div>
+        <div class="example-title">Différentes méthodes:</div>
         <pre>
-let element = document.querySelector(".box");
+let user = {
+    nom: "Alice",
+    age: 30,
+    email: null
+};
 
-// Style inline
-element.style.color = "red";
-element.style.backgroundColor = "blue";
-element.style.fontSize = "20px";
+// Méthode 1: in
+console.log("nom" in user);    // true
+console.log("ville" in user);  // false
 
-// Plusieurs styles
-element.style.cssText = `
-    color: white;
-    background: black;
-    padding: 20px;
-`;
+// Méthode 2: hasOwnProperty()
+console.log(user.hasOwnProperty("nom")); // true
+console.log(user.hasOwnProperty("ville")); // false
+
+// Méthode 3: undefined (attention aux faux positifs!)
+console.log(user.nom !== undefined);    // true
+console.log(user.ville !== undefined);  // false
+console.log(user.email !== undefined);  // true (email existe mais vaut null!)
+
+// Méthode 4: Optional chaining (?.)
+console.log(user?.adresse?.rue); // undefined (pas d'erreur)
         </pre>
     </div>
 
-    <h3>5. Exemple Complet</h3>
+    <h3>10. Exemple Complet Interactif</h3>
+    
     <div class="example">
-        <div class="example-title">Application de liste de tâches:</div>
+        <div class="example-title">Application de gestion d'utilisateurs:</div>
         <pre>
 &lt;!DOCTYPE html&gt;
 &lt;html&gt;
 &lt;head&gt;
-    &lt;title&gt;Liste de Tâches&lt;/title&gt;
+    &lt;title&gt;Gestion Utilisateurs&lt;/title&gt;
     &lt;style&gt;
-        .tache { padding: 10px; margin: 5px; background: #f0f0f0; }
-        .completee { text-decoration: line-through; color: gray; }
+        body { font-family: Arial; max-width: 900px; margin: 50px auto; }
+        .user-card { border: 2px solid #2C3F77; padding: 20px; margin: 15px 0; border-radius: 10px; }
+        .stats { background: #f0f0f0; padding: 20px; margin: 20px 0; border-radius: 8px; }
     &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
-    &lt;h1&gt;Ma Liste de Tâches&lt;/h1&gt;
-    &lt;input type="text" id="nouvelleTache" placeholder="Nouvelle tâche"&gt;
-    &lt;button id="ajouterBtn"&gt;Ajouter&lt;/button&gt;
-    &lt;div id="listeTaches"&gt;&lt;/div&gt;
+    &lt;h1&gt;Base de Données Utilisateurs&lt;/h1&gt;
+    &lt;div id="stats"&gt;&lt;/div&gt;
+    &lt;div id="users"&gt;&lt;/div&gt;
 
     &lt;script&gt;
-        let input = document.getElementById("nouvelleTache");
-        let bouton = document.getElementById("ajouterBtn");
-        let liste = document.getElementById("listeTaches");
-
-        bouton.addEventListener("click", function() {
-            let texte = input.value;
-            if (texte !== "") {
-                // Créer la tâche
-                let tache = document.createElement("div");
-                tache.classList.add("tache");
-                tache.textContent = texte;
-                
-                // Clic pour marquer comme complétée
-                tache.addEventListener("click", function() {
-                    this.classList.toggle("completee");
-                });
-                
-                // Ajouter à la liste
-                liste.appendChild(tache);
-                
-                // Vider l'input
-                input.value = "";
+        let users = [
+            { 
+                id: 1, 
+                nom: "Dupont", 
+                prenom: "Alice", 
+                age: 28, 
+                ville: "Paris",
+                role: "admin",
+                actif: true
+            },
+            { 
+                id: 2, 
+                nom: "Martin", 
+                prenom: "Bob", 
+                age: 35, 
+                ville: "Lyon",
+                role: "user",
+                actif: true
+            },
+            { 
+                id: 3, 
+                nom: "Dubois", 
+                prenom: "Charlie", 
+                age: 42, 
+                ville: "Marseille",
+                role: "user",
+                actif: false
+            },
+            { 
+                id: 4, 
+                nom: "Lefebvre", 
+                prenom: "Diana", 
+                age: 31, 
+                ville: "Paris",
+                role: "moderator",
+                actif: true
             }
-        });
+        ];
+
+        // STATISTIQUES avec Object.keys, Object.values, reduce
+        let stats = {
+            total: users.length,
+            actifs: users.filter(u => u.actif).length,
+            ageMoyen: users.reduce((acc, u) => acc + u.age, 0) / users.length,
+            parVille: users.reduce((acc, u) => {
+                acc[u.ville] = (acc[u.ville] || 0) + 1;
+                return acc;
+            }, {}),
+            parRole: users.reduce((acc, u) => {
+                acc[u.role] = (acc[u.role] || 0) + 1;
+                return acc;
+            }, {})
+        };
+
+        // Afficher les stats
+        let statsHTML = `
+            &lt;div class="stats"&gt;
+                &lt;h2&gt;Statistiques&lt;/h2&gt;
+                &lt;p&gt;&lt;strong&gt;Total:&lt;/strong&gt; ${stats.total} utilisateurs&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Actifs:&lt;/strong&gt; ${stats.actifs}&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Âge moyen:&lt;/strong&gt; ${stats.ageMoyen.toFixed(1)} ans&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Par ville:&lt;/strong&gt; 
+                    ${Object.entries(stats.parVille).map(([ville, count]) => 
+                        `${ville}: ${count}`
+                    ).join(', ')}
+                &lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Par rôle:&lt;/strong&gt; 
+                    ${Object.entries(stats.parRole).map(([role, count]) => 
+                        `${role}: ${count}`
+                    ).join(', ')}
+                &lt;/p&gt;
+            &lt;/div&gt;
+        `;
+        document.getElementById('stats').innerHTML = statsHTML;
+
+        // Afficher les utilisateurs actifs de Paris
+        let usersHTML = users
+            .filter(u => u.actif && u.ville === "Paris")
+            .map(({ nom, prenom, age, role }) => `
+                &lt;div class="user-card"&gt;
+                    &lt;h3&gt;${prenom} ${nom}&lt;/h3&gt;
+                    &lt;p&gt;&lt;strong&gt;Âge:&lt;/strong&gt; ${age} ans&lt;/p&gt;
+                    &lt;p&gt;&lt;strong&gt;Rôle:&lt;/strong&gt; ${role}&lt;/p&gt;
+                &lt;/div&gt;
+            `)
+            .join('');
+
+        document.getElementById('users').innerHTML = 
+            '&lt;h2&gt;Utilisateurs actifs à Paris&lt;/h2&gt;' + usersHTML;
+
+        // Démonstration des méthodes Object
+        console.log("=== DÉMONSTRATION ===");
+        
+        let user = users[0];
+        console.log("Clés:", Object.keys(user));
+        console.log("Valeurs:", Object.values(user));
+        console.log("Entrées:", Object.entries(user));
+        
+        // Destructuration
+        let { nom, prenom, ...infos } = user;
+        console.log("Nom complet:", prenom, nom);
+        console.log("Autres infos:", infos);
     &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -2374,12 +3063,685 @@ element.style.cssText = `
     <div class="exercise">
         <div class="exercise-title"> Exercices Pratiques</div>
         <ol>
-            <li>Sélectionnez tous les paragraphes et changez leur couleur</li>
-            <li>Créez un bouton qui ajoute un div à la page</li>
-            <li>Faites un compteur qui augmente quand on clique</li>
-            <li>Créez un système de tabs/onglets</li>
-            <li>Faites une galerie d'images interactive</li>
+            <li>Créez un objet "livre" avec titre, auteur, pages, année, lu (boolean)</li>
+            <li>Utilisez Object.keys() pour afficher toutes les propriétés</li>
+            <li>Utilisez Object.values() pour calculer le nombre de pages total de plusieurs livres</li>
+            <li>Créez un objet avec des produits et leurs prix, puis :
+                <ul>
+                    <li>Trouvez le produit le plus cher avec Object.entries()</li>
+                    <li>Calculez le prix moyen</li>
+                    <li>Créez un nouveau objet avec tous les prix augmentés de 10%</li>
+                </ul>
+            </li>
+            <li>Utilisez la destructuration pour extraire des propriétés d'un utilisateur</li>
+            <li>Fusionnez deux objets avec le spread operator</li>
+            <li>Créez une fonction qui prend un objet en paramètre et utilise la destructuration</li>
         </ol>
+    </div>
+
+    <div class="note">
+        <strong> À retenir :</strong> Object.keys(), Object.values(), Object.entries() + destructuration + spread operator = Les outils essentiels pour manipuler les objets en JavaScript moderne !
+    </div>
+</div>
+
+<!-- MODULE 8: DOM Manipulation -->
+<div id="module8" class="module">
+    <h2>Module 8: DOM - Sélection & Manipulation Complète</h2>
+    
+    <div class="concept">
+        <h3>Concepts Clés</h3>
+        <p>Le <strong>DOM (Document Object Model)</strong> représente la structure HTML d'une page web. JavaScript peut sélectionner et modifier n'importe quel élément du DOM pour créer des pages interactives.</p>
+    </div>
+
+    <h3>1. SÉLECTION D'ÉLÉMENTS - LES BASES ESSENTIELLES</h3>
+    
+    <div class="warning">
+        <strong>SECTION CRITIQUE</strong> : Ces méthodes sont LA BASE du JavaScript web. Tu DOIS absolument les maîtriser !
+    </div>
+
+    <h4>getElementById() - Sélectionner par ID</h4>
+    
+    <div class="example">
+        <div class="example-title">La méthode la plus basique et rapide:</div>
+        <pre>
+// HTML
+&lt;div id="titre"&gt;Mon Titre&lt;/div&gt;
+&lt;p id="description"&gt;Une description&lt;/p&gt;
+
+// JavaScript
+let titre = document.getElementById("titre");
+console.log(titre); // &lt;div id="titre"&gt;Mon Titre&lt;/div&gt;
+
+// Modifier le contenu
+titre.textContent = "Nouveau Titre";
+
+// IMPORTANT: getElementById retourne UN SEUL élément ou null
+let inexistant = document.getElementById("rien");
+console.log(inexistant); // null
+        </pre>
+    </div>
+
+    <h4>getElementsByClassName() - Sélectionner par Classe</h4>
+    
+    <div class="example">
+        <div class="example-title">Retourne une HTMLCollection (ressemble à un array):</div>
+        <pre>
+// HTML
+&lt;div class="box"&gt;Box 1&lt;/div&gt;
+&lt;div class="box"&gt;Box 2&lt;/div&gt;
+&lt;div class="box"&gt;Box 3&lt;/div&gt;
+
+// JavaScript
+let boxes = document.getElementsByClassName("box");
+console.log(boxes); // HTMLCollection(3)
+console.log(boxes.length); // 3
+
+// Accéder à un élément spécifique
+console.log(boxes[0]); // Premier élément
+console.log(boxes[1]); // Deuxième élément
+
+// ATTENTION: Ce n'est PAS un vrai array !
+// Pour utiliser forEach, il faut convertir :
+Array.from(boxes).forEach(box => {
+    box.style.color = "red";
+});
+
+// Ou avec une boucle classique
+for (let i = 0; i < boxes.length; i++) {
+    boxes[i].textContent = "Box " + (i + 1);
+}
+        </pre>
+    </div>
+
+    <h4>getElementsByTagName() - Sélectionner par Balise</h4>
+    
+    <div class="example">
+        <div class="example-title">Sélectionner tous les éléments d'un type:</div>
+        <pre>
+// Sélectionner tous les paragraphes
+let paragraphes = document.getElementsByTagName("p");
+console.log(paragraphes.length);
+
+// Tous les divs
+let divs = document.getElementsByTagName("div");
+
+// Tous les liens
+let liens = document.getElementsByTagName("a");
+
+// Changer tous les paragraphes en rouge
+Array.from(paragraphes).forEach(p => {
+    p.style.color = "red";
+});
+        </pre>
+    </div>
+
+    <h4>querySelector() - Sélecteur CSS Moderne (1 élément)</h4>
+    
+    <div class="concept">
+        <p><strong>querySelector()</strong> est LA méthode moderne recommandée ! Elle utilise la syntaxe CSS et retourne le PREMIER élément trouvé.</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Syntaxe CSS puissante:</div>
+        <pre>
+// Par ID
+let titre = document.querySelector("#titre");
+
+// Par classe
+let premierBox = document.querySelector(".box");
+
+// Par balise
+let premierP = document.querySelector("p");
+
+// Sélecteurs complexes
+let premierLienDansNav = document.querySelector("nav a");
+let inputEmail = document.querySelector("input[type='email']");
+let premierLiDansUl = document.querySelector("ul li");
+
+// Pseudo-classes
+let premierEnfant = document.querySelector("ul li:first-child");
+let dernierEnfant = document.querySelector("ul li:last-child");
+let deuxieme = document.querySelector("ul li:nth-child(2)");
+
+// Combiner plusieurs sélecteurs
+let btn = document.querySelector("button.primary");
+let div = document.querySelector("div#content.active");
+
+// IMPORTANT: Retourne null si rien n'est trouvé
+let element = document.querySelector(".inexistant");
+console.log(element); // null
+        </pre>
+    </div>
+
+    <h4>querySelectorAll() - Sélecteur CSS Moderne (tous)</h4>
+    
+    <div class="concept">
+        <p><strong>querySelectorAll()</strong> retourne TOUS les éléments qui correspondent. C'est la plus flexible et puissante !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Sélectionner plusieurs éléments:</div>
+        <pre>
+// Toutes les div
+let divs = document.querySelectorAll("div");
+
+// Toutes les box
+let boxes = document.querySelectorAll(".box");
+
+// Tous les liens dans la nav
+let navLinks = document.querySelectorAll("nav a");
+
+// Tous les inputs de type text
+let textInputs = document.querySelectorAll("input[type='text']");
+
+// AVANTAGE: Retourne une NodeList (on peut utiliser forEach directement!)
+boxes.forEach(box => {
+    box.style.backgroundColor = "blue";
+});
+
+// Convertir en array pour utiliser map, filter, etc.
+let boxArray = Array.from(boxes);
+let textes = boxArray.map(box => box.textContent);
+
+// IMPORTANT: Retourne une NodeList vide si rien n'est trouvé
+let vide = document.querySelectorAll(".inexistant");
+console.log(vide.length); // 0
+        </pre>
+    </div>
+
+    <h3>2. Tableau Comparatif des Méthodes</h3>
+    
+    <table>
+        <tr>
+            <th>Méthode</th>
+            <th>Retourne</th>
+            <th>Peut forEach?</th>
+            <th>Vitesse</th>
+            <th>Recommandé?</th>
+        </tr>
+        <tr>
+            <td><code>getElementById()</code></td>
+            <td>1 élément ou null</td>
+            <td>N/A</td>
+            <td>Très rapide</td>
+            <td>Oui pour ID</td>
+        </tr>
+        <tr>
+            <td><code>getElementsByClassName()</code></td>
+            <td>HTMLCollection</td>
+            <td>Non (Array.from)</td>
+            <td>Rapide</td>
+            <td>querySelector préféré</td>
+        </tr>
+        <tr>
+            <td><code>getElementsByTagName()</code></td>
+            <td>HTMLCollection</td>
+            <td>Non (Array.from)</td>
+            <td>Rapide</td>
+            <td>querySelector préféré</td>
+        </tr>
+        <tr>
+            <td><code>querySelector()</code></td>
+            <td>1 élément ou null</td>
+            <td>N/A</td>
+            <td>Plus lent</td>
+            <td>OUI - Moderne</td>
+        </tr>
+        <tr>
+            <td><code>querySelectorAll()</code></td>
+            <td>NodeList</td>
+            <td>Oui</td>
+            <td>Plus lent</td>
+            <td>OUI - Flexible</td>
+        </tr>
+    </table>
+
+    <h3>3.  Manipulation du Contenu</h3>
+
+    <h4>textContent vs innerHTML vs innerText</h4>
+    
+    <div class="concept">
+        <p>3 propriétés différentes pour modifier le contenu. Comprendre leurs différences est CRUCIAL !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Les 3 méthodes expliquées:</div>
+        <pre>
+// HTML de départ
+&lt;div id="demo"&gt;
+    &lt;strong&gt;Texte&lt;/strong&gt; en gras
+&lt;/div&gt;
+
+let div = document.querySelector("#demo");
+
+// 1. textContent - Récupère/définit TOUT le texte (ignore HTML)
+console.log(div.textContent); // "Texte en gras"
+div.textContent = "Nouveau texte";
+// Résultat: &lt;div id="demo"&gt;Nouveau texte&lt;/div&gt;
+
+// 2. innerHTML - Récupère/définit le HTML
+console.log(div.innerHTML); // "&lt;strong&gt;Texte&lt;/strong&gt; en gras"
+div.innerHTML = "&lt;em&gt;Texte en italique&lt;/em&gt;";
+// Résultat: &lt;div id="demo"&gt;&lt;em&gt;Texte en italique&lt;/em&gt;&lt;/div&gt;
+
+// 3. innerText - Comme textContent mais respecte le CSS (rare)
+console.log(div.innerText); // Texte visible à l'écran
+
+// DANGER avec innerHTML - Risque de sécurité (XSS)
+let userInput = "&lt;img src=x onerror=alert('XSS')&gt;";
+div.innerHTML = userInput; //  DANGEREUX !
+div.textContent = userInput; //  SÛR (affiche le texte brut)
+
+// Recommandation:
+// - textContent pour du texte simple (plus rapide et sûr)
+// - innerHTML quand vous devez insérer du HTML (attention sécurité)
+        </pre>
+    </div>
+
+    <h3>4. Attributs HTML</h3>
+    
+    <div class="example">
+        <div class="example-title">getAttribute() et setAttribute():</div>
+        <pre>
+// HTML
+&lt;img id="photo" src="photo1.jpg" alt="Ma photo" data-id="123"&gt;
+&lt;a id="lien" href="https://google.com"&gt;Google&lt;/a&gt;
+
+let img = document.querySelector("#photo");
+let lien = document.querySelector("#lien");
+
+// Lire un attribut
+let src = img.getAttribute("src");
+console.log(src); // "photo1.jpg"
+
+let href = lien.getAttribute("href");
+console.log(href); // "https://google.com"
+
+// Modifier un attribut
+img.setAttribute("src", "photo2.jpg");
+img.setAttribute("alt", "Nouvelle photo");
+
+// Ajouter un nouvel attribut
+img.setAttribute("title", "Survolez-moi");
+
+// Supprimer un attribut
+img.removeAttribute("title");
+
+// Vérifier si un attribut existe
+if (img.hasAttribute("data-id")) {
+    console.log("L'attribut data-id existe");
+}
+
+// Accès direct (raccourci pour attributs standards)
+img.src = "photo3.jpg"; // Équivaut à setAttribute("src", ...)
+lien.href = "https://example.com";
+
+// Attributs data-*
+let id = img.getAttribute("data-id"); // "123"
+// Ou avec dataset (moderne)
+let id2 = img.dataset.id; // "123"
+        </pre>
+    </div>
+
+    <h3>5. Classes CSS avec classList</h3>
+    
+    <div class="concept">
+        <p><strong>classList</strong> est LA méthode moderne pour gérer les classes CSS. Beaucoup plus pratique que className !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Méthodes de classList:</div>
+        <pre>
+// HTML
+&lt;div id="box" class="container blue"&gt;Ma boîte&lt;/div&gt;
+
+let box = document.querySelector("#box");
+
+// Ajouter une classe
+box.classList.add("active");
+// Résultat: class="container blue active"
+
+// Ajouter plusieurs classes
+box.classList.add("large", "shadow");
+// Résultat: class="container blue active large shadow"
+
+// Retirer une classe
+box.classList.remove("blue");
+// Résultat: class="container active large shadow"
+
+// Toggle (ajouter si absente, retirer si présente)
+box.classList.toggle("active"); // Retire "active"
+box.classList.toggle("active"); // Ajoute "active"
+
+// Vérifier si une classe existe
+if (box.classList.contains("active")) {
+    console.log("La classe active est présente");
+}
+
+// Remplacer une classe
+box.classList.replace("large", "small");
+
+// Exemple pratique: Menu toggle
+let menu = document.querySelector("#menu");
+let bouton = document.querySelector("#menuBtn");
+
+bouton.addEventListener("click", () => {
+    menu.classList.toggle("open");
+});
+
+// Ancienne méthode (à éviter)
+box.className = "nouvelle-classe"; // Écrase toutes les classes!
+
+// Lire toutes les classes
+console.log(box.className); // String: "container active small shadow"
+console.log(box.classList);  // DOMTokenList: ["container", "active", "small", "shadow"]
+        </pre>
+    </div>
+
+    <h3>6. Styles CSS avec JavaScript</h3>
+    
+    <div class="example">
+        <div class="example-title">Modifier les styles inline:</div>
+        <pre>
+let element = document.querySelector("#box");
+
+// Modifier un style
+element.style.color = "red";
+element.style.backgroundColor = "blue"; // Notez le camelCase!
+element.style.fontSize = "20px";
+element.style.padding = "10px";
+
+// Plusieurs styles en une fois
+element.style.cssText = `
+    color: white;
+    background-color: black;
+    padding: 20px;
+    border-radius: 10px;
+`;
+
+// Lire un style (attention: retourne seulement les styles inline!)
+console.log(element.style.color); // "white"
+
+// Pour lire TOUS les styles (y compris CSS externes)
+let styles = window.getComputedStyle(element);
+console.log(styles.color); // Valeur réelle affichée
+console.log(styles.fontSize);
+
+// Supprimer un style
+element.style.color = "";
+
+// RECOMMANDATION: Préférer classList pour les styles
+// Au lieu de :
+element.style.display = "none";
+// Faire :
+element.classList.add("hidden"); // Et définir .hidden { display: none; } en CSS
+        </pre>
+    </div>
+
+    <h3>7. Créer et Ajouter des Éléments</h3>
+    
+    <div class="example">
+        <div class="example-title">createElement() et appendChild():</div>
+        <pre>
+// Créer un nouvel élément
+let newDiv = document.createElement("div");
+
+// Ajouter du contenu
+newDiv.textContent = "Je suis un nouveau div";
+
+// Ajouter des classes
+newDiv.classList.add("box", "new");
+
+// Ajouter des attributs
+newDiv.setAttribute("data-id", "123");
+
+// Ajouter des styles
+newDiv.style.padding = "10px";
+newDiv.style.backgroundColor = "lightblue";
+
+// Ajouter à la page (à la fin du body)
+document.body.appendChild(newDiv);
+
+// Ajouter dans un conteneur spécifique
+let container = document.querySelector("#container");
+container.appendChild(newDiv);
+
+// Créer plusieurs éléments
+for (let i = 1; i <= 5; i++) {
+    let item = document.createElement("li");
+    item.textContent = `Item ${i}`;
+    document.querySelector("ul").appendChild(item);
+}
+
+// Créer une structure complète
+let card = document.createElement("div");
+card.className = "card";
+card.innerHTML = `
+    &lt;h3&gt;Titre de la carte&lt;/h3&gt;
+    &lt;p&gt;Description de la carte&lt;/p&gt;
+    &lt;button&gt;Cliquez-moi&lt;/button&gt;
+`;
+container.appendChild(card);
+        </pre>
+    </div>
+
+    <h3>8. insertBefore() et insertAdjacentHTML()</h3>
+    
+    <div class="example">
+        <div class="example-title">Insérer à des positions spécifiques:</div>
+        <pre>
+let container = document.querySelector("#container");
+
+// insertBefore(nouveau, existant)
+let newElement = document.createElement("p");
+newElement.textContent = "Nouveau paragraphe";
+
+let firstP = container.querySelector("p");
+container.insertBefore(newElement, firstP); // Insère AVANT le premier p
+
+// insertAdjacentHTML - Très pratique!
+// 4 positions: beforebegin, afterbegin, beforeend, afterend
+
+let div = document.querySelector("#demo");
+div.insertAdjacentHTML("beforebegin", "&lt;p&gt;Avant le div&lt;/p&gt;");
+div.insertAdjacentHTML("afterbegin", "&lt;p&gt;Début du div&lt;/p&gt;");
+div.insertAdjacentHTML("beforeend", "&lt;p&gt;Fin du div&lt;/p&gt;");
+div.insertAdjacentHTML("afterend", "&lt;p&gt;Après le div&lt;/p&gt;");
+
+// prepend() et append() (moderne)
+container.prepend(newElement); // Ajoute au début
+container.append(newElement);  // Ajoute à la fin
+        </pre>
+    </div>
+
+    <h3>9.  Supprimer des Éléments</h3>
+    
+    <div class="example">
+        <div class="example-title">remove() et removeChild():</div>
+        <pre>
+let element = document.querySelector("#aSupprimer");
+
+// Méthode moderne (recommandée)
+element.remove();
+
+// Ancienne méthode
+let parent = element.parentElement;
+parent.removeChild(element);
+
+// Supprimer tous les enfants d'un élément
+let container = document.querySelector("#container");
+container.innerHTML = ""; // Méthode rapide
+
+// Ou en boucle
+while (container.firstChild) {
+    container.removeChild(container.firstChild);
+}
+
+// Supprimer tous les éléments d'une classe
+document.querySelectorAll(".aSupprimer").forEach(el => {
+    el.remove();
+});
+        </pre>
+    </div>
+
+    <h3>10. Exemple Complet Interactif</h3>
+    
+    <div class="example">
+        <div class="example-title">Application de liste de tâches complète:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Todo List&lt;/title&gt;
+    &lt;style&gt;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; }
+        h1 { color: #2C3F77; margin-bottom: 20px; }
+        .input-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; background: #2C3F77; color: white; border: none; 
+                 border-radius: 5px; cursor: pointer; }
+        button:hover { background: #A0866B; }
+        .task { display: flex; align-items: center; gap: 10px; padding: 15px; 
+                border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px; }
+        .task.completed { background: #e8f5e9; text-decoration: line-through; opacity: 0.6; }
+        .task-text { flex: 1; }
+        .delete-btn { background: #f44336; padding: 5px 10px; }
+        .stats { background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt; Ma Liste de Tâches&lt;/h1&gt;
+    
+    &lt;div class="stats" id="stats"&gt;&lt;/div&gt;
+    
+    &lt;div class="input-container"&gt;
+        &lt;input type="text" id="taskInput" placeholder="Nouvelle tâche..."&gt;
+        &lt;button id="addBtn"&gt;Ajouter&lt;/button&gt;
+    &lt;/div&gt;
+    
+    &lt;div id="taskList"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        // Sélection des éléments
+        let taskInput = document.getElementById("taskInput");
+        let addBtn = document.getElementById("addBtn");
+        let taskList = document.getElementById("taskList");
+        let stats = document.getElementById("stats");
+
+        // Fonction pour mettre à jour les stats
+        function updateStats() {
+            let allTasks = document.querySelectorAll(".task");
+            let completed = document.querySelectorAll(".task.completed");
+            let remaining = allTasks.length - completed.length;
+            
+            stats.innerHTML = `
+                &lt;strong&gt;Total:&lt;/strong&gt; ${allTasks.length} | 
+                &lt;strong&gt;Complétées:&lt;/strong&gt; ${completed.length} | 
+                &lt;strong&gt;Restantes:&lt;/strong&gt; ${remaining}
+            `;
+        }
+
+        // Fonction pour créer une tâche
+        function createTask(text) {
+            // Créer le container de la tâche
+            let task = document.createElement("div");
+            task.classList.add("task");
+            
+            // Checkbox
+            let checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.addEventListener("change", function() {
+                task.classList.toggle("completed");
+                updateStats();
+            });
+            
+            // Texte de la tâche
+            let taskText = document.createElement("span");
+            taskText.classList.add("task-text");
+            taskText.textContent = text;
+            
+            // Bouton supprimer
+            let deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Supprimer";
+            deleteBtn.classList.add("delete-btn");
+            deleteBtn.addEventListener("click", function() {
+                task.remove();
+                updateStats();
+            });
+            
+            // Assembler les éléments
+            task.appendChild(checkbox);
+            task.appendChild(taskText);
+            task.appendChild(deleteBtn);
+            
+            return task;
+        }
+
+        // Ajouter une tâche
+        function addTask() {
+            let text = taskInput.value.trim();
+            
+            if (text === "") {
+                alert("Veuillez entrer une tâche !");
+                return;
+            }
+            
+            let task = createTask(text);
+            taskList.appendChild(task);
+            
+            taskInput.value = "";
+            taskInput.focus();
+            
+            updateStats();
+        }
+
+        // Event listeners
+        addBtn.addEventListener("click", addTask);
+        
+        taskInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                addTask();
+            }
+        });
+
+        // Initialiser les stats
+        updateStats();
+        
+        // Ajouter quelques tâches par défaut
+        ["Apprendre JavaScript", "Faire les courses", "Sport"].forEach(task => {
+            taskList.appendChild(createTask(task));
+        });
+        updateStats();
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Sélectionnez un élément par ID et changez son texte</li>
+            <li>Sélectionnez tous les paragraphes et changez leur couleur</li>
+            <li>Créez 5 div avec createElement et ajoutez-les à la page</li>
+            <li>Ajoutez une classe "active" à un élément au clic</li>
+            <li>Créez un bouton qui supprime un élément</li>
+            <li>Créez une galerie d'images dynamique</li>
+            <li>Faites un système de tabs/onglets</li>
+            <li>Créez un compteur qui s'incrémente au clic</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <strong> À retenir :</strong> 
+        <ul>
+            <li>getElementById pour un seul élément</li>
+            <li>querySelector / querySelectorAll pour tout le reste (syntaxe CSS)</li>
+            <li>textContent pour texte, innerHTML pour HTML</li>
+            <li>classList pour gérer les classes CSS</li>
+            <li>createElement + appendChild pour créer des éléments</li>
+        </ul>
     </div>
 </div>
 
@@ -3209,362 +4571,1269 @@ console.log(MathUtils.PI);                   // 3.14159
     
     <div class="concept">
         <h3> Concepts Clés</h3>
-        <p>ES6+ apporte de nombreuses fonctionnalités modernes qui simplifient le code JavaScript.</p>
+        <p>ES6+ (ECMAScript 2015 et suivants) apporte de nombreuses fonctionnalités modernes qui simplifient et améliorent le code JavaScript.</p>
     </div>
 
-    <h3>1. Destructuration</h3>
+    <h3>1.  Template Literals (Backticks)</h3>
+    
+    <div class="concept">
+        <p>Les <strong>template literals</strong> utilisent les backticks (`) et permettent d'insérer des variables et expressions directement dans les strings. C'est ESSENTIEL en JavaScript moderne !</p>
+    </div>
+
     <div class="example">
-        <div class="example-title">Arrays et objets:</div>
+        <div class="example-title">Syntaxe et utilisation:</div>
         <pre>
-// Destructuration d'array
+let nom = "Thomas";
+let age = 32;
+
+//  Ancienne méthode (concaténation)
+let message1 = "Bonjour, je suis " + nom + " et j'ai " + age + " ans";
+
+//  Template literals (moderne)
+let message2 = `Bonjour, je suis ${nom} et j'ai ${age} ans`;
+
+console.log(message2); // "Bonjour, je suis Thomas et j'ai 32 ans"
+
+// Expressions dans les template literals
+let prix = 100;
+let message3 = `Le prix avec TVA est: ${prix * 1.2}€`;
+console.log(message3); // "Le prix avec TVA est: 120€"
+
+// Appel de fonctions
+function majuscule(str) {
+    return str.toUpperCase();
+}
+let msg = `Bonjour ${majuscule(nom)}`;
+console.log(msg); // "Bonjour THOMAS"
+
+// Opérations
+let a = 5;
+let b = 10;
+console.log(`${a} + ${b} = ${a + b}`); // "5 + 10 = 15"
+
+// Conditions (ternaire)
+let estAdulte = age >= 18;
+let statut = `Vous êtes ${estAdulte ? "majeur" : "mineur"}`;
+        </pre>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Strings multi-lignes:</div>
+        <pre>
+//  Ancienne méthode
+let html1 = "&lt;div&gt;\n" +
+            "  &lt;h1&gt;Titre&lt;/h1&gt;\n" +
+            "  &lt;p&gt;Paragraphe&lt;/p&gt;\n" +
+            "&lt;/div&gt;";
+
+//  Template literals (beaucoup plus lisible!)
+let html2 = `
+    &lt;div&gt;
+        &lt;h1&gt;Titre&lt;/h1&gt;
+        &lt;p&gt;Paragraphe&lt;/p&gt;
+    &lt;/div&gt;
+`;
+
+// Cas pratique: Générer du HTML dynamique
+let user = { nom: "Alice", age: 28, role: "admin" };
+let card = `
+    &lt;div class="user-card"&gt;
+        &lt;h2&gt;${user.nom}&lt;/h2&gt;
+        &lt;p&gt;Âge: ${user.age} ans&lt;/p&gt;
+        &lt;p&gt;Rôle: ${user.role}&lt;/p&gt;
+    &lt;/div&gt;
+`;
+
+// Utilisation avec des arrays
+let produits = ["Laptop", "Souris", "Clavier"];
+let liste = `
+    &lt;ul&gt;
+        ${produits.map(p => `&lt;li&gt;${p}&lt;/li&gt;`).join('')}
+    &lt;/ul&gt;
+`;
+        </pre>
+    </div>
+
+    <h3>2.  Arrow Functions (Fonctions Fléchées)</h3>
+    
+    <div class="concept">
+        <p>Les <strong>arrow functions</strong> sont une syntaxe plus courte pour écrire des fonctions. Très utilisées avec map, filter, forEach, etc.</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Syntaxe et exemples:</div>
+        <pre>
+// Fonction classique
+function addition(a, b) {
+    return a + b;
+}
+
+// Arrow function équivalente
+const addition = (a, b) => {
+    return a + b;
+};
+
+// Version encore plus courte (return implicite)
+const addition = (a, b) => a + b;
+
+console.log(addition(5, 3)); // 8
+
+// Avec un seul paramètre (parenthèses optionnelles)
+const double = x => x * 2;
+const carre = x => x * x;
+
+console.log(double(5)); // 10
+console.log(carre(5));  // 25
+
+// Sans paramètre
+const direBonjour = () => console.log("Bonjour!");
+const obtenirDate = () => new Date();
+
+direBonjour(); // "Bonjour!"
+
+// Avec plusieurs lignes
+const calculer = (a, b) => {
+    let somme = a + b;
+    let produit = a * b;
+    return { somme, produit };
+};
+
+console.log(calculer(5, 3)); // { somme: 8, produit: 15 }
+
+// Retourner un objet (attention aux parenthèses!)
+const creerUser = (nom, age) => ({ nom, age });
+// OU
+const creerUser = (nom, age) => {
+    return { nom, age };
+};
+        </pre>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Utilisation avec les méthodes d'array:</div>
+        <pre>
 let nombres = [1, 2, 3, 4, 5];
+
+//  Avec fonction classique
+let doubles = nombres.map(function(n) {
+    return n * 2;
+});
+
+//  Avec arrow function (plus court!)
+let doubles = nombres.map(n => n * 2);
+
+// filter
+let pairs = nombres.filter(n => n % 2 === 0);
+
+// reduce
+let somme = nombres.reduce((acc, n) => acc + n, 0);
+
+// forEach
+nombres.forEach(n => console.log(n));
+
+// Chaînage
+let resultat = nombres
+    .filter(n => n > 2)
+    .map(n => n * 2)
+    .reduce((acc, n) => acc + n, 0);
+
+console.log(resultat); // 24
+
+// Avec objets
+let users = [
+    { nom: "Alice", age: 25 },
+    { nom: "Bob", age: 30 },
+    { nom: "Charlie", age: 35 }
+];
+
+let noms = users.map(u => u.nom);
+let adultes = users.filter(u => u.age >= 30);
+let ageMoyen = users.reduce((acc, u) => acc + u.age, 0) / users.length;
+        </pre>
+    </div>
+
+    <h3>3.  Destructuration (Arrays et Objets)</h3>
+    
+    <div class="example">
+        <div class="example-title">Destructuration d'arrays:</div>
+        <pre>
+// Array simple
+let nombres = [1, 2, 3, 4, 5];
+
+//  Méthode classique
+let premier = nombres[0];
+let deuxieme = nombres[1];
+let troisieme = nombres[2];
+
+//  Destructuration
+let [premier, deuxieme, troisieme] = nombres;
+console.log(premier);  // 1
+console.log(deuxieme); // 2
+console.log(troisieme); // 3
+
+// Ignorer des éléments
+let [a, , c] = nombres; // On skip le 2ème
+console.log(a, c); // 1, 3
+
+// Rest operator (...)
 let [premier, deuxieme, ...reste] = nombres;
 console.log(premier);  // 1
 console.log(deuxieme); // 2
 console.log(reste);    // [3, 4, 5]
 
-// Destructuration d'objet
+// Valeurs par défaut
+let [x, y, z = 0] = [1, 2];
+console.log(z); // 0 (valeur par défaut)
+
+// Échanger des variables
+let a = 1, b = 2;
+[a, b] = [b, a]; // Échange!
+console.log(a, b); // 2, 1
+        </pre>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Destructuration d'objets:</div>
+        <pre>
 let personne = {
     nom: "Dupont",
+    prenom: "Marie",
     age: 30,
     ville: "Paris"
 };
-let {nom, age, ville} = personne;
-console.log(nom);  // "Dupont"
 
-// Avec renommage
-let {nom: nomPersonne, age: agePersonne} = personne;
+//  Méthode classique
+let nom = personne.nom;
+let age = personne.age;
+
+//  Destructuration
+let { nom, age } = personne;
+console.log(nom, age); // "Dupont", 30
+
+// Renommer
+let { nom: nomPersonne, age: agePersonne } = personne;
+console.log(nomPersonne); // "Dupont"
 
 // Valeurs par défaut
-let {nom, pays = "France"} = personne;
+let { nom, pays = "France" } = personne;
 console.log(pays); // "France"
+
+// Rest operator
+let { nom, age, ...autres } = personne;
+console.log(autres); // { prenom: "Marie", ville: "Paris" }
+
+// Destructuration imbriquée
+let user = {
+    nom: "Alice",
+    adresse: {
+        rue: "123 Main St",
+        ville: "Paris",
+        cp: "75001"
+    }
+};
+
+let { nom, adresse: { ville, cp } } = user;
+console.log(ville); // "Paris"
+console.log(cp);    // "75001"
         </pre>
     </div>
 
-    <h3>2. Spread Operator (...)</h3>
+    <h3>4. Spread Operator (...)</h3>
+    
     <div class="example">
-        <div class="example-title">Étendre des arrays/objets:</div>
+        <div class="example-title">Avec arrays et objets:</div>
         <pre>
-// Avec arrays
+// Arrays
 let arr1 = [1, 2, 3];
 let arr2 = [4, 5, 6];
+
+// Fusionner
 let fusion = [...arr1, ...arr2];
 console.log(fusion); // [1, 2, 3, 4, 5, 6]
 
-// Copier un array
+// Copier
 let copie = [...arr1];
 
-// Avec objets
-let obj1 = {a: 1, b: 2};
-let obj2 = {c: 3, d: 4};
-let fusionObj = {...obj1, ...obj2};
-console.log(fusionObj); // {a: 1, b: 2, c: 3, d: 4}
+// Ajouter des éléments
+let nouveau = [0, ...arr1, 4];
+console.log(nouveau); // [0, 1, 2, 3, 4]
 
-// Modifier en copiant
-let personne = {nom: "Marie", age: 30};
-let nouvellePersonne = {...personne, age: 31};
+// Objets
+let obj1 = { a: 1, b: 2 };
+let obj2 = { c: 3, d: 4 };
+
+// Fusionner
+let fusion = { ...obj1, ...obj2 };
+console.log(fusion); // { a: 1, b: 2, c: 3, d: 4 }
+
+// Copier et modifier
+let user = { nom: "Alice", age: 30 };
+let newUser = { ...user, age: 31 };
+console.log(newUser); // { nom: "Alice", age: 31 }
+
+// Passer un array en arguments
+let nombres = [5, 3, 8, 1];
+console.log(Math.max(...nombres)); // 8
         </pre>
     </div>
 
-    <h3>3. Template Literals</h3>
-    <div class="example">
-        <div class="example-title">Strings avancés:</div>
-        <pre>
-let nom = "Thomas";
-let age = 32;
-
-// Interpolation
-let message = `Bonjour, je suis ${nom} et j'ai ${age} ans`;
-
-// Multi-lignes
-let texte = `
-    Ceci est un texte
-    sur plusieurs lignes
-    très facilement
-`;
-
-// Expressions
-let prix = 100;
-let total = `Le total avec TVA est: ${prix * 1.2}€`;
-
-// Tagged templates
-function tag(strings, ...values) {
-    console.log(strings);
-    console.log(values);
-}
-tag`Hello ${nom}, tu as ${age} ans`;
-        </pre>
+    <h3>5.  Optional Chaining (?.)</h3>
+    
+    <div class="concept">
+        <p><strong>Optional chaining</strong> permet d'accéder en toute sécurité à des propriétés imbriquées sans risquer une erreur si une valeur intermédiaire est null ou undefined.</p>
     </div>
 
-    <h3>4. Optional Chaining (?.)</h3>
     <div class="example">
-        <div class="example-title">Accès sécurisé aux propriétés:</div>
+        <div class="example-title">Éviter les erreurs:</div>
         <pre>
 let user = {
-    nom: "Marie",
+    nom: "Alice",
     adresse: {
         ville: "Paris"
     }
 };
 
-// Sans optional chaining (risque d'erreur)
-// let code = user.adresse.codePostal.numero; // Erreur!
+//  Sans optional chaining (risque d'erreur)
+// let cp = user.adresse.codePostal.numero; // ERREUR!
 
-// Avec optional chaining
-let code = user.adresse?.codePostal?.numero;
-console.log(code); // undefined (pas d'erreur)
+//  Avec optional chaining
+let cp = user.adresse?.codePostal?.numero;
+console.log(cp); // undefined (pas d'erreur)
 
 // Avec méthodes
-let resultat = user.getInfo?.();
+let resultat = user.getInfo?.(); // Appelle seulement si la méthode existe
 
 // Avec arrays
+let users = null;
 let premier = users?.[0]?.nom;
+console.log(premier); // undefined
+
+// Cas pratique
+let data = {
+    user: {
+        profile: {
+            settings: {
+                theme: "dark"
+            }
+        }
+    }
+};
+
+// Sans optional chaining (long et risqué)
+let theme;
+if (data && data.user && data.user.profile && data.user.profile.settings) {
+    theme = data.user.profile.settings.theme;
+}
+
+// Avec optional chaining (court et sûr)
+let theme = data?.user?.profile?.settings?.theme;
+console.log(theme); // "dark"
         </pre>
     </div>
 
-    <h3>5. Nullish Coalescing (??)</h3>
+    <h3>6.  Nullish Coalescing (??)</h3>
+    
+    <div class="concept">
+        <p><strong>Nullish coalescing (??)</strong> retourne la valeur de droite SEULEMENT si celle de gauche est null ou undefined (pas si elle est 0, "", false).</p>
+    </div>
+
     <div class="example">
-        <div class="example-title">Valeur par défaut:</div>
+        <div class="example-title">Différence avec || :</div>
         <pre>
-// ?? retourne la valeur de droite si gauche est null/undefined
+// Problème avec || (considère 0, "", false comme falsy)
+let count = 0;
+let resultat1 = count || 10;
+console.log(resultat1); // 10 (pas ce qu'on veut!)
+
+// Solution avec ??
+let resultat2 = count ?? 10;
+console.log(resultat2); // 0 (correct!)
+
+// Exemples
 let nom = null;
 let nomDefaut = nom ?? "Anonyme";
 console.log(nomDefaut); // "Anonyme"
 
-// Différence avec ||
-let count = 0;
-let resultat1 = count || 10;  // 10 (car 0 est falsy)
-let resultat2 = count ?? 10;  // 0 (car 0 n'est pas null/undefined)
+let age = 0;
+let ageDefaut = age ?? 18;
+console.log(ageDefaut); // 0 (garde la vraie valeur)
 
-// Chaînage
-let valeur = null;
-let result = valeur ?? "défaut 1" ?? "défaut 2";
-console.log(result); // "défaut 1"
+let texte = "";
+let texteDefaut = texte ?? "Texte par défaut";
+console.log(texteDefaut); // "" (garde la chaîne vide)
+
+// Comparaison || vs ??
+let valeur = 0;
+console.log(valeur || 10);  // 10 (0 est falsy)
+console.log(valeur ?? 10);  // 0 (0 n'est pas null/undefined)
+
+valeur = false;
+console.log(valeur || 10);  // 10 (false est falsy)
+console.log(valeur ?? 10);  // false (false n'est pas null/undefined)
+
+valeur = null;
+console.log(valeur || 10);  // 10
+console.log(valeur ?? 10);  // 10 (même résultat)
+
+// Cas pratique
+function afficher(options) {
+    let theme = options?.theme ?? "light";
+    let taille = options?.taille ?? 14;
+    console.log(`Theme: ${theme}, Taille: ${taille}`);
+}
+
+afficher({ theme: "dark" }); // Theme: dark, Taille: 14
+afficher({ taille: 0 });      // Theme: light, Taille: 0 (garde le 0!)
         </pre>
     </div>
 
-    <h3>6. Map et Set</h3>
+    <h3>7. Propriétés Courtes (Shorthand)</h3>
+    
+    <div class="example">
+        <div class="example-title">Syntaxe simplifiée:</div>
+        <pre>
+let nom = "Alice";
+let age = 30;
+
+//  Ancienne méthode
+let user1 = {
+    nom: nom,
+    age: age
+};
+
+//  Propriété courte (si même nom)
+let user2 = { nom, age };
+console.log(user2); // { nom: "Alice", age: 30 }
+
+// Méthodes courtes
+let obj = {
+    //  Ancienne
+    direBonjour: function() {
+        console.log("Bonjour");
+    },
+    
+    //  Courte
+    direAuRevoir() {
+        console.log("Au revoir");
+    }
+};
+
+// Cas pratique: Retourner des objets
+function creerUser(nom, age, ville) {
+    return { nom, age, ville }; // Au lieu de { nom: nom, age: age, ville: ville }
+}
+        </pre>
+    </div>
+
+    <h3>8. Map et Set</h3>
+    
     <div class="example">
         <div class="example-title">Nouvelles structures de données:</div>
         <pre>
-// Map - Clés/valeurs
+// Map - Comme un objet mais meilleur
 let map = new Map();
-map.set("nom", "Marie");
+
+// Ajouter des entrées
+map.set("nom", "Alice");
 map.set("age", 30);
 map.set(1, "un");
 
-console.log(map.get("nom")); // "Marie"
-console.log(map.size);       // 3
-map.delete("age");
-console.log(map.has("age")); // false
+// Récupérer
+console.log(map.get("nom")); // "Alice"
 
-// Itération
+// Vérifier
+console.log(map.has("age")); // true
+
+// Supprimer
+map.delete("age");
+
+// Taille
+console.log(map.size); // 2
+
+// Itérer
 for (let [cle, valeur] of map) {
     console.log(`${cle}: ${valeur}`);
 }
 
 // Set - Valeurs uniques
-let set = new Set([1, 2, 3, 3, 4]);
-console.log(set); // Set {1, 2, 3, 4}
+let set = new Set();
 
-set.add(5);
+// Ajouter
+set.add(1);
+set.add(2);
+set.add(2); // Ignoré (déjà présent)
+set.add(3);
+
+console.log(set); // Set {1, 2, 3}
+console.log(set.size); // 3
+
+// Vérifier
+console.log(set.has(2)); // true
+
+// Supprimer
 set.delete(2);
-console.log(set.has(3)); // true
 
-// Convertir en array
-let arr = [...set];
+// Convertir array en Set pour supprimer les doublons
+let nombres = [1, 2, 2, 3, 3, 3, 4, 5, 5];
+let unique = [...new Set(nombres)];
+console.log(unique); // [1, 2, 3, 4, 5]
         </pre>
     </div>
 
-    <div class="exercise">
-        <div class="exercise-title">Exercices Pratiques</div>
-        <ol>
-            <li>Utilisez la destructuration sur un objet complexe</li>
-            <li>Fusionnez plusieurs objets avec spread</li>
-            <li>Créez un template literal avec expressions</li>
-            <li>Utilisez optional chaining dans un objet imbriqué</li>
-            <li>Créez une Map pour stocker des utilisateurs</li>
-        </ol>
-    </div>
-</div>
-
-<!-- MODULE 15: Modules JavaScript -->
-<div id="module15" class="module">
-    <h2>Module 15: Modules JavaScript</h2>
+    <h3>9. Exemple Complet</h3>
     
-    <div class="concept">
-        <h3> Concepts Clés</h3>
-        <p>Les <strong>modules</strong> permettent d'organiser le code en fichiers séparés et réutilisables.</p>
-    </div>
-
-    <h3>1. Export et Import</h3>
     <div class="example">
-        <div class="example-title">Export nommé:</div>
-        <pre>
-// fichier: math.js
-export const PI = 3.14159;
-
-export function addition(a, b) {
-    return a + b;
-}
-
-export function multiplication(a, b) {
-    return a * b;
-}
-
-// fichier: main.js
-import { PI, addition, multiplication } from './math.js';
-
-console.log(PI);              // 3.14159
-console.log(addition(5, 3));  // 8
-        </pre>
-    </div>
-
-    <h3>2. Export Default</h3>
-    <div class="example">
-        <div class="example-title">Export par défaut:</div>
-        <pre>
-// fichier: Personne.js
-export default class Personne {
-    constructor(nom, age) {
-        this.nom = nom;
-        this.age = age;
-    }
-    
-    sePresenter() {
-        return `Je suis ${this.nom}`;
-    }
-}
-
-// fichier: main.js
-import Personne from './Personne.js';
-
-let marie = new Personne("Marie", 30);
-console.log(marie.sePresenter());
-        </pre>
-    </div>
-
-    <h3>3. Import/Export Mixte</h3>
-    <div class="example">
-        <div class="example-title">Combiner les deux:</div>
-        <pre>
-// fichier: utils.js
-export const VERSION = "1.0.0";
-
-export function log(message) {
-    console.log(`[LOG] ${message}`);
-}
-
-export default class Logger {
-    constructor(prefix) {
-        this.prefix = prefix;
-    }
-    
-    log(message) {
-        console.log(`[${this.prefix}] ${message}`);
-    }
-}
-
-// fichier: main.js
-import Logger, { VERSION, log } from './utils.js';
-
-console.log(VERSION);
-log("Hello");
-
-let logger = new Logger("APP");
-logger.log("Démarrage");
-        </pre>
-    </div>
-
-    <h3>4. Import tout</h3>
-    <div class="example">
-        <div class="example-title">Importer un module entier:</div>
-        <pre>
-// fichier: math.js
-export const PI = 3.14159;
-export function addition(a, b) { return a + b; }
-export function multiplication(a, b) { return a * b; }
-
-// fichier: main.js
-import * as Math from './math.js';
-
-console.log(Math.PI);
-console.log(Math.addition(5, 3));
-console.log(Math.multiplication(4, 2));
-        </pre>
-    </div>
-
-    <h3>5. Utiliser les Modules dans HTML</h3>
-    <div class="example">
-        <div class="example-title">Script type module:</div>
+        <div class="example-title">Application utilisant toutes les features ES6+:</div>
         <pre>
 &lt;!DOCTYPE html&gt;
 &lt;html&gt;
 &lt;head&gt;
-    &lt;title&gt;Modules Demo&lt;/title&gt;
+    &lt;title&gt;ES6+ Demo&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; }
+        .user-card { border: 2px solid #2C3F77; padding: 20px; margin: 10px 0; 
+                     border-radius: 10px; }
+    &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
-    &lt;h1&gt;Application avec Modules&lt;/h1&gt;
-    
-    &lt;!-- Importer le module principal --&gt;
-    &lt;script type="module" src="main.js"&gt;&lt;/script&gt;
+    &lt;h1&gt;Liste d'Utilisateurs ES6+&lt;/h1&gt;
+    &lt;div id="container"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        // Données
+        const users = [
+            { nom: "Dupont", prenom: "Alice", age: 28, ville: "Paris", actif: true },
+            { nom: "Martin", prenom: "Bob", age: 35, ville: "Lyon", actif: true },
+            { nom: "Dubois", prenom: "Charlie", age: 42, ville: "Paris", actif: false },
+            { nom: "Lefebvre", prenom: "Diana", age: 31, ville: "Marseille", actif: true }
+        ];
+
+        // Fonction avec destructuration et template literals
+        const creerCard = ({ nom, prenom, age, ville, actif }) => `
+            &lt;div class="user-card"&gt;
+                &lt;h2&gt;${prenom} ${nom}&lt;/h2&gt;
+                &lt;p&gt;&lt;strong&gt;Âge:&lt;/strong&gt; ${age} ans&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Ville:&lt;/strong&gt; ${ville}&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Statut:&lt;/strong&gt; ${actif ? " Actif" : " Inactif"}&lt;/p&gt;
+            &lt;/div&gt;
+        `;
+
+        // Filtrer et mapper avec arrow functions
+        const html = users
+            .filter(u => u.actif)  // Seulement les actifs
+            .map(creerCard)        // Créer les cards
+            .join('');             // Joindre en string
+
+        document.getElementById('container').innerHTML = html;
+
+        // Statistiques avec reduce et destructuration
+        const stats = users.reduce((acc, user) => ({
+            total: acc.total + 1,
+            actifs: acc.actifs + (user.actif ? 1 : 0),
+            ageMoyen: acc.ageMoyen + user.age
+        }), { total: 0, actifs: 0, ageMoyen: 0 });
+
+        stats.ageMoyen = stats.ageMoyen / stats.total;
+
+        // Optional chaining et nullish coalescing
+        const config = {
+            theme: null,
+            taille: 0
+        };
+
+        const theme = config?.theme ?? "light";
+        const taille = config?.taille ?? 14;
+
+        console.log(`Theme: ${theme}, Taille: ${taille}`);
+
+        // Spread operator
+        const nouveauxUsers = [
+            ...users,
+            { nom: "Nouveau", prenom: "Eric", age: 25, ville: "Nice", actif: true }
+        ];
+
+        console.log(`Total users: ${nouveauxUsers.length}`);
+    &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
         </pre>
     </div>
 
-    <h3>6. Structure de Projet</h3>
-    <div class="example">
-        <div class="example-title">Organisation recommandée:</div>
-        <pre>
-projet/
-│
-├── index.html
-│
-├── js/
-│   ├── main.js
-│   │
-│   ├── utils/
-│   │   ├── math.js
-│   │   └── string.js
-│   │
-│   ├── components/
-│   │   ├── Header.js
-│   │   └── Footer.js
-│   │
-│   └── services/
-│       ├── api.js
-│       └── storage.js
-│
-└── css/
-    └── style.css
-
-// Exemple d'import dans main.js:
-import { addition } from './utils/math.js';
-import Header from './components/Header.js';
-import { fetchUsers } from './services/api.js';
-        </pre>
-    </div>
-
-    <div class="note">
-        <strong> Important:</strong> Les modules nécessitent un serveur web pour fonctionner. Vous ne pouvez pas les utiliser en ouvrant directement un fichier HTML (file://). Utilisez un serveur local comme Live Server.
-    </div>
-
     <div class="exercise">
-        <div class="exercise-title">Exercices Pratiques</div>
+        <div class="exercise-title"> Exercices Pratiques</div>
         <ol>
-            <li>Créez un module math.js avec des fonctions mathématiques</li>
-            <li>Créez une classe dans un module et importez-la</li>
-            <li>Organisez une petite application en plusieurs modules</li>
-            <li>Créez un module utils.js avec des fonctions utilitaires</li>
-            <li>Faites un système de composants réutilisables</li>
+            <li>Réécrivez une fonction classique en arrow function</li>
+            <li>Utilisez template literals pour créer du HTML dynamique</li>
+            <li>Destructurez un objet et un array</li>
+            <li>Utilisez optional chaining sur un objet imbriqué</li>
+            <li>Comparez || et ?? avec différentes valeurs (0, "", false, null)</li>
+            <li>Fusionnez plusieurs objets avec le spread operator</li>
+            <li>Créez un Set pour supprimer les doublons d'un array</li>
         </ol>
     </div>
 
     <div class="note">
-        <strong>Félicitations!</strong> Vous avez terminé les 15 modules de la formation JavaScript. Vous maîtrisez maintenant les bases et les concepts avancés du JavaScript moderne!
+        <strong> À retenir :</strong> Template literals, arrow functions, destructuration, spread operator, optional chaining et nullish coalescing sont les features ES6+ les plus importantes à maîtriser !
     </div>
 </div>
+
+<!-- MODULE 15: Modules JavaScript -->
+<div id="module15" class="module">
+    <h2>Module 15: Storage & JSON</h2>
+    
+    <div class="concept">
+        <h3>Concepts Clés</h3>
+        <p>Le <strong>Web Storage</strong> (localStorage et sessionStorage) permet de sauvegarder des données dans le navigateur. <strong>JSON</strong> est le format standard pour échanger et stocker des données structurées.</p>
+    </div>
+
+    <div class="warning">
+        <strong>MODULE ESSENTIEL</strong> : Le storage est crucial pour créer des applications qui sauvegardent des données côté client (préférences, paniers, etc.)
+    </div>
+
+    <h3>1. localStorage - Stockage Permanent</h3>
+    
+    <div class="concept">
+        <p><strong>localStorage</strong> stocke des données qui persistent même après fermeture du navigateur. Limite: environ 5-10 MB par domaine.</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Méthodes de base:</div>
+        <pre>
+// Sauvegarder une donnée (key-value)
+localStorage.setItem("nom", "Alice");
+localStorage.setItem("age", "30");
+localStorage.setItem("theme", "dark");
+
+// Récupérer une donnée
+let nom = localStorage.getItem("nom");
+console.log(nom); // "Alice"
+
+let age = localStorage.getItem("age");
+console.log(age); // "30" (ATTENTION: toujours en string!)
+
+// Convertir en nombre si besoin
+let ageNombre = parseInt(localStorage.getItem("age"));
+console.log(ageNombre); // 30 (number)
+
+// Supprimer une donnée
+localStorage.removeItem("theme");
+
+// Tout supprimer
+localStorage.clear();
+
+// Vérifier si une clé existe
+if (localStorage.getItem("nom")) {
+    console.log("Le nom existe");
+}
+
+// Nombre de clés
+console.log(localStorage.length);
+
+// Parcourir toutes les clés
+for (let i = 0; i < localStorage.length; i++) {
+    let cle = localStorage.key(i);
+    let valeur = localStorage.getItem(cle);
+    console.log(`${cle}: ${valeur}`);
+}
+        </pre>
+    </div>
+
+    <h3>2. sessionStorage - Stockage Temporaire</h3>
+    
+    <div class="concept">
+        <p><strong>sessionStorage</strong> fonctionne exactement comme localStorage MAIS les données sont supprimées à la fermeture de l'onglet/navigateur.</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Même API que localStorage:</div>
+        <pre>
+// Sauvegarder
+sessionStorage.setItem("tempData", "Données temporaires");
+
+// Récupérer
+let data = sessionStorage.getItem("tempData");
+
+// Supprimer
+sessionStorage.removeItem("tempData");
+
+// Tout supprimer
+sessionStorage.clear();
+
+// Cas d'usage: données de formulaire temporaires
+sessionStorage.setItem("formStep", "2");
+sessionStorage.setItem("formData", "...");
+        </pre>
+    </div>
+
+    <h3>3. localStorage vs sessionStorage</h3>
+    
+    <table>
+        <tr>
+            <th>Caractéristique</th>
+            <th>localStorage</th>
+            <th>sessionStorage</th>
+        </tr>
+        <tr>
+            <td>Durée de vie</td>
+            <td>Permanent (jusqu'à suppression manuelle)</td>
+            <td>Temporaire (fermeture onglet)</td>
+        </tr>
+        <tr>
+            <td>Capacité</td>
+            <td>~5-10 MB</td>
+            <td>~5-10 MB</td>
+        </tr>
+        <tr>
+            <td>Partage entre onglets</td>
+            <td> Oui</td>
+            <td> Non (isolé par onglet)</td>
+        </tr>
+        <tr>
+            <td>API</td>
+            <td>Identique</td>
+            <td>Identique</td>
+        </tr>
+        <tr>
+            <td>Cas d'usage</td>
+            <td>Préférences, panier, settings</td>
+            <td>Données temporaires, formulaires</td>
+        </tr>
+    </table>
+
+    <h3>4. JSON - JavaScript Object Notation</h3>
+    
+    <div class="concept">
+        <p><strong>JSON</strong> est un format texte pour représenter des données structurées. ESSENTIEL car localStorage ne peut stocker que des strings !</p>
+    </div>
+
+    <h4>JSON.stringify() - Objet → String</h4>
+    
+    <div class="example">
+        <div class="example-title">Convertir un objet en JSON:</div>
+        <pre>
+// Objet JavaScript
+let user = {
+    nom: "Alice",
+    age: 30,
+    ville: "Paris",
+    actif: true
+};
+
+// Convertir en JSON string
+let userJSON = JSON.stringify(user);
+console.log(userJSON);
+// '{"nom":"Alice","age":30,"ville":"Paris","actif":true}'
+
+console.log(typeof userJSON); // "string"
+
+// Avec un array
+let nombres = [1, 2, 3, 4, 5];
+let nombresJSON = JSON.stringify(nombres);
+console.log(nombresJSON); // '[1,2,3,4,5]'
+
+// Avec des objets imbriqués
+let data = {
+    user: {
+        nom: "Bob",
+        adresse: {
+            rue: "123 Main St",
+            ville: "Lyon"
+        }
+    },
+    timestamp: new Date()
+};
+
+let dataJSON = JSON.stringify(data);
+console.log(dataJSON);
+
+// Formatage lisible (avec indentation)
+let dataPretty = JSON.stringify(data, null, 2);
+console.log(dataPretty);
+/*
+{
+  "user": {
+    "nom": "Bob",
+    "adresse": {
+      "rue": "123 Main St",
+      "ville": "Lyon"
+    }
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+*/
+        </pre>
+    </div>
+
+    <h4>JSON.parse() - String → Objet</h4>
+    
+    <div class="example">
+        <div class="example-title">Convertir JSON en objet:</div>
+        <pre>
+// String JSON
+let userJSON = '{"nom":"Alice","age":30,"ville":"Paris"}';
+
+// Convertir en objet
+let user = JSON.parse(userJSON);
+console.log(user); // { nom: "Alice", age: 30, ville: "Paris" }
+console.log(typeof user); // "object"
+
+// Accéder aux propriétés
+console.log(user.nom);   // "Alice"
+console.log(user.age);   // 30
+
+// Avec array
+let nombresJSON = '[1,2,3,4,5]';
+let nombres = JSON.parse(nombresJSON);
+console.log(nombres); // [1, 2, 3, 4, 5]
+
+// ATTENTION aux erreurs de parsing
+try {
+    let mauvais = JSON.parse("pas du json");
+} catch (error) {
+    console.error("Erreur de parsing:", error);
+}
+
+// Vérifier avant de parser
+let json = localStorage.getItem("data");
+if (json) {
+    try {
+        let data = JSON.parse(json);
+        console.log(data);
+    } catch (e) {
+        console.error("JSON invalide");
+    }
+}
+        </pre>
+    </div>
+
+    <h3>5. Stocker des Objets et Arrays</h3>
+    
+    <div class="concept">
+        <p>Pour stocker des objets/arrays dans localStorage, il FAUT les convertir en JSON !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Pattern complet:</div>
+        <pre>
+// Sauvegarder un objet
+let user = {
+    nom: "Alice",
+    age: 30,
+    preferences: {
+        theme: "dark",
+        langue: "fr"
+    }
+};
+
+// MAUVAIS - Stocke "[object Object]"
+localStorage.setItem("user", user);
+
+// BON - Convertir en JSON d'abord
+localStorage.setItem("user", JSON.stringify(user));
+
+// Récupérer l'objet
+let userJSON = localStorage.getItem("user");
+let userRecupere = JSON.parse(userJSON);
+console.log(userRecupere); // { nom: "Alice", age: 30, ... }
+
+// Pattern complet avec vérification
+function sauvegarderUser(user) {
+    try {
+        localStorage.setItem("user", JSON.stringify(user));
+        return true;
+    } catch (e) {
+        console.error("Erreur de sauvegarde:", e);
+        return false;
+    }
+}
+
+function chargerUser() {
+    try {
+        let json = localStorage.getItem("user");
+        return json ? JSON.parse(json) : null;
+    } catch (e) {
+        console.error("Erreur de chargement:", e);
+        return null;
+    }
+}
+
+// Utilisation
+sauvegarderUser(user);
+let chargé = chargerUser();
+console.log(chargé);
+        </pre>
+    </div>
+
+    <h3>6. Exemples Pratiques</h3>
+
+    <h4>Exemple 1: Sauvegarder des Préférences</h4>
+    
+    <div class="example">
+        <div class="example-title">Thème et préférences utilisateur:</div>
+        <pre>
+// Sauvegarder le thème
+function sauvegarderTheme(theme) {
+    localStorage.setItem("theme", theme);
+    appliquerTheme(theme);
+}
+
+function chargerTheme() {
+    let theme = localStorage.getItem("theme");
+    return theme || "light"; // Valeur par défaut
+}
+
+function appliquerTheme(theme) {
+    document.body.className = theme;
+}
+
+// Au chargement de la page
+document.addEventListener("DOMContentLoaded", () => {
+    let theme = chargerTheme();
+    appliquerTheme(theme);
+});
+
+// Bouton pour changer le thème
+document.getElementById("themeBtn").addEventListener("click", () => {
+    let themeActuel = chargerTheme();
+    let nouveauTheme = themeActuel === "light" ? "dark" : "light";
+    sauvegarderTheme(nouveauTheme);
+});
+        </pre>
+    </div>
+
+    <h4>Exemple 2: Panier d'Achat</h4>
+    
+    <div class="example">
+        <div class="example-title">Persister un panier:</div>
+        <pre>
+// Objet panier
+let panier = {
+    items: [],
+    total: 0
+};
+
+// Ajouter un produit
+function ajouterAuPanier(produit) {
+    panier.items.push(produit);
+    panier.total += produit.prix;
+    sauvegarderPanier();
+}
+
+// Sauvegarder
+function sauvegarderPanier() {
+    localStorage.setItem("panier", JSON.stringify(panier));
+}
+
+// Charger
+function chargerPanier() {
+    let json = localStorage.getItem("panier");
+    if (json) {
+        panier = JSON.parse(json);
+    }
+}
+
+// Vider
+function viderPanier() {
+    panier = { items: [], total: 0 };
+    localStorage.removeItem("panier");
+}
+
+// Initialiser au chargement
+chargerPanier();
+
+// Exemple d'utilisation
+ajouterAuPanier({ nom: "Laptop", prix: 1000 });
+ajouterAuPanier({ nom: "Souris", prix: 25 });
+console.log(panier);
+        </pre>
+    </div>
+
+    <h4>Exemple 3: Liste de Tâches Persistante</h4>
+    
+    <div class="example">
+        <div class="example-title">Todo list avec localStorage:</div>
+        <pre>
+let taches = [];
+
+// Charger les tâches
+function chargerTaches() {
+    let json = localStorage.getItem("taches");
+    taches = json ? JSON.parse(json) : [];
+    afficherTaches();
+}
+
+// Sauvegarder les tâches
+function sauvegarderTaches() {
+    localStorage.setItem("taches", JSON.stringify(taches));
+}
+
+// Ajouter une tâche
+function ajouterTache(texte) {
+    let tache = {
+        id: Date.now(),
+        texte: texte,
+        completee: false,
+        date: new Date().toISOString()
+    };
+    taches.push(tache);
+    sauvegarderTaches();
+    afficherTaches();
+}
+
+// Supprimer une tâche
+function supprimerTache(id) {
+    taches = taches.filter(t => t.id !== id);
+    sauvegarderTaches();
+    afficherTaches();
+}
+
+// Toggle complétée
+function toggleTache(id) {
+    let tache = taches.find(t => t.id === id);
+    if (tache) {
+        tache.completee = !tache.completee;
+        sauvegarderTaches();
+        afficherTaches();
+    }
+}
+
+// Afficher
+function afficherTaches() {
+    let html = taches.map(t => `
+        &lt;div class="tache ${t.completee ? 'completee' : ''}"&gt;
+            &lt;input type="checkbox" ${t.completee ? 'checked' : ''} 
+                   onchange="toggleTache(${t.id})"&gt;
+            &lt;span&gt;${t.texte}&lt;/span&gt;
+            &lt;button onclick="supprimerTache(${t.id})"&gt;&lt;/button&gt;
+        &lt;/div&gt;
+    `).join('');
+    
+    document.getElementById('listeTaches').innerHTML = html;
+}
+
+// Initialiser
+chargerTaches();
+        </pre>
+    </div>
+
+    <h3>7. Exemple Complet Interactif</h3>
+    
+    <div class="example">
+        <div class="example-title">Application complète avec localStorage:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Notes Persistantes&lt;/title&gt;
+    &lt;style&gt;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        h1 { color: #2C3F77; margin-bottom: 20px; }
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; background: #2C3F77; color: white; 
+                 border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #A0866B; }
+        .note { background: #fff3cd; padding: 15px; margin: 10px 0; 
+                border-radius: 5px; border-left: 4px solid #ffc107; }
+        .note-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .note-title { font-weight: bold; font-size: 1.1em; }
+        .note-date { color: #666; font-size: 0.9em; }
+        .delete-btn { background: #f44336; padding: 5px 10px; font-size: 0.9em; }
+        .stats { background: #e3f2fd; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Mes Notes Persistantes&lt;/h1&gt;
+    
+    &lt;div class="stats" id="stats"&gt;&lt;/div&gt;
+    
+    &lt;div class="controls"&gt;
+        &lt;input type="text" id="titreInput" placeholder="Titre de la note..."&gt;
+        &lt;input type="text" id="contenuInput" placeholder="Contenu..."&gt;
+        &lt;button id="ajouterBtn"&gt;Ajouter&lt;/button&gt;
+        &lt;button id="exportBtn"&gt;Exporter JSON&lt;/button&gt;
+        &lt;button id="clearBtn" style="background: #f44336;"&gt;Tout Supprimer&lt;/button&gt;
+    &lt;/div&gt;
+    
+    &lt;div id="notesContainer"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let notes = [];
+
+        // Charger les notes au démarrage
+        function chargerNotes() {
+            try {
+                let json = localStorage.getItem("notes");
+                notes = json ? JSON.parse(json) : [];
+            } catch (e) {
+                console.error("Erreur de chargement:", e);
+                notes = [];
+            }
+            afficherNotes();
+            afficherStats();
+        }
+
+        // Sauvegarder les notes
+        function sauvegarderNotes() {
+            try {
+                localStorage.setItem("notes", JSON.stringify(notes));
+                return true;
+            } catch (e) {
+                console.error("Erreur de sauvegarde:", e);
+                if (e.name === "QuotaExceededError") {
+                    alert("Espace de stockage plein!");
+                }
+                return false;
+            }
+        }
+
+        // Ajouter une note
+        function ajouterNote() {
+            let titre = document.getElementById("titreInput").value.trim();
+            let contenu = document.getElementById("contenuInput").value.trim();
+            
+            if (!titre || !contenu) {
+                alert("Remplissez tous les champs!");
+                return;
+            }
+            
+            let note = {
+                id: Date.now(),
+                titre: titre,
+                contenu: contenu,
+                date: new Date().toLocaleString("fr-FR")
+            };
+            
+            notes.unshift(note); // Ajouter au début
+            sauvegarderNotes();
+            
+            document.getElementById("titreInput").value = "";
+            document.getElementById("contenuInput").value = "";
+            
+            afficherNotes();
+            afficherStats();
+        }
+
+        // Supprimer une note
+        function supprimerNote(id) {
+            if (confirm("Supprimer cette note?")) {
+                notes = notes.filter(n => n.id !== id);
+                sauvegarderNotes();
+                afficherNotes();
+                afficherStats();
+            }
+        }
+
+        // Afficher les notes
+        function afficherNotes() {
+            let html = notes.map(note => `
+                &lt;div class="note"&gt;
+                    &lt;div class="note-header"&gt;
+                        &lt;span class="note-title"&gt;${note.titre}&lt;/span&gt;
+                        &lt;span class="note-date"&gt;${note.date}&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;p&gt;${note.contenu}&lt;/p&gt;
+                    &lt;button class="delete-btn" onclick="supprimerNote(${note.id})"&gt;
+                        Supprimer
+                    &lt;/button&gt;
+                &lt;/div&gt;
+            `).join('');
+            
+            document.getElementById('notesContainer').innerHTML = html || 
+                '&lt;p style="text-align: center; color: #666;"&gt;Aucune note&lt;/p&gt;';
+        }
+
+        // Afficher les stats
+        function afficherStats() {
+            let taille = new Blob([JSON.stringify(notes)]).size;
+            document.getElementById('stats').innerHTML = `
+                &lt;strong&gt;Total:&lt;/strong&gt; ${notes.length} notes | 
+                &lt;strong&gt;Taille:&lt;/strong&gt; ${taille} octets
+            `;
+        }
+
+        // Exporter en JSON
+        function exporterJSON() {
+            let json = JSON.stringify(notes, null, 2);
+            let blob = new Blob([json], { type: 'application/json' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'notes.json';
+            a.click();
+        }
+
+        // Tout supprimer
+        function toutSupprimer() {
+            if (confirm("Supprimer TOUTES les notes?")) {
+                notes = [];
+                localStorage.removeItem("notes");
+                afficherNotes();
+                afficherStats();
+            }
+        }
+
+        // Event listeners
+        document.getElementById("ajouterBtn").addEventListener("click", ajouterNote);
+        document.getElementById("exportBtn").addEventListener("click", exporterJSON);
+        document.getElementById("clearBtn").addEventListener("click", toutSupprimer);
+        
+        document.getElementById("contenuInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") ajouterNote();
+        });
+
+        // Charger au démarrage
+        chargerNotes();
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <h3>8. Bonnes Pratiques et Pièges</h3>
+    
+    <div class="warning">
+        <strong>Points d'attention :</strong>
+        <ul>
+            <li>localStorage stocke UNIQUEMENT des strings</li>
+            <li>Toujours utiliser JSON.stringify() / JSON.parse() pour objets/arrays</li>
+            <li>Limite de ~5-10 MB selon navigateur</li>
+            <li>Gérer les erreurs (try/catch) car peut être plein ou désactivé</li>
+            <li>Ne PAS stocker d'informations sensibles (mots de passe, etc.)</li>
+            <li>Vérifier si localStorage existe (navigation privée)</li>
+        </ul>
+    </div>
+
+    <div class="note">
+        <strong>Bonnes pratiques :</strong>
+        <ul>
+            <li>Préfixer les clés (ex: "app_user", "app_settings")</li>
+            <li>Valider les données avant de parse</li>
+            <li>Avoir des valeurs par défaut</li>
+            <li>Nettoyer les données obsolètes</li>
+            <li>Versionner vos données si structure change</li>
+        </ul>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Créez un système de sauvegarde de préférences (thème, langue)</li>
+            <li>Faites une liste de courses qui persiste</li>
+            <li>Créez un compteur de visites</li>
+            <li>Sauvegardez l'historique de recherche</li>
+            <li>Faites un système de favoris</li>
+            <li>Créez un panier d'achat persistant</li>
+            <li>Sauvegardez la progression dans un jeu</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <strong>À retenir :</strong> localStorage + JSON.stringify/parse = La combinaison parfaite pour sauvegarder des données dans le navigateur !
+    </div>
+</div>
+
 
 <!-- FIN DES MODULES 6 À 15 -->
 

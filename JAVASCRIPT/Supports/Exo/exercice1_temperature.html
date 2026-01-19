@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 1 - Conversion de température</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+       
+    
+     
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Exercice 1 : Conversion de température</h1>
+        
+        <div id="resultats"></div>
+    </div>
+
+    <script>
+        // 1. Créer une variable celsius avec la valeur 25
+        let celsius = 25;
+
+        // 2. Calculer la température en Fahrenheit : (celsius * 9/5) + 32
+        let fahrenheit = (celsius * 9/5) + 32;
+
+        // 3. Calculer la température en Kelvin : celsius + 273.15
+        let kelvin = celsius + 273.15;
+
+        // 4. Afficher les trois températures avec leur unité
+        let html = `
+            <div class="result">
+                <h2>Résultats des conversions</h2>
+                <div class="temperature celsius">
+                     Celsius : ${celsius}°C
+                </div>
+                <div class="temperature fahrenheit">
+                     Fahrenheit : ${fahrenheit}°F
+                </div>
+                <div class="temperature kelvin">
+                     Kelvin : ${kelvin}K
+                </div>
+            </div>
+        `;
+
+        // 5. Vérifier si la température en Celsius est supérieure à 30
+        if (celsius > 30) {
+            html += `
+                <div class="alert">
+                    Attention ! Il fait chaud : ${celsius}°C est supérieur à 30°C !
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="info">
+                    Température agréable : ${celsius}°C est inférieur ou égal à 30°C
+                </div>
+            `;
+        }
+
+        // Afficher le code utilisé
+        html += `
+            <div class="result">
+                <h3>Code JavaScript utilisé :</h3>
+                <div class="code">
+let celsius = 25;<br>
+let fahrenheit = (celsius * 9/5) + 32;<br>
+let kelvin = celsius + 273.15;<br>
+<br>
+if (celsius > 30) {<br>
+&nbsp;&nbsp;console.log("Il fait chaud !");<br>
+} else {<br>
+&nbsp;&nbsp;console.log("Température agréable");<br>
+}
+                </div>
+            </div>
+        `;
+
+        // Afficher dans la page
+        document.getElementById('resultats').innerHTML = html;
+
+        // Afficher aussi dans la console
+        console.log("=== CONVERSION DE TEMPÉRATURE ===");
+        console.log(`Celsius : ${celsius}°C`);
+        console.log(`Fahrenheit : ${fahrenheit}°F`);
+        console.log(`Kelvin : ${kelvin}K`);
+        console.log(celsius > 30 ? "Il fait chaud !" : "Température agréable");
+    </script>
+</body>
+</html>

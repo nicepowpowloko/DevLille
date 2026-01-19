@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+       
+let prix = 25.50;
+let quantite = 3;
+let total = prix * quantite;
+
+console.log("Prix unitaire :", prix, "€");
+console.log("Quantité :", quantite);
+console.log("Total :", total, "€");
+// Total : 76.5 €
+
+// 2. Utilisez l'opérateur modulo pour vérifier si un nombre est pair
+let nombre = 14;
+let estPair = nombre % 2 === 0;
+
+console.log(nombre, "est pair :", estPair);
+// Résultat : 14 est pair : true
+
+// Autre exemple avec un nombre impair
+let nombre2 = 7;
+console.log(nombre2, "est pair :", nombre2 % 2 === 0);
+// Résultat : 7 est pair : false
+
+
+// 3. Créez une variable `age` et vérifiez s'il est majeur (>= 18)
+let age = 20;
+let estMajeur = age >= 18;
+
+console.log("Âge :", age);
+console.log("Est majeur :", estMajeur);
+// Résultat : Est majeur : true
+
+
+// 4. Utilisez les opérateurs logiques pour vérifier plusieurs conditions
+let ageUtilisateur = 25;
+let aPermis = true;
+let aVoiture = false;
+
+// Vérifier si la personne peut conduire (majeur ET a le permis)
+let peutConduire = ageUtilisateur >= 18 && aPermis;
+console.log("Peut conduire :", peutConduire);
+// Résultat : true
+
+// Vérifier si la personne a besoin de louer (pas de voiture OU pas le permis)
+let doitLouer = !aVoiture || !aPermis;
+console.log("Doit louer une voiture :", doitLouer);
+// Résultat : true
+
+// Vérifier si tout est OK pour un road trip
+let pretPourRoadTrip = ageUtilisateur >= 18 && aPermis && aVoiture;
+console.log("Prêt pour un road trip :", pretPourRoadTrip);
+// Résultat : false
+
+
+// 5. Créez un compteur et incrémentez-le 5 fois
+let compteur = 0;
+
+console.log("Compteur initial :", compteur);
+
+compteur++; // 1ère incrémentation
+console.log("Après 1ère incrémentation :", compteur);
+
+compteur++; // 2ème incrémentation
+console.log("Après 2ème incrémentation :", compteur);
+
+compteur++; // 3ème incrémentation
+console.log("Après 3ème incrémentation :", compteur);
+
+compteur++; // 4ème incrémentation
+console.log("Après 4ème incrémentation :", compteur);
+
+compteur++; // 5ème incrémentation
+console.log("Après 5ème incrémentation :", compteur);
+
+// Résultat final : 5
+
+// Alternative avec +=
+let compteur2 = 0;
+compteur2 += 5; // Ajoute directement 5
+console.log("Compteur2 :", compteur2);
+// Résultat : 5
+    </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 2 - Calcul du temps de trajet</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Exercice 2 : Calcul du temps de trajet</h1>
+        
+        <div id="resultats"></div>
+    </div>
+
+    <script>
+        // 1. Créer une variable distance avec la valeur 45 (en km)
+        let distance = 45;
+
+        // 2. Créer une variable vitesse avec la valeur 90 (en km/h)
+        let vitesse = 90;
+
+        // 3. Calculer le temps en heures : distance / vitesse
+        let tempsHeures = distance / vitesse;
+
+        // 4. Convertir ce temps en minutes (multiplier par 60)
+        let tempsMinutes = tempsHeures * 60;
+
+        // 5. Vérifier si le trajet dure plus de 30 minutes ET moins d'une heure
+        let trajetIdeal = tempsMinutes > 30 && tempsMinutes < 60;
+
+        // 6. Afficher tous les résultats
+        let html = `
+            <div class="result">
+                <h2> Données du trajet</h2>
+                <div class="info-line">
+                     Distance : <span class="highlight">${distance} km</span>
+                </div>
+                <div class="info-line">
+                     Vitesse moyenne : <span class="highlight">${vitesse} km/h</span>
+                </div>
+            </div>
+
+            <div class="result">
+                <h2>⏱ Temps de trajet calculé</h2>
+                <div class="info-line">
+                 Temps en heures : <span class="highlight">${tempsHeures.toFixed(2)} h</span>
+                </div>
+                <div class="info-line">
+                     Temps en minutes : <span class="highlight">${tempsMinutes} min</span>
+                </div>
+            </div>
+        `;
+
+        // Afficher le résultat de la vérification
+        if (trajetIdeal) {
+            html += `
+                <div class="success">
+                     Parfait ! Le trajet dure plus de 30 minutes ET moins d'une heure (${tempsMinutes} min)
+                    <br>C'est un temps de trajet raisonnable !
+                </div>
+            `;
+        } else if (tempsMinutes <= 30) {
+            html += `
+                <div class="warning">
+                     Le trajet dure ${tempsMinutes} min, c'est moins de 30 minutes.
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="warning">
+                     Le trajet dure ${tempsMinutes} min, c'est plus d'une heure (60 min).
+                </div>
+            `;
+        }
+
+        // Afficher le code utilisé
+        html += `
+            <div class="result">
+                <h3> Code JavaScript utilisé :</h3>
+                <div class="code">
+let distance = 45;<br>
+let vitesse = 90;<br>
+let tempsHeures = distance / vitesse;<br>
+let tempsMinutes = tempsHeures * 60;<br>
+<br>
+// Vérification si entre 30 et 60 minutes<br>
+let trajetIdeal = tempsMinutes > 30 && tempsMinutes < 60;<br>
+<br>
+console.log("Temps en heures:", tempsHeures);<br>
+console.log("Temps en minutes:", tempsMinutes);<br>
+console.log("Trajet idéal?", trajetIdeal);
+                </div>
+            </div>
+        `;
+
+        // Afficher dans la page
+        document.getElementById('resultats').innerHTML = html;
+
+        // Afficher aussi dans la console
+        console.log("=== CALCUL DU TEMPS DE TRAJET ===");
+        console.log(`Distance : ${distance} km`);
+        console.log(`Vitesse : ${vitesse} km/h`);
+        console.log(`Temps en heures : ${tempsHeures.toFixed(2)} h`);
+        console.log(`Temps en minutes : ${tempsMinutes} min`);
+        console.log(`Trajet entre 30 et 60 min ? ${trajetIdeal}`);
+    </script>
+</body>
+</html>

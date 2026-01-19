@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 5 - Calcul de réduction</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+       
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Exercice 5 : Calcul de réduction dans un magasin</h1>
+        
+        <div id="resultats"></div>
+    </div>
+
+    <script>
+        // 1. Créer une variable prixArticle avec la valeur 80
+        let prixArticle = 80;
+
+        // 2. Créer une variable quantiteAchetee avec la valeur 3
+        let quantiteAchetee = 3;
+
+        // 3. Calculer le montantTotal (prix × quantité)
+        let montantTotal = prixArticle * quantiteAchetee;
+
+        // 4. Créer une variable aCarteFidelite avec true ou false
+        let aCarteFidelite = true;
+
+        // 5. Si le client a une carte de fidélité ET achète plus de 2 articles, il a 15% de réduction
+        let aReduction = aCarteFidelite && quantiteAchetee > 2;
+        let montantReduction = 0;
+        let montantFinal = montantTotal;
+
+        if (aReduction) {
+            montantReduction = montantTotal * 0.15;
+            montantFinal = montantTotal - montantReduction;
+        }
+
+        // 7. Afficher tous les résultats
+        let html = `
+            <div class="result">
+                <h2>Détails de l'achat</h2>
+                <div class="info-line">
+                    <span>Prix unitaire de l'article</span>
+                    <span class="value">${prixArticle} €</span>
+                </div>
+                <div class="info-line">
+                    <span>Quantité achetée</span>
+                    <span class="value">${quantiteAchetee}</span>
+                </div>
+            </div>
+
+            <div class="total">
+                MONTANT TOTAL : ${montantTotal} €
+            </div>
+
+            <div class="carte-fidelite">
+                ${aCarteFidelite ? 'CARTE DE FIDÉLITÉ : OUI ' : ' PAS DE CARTE DE FIDÉLITÉ'}
+            </div>
+        `;
+
+        // Afficher les informations sur la réduction
+        if (aReduction) {
+            html += `
+                <div class="result">
+                    <h2>Vous bénéficiez d'une réduction !</h2>
+                    <div class="reduction">
+                        RÉDUCTION DE 15%<br>
+                        (Carte fidélité + Plus de 2 articles)
+                    </div>
+                    <div class="economie">
+                        Vous économisez : ${montantReduction.toFixed(2)} €
+                    </div>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="result">
+                    <h2>Conditions de réduction</h2>
+                    <div class="info-line" style="background: #ffebee; flex-direction: column; align-items: flex-start; gap: 10px;">
+                        <div>Pour bénéficier de la réduction de 15%, il faut :</div>
+                        <div>✓ Avoir une carte de fidélité : ${aCarteFidelite ? 'OUI' : ' NON'}</div>
+                        <div>✓ Acheter plus de 2 articles : ${quantiteAchetee > 2 ? 'OUI' : ' NON'}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        html += `
+            <div class="final">
+                 MONTANT FINAL À PAYER : ${montantFinal.toFixed(2)} €
+            </div>
+        `;
+
+        // Afficher le code utilisé
+        html += `
+            <div class="result">
+                <h3> Code JavaScript utilisé :</h3>
+                <div class="code">
+// 1. Prix de l'article<br>
+let prixArticle = 80;<br>
+<br>
+// 2. Quantité achetée<br>
+let quantiteAchetee = 3;<br>
+<br>
+// 3. Calcul du montant total<br>
+let montantTotal = prixArticle * quantiteAchetee;<br>
+<br>
+// 4. Carte de fidélité<br>
+let aCarteFidelite = true;<br>
+<br>
+// 5. Vérifier les conditions de réduction<br>
+let aReduction = aCarteFidelite && quantiteAchetee > 2;<br>
+<br>
+// 6. Calculer le montant final<br>
+let montantFinal = montantTotal;<br>
+<br>
+if (aReduction) {<br>
+&nbsp;&nbsp;let reduction = montantTotal * 0.15;<br>
+&nbsp;&nbsp;montantFinal = montantTotal - reduction;<br>
+}<br>
+<br>
+// 7. Afficher les résultats<br>
+console.log("Montant total:", montantTotal);<br>
+console.log("Réduction appliquée:", aReduction);<br>
+console.log("Montant final:", montantFinal);
+                </div>
+            </div>
+        `;
+
+        // Afficher dans la page
+        document.getElementById('resultats').innerHTML = html;
+
+        // Afficher aussi dans la console
+        console.log("=== CALCUL DE RÉDUCTION ===");
+        console.log(`Prix unitaire : ${prixArticle} €`);
+        console.log(`Quantité : ${quantiteAchetee}`);
+        console.log(`Montant total : ${montantTotal} €`);
+        console.log(`Carte fidélité : ${aCarteFidelite}`);
+        console.log(`Réduction applicable : ${aReduction}`);
+        if (aReduction) {
+            console.log(`Montant réduction : ${montantReduction.toFixed(2)} €`);
+        }
+        console.log(`MONTANT FINAL : ${montantFinal.toFixed(2)} €`);
+    </script>
+</body>
+</html>
