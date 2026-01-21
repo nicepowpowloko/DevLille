@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 2 - Système de réduction</title>
+</head>
+<body>
+    <h1>Exercice 2 : Système de réduction selon l'âge</h1>
+    
+    <div>
+        <label for="age">Entrez votre âge :</label>
+        <input type="number" id="age" placeholder="Ex: 25" min="0" max="120">
+        <br><br>
+        <label for="prixBase">Prix de base (€) :</label>
+        <input type="number" id="prixBase" placeholder="Ex: 50" min="0" step="0.01">
+        <br><br>
+        <button onclick="calculerReduction()">Calculer la réduction</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <hr>
+    
+    <h2>Code JavaScript avec commentaires :</h2>
+    <pre>
+function calculerReduction() {
+    // 1. Récupération et conversion des valeurs
+    // parseInt() pour l'âge car c'est un nombre entier
+    // parseFloat() pour le prix car il peut avoir des décimales
+    const age = parseInt(document.getElementById('age').value);
+    const prixBase = parseFloat(document.getElementById('prixBase').value);
+    
+    // 2. Validation des données saisies
+    // On vérifie que les deux valeurs sont des nombres valides
+    if (isNaN(age) || isNaN(prixBase)) {
+        document.getElementById('result').innerHTML = ' Veuillez remplir tous les champs';
+        return;
+    }
+    
+    // Validation des valeurs négatives
+    if (age < 0 || prixBase < 0) {
+        document.getElementById('result').innerHTML = ' L\'âge et le prix doivent être positifs';
+        return;
+    }
+    
+    // 3. Déclaration des variables pour le calcul
+    let categorie;      // Nom de la catégorie
+    let tauxReduction;  // Pourcentage de réduction (0 à 100)
+    
+    // 4. Structure conditionnelle imbriquée
+    // IMPORTANT : L'ordre des conditions compte !
+    // On va du plus jeune au plus âgé
+    
+    if (age < 12) {
+        // Enfants : moins de 12 ans
+        categorie = 'Enfant';
+        tauxReduction = 50;  // 50% de réduction
+    } else if (age >= 12 && age < 18) {
+        // Jeunes : de 12 à 17 ans inclus
+        categorie = 'Jeune';
+        tauxReduction = 30;  // 30% de réduction
+    } else if (age >= 18 && age < 65) {
+        // Adultes : de 18 à 64 ans inclus
+        categorie = 'Adulte';
+        tauxReduction = 0;   // Pas de réduction (tarif plein)
+    } else {
+        // Seniors : 65 ans et plus
+        categorie = 'Senior';
+        tauxReduction = 40;  // 40% de réduction
+    }
+    
+    // 5. Calculs
+    // Montant de la réduction en euros
+    const montantReduction = prixBase * (tauxReduction / 100);
+    
+    // Prix final après réduction
+    const prixFinal = prixBase - montantReduction;
+    
+    // 6. Construction du message avec template literals (``)
+    // toFixed(2) affiche 2 décimales pour les prix
+    const message = `
+         Catégorie : ${categorie}
+         Prix de base : ${prixBase.toFixed(2)} €
+         Réduction : ${tauxReduction}% (-${montantReduction.toFixed(2)} €)
+         Prix final : ${prixFinal.toFixed(2)} €
+    `;
+    
+    // 7. Affichage du résultat
+    document.getElementById('result').innerHTML = message.replace(/\n/g, '<br>');
+}
+    </pre>
+
+    <script>
+        function calculerReduction() {
+            // 1. Récupération et conversion des valeurs
+            // parseInt() pour l'âge car c'est un nombre entier
+            // parseFloat() pour le prix car il peut avoir des décimales
+            const age = parseInt(document.getElementById('age').value);
+            const prixBase = parseFloat(document.getElementById('prixBase').value);
+            
+            // 2. Validation des données saisies
+            // On vérifie que les deux valeurs sont des nombres valides
+            if (isNaN(age) || isNaN(prixBase)) {
+                document.getElementById('result').innerHTML = ' Veuillez remplir tous les champs';
+                return;
+            }
+            
+            // Validation des valeurs négatives
+            if (age < 0 || prixBase < 0) {
+                document.getElementById('result').innerHTML = ' L\'âge et le prix doivent être positifs';
+                return;
+            }
+            
+            // 3. Déclaration des variables pour le calcul
+            let categorie;      // Nom de la catégorie
+            let tauxReduction;  // Pourcentage de réduction (0 à 100)
+            
+            // 4. Structure conditionnelle imbriquée
+            // IMPORTANT : L'ordre des conditions compte !
+            // On va du plus jeune au plus âgé
+            
+            if (age < 12) {
+                // Enfants : moins de 12 ans
+                categorie = 'Enfant';
+                tauxReduction = 50;  // 50% de réduction
+            } else if (age >= 12 && age < 18) {
+                // Jeunes : de 12 à 17 ans inclus
+                categorie = 'Jeune';
+                tauxReduction = 30;  // 30% de réduction
+            } else if (age >= 18 && age < 65) {
+                // Adultes : de 18 à 64 ans inclus
+                categorie = 'Adulte';
+                tauxReduction = 0;   // Pas de réduction (tarif plein)
+            } else {
+                // Seniors : 65 ans et plus
+                categorie = 'Senior';
+                tauxReduction = 40;  // 40% de réduction
+            }
+            
+            // 5. Calculs
+            // Montant de la réduction en euros
+            const montantReduction = prixBase * (tauxReduction / 100);
+            
+            // Prix final après réduction
+            const prixFinal = prixBase - montantReduction;
+            
+            // 6. Construction du message avec template literals (``)
+            // toFixed(2) affiche 2 décimales pour les prix
+            const message = `
+                 Catégorie : ${categorie}<br>
+                 Prix de base : ${prixBase.toFixed(2)} €<br>
+                 Réduction : ${tauxReduction}% (-${montantReduction.toFixed(2)} €)<br>
+                 Prix final : ${prixFinal.toFixed(2)} €
+            `;
+            
+            // 7. Affichage du résultat
+            document.getElementById('result').innerHTML = message;
+        }
+
+
+
+        
+    </script>
+</body>
+</html>

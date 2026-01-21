@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 3 - Vérificateur de mot de passe</title>
+</head>
+<body>
+    <h1>Exercice 3 : Vérificateur de mot de passe</h1>
+    
+    <div>
+        <h3> Critères requis :</h3>
+        <ul>
+            <li>Minimum 8 caractères</li>
+            <li>Au moins une majuscule</li>
+            <li>Au moins une minuscule</li>
+            <li>Au moins un chiffre</li>
+            <li>Au moins un caractère spécial (@, #, $, !, %, &, *)</li>
+        </ul>
+        
+        <label for="password">Entrez un mot de passe :</label>
+        <input type="text" id="password" placeholder="Ex: MonP@ssw0rd!">
+        <br><br>
+        <button onclick="verifierMotDePasse()">Vérifier le mot de passe</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <hr>
+    
+    <h2>Code JavaScript avec commentaires :</h2>
+    <pre>
+function verifierMotDePasse() {
+    // 1. Récupération du mot de passe
+    const password = document.getElementById('password').value;
+    
+    // 2. Validation de base
+    if (password === '') {
+        document.getElementById('result').innerHTML = ' Veuillez entrer un mot de passe';
+        return;
+    }
+    
+    // 3. Définition des critères avec REGEX (Expressions Régulières)
+    // Les regex permettent de chercher des motifs dans du texte
+    
+    // Longueur minimale : au moins 8 caractères
+    const longueurMin = password.length >= 8;
+    
+    // /[A-Z]/ cherche AU MOINS UNE lettre majuscule
+    // .test() retourne true si le motif est trouvé
+    const aMajuscule = /[A-Z]/.test(password);
+    
+    // /[a-z]/ cherche AU MOINS UNE lettre minuscule
+    const aMinuscule = /[a-z]/.test(password);
+    
+    // /[0-9]/ ou /\d/ cherche AU MOINS UN chiffre
+    const aChiffre = /[0-9]/.test(password);
+    
+    // /[@#$!%&*]/ cherche AU MOINS UN caractère spécial dans la liste
+    const aCaractereSpecial = /[@#$!%&*]/.test(password);
+    
+    // 4. Tableau pour stocker les erreurs
+    // On va collecter tous les critères NON respectés
+    const erreurs = [];
+    
+    // 5. Vérification de chaque critère
+    // Si un critère n'est PAS respecté (!), on ajoute un message d'erreur
+    if (!longueurMin) {
+        erreurs.push(' Minimum 8 caractères');
+    }
+    if (!aMajuscule) {
+        erreurs.push(' Au moins une majuscule (A-Z)');
+    }
+    if (!aMinuscule) {
+        erreurs.push(' Au moins une minuscule (a-z)');
+    }
+    if (!aChiffre) {
+        erreurs.push(' Au moins un chiffre (0-9)');
+    }
+    if (!aCaractereSpecial) {
+        erreurs.push(' Au moins un caractère spécial (@#$!%&*)');
+    }
+    
+    // 6. Évaluation finale
+    // Si le tableau erreurs est vide (length === 0), le mot de passe est valide
+    if (erreurs.length === 0) {
+        // Tous les critères sont respectés !
+        const message = `
+             Mot de passe VALIDE !
+            
+            Tous les critères sont respectés :
+            ✓ Longueur : ${password.length} caractères
+            ✓ Contient des majuscules
+            ✓ Contient des minuscules
+            ✓ Contient des chiffres
+            ✓ Contient des caractères spéciaux
+        `;
+        document.getElementById('result').innerHTML = message.replace(/\n/g, '<br>');
+    } else {
+        // Au moins un critère n'est pas respecté
+        // .join('<br>') transforme le tableau en texte avec des retours à la ligne
+        const message = `
+             Mot de passe INVALIDE
+            
+            Critères non respectés :
+            ${erreurs.join('<br>')}
+        `;
+        document.getElementById('result').innerHTML = message.replace(/\n/g, '<br>');
+    }
+}
+    </pre>
+
+    <script>
+        function verifierMotDePasse() {
+            // 1. Récupération du mot de passe
+            const password = document.getElementById('password').value;
+            
+            // 2. Validation de base
+            if (password === '') {
+                document.getElementById('result').innerHTML = ' Veuillez entrer un mot de passe';
+                return;
+            }
+            
+            // 3. Définition des critères avec REGEX (Expressions Régulières)
+            // Les regex permettent de chercher des motifs dans du texte
+            
+            // Longueur minimale : au moins 8 caractères
+            const longueurMin = password.length >= 8;
+            
+            // /[A-Z]/ cherche AU MOINS UNE lettre majuscule
+            // .test() retourne true si le motif est trouvé
+            const aMajuscule = /[A-Z]/.test(password);
+            
+            // /[a-z]/ cherche AU MOINS UNE lettre minuscule
+            const aMinuscule = /[a-z]/.test(password);
+            
+            // /[0-9]/ ou /\d/ cherche AU MOINS UN chiffre
+            const aChiffre = /[0-9]/.test(password);
+            
+            // /[@#$!%&*]/ cherche AU MOINS UN caractère spécial dans la liste
+            const aCaractereSpecial = /[@#$!%&*]/.test(password);
+            
+            // 4. Tableau pour stocker les erreurs
+            // On va collecter tous les critères NON respectés
+            const erreurs = [];
+            
+            // 5. Vérification de chaque critère
+            // Si un critère n'est PAS respecté (!), on ajoute un message d'erreur
+            if (!longueurMin) {
+                erreurs.push(' Minimum 8 caractères');
+            }
+            if (!aMajuscule) {
+                erreurs.push(' Au moins une majuscule (A-Z)');
+            }
+            if (!aMinuscule) {
+                erreurs.push(' Au moins une minuscule (a-z)');
+            }
+            if (!aChiffre) {
+                erreurs.push(' Au moins un chiffre (0-9)');
+            }
+            if (!aCaractereSpecial) {
+                erreurs.push(' Au moins un caractère spécial (@#$!%&*)');
+            }
+            
+            // 6. Évaluation finale
+            // Si le tableau erreurs est vide (length === 0), le mot de passe est valide
+            if (erreurs.length === 0) {
+                // Tous les critères sont respectés !
+                const message = `
+                     <strong>Mot de passe VALIDE !</strong><br><br>
+                    Tous les critères sont respectés :<br>
+                    ✓ Longueur : ${password.length} caractères<br>
+                    ✓ Contient des majuscules<br>
+                    ✓ Contient des minuscules<br>
+                    ✓ Contient des chiffres<br>
+                    ✓ Contient des caractères spéciaux
+                `;
+                document.getElementById('result').innerHTML = message;
+            } else {
+                // Au moins un critère n'est pas respecté
+                // .join('<br>') transforme le tableau en texte avec des retours à la ligne
+                const message = `
+                     <strong>Mot de passe INVALIDE</strong><br><br>
+                    Critères non respectés :<br>
+                    ${erreurs.join('<br>')}
+                `;
+                document.getElementById('result').innerHTML = message;
+            }
+        }
+
+
+
+
+        
+    </script>
+</body>
+</html>

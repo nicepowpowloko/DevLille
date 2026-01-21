@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 4 - Menu restaurant</title>
+</head>
+<body>
+    <h1>Exercice 4 : Menu de restaurant selon le jour (switch)</h1>
+    
+    <div>
+        <label for="jour">Sélectionnez un jour :</label>
+        <select id="jour">
+            <option value="">-- Choisissez un jour --</option>
+            <option value="lundi">Lundi</option>
+            <option value="mardi">Mardi</option>
+            <option value="mercredi">Mercredi</option>
+            <option value="jeudi">Jeudi</option>
+            <option value="vendredi">Vendredi</option>
+            <option value="samedi">Samedi</option>
+            <option value="dimanche">Dimanche</option>
+        </select>
+        <br><br>
+        <button onclick="afficherMenu()">Voir le menu du jour</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <hr>
+    
+    <h2>Code JavaScript avec commentaires :</h2>
+    <pre>
+function afficherMenu() {
+    // 1. Récupération du jour sélectionné
+    // .toLowerCase() convertit en minuscules pour éviter les erreurs de casse
+    const jour = document.getElementById('jour').value.toLowerCase();
+    
+    // 2. Validation de la sélection
+    if (jour === '') {
+        document.getElementById('result').innerHTML = ' Veuillez sélectionner un jour';
+        return;
+    }
+    
+    // 3. Variables pour stocker les informations du menu
+    let entree, plat, dessert, prix, theme;
+    
+    // 4. SWITCH : structure conditionnelle idéale pour tester une valeur
+    // contre plusieurs cas possibles
+    // Plus lisible que des if/else if en cascade pour ce type de situation
+    
+    switch(jour) {
+        // Chaque 'case' représente une valeur possible
+        
+        case 'lundi':
+            // Si jour === 'lundi', on exécute ce bloc
+            theme = '🇮🇹 Lundi Italien';
+            entree = 'Bruschetta à la tomate';
+            plat = 'Spaghetti Carbonara';
+            dessert = 'Tiramisu';
+            prix = 15.90;
+            break; // IMPORTANT : break arrête le switch
+            
+        case 'mardi':
+            theme = '🇫🇷 Mardi Français';
+            entree = 'Soupe à l\'oignon';
+            plat = 'Coq au vin';
+            dessert = 'Crème brûlée';
+            prix = 17.50;
+            break;
+            
+        case 'mercredi':
+            theme = '🇪🇸 Mercredi Espagnol';
+            entree = 'Gazpacho';
+            plat = 'Paella aux fruits de mer';
+            dessert = 'Churros au chocolat';
+            prix = 16.90;
+            break;
+            
+        case 'jeudi':
+            theme = '🇯🇵 Jeudi Japonais';
+            entree = 'Soupe miso';
+            plat = 'Sushi & Sashimi';
+            dessert = 'Mochi glacé';
+            prix = 19.90;
+            break;
+            
+        case 'vendredi':
+            theme = ' Vendredi Poisson';
+            entree = 'Salade de la mer';
+            plat = 'Pavé de saumon grillé';
+            dessert = 'Tarte au citron meringuée';
+            prix = 18.50;
+            break;
+            
+        case 'samedi':
+            theme = ' Samedi Grillades';
+            entree = 'Carpaccio de bœuf';
+            plat = 'Entrecôte grillée';
+            dessert = 'Moelleux au chocolat';
+            prix = 22.90;
+            break;
+            
+        case 'dimanche':
+            theme = ' Dimanche Familial';
+            entree = 'Terrine de campagne';
+            plat = 'Poulet rôti aux légumes';
+            dessert = 'Profiteroles';
+            prix = 16.90;
+            break;
+            
+        default:
+            // 'default' : cas par défaut si aucun case ne correspond
+            // Comme le 'else' dans un if/else
+            document.getElementById('result').innerHTML = ' Jour invalide';
+            return;
+    }
+    
+    // 5. Construction et affichage du menu
+    const message = `
+        <h3>${theme}</h3>
+        <p> <strong>Entrée :</strong> ${entree}</p>
+        <p> <strong>Plat :</strong> ${plat}</p>
+        <p> <strong>Dessert :</strong> ${dessert}</p>
+        <p> <strong>Prix du menu :</strong> ${prix.toFixed(2)} €</p>
+    `;
+    
+    document.getElementById('result').innerHTML = message;
+}
+    </pre>
+
+    <script>
+        function afficherMenu() {
+            // 1. Récupération du jour sélectionné
+            // .toLowerCase() convertit en minuscules pour éviter les erreurs de casse
+            const jour = document.getElementById('jour').value.toLowerCase();
+            
+            // 2. Validation de la sélection
+            if (jour === '') {
+                document.getElementById('result').innerHTML = ' Veuillez sélectionner un jour';
+                return;
+            }
+            
+            // 3. Variables pour stocker les informations du menu
+            let entree, plat, dessert, prix, theme;
+            
+            // 4. SWITCH : structure conditionnelle idéale pour tester une valeur
+            // contre plusieurs cas possibles
+            // Plus lisible que des if/else if en cascade pour ce type de situation
+            
+            switch(jour) {
+                // Chaque 'case' représente une valeur possible
+                
+                case 'lundi':
+                    // Si jour === 'lundi', on exécute ce bloc
+                    theme = '🇮🇹 Lundi Italien';
+                    entree = 'Bruschetta à la tomate';
+                    plat = 'Spaghetti Carbonara';
+                    dessert = 'Tiramisu';
+                    prix = 15.90;
+                    break; // IMPORTANT : break arrête le switch
+                    
+                case 'mardi':
+                    theme = '🇫🇷 Mardi Français';
+                    entree = 'Soupe à l\'oignon';
+                    plat = 'Coq au vin';
+                    dessert = 'Crème brûlée';
+                    prix = 17.50;
+                    break;
+                    
+                case 'mercredi':
+                    theme = '🇪🇸 Mercredi Espagnol';
+                    entree = 'Gazpacho';
+                    plat = 'Paella aux fruits de mer';
+                    dessert = 'Churros au chocolat';
+                    prix = 16.90;
+                    break;
+                    
+                case 'jeudi':
+                    theme = '🇯🇵 Jeudi Japonais';
+                    entree = 'Soupe miso';
+                    plat = 'Sushi & Sashimi';
+                    dessert = 'Mochi glacé';
+                    prix = 19.90;
+                    break;
+                    
+                case 'vendredi':
+                    theme = ' Vendredi Poisson';
+                    entree = 'Salade de la mer';
+                    plat = 'Pavé de saumon grillé';
+                    dessert = 'Tarte au citron meringuée';
+                    prix = 18.50;
+                    break;
+                    
+                case 'samedi':
+                    theme = ' Samedi Grillades';
+                    entree = 'Carpaccio de bœuf';
+                    plat = 'Entrecôte grillée';
+                    dessert = 'Moelleux au chocolat';
+                    prix = 22.90;
+                    break;
+                    
+                case 'dimanche':
+                    theme = ' Dimanche Familial';
+                    entree = 'Terrine de campagne';
+                    plat = 'Poulet rôti aux légumes';
+                    dessert = 'Profiteroles';
+                    prix = 16.90;
+                    break;
+                    
+                default:
+                    // 'default' : cas par défaut si aucun case ne correspond
+                    // Comme le 'else' dans un if/else
+                    document.getElementById('result').innerHTML = ' Jour invalide';
+                    return;
+            }
+            
+            // 5. Construction et affichage du menu
+            const message = `
+                <h3>${theme}</h3>
+                <p><strong>Entrée :</strong> ${entree}</p>
+                <p><strong>Plat :</strong> ${plat}</p>
+                <p><strong>Dessert :</strong> ${dessert}</p>
+                <p><strong>Prix du menu :</strong> ${prix.toFixed(2)} €</p>
+            `;
+            
+            document.getElementById('result').innerHTML = message;
+        }
+
+
+
+
+
+        
+    </script>
+</body>
+</html>

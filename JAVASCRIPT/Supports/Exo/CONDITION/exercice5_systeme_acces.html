@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 5 - Système d'accès</title>
+</head>
+<body>
+    <h1>Exercice 5 : Système d'accès sécurisé (opérateurs && et ||)</h1>
+    
+    <div>
+        <label for="username">Nom d'utilisateur :</label>
+        <input type="text" id="username" placeholder="Entrez votre nom d'utilisateur">
+        <br><br>
+        
+        <label for="password">Mot de passe :</label>
+        <input type="password" id="password" placeholder="Entrez votre mot de passe">
+        <br><br>
+        
+        <label for="age">Âge :</label>
+        <input type="number" id="age" placeholder="Entrez votre âge" min="0">
+        <br><br>
+        
+        <label>
+            <input type="checkbox" id="vip"> Membre VIP
+        </label>
+        <br>
+        
+        <label>
+            <input type="checkbox" id="admin"> Administrateur
+        </label>
+        <br><br>
+        
+        <button onclick="verifierAcces()">Vérifier l'accès</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <hr>
+    
+    <h2>Code JavaScript avec commentaires :</h2>
+    <pre>
+function verifierAcces() {
+    // 1. Récupération de toutes les données
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const age = parseInt(document.getElementById('age').value);
+    
+    // Pour les checkbox, on utilise .checked qui retourne true ou false
+    const estVIP = document.getElementById('vip').checked;
+    const estAdmin = document.getElementById('admin').checked;
+    
+    // 2. Validation de base (champs requis)
+    if (username === '' || password === '' || isNaN(age)) {
+        document.getElementById('result').innerHTML = '❌ Veuillez remplir tous les champs';
+        return;
+    }
+    
+    // 3. Définition des critères d'accès
+    // === vérifie l'égalité stricte (valeur ET type)
+    // !== vérifie la différence stricte
+    const usernameValide = username === 'admin' || username === 'user';
+    const passwordValide = password.length >= 6;
+    const ageValide = age >= 18;
+    
+    // 4. OPÉRATEURS LOGIQUES : && (ET) et || (OU)
+    
+    // OPÉRATEUR && (ET LOGIQUE)
+    // Retourne true SEULEMENT SI TOUTES les conditions sont vraies
+    // Si une seule est false, le résultat est false
+    // Exemples :
+    // true && true && true = true
+    // true && false && true = false
+    
+    // OPÉRATEUR || (OU LOGIQUE)
+    // Retourne true SI AU MOINS UNE condition est vraie
+    // Retourne false seulement si TOUTES sont fausses
+    // Exemples :
+    // true || false = true
+    // false || false = false
+    // true || true = true
+    
+    // 5. Règles d'accès complexes avec combinaison de && et ||
+    
+    // Règle 1 : Accès ADMIN (priorité absolue)
+    // Un administrateur a TOUJOURS accès, peu importe les autres critères
+    if (estAdmin) {
+        document.getElementById('result').innerHTML = 
+            '✅ <strong>ACCÈS ACCORDÉ</strong><br>Statut : Administrateur (accès total)';
+        return;
+    }
+    
+    // Règle 2 : Accès VIP
+    // Un membre VIP doit avoir :
+    // - username valide ET password valide ET âge >= 18
+    // Les opérateurs && s'évaluent de gauche à droite
+    if (estVIP && usernameValide && passwordValide && ageValide) {
+        document.getElementById('result').innerHTML = 
+            '✅ <strong>ACCÈS ACCORDÉ</strong><br>Statut : Membre VIP';
+        return;
+    }
+    
+    // Règle 3 : Accès Standard
+    // Un utilisateur standard doit avoir TOUS les critères de base
+    // ET ne pas être mineur
+    if (usernameValide && passwordValide && ageValide) {
+        document.getElementById('result').innerHTML = 
+            '✅ <strong>ACCÈS ACCORDÉ</strong><br>Statut : Utilisateur standard';
+        return;
+    }
+    
+    // 6. Si aucune règle n'est satisfaite, on refuse l'accès
+    // et on détaille les problèmes
+    let problemes = [];
+    
+    if (!usernameValide) {
+        problemes.push('❌ Nom d\'utilisateur incorrect (doit être "admin" ou "user")');
+    }
+    if (!passwordValide) {
+        problemes.push('❌ Mot de passe trop court (minimum 6 caractères)');
+    }
+    if (!ageValide) {
+        problemes.push('❌ Âge insuffisant (minimum 18 ans)');
+    }
+    
+    const message = `
+        ❌ <strong>ACCÈS REFUSÉ</strong><br><br>
+        Problèmes détectés :<br>
+        ${problemes.join('<br>')}
+        <br><br>
+        <em>Astuce : Les membres VIP ou Administrateurs ont des privilèges spéciaux</em>
+    `;
+    
+    document.getElementById('result').innerHTML = message;
+}
+
+// EXEMPLES D'OPÉRATEURS LOGIQUES :
+
+// Exemple 1 : && (ET)
+// let a = true;
+// let b = false;
+// let c = true;
+// console.log(a && b && c); // false (car b est false)
+// console.log(a && c);      // true (les deux sont true)
+
+// Exemple 2 : || (OU)
+// let x = false;
+// let y = true;
+// let z = false;
+// console.log(x || y || z); // true (car y est true)
+// console.log(x || z);      // false (les deux sont false)
+
+// Exemple 3 : Combinaison
+// let age = 25;
+// let permis = true;
+// let voiture = false;
+// 
+// Peut conduire SI : (majeur ET permis) OU voiture de service
+// let peutConduire = (age >= 18 && permis) || voiture;
+// console.log(peutConduire); // true
+
+// Exemple 4 : Priorité des opérateurs
+// && a une priorité PLUS ÉLEVÉE que ||
+// a || b && c === a || (b && c)
+// Pour être clair, utilisez des parenthèses !
+    </pre>
+
+    <script>
+        function verifierAcces() {
+            // 1. Récupération de toutes les données
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const age = parseInt(document.getElementById('age').value);
+            
+            // Pour les checkbox, on utilise .checked qui retourne true ou false
+            const estVIP = document.getElementById('vip').checked;
+            const estAdmin = document.getElementById('admin').checked;
+            
+            // 2. Validation de base (champs requis)
+            if (username === '' || password === '' || isNaN(age)) {
+                document.getElementById('result').innerHTML = '❌ Veuillez remplir tous les champs';
+                return;
+            }
+            
+            // 3. Définition des critères d'accès
+            // === vérifie l'égalité stricte (valeur ET type)
+            // !== vérifie la différence stricte
+            const usernameValide = username === 'admin' || username === 'user';
+            const passwordValide = password.length >= 6;
+            const ageValide = age >= 18;
+            
+            // 4. OPÉRATEURS LOGIQUES : && (ET) et || (OU)
+            
+            // OPÉRATEUR && (ET LOGIQUE)
+            // Retourne true SEULEMENT SI TOUTES les conditions sont vraies
+            // Si une seule est false, le résultat est false
+            // Exemples :
+            // true && true && true = true
+            // true && false && true = false
+            
+            // OPÉRATEUR || (OU LOGIQUE)
+            // Retourne true SI AU MOINS UNE condition est vraie
+            // Retourne false seulement si TOUTES sont fausses
+            // Exemples :
+            // true || false = true
+            // false || false = false
+            // true || true = true
+            
+            // 5. Règles d'accès complexes avec combinaison de && et ||
+            
+            // Règle 1 : Accès ADMIN (priorité absolue)
+            // Un administrateur a TOUJOURS accès, peu importe les autres critères
+            if (estAdmin) {
+                document.getElementById('result').innerHTML = 
+                    '✅ <strong>ACCÈS ACCORDÉ</strong><br>Statut : Administrateur (accès total)';
+                return;
+            }
+            
+            // Règle 2 : Accès VIP
+            // Un membre VIP doit avoir :
+            // - username valide ET password valide ET âge >= 18
+            // Les opérateurs && s'évaluent de gauche à droite
+            if (estVIP && usernameValide && passwordValide && ageValide) {
+                document.getElementById('result').innerHTML = 
+                    '✅ <strong>ACCÈS ACCORDÉ</strong><br>Statut : Membre VIP';
+                return;
+            }
+            
+            // Règle 3 : Accès Standard
+            // Un utilisateur standard doit avoir TOUS les critères de base
+            // ET ne pas être mineur
+            if (usernameValide && passwordValide && ageValide) {
+                document.getElementById('result').innerHTML = 
+                    '✅ <strong>ACCÈS ACCORDÉ</strong><br>Statut : Utilisateur standard';
+                return;
+            }
+            
+            // 6. Si aucune règle n'est satisfaite, on refuse l'accès
+            // et on détaille les problèmes
+            let problemes = [];
+            
+            if (!usernameValide) {
+                problemes.push('❌ Nom d\'utilisateur incorrect (doit être "admin" ou "user")');
+            }
+            if (!passwordValide) {
+                problemes.push('❌ Mot de passe trop court (minimum 6 caractères)');
+            }
+            if (!ageValide) {
+                problemes.push('❌ Âge insuffisant (minimum 18 ans)');
+            }
+            
+            const message = `
+                ❌ <strong>ACCÈS REFUSÉ</strong><br><br>
+                Problèmes détectés :<br>
+                ${problemes.join('<br>')}
+                <br><br>
+                <em>Astuce : Les membres VIP ou Administrateurs ont des privilèges spéciaux</em>
+            `;
+            
+            document.getElementById('result').innerHTML = message;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 1 - Vérification de nombre</title>
+</head>
+<body>
+    <h1>Exercice 1 : Vérification de nombre (positif/négatif/nul)</h1>
+    
+    <div>
+        <label for="nombre">Entrez un nombre :</label>
+        <input type="number" id="nombre" placeholder="Ex: 42, -15, 0">
+        <button onclick="verifierNombre()">Vérifier</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <hr>
+    
+    <h2>Code JavaScript avec commentaires :</h2>
+    <pre>
+function verifierNombre() {
+    // 1. Récupération de la valeur saisie
+    // getElementById() récupère l'élément HTML
+    // .value obtient la valeur du champ
+    // parseFloat() convertit le texte en nombre décimal
+    const nombre = parseFloat(document.getElementById('nombre').value);
+    
+    // 2. Validation : vérifier si l'utilisateur a bien saisi un nombre
+    // isNaN() retourne true si ce n'est PAS un nombre
+    if (isNaN(nombre)) {
+        document.getElementById('result').innerHTML = ' Veuillez entrer un nombre valide';
+        return; // On arrête la fonction ici
+    }
+    
+    // 3. Structure conditionnelle avec if / else if / else
+    // L'ordre est IMPORTANT : on teste d'abord > 0, puis < 0, sinon c'est 0
+    let message;
+    
+    if (nombre > 0) {
+        // Si le nombre est strictement supérieur à 0
+        message = ` ${nombre} est un nombre POSITIF`;
+    } else if (nombre < 0) {
+        // Si le nombre est strictement inférieur à 0
+        message = ` ${nombre} est un nombre NÉGATIF`;
+    } else {
+        // Dans tous les autres cas (donc si nombre === 0)
+        message = ` ${nombre} est NUL (ni positif, ni négatif)`;
+    }
+    
+    // 4. Affichage du résultat
+    document.getElementById('result').innerHTML = message;
+}
+    </pre>
+
+    <script>
+        function verifierNombre() {
+            // 1. Récupération de la valeur saisie
+            // getElementById() récupère l'élément HTML
+            // .value obtient la valeur du champ
+            // parseFloat() convertit le texte en nombre décimal
+            const nombre = parseFloat(document.getElementById('nombre').value);
+            
+            // 2. Validation : vérifier si l'utilisateur a bien saisi un nombre
+            // isNaN() retourne true si ce n'est PAS un nombre
+            if (isNaN(nombre)) {
+                document.getElementById('result').innerHTML = ' Veuillez entrer un nombre valide';
+                return; // On arrête la fonction ici
+            }
+            
+            // 3. Structure conditionnelle avec if / else if / else
+            // L'ordre est IMPORTANT : on teste d'abord > 0, puis < 0, sinon c'est 0
+            let message;
+            
+            if (nombre > 0) {
+                // Si le nombre est strictement supérieur à 0
+                message = ` ${nombre} est un nombre POSITIF`;
+            } else if (nombre < 0) {
+                // Si le nombre est strictement inférieur à 0
+                message = ` ${nombre} est un nombre NÉGATIF`;
+            } else {
+                // Dans tous les autres cas (donc si nombre === 0)
+                message = ` ${nombre} est NUL (ni positif, ni négatif)`;
+            }
+            
+            // 4. Affichage du résultat
+            document.getElementById('result').innerHTML = message;
+        }
+    </script>
+</body>
+</html>
