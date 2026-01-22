@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍿 Calculateur 2 - Menu Concession</title>
+    <title>Calculateur 2 - Menu Concession</title>
     <style>
         * {
             margin: 0;
@@ -159,29 +159,29 @@
 <body>
     <div class="container">
         <header>
-            <h1>🍿 Calculateur 2 : Menu Concession</h1>
+            <h1> Calculateur 2 : Menu Concession</h1>
             <p>Corrigé Complet avec Commentaires Détaillés</p>
         </header>
 
         <div class="content">
             <!-- INTRODUCTION -->
             <div class="prix-info">
-                <h3>📋 Prix des Articles</h3>
+                <h3> Prix des Articles</h3>
                 <div class="prix-grid">
                     <div class="prix-item">
-                        <strong>🍿 Pop-corn</strong>
+                        <strong> Pop-corn</strong>
                         Petit : 3.50€<br>
                         Moyen : 5.00€<br>
                         Grand : 6.50€
                     </div>
                     <div class="prix-item">
-                        <strong>🥤 Boisson</strong>
+                        <strong> Boisson</strong>
                         Petit : 3.00€<br>
                         Moyen : 4.00€<br>
                         Grand : 5.00€
                     </div>
                     <div class="prix-item">
-                        <strong>🍬 Snacks</strong>
+                        <strong> Snacks</strong>
                         Bonbons : 2.50€<br>
                         Nachos : 4.50€<br>
                         Hot-dog : 5.50€<br>
@@ -189,7 +189,7 @@
                     </div>
                 </div>
 
-                <h3 style="margin-top: 20px;">🎯 Formules Spéciales</h3>
+                <h3 style="margin-top: 20px;"> Formules Spéciales</h3>
                 <div class="prix-grid">
                     <div class="prix-item">
                         <strong>Formule Solo</strong>
@@ -208,7 +208,7 @@
                     </div>
                 </div>
 
-                <h3 style="margin-top: 20px;">🎉 Promotions</h3>
+                <h3 style="margin-top: 20px;"> Promotions</h3>
                 <p style="margin: 10px 0; color: #424242;">
                     <strong>Total > 20€ :</strong> -10% de réduction<br>
                     <strong>Total > 30€ :</strong> -15% de réduction
@@ -223,10 +223,10 @@
                     Le client choisit la taille de son pop-corn et de sa boisson, et peut ajouter des extras (bonbons, nachos, etc.).
                 </p>
                 <div class="note">
-                    💡 <strong>Concepts utilisés :</strong> Switch pour les tailles, if/else pour les extras (boolean), 
+                     <strong>Concepts utilisés :</strong> Switch pour les tailles, if/else pour les extras (boolean), 
                     addition progressive avec l'opérateur +=
                 </div>
-                <button class="btn-execute" onclick="executerPartieA()">▶️ Exécuter Partie A</button>
+                <button class="btn-execute" onclick="executerPartieA()">▶ Exécuter Partie A</button>
                 <div id="output-a" class="output"></div>
             </div>
 
@@ -238,10 +238,10 @@
                     Le client peut ensuite ajouter des extras à sa formule.
                 </p>
                 <div class="note">
-                    💡 <strong>Concepts utilisés :</strong> If/else pour vérifier quelle formule est choisie, 
+                     <strong>Concepts utilisés :</strong> If/else pour vérifier quelle formule est choisie, 
                     combinaison avec les extras, switch pour les formules
                 </div>
-                <button class="btn-execute" onclick="executerPartieB()">▶️ Exécuter Partie B</button>
+                <button class="btn-execute" onclick="executerPartieB()"> Exécuter Partie B</button>
                 <div id="output-b" class="output"></div>
             </div>
 
@@ -253,16 +253,16 @@
                     Si le total dépasse certains seuils, une réduction s'applique.
                 </p>
                 <div class="note">
-                    💡 <strong>Concepts utilisés :</strong> Conditions imbriquées pour les promotions, 
+                     <strong>Concepts utilisés :</strong> Conditions imbriquées pour les promotions, 
                     calcul de pourcentage, opérateur de comparaison (>)
                 </div>
-                <button class="btn-execute" onclick="executerPartieC()">▶️ Exécuter Partie C</button>
+                <button class="btn-execute" onclick="executerPartieC()"> Exécuter Partie C</button>
                 <div id="output-c" class="output"></div>
             </div>
         </div>
 
         <footer>
-            <p>🎬 Projet Cinéma - Formation Développeur Web | Real Conseil © 2025</p>
+            <p> Projet Cinéma - Formation Développeur Web | Real Conseil © 2025</p>
             <p>Calculateur 2 : Menu Concession - Corrigé Commenté</p>
         </footer>
     </div>
@@ -447,7 +447,7 @@
                 // Contenu : 1 pop-corn moyen + 1 boisson moyenne
                 // Prix spécial : 8€ au lieu de 9€
                 total = 8.00;
-                resultat += "🎯 Formule Solo : 8.00€\n";
+                resultat += " Formule Solo : 8.00€\n";
                 resultat += "  (1 pop-corn moyen + 1 boisson moyenne)\n\n";
 
                 // Le client peut ajouter des extras à sa formule
@@ -473,7 +473,7 @@
                 // Contenu : 1 pop-corn grand + 2 boissons moyennes
                 // Prix spécial : 13€ au lieu de 14.50€
                 total = 13.00;
-                resultat += "🎯 Formule Duo : 13.00€\n";
+                resultat += " Formule Duo : 13.00€\n";
                 resultat += "  (1 pop-corn grand + 2 boissons moyennes)\n\n";
 
                 // Ajout des extras
@@ -499,7 +499,7 @@
                 // Contenu : 2 pop-corn grands + 4 boissons moyennes
                 // Prix spécial : 24€ au lieu de 29€
                 total = 24.00;
-                resultat += "🎯 Formule Famille : 24.00€\n";
+                resultat += " Formule Famille : 24.00€\n";
                 resultat += "  (2 pop-corn grands + 4 boissons moyennes)\n\n";
 
                 // Ajout des extras
@@ -595,19 +595,19 @@
             switch (choixFormule) {
                 case "solo":
                     total = 8.00;
-                    resultat += "🎯 Formule Solo : 8.00€\n";
+                    resultat += " Formule Solo : 8.00€\n";
                     resultat += "  (1 pop-corn moyen + 1 boisson moyenne)\n\n";
                     break;
                 
                 case "duo":
                     total = 13.00;
-                    resultat += "🎯 Formule Duo : 13.00€\n";
+                    resultat += " Formule Duo : 13.00€\n";
                     resultat += "  (1 pop-corn grand + 2 boissons moyennes)\n\n";
                     break;
                 
                 case "famille":
                     total = 24.00;
-                    resultat += "🎯 Formule Famille : 24.00€\n";
+                    resultat += " Formule Famille : 24.00€\n";
                     resultat += "  (2 pop-corn grands + 4 boissons moyennes)\n\n";
                     break;
                 
@@ -659,7 +659,7 @@
                 reductionPourcent = 15;
                 // Pour calculer 15% : total × 0.15
                 reductionEuros = total * 0.15;
-                resultat += "🎉 Promotion -15% : -" + reductionEuros.toFixed(2) + "€\n";
+                resultat += " Promotion -15% : -" + reductionEuros.toFixed(2) + "€\n";
             } 
             else if (total > 20) {
                 // Sinon, si le total est supérieur à 20€
@@ -667,7 +667,7 @@
                 reductionPourcent = 10;
                 // Pour calculer 10% : total × 0.10
                 reductionEuros = total * 0.10;
-                resultat += "🎉 Promotion -10% : -" + reductionEuros.toFixed(2) + "€\n";
+                resultat += " Promotion -10% : -" + reductionEuros.toFixed(2) + "€\n";
             } 
             else {
                 // Sinon (total ≤ 20€), pas de promotion

@@ -117,15 +117,15 @@
                 <h2>Partie C : Analyse d'une journée complète</h2>
                 <p><strong>Objectif :</strong> Analyser 4 séances et identifier la meilleure/pire performance.</p>
                 <div class="note">
-                    💡 <strong>Concepts :</strong> Comparaisons multiples, recherche de max/min, calcul global
+                    <strong>Concepts :</strong> Comparaisons multiples, recherche de max/min, calcul global
                 </div>
-                <button class="btn-execute" onclick="executerPartieC()">▶️ Exécuter Partie C</button>
+                <button class="btn-execute" onclick="executerPartieC()">▶ Exécuter Partie C</button>
                 <div id="output-c" class="output"></div>
             </div>
         </div>
 
         <footer>
-            <p>🎬 Projet Cinéma - Formation Développeur Web | Real Conseil © 2025</p>
+            <p> Projet Cinéma - Formation Développeur Web | Real Conseil © 2025</p>
             <p>Calculateur 4 : Occupation des Salles - Corrigé Commenté</p>
         </footer>
     </div>
@@ -157,7 +157,7 @@
             } else {
                 // Si le numéro est invalide
                 capaciteSalle = 0;
-                resultat += "❌ Numéro de salle invalide !\n";
+                resultat += " Numéro de salle invalide !\n";
             }
 
             resultat += "Capacité totale : " + capaciteSalle + " places\n";
@@ -183,30 +183,30 @@
             if (tauxOccupation < 25) {
                 // Moins de 25% : VIDE
                 statut = "VIDE";
-                emoji = "⚪";
+                emoji = "";
             } else if (tauxOccupation >= 25 && tauxOccupation < 50) {
                 // Entre 25% et 49% : FAIBLE
                 statut = "FAIBLE";
-                emoji = "🔵";
+                emoji = "";
             } else if (tauxOccupation >= 50 && tauxOccupation < 75) {
                 // Entre 50% et 74% : MOYEN
                 statut = "MOYEN";
-                emoji = "🟡";
+                emoji = "";
             } else if (tauxOccupation >= 75 && tauxOccupation < 90) {
                 // Entre 75% et 89% : BON
                 statut = "BON";
-                emoji = "🟢";
+                emoji = "";
             } else if (tauxOccupation >= 90 && tauxOccupation < 100) {
                 // Entre 90% et 99% : COMPLET
                 statut = "COMPLET";
-                emoji = "🟠";
+                emoji = "";
             } else if (tauxOccupation === 100) {
                 // Exactement 100% : SOLD OUT
                 statut = "SOLD OUT";
-                emoji = "🔴";
+                emoji = "";
             } else {
                 statut = "INCONNU";
-                emoji = "❓";
+                emoji = "";
             }
 
             resultat += "Statut : " + emoji + " " + statut + "\n\n";
@@ -372,31 +372,31 @@
 
             // Séance 1
             resultat += "10h - Salle " + seance1_salle + " : " + seance1_vendus + "/" + capacite1 + " (" + taux1.toFixed(0) + "%)";
-            if (taux1 < 50) { resultat += " 🔵\n"; }
-            else if (taux1 < 75) { resultat += " 🟡\n"; }
-            else if (taux1 < 100) { resultat += " 🟢\n"; }
-            else { resultat += " 🔴 SOLD OUT\n"; }
+            if (taux1 < 50) { resultat += " \n"; }
+            else if (taux1 < 75) { resultat += " \n"; }
+            else if (taux1 < 100) { resultat += " \n"; }
+            else { resultat += "  SOLD OUT\n"; }
 
             // Séance 2
             resultat += "14h - Salle " + seance2_salle + " : " + seance2_vendus + "/" + capacite2 + " (" + taux2.toFixed(0) + "%)";
-            if (taux2 < 50) { resultat += " 🔵\n"; }
-            else if (taux2 < 75) { resultat += " 🟡\n"; }
-            else if (taux2 < 100) { resultat += " 🟢\n"; }
-            else { resultat += " 🔴 SOLD OUT\n"; }
+            if (taux2 < 50) { resultat += " \n"; }
+            else if (taux2 < 75) { resultat += " \n"; }
+            else if (taux2 < 100) { resultat += " \n"; }
+            else { resultat += "  SOLD OUT\n"; }
 
             // Séance 3
             resultat += "17h - Salle " + seance3_salle + " : " + seance3_vendus + "/" + capacite3 + " (" + taux3.toFixed(0) + "%)";
-            if (taux3 < 50) { resultat += " 🔵\n"; }
-            else if (taux3 < 75) { resultat += " 🟡\n"; }
-            else if (taux3 < 100) { resultat += " 🟢\n"; }
-            else { resultat += " 🔴 SOLD OUT\n"; }
+            if (taux3 < 50) { resultat += " \n"; }
+            else if (taux3 < 75) { resultat += " \n"; }
+            else if (taux3 < 100) { resultat += " \n"; }
+            else { resultat += "  SOLD OUT\n"; }
 
             // Séance 4
             resultat += "20h - Salle " + seance4_salle + " : " + seance4_vendus + "/" + capacite4 + " (" + taux4.toFixed(0) + "%)";
-            if (taux4 < 50) { resultat += " 🔵\n\n"; }
-            else if (taux4 < 75) { resultat += " 🟡\n\n"; }
-            else if (taux4 < 100) { resultat += " 🟢\n\n"; }
-            else { resultat += " 🔴 SOLD OUT\n\n"; }
+            if (taux4 < 50) { resultat += " \n\n"; }
+            else if (taux4 < 75) { resultat += " \n\n"; }
+            else if (taux4 < 100) { resultat += " \n\n"; }
+            else { resultat += "  SOLD OUT\n\n"; }
 
             // === ÉTAPE 4 : Calculs globaux ===
             let totalBilletsVendus = seance1_vendus + seance2_vendus + seance3_vendus + seance4_vendus;
@@ -453,18 +453,18 @@
             }
 
             resultat += "PERFORMANCES :\n";
-            resultat += "🏆 Meilleure séance : " + meilleureSeance + " (" + meilleurTaux.toFixed(0) + "%)\n";
-            resultat += "⚠️  Séance à améliorer : " + pireSeance + " (" + pireTaux.toFixed(0) + "%)\n\n";
+            resultat += " Meilleure séance : " + meilleureSeance + " (" + meilleurTaux.toFixed(0) + "%)\n";
+            resultat += "  Séance à améliorer : " + pireSeance + " (" + pireTaux.toFixed(0) + "%)\n\n";
 
             // === ÉTAPE 8 : Statut global ===
             if (tauxGlobal >= 80) {
-                resultat += "📊 Statut global : 🟢 TRÈS BONNE JOURNÉE\n";
+                resultat += " Statut global :  TRÈS BONNE JOURNÉE\n";
             } else if (tauxGlobal >= 60) {
-                resultat += "📊 Statut global : 🟡 BONNE JOURNÉE\n";
+                resultat += " Statut global :  BONNE JOURNÉE\n";
             } else if (tauxGlobal >= 40) {
-                resultat += "📊 Statut global : 🟠 JOURNÉE MOYENNE\n";
+                resultat += " Statut global :  JOURNÉE MOYENNE\n";
             } else {
-                resultat += "📊 Statut global : 🔴 JOURNÉE FAIBLE\n";
+                resultat += " Statut global :  JOURNÉE FAIBLE\n";
             }
 
             document.getElementById('output-c').textContent = resultat;

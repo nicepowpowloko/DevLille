@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💰 Calculateur 5 - Recettes du Jour</title>
+    <title>Calculateur 5 - Recettes du Jour</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -73,7 +73,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>💰 Calculateur 5 : Recettes du Jour</h1>
+            <h1>Calculateur 5 : Recettes du Jour</h1>
             <p>Corrigé Complet avec Commentaires Détaillés</p>
         </header>
 
@@ -82,9 +82,9 @@
                 <h2>Partie A : Calcul des recettes billetterie</h2>
                 <p><strong>Objectif :</strong> Calculer les recettes totales par catégorie de billets.</p>
                 <div class="note">
-                    💡 <strong>Concepts :</strong> Multiplication par catégorie, addition, calcul de pourcentages, moyenne
+                    <strong>Concepts :</strong> Multiplication par catégorie, addition, calcul de pourcentages, moyenne
                 </div>
-                <button class="btn-execute" onclick="executerPartieA()">▶️ Exécuter Partie A</button>
+                <button class="btn-execute" onclick="executerPartieA()"> Exécuter Partie A</button>
                 <div id="output-a" class="output"></div>
             </div>
 
@@ -92,9 +92,9 @@
                 <h2>Partie B : Ajout des recettes concession</h2>
                 <p><strong>Objectif :</strong> Ajouter les recettes de la concession et calculer les répartitions.</p>
                 <div class="note">
-                    💡 <strong>Concepts :</strong> Addition de totaux, calcul de pourcentages, division pour moyenne
+                    <strong>Concepts :</strong> Addition de totaux, calcul de pourcentages, division pour moyenne
                 </div>
-                <button class="btn-execute" onclick="executerPartieB()">▶️ Exécuter Partie B</button>
+                <button class="btn-execute" onclick="executerPartieB()"> Exécuter Partie B</button>
                 <div id="output-b" class="output"></div>
             </div>
 
@@ -102,15 +102,15 @@
                 <h2>Partie C : Comparaison avec objectifs</h2>
                 <p><strong>Objectif :</strong> Comparer le réalisé avec les objectifs et donner des recommandations.</p>
                 <div class="note">
-                    💡 <strong>Concepts :</strong> Soustraction d'écarts, comparaisons, conditions pour recommandations
+                     <strong>Concepts :</strong> Soustraction d'écarts, comparaisons, conditions pour recommandations
                 </div>
-                <button class="btn-execute" onclick="executerPartieC()">▶️ Exécuter Partie C</button>
+                <button class="btn-execute" onclick="executerPartieC()"> Exécuter Partie C</button>
                 <div id="output-c" class="output"></div>
             </div>
         </div>
 
         <footer>
-            <p>🎬 Projet Cinéma - Formation Développeur Web | Real Conseil © 2025</p>
+            <p> Projet Cinéma - Formation Développeur Web | Real Conseil © 2025</p>
             <p>Calculateur 5 : Recettes du Jour - Corrigé Commenté</p>
         </footer>
     </div>
@@ -225,7 +225,7 @@
             // Dépense moyenne totale
             let depenseMoyenneTotal = recettesTotales / totalSpectateurs;
 
-            resultat += "📊 ANALYSE :\n";
+            resultat += " ANALYSE :\n";
             resultat += "Dépense moyenne/spectateur :\n";
             resultat += "  - Billet : " + depenseMoyenneBillet.toFixed(2) + "€\n";
             resultat += "  - Concession : " + depenseMoyenneConcession.toFixed(2) + "€\n";
@@ -280,7 +280,7 @@
             // === ÉTAPE 5 : Calculer le taux global ===
             let tauxGlobal = (realiseTotal / objectifTotal) * 100;
 
-            resultat += "📊 TAUX DE RÉALISATION : " + tauxGlobal.toFixed(0) + "%\n";
+            resultat += " TAUX DE RÉALISATION : " + tauxGlobal.toFixed(0) + "%\n";
             
             if (ecartTotal >= 0) {
                 // Si positif : dépassement d'objectif
@@ -292,16 +292,16 @@
 
             // === ÉTAPE 6 : Déterminer si objectif atteint ===
             if (tauxGlobal >= 100) {
-                resultat += "✅ OBJECTIF ATTEINT\n\n";
+                resultat += " OBJECTIF ATTEINT\n\n";
             } else {
-                resultat += "❌ OBJECTIF NON ATTEINT\n\n";
+                resultat += " OBJECTIF NON ATTEINT\n\n";
             }
 
             // === ÉTAPE 7 : Analyser les écarts par secteur ===
             let ecartBilletterie = recettesBilletterie - objectifBilletterie;
             let ecartConcession = recettesConcession - objectifConcession;
 
-            resultat += "📉 ANALYSE :\n";
+            resultat += " ANALYSE :\n";
 
             // Identifier le point faible (le secteur le plus en retard)
             // On compare les pourcentages manquants
@@ -319,7 +319,7 @@
             }
 
             // === ÉTAPE 8 : Donner une recommandation ===
-            resultat += "💡 RECOMMANDATION :\n";
+            resultat += " RECOMMANDATION :\n";
 
             if (manqueConcession > manqueBilletterie && manqueConcession > 15) {
                 // Problème majeur à la concession
