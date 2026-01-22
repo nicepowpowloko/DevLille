@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💳 Calculateur 3 - Abonnement CinéPass</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #0575e6 0%, #021b79 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+        header p { font-size: 1.2em; opacity: 0.9; }
+        .content { padding: 40px; }
+        .partie {
+            background: #f0f8ff;
+            border-left: 5px solid #0575e6;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        .partie h2 { color: #021b79; font-size: 1.8em; margin-bottom: 15px; }
+        .partie p { color: #555; line-height: 1.8; margin-bottom: 15px; font-size: 1.1em; }
+        .btn-execute {
+            background: linear-gradient(135deg, #0575e6 0%, #021b79 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 15px 10px 15px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(5, 117, 230, 0.3);
+        }
+        .btn-execute:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(5, 117, 230, 0.4); }
+        .output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+            line-height: 1.6;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        footer { background: #021b79; color: white; text-align: center; padding: 25px; font-size: 1em; }
+        .note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💳 Calculateur 3 : Abonnement CinéPass</h1>
+            <p>Corrigé Complet avec Commentaires Détaillés</p>
+        </header>
+
+        <div class="content">
+            <div class="info-box">
+                <h3>📋 Informations CinéPass</h3>
+                <p><strong>Prix de l'abonnement :</strong> 29.90€/mois</p>
+                <p><strong>Prix billet normal :</strong> 12.00€</p>
+                <p><strong>Avantages :</strong></p>
+                <ul>
+                    <li>Séances illimitées</li>
+                    <li>-20% sur la concession</li>
+                    <li>Invitations avant-premières (1/mois)</li>
+                    <li>Réservation prioritaire</li>
+                </ul>
+            </div>
+
+            <div class="partie">
+                <h2>Partie A : Analyse de rentabilité simple</h2>
+                <p><strong>Objectif :</strong> Comparer le coût avec et sans abonnement pour un profil donné.</p>
+                <div class="note">
+                    💡 <strong>Concepts :</strong> Multiplication, addition, soustraction, comparaison avec opérateurs, Math.ceil()
+                </div>
+                <button class="btn-execute" onclick="executerPartieA()">▶️ Exécuter Partie A</button>
+                <div id="output-a" class="output"></div>
+            </div>
+
+            <div class="partie">
+                <h2>Partie B : Comparaison sur différentes durées</h2>
+                <p><strong>Objectif :</strong> Calculer l'économie sur 1, 3, 6 et 12 mois.</p>
+                <div class="note">
+                    💡 <strong>Concepts :</strong> Multiplication pour différentes durées, comparaison, formatage
+                </div>
+                <button class="btn-execute" onclick="executerPartieB()">▶️ Exécuter Partie B</button>
+                <div id="output-b" class="output"></div>
+            </div>
+
+            <div class="partie">
+                <h2>Partie C : Recommandation personnalisée</h2>
+                <p><strong>Objectif :</strong> Analyser le profil et donner une recommandation (OUI, NON, PEUT-ÊTRE).</p>
+                <div class="note">
+                    💡 <strong>Concepts :</strong> Switch pour convertir fréquence, compteur d'avantages, conditions multiples
+                </div>
+                <button class="btn-execute" onclick="executerPartieC()">▶️ Exécuter Partie C</button>
+                <div id="output-c" class="output"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>🎬 Projet Cinéma - Formation Développeur Web | Real Conseil © 2025</p>
+            <p>Calculateur 3 : Abonnement CinéPass - Corrigé Commenté</p>
+        </footer>
+    </div>
+
+    <script>
+        // PARTIE A
+        function executerPartieA() {
+            let resultat = "";
+
+            // === PROFIL CLIENT ===
+            // Combien de fois le client va au cinéma par mois
+            let nombreSeancesParMois = 5;
+            // Combien il dépense en moyenne à la concession
+            let depenseConcessionParVisite = 15;
+
+            // === CONSTANTES (ne changent jamais) ===
+            const PRIX_BILLET_NORMAL = 12.00; // Prix d'un billet normal
+            const PRIX_ABONNEMENT = 29.90; // Prix de l'abonnement mensuel
+            const REDUCTION_CONCESSION = 0.20; // 20% de réduction = 0.20
+
+            resultat += "=== ANALYSE CINÉPASS ===\n\n";
+            resultat += "Votre profil :\n";
+            resultat += "- " + nombreSeancesParMois + " séances par mois\n";
+            resultat += "- " + depenseConcessionParVisite.toFixed(2) + "€ de concession par visite\n\n";
+
+            // === CALCUL SANS ABONNEMENT ===
+            // Coût billets : prix unitaire × nombre de séances
+            let coutBilletsSansAbo = PRIX_BILLET_NORMAL * nombreSeancesParMois;
+            
+            // Coût concession : dépense par visite × nombre de visites
+            let coutConcessionSansAbo = depenseConcessionParVisite * nombreSeancesParMois;
+            
+            // Total : on additionne les deux
+            let coutTotalSansAbo = coutBilletsSansAbo + coutConcessionSansAbo;
+
+            resultat += "💰 SANS ABONNEMENT :\n";
+            resultat += "Billets (" + nombreSeancesParMois + " x " + PRIX_BILLET_NORMAL.toFixed(2) + "€) : " + coutBilletsSansAbo.toFixed(2) + "€\n";
+            resultat += "Concession (" + nombreSeancesParMois + " x " + depenseConcessionParVisite.toFixed(2) + "€) : " + coutConcessionSansAbo.toFixed(2) + "€\n";
+            resultat += "TOTAL : " + coutTotalSansAbo.toFixed(2) + "€\n\n";
+
+            // === CALCUL AVEC ABONNEMENT ===
+            // Avec l'abo : billets illimités, on paie juste l'abonnement
+            // Mais on a 20% de réduction sur la concession
+            
+            // Calcul de la concession avec réduction :
+            // Si on a 20% de réduction, on paie 80% du prix
+            // 80% = 1 - 0.20 = 0.80
+            let depenseConcessionAvecReduc = depenseConcessionParVisite * (1 - REDUCTION_CONCESSION);
+            
+            // Coût total concession avec réduction
+            let coutConcessionAvecAbo = depenseConcessionAvecReduc * nombreSeancesParMois;
+            
+            // Total : abonnement + concession avec réduction
+            let coutTotalAvecAbo = PRIX_ABONNEMENT + coutConcessionAvecAbo;
+
+            resultat += "💳 AVEC CINÉPASS :\n";
+            resultat += "Abonnement : " + PRIX_ABONNEMENT.toFixed(2) + "€\n";
+            resultat += "Concession avec -20% (" + nombreSeancesParMois + " x " + depenseConcessionAvecReduc.toFixed(2) + "€) : " + coutConcessionAvecAbo.toFixed(2) + "€\n";
+            resultat += "TOTAL : " + coutTotalAvecAbo.toFixed(2) + "€\n\n";
+
+            // === CALCUL DE L'ÉCONOMIE ===
+            // On soustrait : coût sans abo - coût avec abo
+            let economie = coutTotalSansAbo - coutTotalAvecAbo;
+
+            if (economie > 0) {
+                // Si positif : c'est une économie
+                resultat += "✅ ÉCONOMIE : " + economie.toFixed(2) + "€ par mois\n\n";
+            } else {
+                // Si négatif : c'est un surcoût
+                let surcout = -economie; // On inverse le signe
+                resultat += "❌ SURCOÛT : " + surcout.toFixed(2) + "€ par mois\n\n";
+            }
+
+            // === SEUIL DE RENTABILITÉ ===
+            // Combien de séances minimum pour que l'abo soit rentable ?
+            // Formule : prix_abonnement / prix_billet_normal
+            // Math.ceil() arrondit au supérieur (exemple : 2.5 devient 3)
+            let seancesMinimum = Math.ceil(PRIX_ABONNEMENT / PRIX_BILLET_NORMAL);
+
+            resultat += "📊 Le CinéPass est rentable dès " + seancesMinimum + " séances/mois\n";
+
+            document.getElementById('output-a').textContent = resultat;
+        }
+
+        // PARTIE B
+        function executerPartieB() {
+            let resultat = "";
+
+            let nombreSeancesParMois = 4;
+            let depenseConcessionParVisite = 10;
+
+            const PRIX_BILLET_NORMAL = 12.00;
+            const PRIX_ABONNEMENT = 29.90;
+            const REDUCTION_CONCESSION = 0.20;
+
+            resultat += "=== COMPARAISON SUR PLUSIEURS DURÉES ===\n\n";
+            resultat += "Profil : " + nombreSeancesParMois + " séances/mois, " + depenseConcessionParVisite.toFixed(2) + "€ concession/visite\n\n";
+
+            resultat += "┌─────────┬──────────────┬─────────────┬───────────┐\n";
+            resultat += "│ Durée   │ Sans abo     │ Avec abo    │ Économie  │\n";
+            resultat += "├─────────┼──────────────┼─────────────┼───────────┤\n";
+
+            // On va faire le même calcul pour 4 durées différentes
+            // Pour éviter la répétition, on utilise une variable pour la durée
+
+            // === CALCUL POUR 1 MOIS ===
+            let duree1 = 1;
+            
+            // Sans abo : (billet × séances + concession × séances) × durée
+            let coutSansAbo1 = (PRIX_BILLET_NORMAL * nombreSeancesParMois + depenseConcessionParVisite * nombreSeancesParMois) * duree1;
+            
+            // Avec abo : (abonnement + concession réduite × séances) × durée
+            let depenseConc1 = depenseConcessionParVisite * (1 - REDUCTION_CONCESSION);
+            let coutAvecAbo1 = (PRIX_ABONNEMENT + depenseConc1 * nombreSeancesParMois) * duree1;
+            
+            let economie1 = coutSansAbo1 - coutAvecAbo1;
+
+            resultat += "│ 1 mois  │ " + coutSansAbo1.toFixed(2) + "€       │ " + coutAvecAbo1.toFixed(2) + "€      │ " + economie1.toFixed(2) + "€    │\n";
+
+            // === CALCUL POUR 3 MOIS ===
+            let duree3 = 3;
+            let coutSansAbo3 = (PRIX_BILLET_NORMAL * nombreSeancesParMois + depenseConcessionParVisite * nombreSeancesParMois) * duree3;
+            let coutAvecAbo3 = (PRIX_ABONNEMENT + depenseConc1 * nombreSeancesParMois) * duree3;
+            let economie3 = coutSansAbo3 - coutAvecAbo3;
+
+            resultat += "│ 3 mois  │ " + coutSansAbo3.toFixed(2) + "€      │ " + coutAvecAbo3.toFixed(2) + "€     │ " + economie3.toFixed(2) + "€    │\n";
+
+            // === CALCUL POUR 6 MOIS ===
+            let duree6 = 6;
+            let coutSansAbo6 = (PRIX_BILLET_NORMAL * nombreSeancesParMois + depenseConcessionParVisite * nombreSeancesParMois) * duree6;
+            let coutAvecAbo6 = (PRIX_ABONNEMENT + depenseConc1 * nombreSeancesParMois) * duree6;
+            let economie6 = coutSansAbo6 - coutAvecAbo6;
+
+            resultat += "│ 6 mois  │ " + coutSansAbo6.toFixed(2) + "€      │ " + coutAvecAbo6.toFixed(2) + "€     │ " + economie6.toFixed(2) + "€   │\n";
+
+            // === CALCUL POUR 1 AN (12 MOIS) ===
+            let duree12 = 12;
+            let coutSansAbo12 = (PRIX_BILLET_NORMAL * nombreSeancesParMois + depenseConcessionParVisite * nombreSeancesParMois) * duree12;
+            let coutAvecAbo12 = (PRIX_ABONNEMENT + depenseConc1 * nombreSeancesParMois) * duree12;
+            let economie12 = coutSansAbo12 - coutAvecAbo12;
+
+            resultat += "│ 1 an    │ " + coutSansAbo12.toFixed(2) + "€     │ " + coutAvecAbo12.toFixed(2) + "€    │ " + economie12.toFixed(2) + "€   │\n";
+            resultat += "└─────────┴──────────────┴─────────────┴───────────┘\n\n";
+
+            resultat += "✅ Sur 6 mois, vous économisez " + economie6.toFixed(2) + "€\n";
+
+            document.getElementById('output-b').textContent = resultat;
+        }
+
+        // PARTIE C
+        function executerPartieC() {
+            let resultat = "";
+
+            // === PROFIL CLIENT ===
+            let frequenceVisite = "hebdomadaire"; // Options: "rare", "mensuelle", "bimensuelle", "hebdomadaire"
+            let utiliseConcession = true;
+            let montantConcessionMoyen = 12;
+            let interesseAvantPremieres = true;
+
+            const PRIX_BILLET_NORMAL = 12.00;
+            const PRIX_ABONNEMENT = 29.90;
+            const REDUCTION_CONCESSION = 0.20;
+
+            resultat += "=== RECOMMANDATION CINÉPASS ===\n\n";
+            resultat += "Votre profil :\n";
+
+            // === CONVERSION FRÉQUENCE EN NOMBRE ===
+            // On utilise switch pour convertir le texte en nombre
+            let nombreSeances = 0;
+
+            switch (frequenceVisite) {
+                case "rare":
+                    nombreSeances = 1; // 1 fois par mois
+                    resultat += "🎬 Fréquence : Rare (1 séance/mois)\n";
+                    break;
+                case "mensuelle":
+                    nombreSeances = 2; // 2 fois par mois
+                    resultat += "🎬 Fréquence : Mensuelle (2 séances/mois)\n";
+                    break;
+                case "bimensuelle":
+                    nombreSeances = 4; // 2 fois par quinzaine = 4 par mois
+                    resultat += "🎬 Fréquence : Bimensuelle (4 séances/mois)\n";
+                    break;
+                case "hebdomadaire":
+                    nombreSeances = 8; // 2 fois par semaine = 8 par mois
+                    resultat += "🎬 Fréquence : Hebdomadaire (8 séances/mois)\n";
+                    break;
+                default:
+                    nombreSeances = 1;
+                    resultat += "🎬 Fréquence : Rare (1 séance/mois)\n";
+            }
+
+            if (utiliseConcession === true) {
+                resultat += "🍿 Concession : Oui (" + montantConcessionMoyen.toFixed(2) + "€ en moyenne)\n";
+            } else {
+                resultat += "🍿 Concession : Non\n";
+            }
+
+            if (interesseAvantPremieres === true) {
+                resultat += "🎁 Avant-premières : Intéressé\n\n";
+            } else {
+                resultat += "🎁 Avant-premières : Pas intéressé\n\n";
+            }
+
+            // === CALCUL COÛTS ===
+            let coutSansAbo = PRIX_BILLET_NORMAL * nombreSeances;
+            if (utiliseConcession === true) {
+                coutSansAbo = coutSansAbo + (montantConcessionMoyen * nombreSeances);
+            }
+
+            let coutAvecAbo = PRIX_ABONNEMENT;
+            if (utiliseConcession === true) {
+                let depenseConc = montantConcessionMoyen * (1 - REDUCTION_CONCESSION);
+                coutAvecAbo = coutAvecAbo + (depenseConc * nombreSeances);
+            }
+
+            let economie = coutSansAbo - coutAvecAbo;
+
+            resultat += "📊 ANALYSE :\n";
+            resultat += "Sans abo : " + coutSansAbo.toFixed(2) + "€/mois\n";
+            resultat += "Avec abo : " + coutAvecAbo.toFixed(2) + "€/mois\n";
+            
+            if (economie > 0) {
+                resultat += "Économie : " + economie.toFixed(2) + "€/mois\n\n";
+            } else {
+                resultat += "Surcoût : " + (-economie).toFixed(2) + "€/mois\n\n";
+            }
+
+            // === COMPTEUR D'AVANTAGES ===
+            // On compte combien d'avantages correspondent au profil
+            let nombreAvantages = 0;
+            let listeAvantages = "";
+
+            if (economie > 0) {
+                nombreAvantages = nombreAvantages + 1;
+                listeAvantages = listeAvantages + "  ✓ Économie financière importante\n";
+            }
+
+            if (interesseAvantPremieres === true) {
+                nombreAvantages = nombreAvantages + 1;
+                listeAvantages = listeAvantages + "  ✓ Accès avant-premières\n";
+            }
+
+            if (utiliseConcession === true) {
+                nombreAvantages = nombreAvantages + 1;
+                listeAvantages = listeAvantages + "  ✓ Réduction concession 20%\n";
+            }
+
+            nombreAvantages = nombreAvantages + 1;
+            listeAvantages = listeAvantages + "  ✓ Réservation prioritaire\n";
+
+            if (nombreAvantages > 0) {
+                resultat += "✅ Avantages pour vous :\n";
+                resultat += listeAvantages;
+                resultat += "\n";
+            }
+
+            // === RECOMMANDATION ===
+            let recommandation = "";
+            let explication = "";
+
+            // On décide selon plusieurs critères
+            if (economie > 20 && nombreSeances >= 4) {
+                recommandation = "OUI, FORTEMENT RECOMMANDÉ !";
+                explication = "Le CinéPass est parfait pour votre profil.\nVous rentabilisez l'abonnement dès la 3ème séance.";
+            } else if (economie > 0 && nombreSeances >= 3) {
+                recommandation = "OUI, RECOMMANDÉ";
+                explication = "L'abonnement vous permet de réaliser des économies.\nVous en profiterez pleinement.";
+            } else if (economie > -5 && nombreSeances >= 2) {
+                recommandation = "PEUT-ÊTRE";
+                explication = "L'abonnement est presque rentable pour vous.\nSi vous augmentez votre fréquence, ce sera intéressant.";
+            } else {
+                recommandation = "NON, PAS RECOMMANDÉ";
+                explication = "Avec votre fréquence actuelle, l'abonnement n'est pas rentable.\nPrivilégiez les billets à l'unité.";
+            }
+
+            resultat += "🎯 RECOMMANDATION : " + recommandation + "\n";
+            resultat += explication + "\n";
+
+            document.getElementById('output-c').textContent = resultat;
+        }
+    </script>
+</body>
+</html>

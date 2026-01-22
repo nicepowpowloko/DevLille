@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billetterie Cinéma</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            background-color: #033a76;
+            color: rgb(251, 245, 245);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #resultat {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            white-space: pre-wrap;
+            font-family: monospace;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1> Billetterie Cinéma exemple correction </h1>
+    
+    <div class="buttons">
+        <button onclick="partieA()"><br>1 personne</button>
+        <button onclick="partieB()"><br>Plusieurs personnes</button>
+        <button onclick="partieC()"><br>Carte fidélité</button>
+    </div>
+    
+    <div id="resultat"></div>
+</body>
+
+<script src="billeterie.js"></script>
+
+<script>
+    
+    // A : 1 PERSONNE
+    
+    function partieA() {
+        let resultat = calculer1Personne();
+        
+        // Utiliser toutes les valeurs retournées
+        console.log(" Informations du billet :");
+        console.log("Âge :", resultat.age);
+        console.log("Jour :", resultat.jour);
+        console.log("Heure :", resultat.heure);
+        console.log("3D :", resultat.seance3D);
+        console.log("IMAX :", resultat.seanceIMAX);
+        console.log("Prix :", resultat.prixFinal);
+        
+        // Affichage
+        document.getElementById("resultat").textContent = resultat.detailBillet;
+        
+        // Tu peux modifier le prix
+        let prixModifie = resultat.prixFinal + 5;
+        console.log("Prix avec supplément de 5€ :", prixModifie);
+    }
+    
+
+
+
+
+
+
+    // ==========================================
+    // PARTIE B : PLUSIEURS PERSONNES
+    // ==========================================
+    function partieB() {
+        let resultat = calculerPlusieursPersonnes();
+        
+        // Utiliser toutes les valeurs retournées
+        console.log(" Groupe de", resultat.nbPersonnes, "personne(s)");
+        console.log("Billets :", resultat.billets);
+        console.log("Prix total :", resultat.prixTotal);
+        
+        // Afficher dans la page
+        document.getElementById("resultat").textContent = resultat.detailComplet;
+        
+        // Calculer une moyenne
+        let prixMoyen = resultat.prixTotal / resultat.nbPersonnes;
+        console.log("Prix moyen par personne :", prixMoyen.toFixed(2), "€");
+    }
+    
+    // ==========================================
+    // PARTIE C : CARTE FIDÉLITÉ
+    // ==========================================
+    function partieC() {
+        let resultat = calculerAvecCarteFidelite();
+        
+        // Utiliser toutes les valeurs retournées
+        console.log(" Réservation avec carte fidélité");
+        console.log("Nombre de personnes :", resultat.nbPersonnes);
+        console.log("Carte fidélité :", resultat.carteFidelite);
+        console.log("Prix avant réduction :", resultat.prixAvantReduction);
+        console.log("Réduction appliquée :", (resultat.reduction * 100) + "%");
+        console.log("Prix final :", resultat.prixFinal);
+        
+        // Afficher dans la page
+        document.getElementById("resultat").textContent = resultat.detailComplet;
+        
+        // Calculer l'économie réalisée
+        let economie = resultat.prixAvantReduction - resultat.prixFinal;
+        if (economie > 0) {
+            console.log(" Vous avez économisé :", economie.toFixed(2), "€");
+        }
+    }
+</script>
+</html>

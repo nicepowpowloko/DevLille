@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur 1 - Tarifs Billetterie</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2858b1 0%, #0b0b0d 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .partie {
+            background: #f8f9fa;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .partie h2 {
+            color: #1f2021;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .partie p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .btn-execute {
+            background: linear-gradient(135deg, #2858b1 0%, #0b0b0d 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 15px 10px 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .btn-execute:hover {
+            transform: translateY(-3px);
+            
+        }
+
+        .output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+            line-height: 1.6;
+        }
+
+        .tarifs-info {
+            background: #e3f2fd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .tarifs-info h3 {
+            color: #0a2a50;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .tarifs-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .tarifs-info li {
+            padding: 8px 0;
+            color: #424242;
+            font-size: 1.05em;
+        }
+
+        .tarifs-info li strong {
+            color: #0a0a0a;
+        }
+
+        footer {
+            background: #1e3c72;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            font-size: 1em;
+        }
+
+      
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Calculateur 1 : Tarifs de Billetterie</h1>
+            <p>Corrigé</p>
+        </header>
+
+        <div class="content">
+            <!-- INTRODUCTION -->
+            <div class="tarifs-info">
+                <h3>Grille Tarifaire du Cinéma</h3>
+                <ul>
+                    <li><strong>Enfant (moins de 12 ans) :</strong> 6.50€</li>
+                    <li><strong>Étudiant (12-25 ans) :</strong> 8.50€</li>
+                    <li><strong>Adulte (26-59 ans) :</strong> 12.00€</li>
+                    <li><strong>Senior (60 ans et plus) :</strong> 7.50€</li>
+                </ul>
+                <h3 style="margin-top: 20px;">Réductions Spéciales</h3>
+                <ul>
+                    <li><strong>Lundi :</strong> Tous les tarifs à 6€</li>
+                    <li><strong>Séance matinale (avant 12h) :</strong> -2€ (sauf lundi)</li>
+                    <li><strong>Séance 3D :</strong> +3€</li>
+                    <li><strong>Séance IMAX :</strong> +5€</li>
+                </ul>
+            </div>
+
+            <!-- PARTIE A -->
+            <div class="partie">
+                <h2>Partie A : Calcul pour 1 personne</h2>
+                <p>
+                    <strong>Objectif :</strong> Calculer le prix d'un billet pour une seule personne en tenant compte 
+                    de son âge, du jour de la semaine, de l'heure de la séance et des suppléments éventuels (3D, IMAX).
+                </p>
+            
+                <button class="btn-execute" onclick="executerPartieA()">Partie A</button>
+                <div id="output-a" class="output"></div>
+            </div>
+
+            <!-- PARTIE B -->
+            <div class="partie">
+                <h2>Partie B : Calcul pour plusieurs personnes</h2>
+                <p>
+                    <strong>Objectif :</strong> Calculer le prix total pour un groupe de 4 personnes d'âges différents. 
+                    Il faut calculer le prix individuel de chaque personne puis faire la somme pour obtenir le total du groupe.
+                </p>
+             
+                <button class="btn-execute" onclick="executerPartieB()">Partie B</button>
+                <div id="output-b" class="output"></div>
+            </div>
+
+            <!-- PARTIE C -->
+            <div class="partie">
+                <h2>Partie C : Avec carte fidélité</h2>
+                <p>
+                    <strong>Objectif :</strong> Ajouter le système de fidélité avec différents paliers (Bronze, Argent, Or, Platine) 
+                    qui donnent des réductions en pourcentage. Calculer aussi les points gagnés et le prochain palier à atteindre.
+                </p>
+                <div class="tarifs-info" style="margin-top: 15px;">
+                    <h3>Paliers de Fidélité</h3>
+                    <ul>
+                        <li><strong>Bronze (0-99 points) :</strong> -5%</li>
+                        <li><strong>Argent (100-299 points) :</strong> -10%</li>
+                        <li><strong>Or (300-499 points) :</strong> -15%</li>
+                        <li><strong>Platine (500+ points) :</strong> -20%</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>Règle :</strong> 1€ dépensé = 10 points gagnés</p>
+                </div>
+             
+                <button class="btn-execute" onclick="executerPartieC()">Partie C</button>
+                <div id="output-c" class="output"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Projet Cinéma - Formation Développeur Web | Real Conseil © 2025</p>
+            <p>Calculateur 1 : Tarifs de Billetterie - Corrigé Commenté</p>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================================================
+        // PARTIE A : CALCUL POUR 1 PERSONNE
+        // ============================================================================
+        function executerPartieA() {
+            // Variable pour stocker le résultat final qui sera affiché
+            let resultat = "";
+            
+            // === DONNÉES CLIENT ===
+            // Je déclare toutes les informations du client avec let (modifiable)
+            let age = 28; // L'âge du client (type: number)
+            let jour = "mardi"; // Le jour de la semaine (type: string)
+            let heureSeance = 14; // L'heure de la séance en format 24h (type: number)
+            let type3D = false; // Est-ce une séance 3D ? (type: boolean)
+            let typeIMAX = true; // Est-ce une séance IMAX ? (type: boolean)
+
+            // On commence à construire notre texte de résultat
+            resultat += "=== CALCUL DU BILLET ===\n";
+            resultat += "Âge : " + age + " ans\n"; // On concatène avec l'opérateur +
+
+            // === ÉTAPE 1 : Déterminer le tarif de base selon l'âge ===
+            // On initialise deux variables : le prix et la catégorie
+            let prixBase = 0; // Prix initial à 0 (type: number)
+            let categorie = ""; // Catégorie vide pour l'instant (type: string)
+
+            // On utilise if/else pour déterminer le tarif selon l'âge
+            // L'opérateur < signifie "inférieur à"
+            if (age < 12) {
+                // Si l'âge est strictement inférieur à 12
+                prixBase = 6.50; // On assigne 6.50€
+                categorie = "Enfant"; // On assigne la catégorie
+            } 
+            // L'opérateur && signifie "ET" (les deux conditions doivent être vraies)
+            // L'opérateur >= signifie "supérieur ou égal"
+            // L'opérateur <= signifie "inférieur ou égal"
+            else if (age >= 12 && age <= 25) {
+                // Si l'âge est entre 12 et 25 ans (inclus)
+                prixBase = 8.50;
+                categorie = "Étudiant";
+            } 
+            else if (age >= 26 && age <= 59) {
+                // Si l'âge est entre 26 et 59 ans
+                prixBase = 12.00;
+                categorie = "Adulte";
+            } 
+            else {
+                // Sinon (tous les autres cas = 60 ans et plus)
+                prixBase = 7.50;
+                categorie = "Senior";
+            }
+
+            // On ajoute la catégorie au résultat
+            resultat += "Catégorie : " + categorie + "\n";
+            // toFixed(2) permet d'afficher 2 chiffres après la virgule
+            resultat += "Tarif de base : " + prixBase.toFixed(2) + "€\n";
+
+            // === ÉTAPE 2 : Vérifier si c'est lundi (tarif spécial 6€) ===
+            // L'opérateur === signifie "égal strict" (vérifie la valeur ET le type)
+            if (jour === "lundi") {
+                // Si c'est lundi, on écrase le prix de base (peu importe l'âge)
+                prixBase = 6.00;
+                resultat += "Tarif Lundi appliqué : 6.00€\n";
+            }
+
+            resultat += "Jour : " + jour + "\n";
+            resultat += "Heure : " + heureSeance + "h\n";
+
+            // === ÉTAPE 3 : Vérifier si c'est une séance matinale ===
+            // Séance matinale = avant 12h = réduction de 2€
+            // MAIS seulement si ce n'est PAS lundi (car le tarif lundi est déjà le plus bas)
+            // L'opérateur !== signifie "différent de"
+            if (heureSeance < 12 && jour !== "lundi") {
+                // On utilise && pour vérifier les DEUX conditions en même temps
+                // Les deux doivent être vraies pour entrer dans le if
+                prixBase = prixBase - 2.00; // On soustrait 2€
+                // Note: on peut aussi écrire : prixBase -= 2.00;
+                resultat += "Réduction séance matinale : -2.00€\n";
+            }
+
+            // === ÉTAPE 4 : Ajouter le supplément 3D si nécessaire ===
+            let supplement3D = 0; // On initialise le supplément à 0
+            
+            // Pour les boolean, on peut écrire if (type3D === true) ou simplement if (type3D)
+            if (type3D === true) {
+                supplement3D = 3.00; // On ajoute 3€ pour la 3D
+                resultat += "Type : 3D\n";
+            }
+
+            // === ÉTAPE 5 : Ajouter le supplément IMAX si nécessaire ===
+            let supplementIMAX = 0;
+            
+            if (typeIMAX === true) {
+                supplementIMAX = 5.00; // On ajoute 5€ pour IMAX
+                resultat += "Type : IMAX\n";
+            }
+
+            // === ÉTAPE 6 : Calculer le prix final ===
+            resultat += "---\n";
+            resultat += "Prix de base : " + prixBase.toFixed(2) + "€\n";
+            
+            // On affiche les suppléments seulement s'ils existent (> 0)
+            if (supplement3D > 0) {
+                resultat += "Supplément 3D : +" + supplement3D.toFixed(2) + "€\n";
+            }
+            if (supplementIMAX > 0) {
+                resultat += "Supplément IMAX : +" + supplementIMAX.toFixed(2) + "€\n";
+            }
+
+            // On additionne tout pour obtenir le prix final
+            let prixFinal = prixBase + supplement3D + supplementIMAX;
+
+            resultat += "---\n";
+            resultat += "PRIX FINAL : " + prixFinal.toFixed(2) + "€\n";
+
+            // On affiche le résultat dans la div de sortie
+            // textContent est une propriété qui permet de modifier le texte d'un élément HTML
+            document.getElementById('output-a').textContent = resultat;
+        }
+
+        // ============================================================================
+        // PARTIE B : CALCUL POUR PLUSIEURS PERSONNES
+        // ============================================================================
+        function executerPartieB() {
+            let resultat = "";
+
+            // === GROUPE DE SPECTATEURS ===
+            // On déclare l'âge de chaque personne du groupe
+            let personne1_age = 8;
+            let personne2_age = 35;
+            let personne3_age = 65;
+            let personne4_age = 15;
+
+            // Informations communes à tout le groupe
+            let nombrePersonnes = 4;
+            let jour = "mercredi";
+            let heureSeance = 10; // 10h = séance matinale
+            let type3D = false;
+            let typeIMAX = false;
+
+            resultat += "=== GROUPE DE " + nombrePersonnes + " PERSONNES ===\n";
+            resultat += "Jour : " + jour + "\n";
+            resultat += "Heure : " + heureSeance + "h";
+            
+            // On vérifie si c'est une séance matinale pour l'afficher
+            if (heureSeance < 12) {
+                resultat += " (Séance matinale -2€)";
+            }
+            resultat += "\n\n";
+
+            // === CALCUL POUR PERSONNE 1 ===
+            // On répète exactement la même logique que dans la Partie A
+            let prix1 = 0;
+            let cat1 = "";
+            
+            // Tarif selon l'âge
+            if (personne1_age < 12) {
+                prix1 = 6.50;
+                cat1 = "Enfant";
+            } else if (personne1_age >= 12 && personne1_age <= 25) {
+                prix1 = 8.50;
+                cat1 = "Étudiant";
+            } else if (personne1_age >= 26 && personne1_age <= 59) {
+                prix1 = 12.00;
+                cat1 = "Adulte";
+            } else {
+                prix1 = 7.50;
+                cat1 = "Senior";
+            }
+
+            // Tarif lundi (tous les tarifs à 6€)
+            if (jour === "lundi") {
+                prix1 = 6.00;
+            }
+
+            // Réduction matinale (sauf lundi)
+            if (heureSeance < 12 && jour !== "lundi") {
+                prix1 = prix1 - 2.00;
+            }
+
+            // Suppléments 3D et IMAX
+            if (type3D === true) {
+                prix1 = prix1 + 3.00;
+            }
+            if (typeIMAX === true) {
+                prix1 = prix1 + 5.00;
+            }
+
+            // On affiche le résultat pour la personne 1
+            resultat += "Personne 1 (" + personne1_age + " ans) - " + cat1 + " : " + prix1.toFixed(2) + "€\n";
+
+            // === CALCUL POUR PERSONNE 2 ===
+            // On répète la même logique
+            let prix2 = 0;
+            let cat2 = "";
+            
+            if (personne2_age < 12) {
+                prix2 = 6.50;
+                cat2 = "Enfant";
+            } else if (personne2_age >= 12 && personne2_age <= 25) {
+                prix2 = 8.50;
+                cat2 = "Étudiant";
+            } else if (personne2_age >= 26 && personne2_age <= 59) {
+                prix2 = 12.00;
+                cat2 = "Adulte";
+            } else {
+                prix2 = 7.50;
+                cat2 = "Senior";
+            }
+
+            if (jour === "lundi") {
+                prix2 = 6.00;
+            }
+
+            if (heureSeance < 12 && jour !== "lundi") {
+                prix2 = prix2 - 2.00;
+            }
+
+            if (type3D === true) {
+                prix2 = prix2 + 3.00;
+            }
+            if (typeIMAX === true) {
+                prix2 = prix2 + 5.00;
+            }
+
+            resultat += "Personne 2 (" + personne2_age + " ans) - " + cat2 + " : " + prix2.toFixed(2) + "€\n";
+
+            // === CALCUL POUR PERSONNE 3 ===
+            let prix3 = 0;
+            let cat3 = "";
+            
+            if (personne3_age < 12) {
+                prix3 = 6.50;
+                cat3 = "Enfant";
+            } else if (personne3_age >= 12 && personne3_age <= 25) {
+                prix3 = 8.50;
+                cat3 = "Étudiant";
+            } else if (personne3_age >= 26 && personne3_age <= 59) {
+                prix3 = 12.00;
+                cat3 = "Adulte";
+            } else {
+                prix3 = 7.50;
+                cat3 = "Senior";
+            }
+
+            if (jour === "lundi") {
+                prix3 = 6.00;
+            }
+
+            if (heureSeance < 12 && jour !== "lundi") {
+                prix3 = prix3 - 2.00;
+            }
+
+            if (type3D === true) {
+                prix3 = prix3 + 3.00;
+            }
+            if (typeIMAX === true) {
+                prix3 = prix3 + 5.00;
+            }
+
+            resultat += "Personne 3 (" + personne3_age + " ans) - " + cat3 + " : " + prix3.toFixed(2) + "€\n";
+
+            // === CALCUL POUR PERSONNE 4 ===
+            let prix4 = 0;
+            let cat4 = "";
+            
+            if (personne4_age < 12) {
+                prix4 = 6.50;
+                cat4 = "Enfant";
+            } else if (personne4_age >= 12 && personne4_age <= 25) {
+                prix4 = 8.50;
+                cat4 = "Étudiant";
+            } else if (personne4_age >= 26 && personne4_age <= 59) {
+                prix4 = 12.00;
+                cat4 = "Adulte";
+            } else {
+                prix4 = 7.50;
+                cat4 = "Senior";
+            }
+
+            if (jour === "lundi") {
+                prix4 = 6.00;
+            }
+
+            if (heureSeance < 12 && jour !== "lundi") {
+                prix4 = prix4 - 2.00;
+            }
+
+            if (type3D === true) {
+                prix4 = prix4 + 3.00;
+            }
+            if (typeIMAX === true) {
+                prix4 = prix4 + 5.00;
+            }
+
+            resultat += "Personne 4 (" + personne4_age + " ans) - " + cat4 + " : " + prix4.toFixed(2) + "€\n";
+
+            // === CALCUL DU TOTAL DU GROUPE ===
+            // On additionne les 4 prix individuels
+            let totalGroupe = prix1 + prix2 + prix3 + prix4;
+
+            // === CALCUL DU PRIX MOYEN PAR PERSONNE ===
+            // On divise le total par le nombre de personnes
+            // L'opérateur / est la division
+            let prixMoyen = totalGroupe / nombrePersonnes;
+
+            resultat += "---\n";
+            resultat += "TOTAL GROUPE : " + totalGroupe.toFixed(2) + "€\n";
+            resultat += "Prix moyen : " + prixMoyen.toFixed(2) + "€ par personne\n";
+
+            document.getElementById('output-b').textContent = resultat;
+        }
+
+        // ============================================================================
+        // PARTIE C : AVEC CARTE FIDÉLITÉ
+        // ============================================================================
+        function executerPartieC() {
+            let resultat = "";
+
+            // === CLIENT FIDÈLE ===
+            let age = 42;
+            let jour = "samedi";
+            let heureSeance = 20;
+            let type3D = true;
+            let typeIMAX = false;
+
+            // === CARTE FIDÉLITÉ ===
+            let carteFidelite = true; // Le client a une carte (boolean)
+            let pointsFidelite = 250; // Nombre de points accumulés (number)
+
+            resultat += "=== CLIENT FIDÈLE ===\n";
+            resultat += "Âge : " + age + " ans";
+
+            // === ÉTAPE 1 : Calculer le prix normal du billet (comme dans la Partie A) ===
+            let prixBase = 0;
+            let categorie = "";
+
+            if (age < 12) {
+                prixBase = 6.50;
+                categorie = "Enfant";
+            } else if (age >= 12 && age <= 25) {
+                prixBase = 8.50;
+                categorie = "Étudiant";
+            } else if (age >= 26 && age <= 59) {
+                prixBase = 12.00;
+                categorie = "Adulte";
+            } else {
+                prixBase = 7.50;
+                categorie = "Senior";
+            }
+
+            resultat += " - " + categorie + "\n";
+
+            // Tarif lundi
+            if (jour === "lundi") {
+                prixBase = 6.00;
+            }
+
+            // Réduction matinale
+            if (heureSeance < 12 && jour !== "lundi") {
+                prixBase = prixBase - 2.00;
+            }
+
+            resultat += "Séance : " + jour + " " + heureSeance + "h";
+
+            // Calcul des suppléments
+            let supplement = 0; // On va cumuler tous les suppléments
+            if (type3D === true) {
+                supplement = supplement + 3.00;
+                resultat += " - 3D";
+            }
+            if (typeIMAX === true) {
+                supplement = supplement + 5.00;
+                resultat += " - IMAX";
+            }
+
+            resultat += "\n\n";
+            resultat += "Prix de base : " + prixBase.toFixed(2) + "€\n";
+            
+            if (supplement > 0) {
+                resultat += "Supplément 3D/IMAX : +" + supplement.toFixed(2) + "€\n";
+            }
+
+            // Calcul du sous-total (avant réduction fidélité)
+            let sousTotal = prixBase + supplement;
+            resultat += "Sous-total : " + sousTotal.toFixed(2) + "€\n\n";
+
+            // === ÉTAPE 2 : Déterminer le niveau de carte fidélité ===
+            let niveauCarte = ""; // Le nom du niveau
+            let reductionPourcent = 0; // Le pourcentage de réduction
+
+            // On utilise if/else pour déterminer le niveau selon les points
+            if (pointsFidelite >= 0 && pointsFidelite <= 99) {
+                // De 0 à 99 points : Bronze
+                niveauCarte = "Bronze";
+                reductionPourcent = 5; // 5% de réduction
+            } else if (pointsFidelite >= 100 && pointsFidelite <= 299) {
+                // De 100 à 299 points : Argent
+                niveauCarte = "Argent";
+                reductionPourcent = 10; // 10% de réduction
+            } else if (pointsFidelite >= 300 && pointsFidelite <= 499) {
+                // De 300 à 499 points : Or
+                niveauCarte = "Or";
+                reductionPourcent = 15; // 15% de réduction
+            } else {
+                // 500 points et plus : Platine
+                niveauCarte = "Platine";
+                reductionPourcent = 20; // 20% de réduction
+            }
+
+            resultat += "Carte " + niveauCarte + " (" + pointsFidelite + " points)\n";
+
+            // === ÉTAPE 3 : Calculer la réduction en euros ===
+            // Pour calculer X% d'un montant : montant × (X / 100)
+            // Exemple : 10% de 15€ = 15 × (10 / 100) = 15 × 0.10 = 1.50€
+            let reductionEuros = sousTotal * (reductionPourcent / 100);
+
+            resultat += "Réduction fidélité : -" + reductionPourcent + "% (-" + reductionEuros.toFixed(2) + "€)\n";
+
+            // === ÉTAPE 4 : Calculer le prix final ===
+            let prixFinal = sousTotal - reductionEuros;
+
+            resultat += "---\n";
+            resultat += "PRIX FINAL : " + prixFinal.toFixed(2) + "€\n\n";
+
+            // === ÉTAPE 5 : Calculer les nouveaux points gagnés ===
+            // Règle : 1€ dépensé = 10 points
+            // Math.floor() arrondit à l'entier inférieur
+            // Exemple : Math.floor(13.7) = 13
+            let pointsGagnes = Math.floor(prixFinal * 10);
+            
+            // On ajoute les points gagnés aux points existants
+            let nouveauxPoints = pointsFidelite + pointsGagnes;
+
+            resultat += "Points gagnés : +" + pointsGagnes + " points\n";
+            resultat += "Nouveau total : " + nouveauxPoints + " points\n";
+
+            // === ÉTAPE 6 : Calculer les points manquants pour le prochain palier ===
+            let prochainPalier = "";
+            let pointsManquants = 0;
+
+            // On détermine le prochain palier selon les points actuels
+            if (nouveauxPoints < 100) {
+                prochainPalier = "Argent";
+                pointsManquants = 100 - nouveauxPoints;
+            } else if (nouveauxPoints < 300) {
+                prochainPalier = "Or";
+                pointsManquants = 300 - nouveauxPoints;
+            } else if (nouveauxPoints < 500) {
+                prochainPalier = "Platine";
+                pointsManquants = 500 - nouveauxPoints;
+            } else {
+                // Déjà au niveau maximum
+                prochainPalier = "Maximum atteint";
+                pointsManquants = 0;
+            }
+
+            if (pointsManquants > 0) {
+                resultat += "Prochain palier : " + prochainPalier + " (dans " + pointsManquants + " points)\n";
+            } else {
+                resultat += "Niveau maximum atteint !\n";
+            }
+
+            document.getElementById('output-c').textContent = resultat;
+        }
+    </script>
+</body>
+</html>

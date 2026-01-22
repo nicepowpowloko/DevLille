@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍿 Calculateur 2 - Menu Concession</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #d31027 0%, #ea384d 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .partie {
+            background: #fff5f5;
+            border-left: 5px solid #ea384d;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .partie h2 {
+            color: #d31027;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .partie p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .btn-execute {
+            background: linear-gradient(135deg, #ea384d 0%, #d31027 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 15px 10px 15px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(211, 16, 39, 0.3);
+        }
+
+        .btn-execute:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(211, 16, 39, 0.4);
+        }
+
+        .output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+            line-height: 1.6;
+        }
+
+        .prix-info {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .prix-info h3 {
+            color: #c62828;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .prix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .prix-item {
+            background: white;
+            padding: 12px;
+            border-radius: 5px;
+            border-left: 3px solid #ea384d;
+        }
+
+        .prix-item strong {
+            color: #d31027;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        footer {
+            background: #d31027;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            font-size: 1em;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍿 Calculateur 2 : Menu Concession</h1>
+            <p>Corrigé Complet avec Commentaires Détaillés</p>
+        </header>
+
+        <div class="content">
+            <!-- INTRODUCTION -->
+            <div class="prix-info">
+                <h3>📋 Prix des Articles</h3>
+                <div class="prix-grid">
+                    <div class="prix-item">
+                        <strong>🍿 Pop-corn</strong>
+                        Petit : 3.50€<br>
+                        Moyen : 5.00€<br>
+                        Grand : 6.50€
+                    </div>
+                    <div class="prix-item">
+                        <strong>🥤 Boisson</strong>
+                        Petit : 3.00€<br>
+                        Moyen : 4.00€<br>
+                        Grand : 5.00€
+                    </div>
+                    <div class="prix-item">
+                        <strong>🍬 Snacks</strong>
+                        Bonbons : 2.50€<br>
+                        Nachos : 4.50€<br>
+                        Hot-dog : 5.50€<br>
+                        Glace : 3.50€
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 20px;">🎯 Formules Spéciales</h3>
+                <div class="prix-grid">
+                    <div class="prix-item">
+                        <strong>Formule Solo</strong>
+                        1 pop-corn moyen + 1 boisson moyenne<br>
+                        <span style="color: #d31027; font-weight: bold;">8.00€ au lieu de 9.00€</span>
+                    </div>
+                    <div class="prix-item">
+                        <strong>Formule Duo</strong>
+                        1 pop-corn grand + 2 boissons moyennes<br>
+                        <span style="color: #d31027; font-weight: bold;">13.00€ au lieu de 14.50€</span>
+                    </div>
+                    <div class="prix-item">
+                        <strong>Formule Famille</strong>
+                        2 pop-corn grands + 4 boissons moyennes<br>
+                        <span style="color: #d31027; font-weight: bold;">24.00€ au lieu de 29.00€</span>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 20px;">🎉 Promotions</h3>
+                <p style="margin: 10px 0; color: #424242;">
+                    <strong>Total > 20€ :</strong> -10% de réduction<br>
+                    <strong>Total > 30€ :</strong> -15% de réduction
+                </p>
+            </div>
+
+            <!-- PARTIE A -->
+            <div class="partie">
+                <h2>Partie A : Commande simple</h2>
+                <p>
+                    <strong>Objectif :</strong> Calculer le prix d'une commande à l'unité (sans formule). 
+                    Le client choisit la taille de son pop-corn et de sa boisson, et peut ajouter des extras (bonbons, nachos, etc.).
+                </p>
+                <div class="note">
+                    💡 <strong>Concepts utilisés :</strong> Switch pour les tailles, if/else pour les extras (boolean), 
+                    addition progressive avec l'opérateur +=
+                </div>
+                <button class="btn-execute" onclick="executerPartieA()">▶️ Exécuter Partie A</button>
+                <div id="output-a" class="output"></div>
+            </div>
+
+            <!-- PARTIE B -->
+            <div class="partie">
+                <h2>Partie B : Avec formules</h2>
+                <p>
+                    <strong>Objectif :</strong> Gérer les formules (Solo, Duo, Famille) qui ont des prix spéciaux. 
+                    Le client peut ensuite ajouter des extras à sa formule.
+                </p>
+                <div class="note">
+                    💡 <strong>Concepts utilisés :</strong> If/else pour vérifier quelle formule est choisie, 
+                    combinaison avec les extras, switch pour les formules
+                </div>
+                <button class="btn-execute" onclick="executerPartieB()">▶️ Exécuter Partie B</button>
+                <div id="output-b" class="output"></div>
+            </div>
+
+            <!-- PARTIE C -->
+            <div class="partie">
+                <h2>Partie C : Avec promotion</h2>
+                <p>
+                    <strong>Objectif :</strong> Appliquer automatiquement les promotions selon le montant total de la commande. 
+                    Si le total dépasse certains seuils, une réduction s'applique.
+                </p>
+                <div class="note">
+                    💡 <strong>Concepts utilisés :</strong> Conditions imbriquées pour les promotions, 
+                    calcul de pourcentage, opérateur de comparaison (>)
+                </div>
+                <button class="btn-execute" onclick="executerPartieC()">▶️ Exécuter Partie C</button>
+                <div id="output-c" class="output"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>🎬 Projet Cinéma - Formation Développeur Web | Real Conseil © 2025</p>
+            <p>Calculateur 2 : Menu Concession - Corrigé Commenté</p>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================================================
+        // PARTIE A : COMMANDE SIMPLE
+        // ============================================================================
+        function executerPartieA() {
+            let resultat = "";
+
+            // === COMMANDE CLIENT ===
+            // On déclare ce que le client a commandé
+            // Pour les tailles : on utilise des strings ("petit", "moyen", "grand", ou "non")
+            let popcorn = "grand"; // Taille du pop-corn
+            let boisson = "moyen"; // Taille de la boisson
+            
+            // Pour les extras : on utilise des boolean (true = oui, false = non)
+            let bonbons = true; // Le client prend des bonbons
+            let nachos = false; // Le client ne prend pas de nachos
+            let hotdog = true; // Le client prend un hot-dog
+            let glace = false; // Le client ne prend pas de glace
+
+            resultat += "=== COMMANDE CONCESSION ===\n\n";
+
+            // === ÉTAPE 1 : Initialiser le total à 0 ===
+            // On va accumuler le prix de chaque article dans cette variable
+            let total = 0;
+
+            // === ÉTAPE 2 : Calculer le prix du pop-corn selon la taille ===
+            // On utilise un SWITCH pour tester la valeur de la variable popcorn
+            // Le switch est pratique quand on a plusieurs valeurs possibles à tester
+            
+            let prixPopcorn = 0; // Variable pour stocker le prix du pop-corn
+            
+            switch (popcorn) {
+                case "petit":
+                    // Si popcorn === "petit", on entre ici
+                    prixPopcorn = 3.50;
+                    resultat += "Pop-corn Petit : 3.50€\n";
+                    break; // IMPORTANT: break arrête le switch (sinon il continue)
+                
+                case "moyen":
+                    // Si popcorn === "moyen"
+                    prixPopcorn = 5.00;
+                    resultat += "Pop-corn Moyen : 5.00€\n";
+                    break;
+                
+                case "grand":
+                    // Si popcorn === "grand"
+                    prixPopcorn = 6.50;
+                    resultat += "Pop-corn Grand : 6.50€\n";
+                    break;
+                
+                case "non":
+                    // Si le client ne prend pas de pop-corn
+                    prixPopcorn = 0;
+                    resultat += "Pop-corn : non\n";
+                    break;
+                
+                default:
+                    // Si la valeur ne correspond à aucun cas (sécurité)
+                    prixPopcorn = 0;
+                    resultat += "Pop-corn : non\n";
+            }
+
+            // On ajoute le prix du pop-corn au total
+            // Méthode 1 : total = total + prixPopcorn;
+            // Méthode 2 (raccourci) : total += prixPopcorn;
+            total = total + prixPopcorn;
+
+            // === ÉTAPE 3 : Calculer le prix de la boisson ===
+            // Même logique que pour le pop-corn
+            let prixBoisson = 0;
+            
+            switch (boisson) {
+                case "petit":
+                    prixBoisson = 3.00;
+                    resultat += "Boisson Petite : 3.00€\n";
+                    break;
+                
+                case "moyen":
+                    prixBoisson = 4.00;
+                    resultat += "Boisson Moyenne : 4.00€\n";
+                    break;
+                
+                case "grand":
+                    prixBoisson = 5.00;
+                    resultat += "Boisson Grande : 5.00€\n";
+                    break;
+                
+                case "non":
+                    prixBoisson = 0;
+                    resultat += "Boisson : non\n";
+                    break;
+                
+                default:
+                    prixBoisson = 0;
+                    resultat += "Boisson : non\n";
+            }
+
+            // On ajoute le prix de la boisson au total
+            total = total + prixBoisson;
+
+            // === ÉTAPE 4 : Ajouter les bonbons si commandés ===
+            // On utilise IF pour tester un boolean
+            // Pour les boolean : if (bonbons === true) ou simplement if (bonbons)
+            
+            if (bonbons === true) {
+                // Si le client a pris des bonbons, on ajoute 2.50€
+                total = total + 2.50;
+                resultat += "Bonbons : 2.50€\n";
+            } else {
+                // Sinon, on n'ajoute rien
+                resultat += "Bonbons : non\n";
+            }
+
+            // === ÉTAPE 5 : Ajouter les nachos si commandés ===
+            if (nachos === true) {
+                total = total + 4.50;
+                resultat += "Nachos : 4.50€\n";
+            } else {
+                resultat += "Nachos : non\n";
+            }
+
+            // === ÉTAPE 6 : Ajouter le hot-dog si commandé ===
+            if (hotdog === true) {
+                total = total + 5.50;
+                resultat += "Hot-dog : 5.50€\n";
+            } else {
+                resultat += "Hot-dog : non\n";
+            }
+
+            // === ÉTAPE 7 : Ajouter la glace si commandée ===
+            if (glace === true) {
+                total = total + 3.50;
+                resultat += "Glace : 3.50€\n";
+            } else {
+                resultat += "Glace : non\n";
+            }
+
+            // === ÉTAPE 8 : Afficher le total ===
+            resultat += "---\n";
+            // toFixed(2) affiche 2 chiffres après la virgule
+            resultat += "TOTAL : " + total.toFixed(2) + "€\n";
+
+            // On affiche le résultat dans la div de sortie
+            document.getElementById('output-a').textContent = resultat;
+        }
+
+        // ============================================================================
+        // PARTIE B : AVEC FORMULES
+        // ============================================================================
+        function executerPartieB() {
+            let resultat = "";
+
+            // === CHOIX DU CLIENT ===
+            // Le client peut choisir une formule ou commander à l'unité
+            let choixFormule = "duo"; // Options: "non", "solo", "duo", "famille"
+
+            // Si "non" : commande à l'unité (comme Partie A)
+            let popcorn = "moyen";
+            let boisson = "petit";
+            let bonbons = true;
+
+            // Si une formule est choisie, le client peut ajouter des extras
+            let extras_bonbons = true;
+            let extras_nachos = false;
+            let extras_glace = true;
+
+            resultat += "=== COMMANDE CONCESSION ===\n\n";
+
+            // === ÉTAPE 1 : Initialiser le total ===
+            let total = 0;
+
+            // === ÉTAPE 2 : Vérifier si une formule est choisie ===
+            // On utilise if/else pour traiter les différents cas
+            // Chaque formule a un prix fixe
+
+            if (choixFormule === "solo") {
+                // === FORMULE SOLO ===
+                // Contenu : 1 pop-corn moyen + 1 boisson moyenne
+                // Prix spécial : 8€ au lieu de 9€
+                total = 8.00;
+                resultat += "🎯 Formule Solo : 8.00€\n";
+                resultat += "  (1 pop-corn moyen + 1 boisson moyenne)\n\n";
+
+                // Le client peut ajouter des extras à sa formule
+                resultat += "Extras :\n";
+                
+                if (extras_bonbons === true) {
+                    total = total + 2.50;
+                    resultat += "  + Bonbons : 2.50€\n";
+                }
+                
+                if (extras_nachos === true) {
+                    total = total + 4.50;
+                    resultat += "  + Nachos : 4.50€\n";
+                }
+                
+                if (extras_glace === true) {
+                    total = total + 3.50;
+                    resultat += "  + Glace : 3.50€\n";
+                }
+
+            } else if (choixFormule === "duo") {
+                // === FORMULE DUO ===
+                // Contenu : 1 pop-corn grand + 2 boissons moyennes
+                // Prix spécial : 13€ au lieu de 14.50€
+                total = 13.00;
+                resultat += "🎯 Formule Duo : 13.00€\n";
+                resultat += "  (1 pop-corn grand + 2 boissons moyennes)\n\n";
+
+                // Ajout des extras
+                resultat += "Extras :\n";
+                
+                if (extras_bonbons === true) {
+                    total = total + 2.50;
+                    resultat += "  + Bonbons : 2.50€\n";
+                }
+                
+                if (extras_nachos === true) {
+                    total = total + 4.50;
+                    resultat += "  + Nachos : 4.50€\n";
+                }
+                
+                if (extras_glace === true) {
+                    total = total + 3.50;
+                    resultat += "  + Glace : 3.50€\n";
+                }
+
+            } else if (choixFormule === "famille") {
+                // === FORMULE FAMILLE ===
+                // Contenu : 2 pop-corn grands + 4 boissons moyennes
+                // Prix spécial : 24€ au lieu de 29€
+                total = 24.00;
+                resultat += "🎯 Formule Famille : 24.00€\n";
+                resultat += "  (2 pop-corn grands + 4 boissons moyennes)\n\n";
+
+                // Ajout des extras
+                resultat += "Extras :\n";
+                
+                if (extras_bonbons === true) {
+                    total = total + 2.50;
+                    resultat += "  + Bonbons : 2.50€\n";
+                }
+                
+                if (extras_nachos === true) {
+                    total = total + 4.50;
+                    resultat += "  + Nachos : 4.50€\n";
+                }
+                
+                if (extras_glace === true) {
+                    total = total + 3.50;
+                    resultat += "  + Glace : 3.50€\n";
+                }
+
+            } else {
+                // === PAS DE FORMULE : Commande à l'unité ===
+                // On reprend la logique de la Partie A
+                resultat += "Commande à l'unité :\n";
+
+                // Calcul du pop-corn avec switch
+                switch (popcorn) {
+                    case "petit":
+                        total = total + 3.50;
+                        resultat += "Pop-corn Petit : 3.50€\n";
+                        break;
+                    case "moyen":
+                        total = total + 5.00;
+                        resultat += "Pop-corn Moyen : 5.00€\n";
+                        break;
+                    case "grand":
+                        total = total + 6.50;
+                        resultat += "Pop-corn Grand : 6.50€\n";
+                        break;
+                }
+
+                // Calcul de la boisson avec switch
+                switch (boisson) {
+                    case "petit":
+                        total = total + 3.00;
+                        resultat += "Boisson Petite : 3.00€\n";
+                        break;
+                    case "moyen":
+                        total = total + 4.00;
+                        resultat += "Boisson Moyenne : 4.00€\n";
+                        break;
+                    case "grand":
+                        total = total + 5.00;
+                        resultat += "Boisson Grande : 5.00€\n";
+                        break;
+                }
+
+                // Bonbons
+                if (bonbons === true) {
+                    total = total + 2.50;
+                    resultat += "Bonbons : 2.50€\n";
+                }
+            }
+
+            // === ÉTAPE 3 : Afficher le total ===
+            resultat += "---\n";
+            resultat += "TOTAL : " + total.toFixed(2) + "€\n";
+
+            document.getElementById('output-b').textContent = resultat;
+        }
+
+        // ============================================================================
+        // PARTIE C : AVEC PROMOTION
+        // ============================================================================
+        function executerPartieC() {
+            let resultat = "";
+
+            // === GROSSE COMMANDE ===
+            // Le client prend une formule famille + beaucoup d'extras
+            let choixFormule = "famille";
+            let extras_bonbons = true;
+            let extras_nachos = true;
+            let extras_hotdog = true;
+            let extras_glace = true;
+
+            resultat += "=== COMMANDE CONCESSION ===\n\n";
+
+            // === ÉTAPE 1 : Calculer le prix de la formule ===
+            let total = 0;
+
+            // On détermine le prix de la formule avec un switch
+            // Le switch est plus lisible quand on a beaucoup de cas
+            switch (choixFormule) {
+                case "solo":
+                    total = 8.00;
+                    resultat += "🎯 Formule Solo : 8.00€\n";
+                    resultat += "  (1 pop-corn moyen + 1 boisson moyenne)\n\n";
+                    break;
+                
+                case "duo":
+                    total = 13.00;
+                    resultat += "🎯 Formule Duo : 13.00€\n";
+                    resultat += "  (1 pop-corn grand + 2 boissons moyennes)\n\n";
+                    break;
+                
+                case "famille":
+                    total = 24.00;
+                    resultat += "🎯 Formule Famille : 24.00€\n";
+                    resultat += "  (2 pop-corn grands + 4 boissons moyennes)\n\n";
+                    break;
+                
+                default:
+                    total = 0;
+                    resultat += "Pas de formule\n\n";
+            }
+
+            // === ÉTAPE 2 : Ajouter tous les extras ===
+            resultat += "Extras :\n";
+
+            if (extras_bonbons === true) {
+                total = total + 2.50;
+                resultat += "  + Bonbons : 2.50€\n";
+            }
+
+            if (extras_nachos === true) {
+                total = total + 4.50;
+                resultat += "  + Nachos : 4.50€\n";
+            }
+
+            if (extras_hotdog === true) {
+                total = total + 5.50;
+                resultat += "  + Hot-dog : 5.50€\n";
+            }
+
+            if (extras_glace === true) {
+                total = total + 3.50;
+                resultat += "  + Glace : 3.50€\n";
+            }
+
+            // === ÉTAPE 3 : Afficher le sous-total (avant promotion) ===
+            resultat += "\nSous-total : " + total.toFixed(2) + "€\n";
+
+            // === ÉTAPE 4 : Vérifier si éligible à promotion ===
+            // Règles : 
+            // - Si total > 30€ : -15% de réduction
+            // - Sinon si total > 20€ : -10% de réduction
+            // - Sinon : pas de promotion
+
+            let reductionPourcent = 0; // Pourcentage de réduction
+            let reductionEuros = 0; // Montant de la réduction en euros
+
+            // On utilise if/else pour tester les conditions dans l'ordre
+            // IMPORTANT : On teste d'abord le montant le plus élevé (30€)
+            if (total > 30) {
+                // Si le total est supérieur à 30€
+                // On applique 15% de réduction
+                reductionPourcent = 15;
+                // Pour calculer 15% : total × 0.15
+                reductionEuros = total * 0.15;
+                resultat += "🎉 Promotion -15% : -" + reductionEuros.toFixed(2) + "€\n";
+            } 
+            else if (total > 20) {
+                // Sinon, si le total est supérieur à 20€
+                // On applique 10% de réduction
+                reductionPourcent = 10;
+                // Pour calculer 10% : total × 0.10
+                reductionEuros = total * 0.10;
+                resultat += "🎉 Promotion -10% : -" + reductionEuros.toFixed(2) + "€\n";
+            } 
+            else {
+                // Sinon (total ≤ 20€), pas de promotion
+                resultat += "Pas de promotion\n";
+            }
+
+            // === ÉTAPE 5 : Calculer le total final ===
+            // On soustrait la réduction du total
+            let totalFinal = total - reductionEuros;
+
+            resultat += "---\n";
+            resultat += "TOTAL FINAL : " + totalFinal.toFixed(2) + "€\n";
+
+            // On affiche le résultat
+            document.getElementById('output-c').textContent = resultat;
+        }
+    </script>
+</body>
+</html>

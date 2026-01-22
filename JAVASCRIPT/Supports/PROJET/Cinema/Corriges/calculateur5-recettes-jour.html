@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Calculateur 5 - Recettes du Jour</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+        header p { font-size: 1.2em; opacity: 0.9; }
+        .content { padding: 40px; }
+        .partie {
+            background: #e8f5e9;
+            border-left: 5px solid #11998e;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        .partie h2 { color: #11998e; font-size: 1.8em; margin-bottom: 15px; }
+        .partie p { color: #555; line-height: 1.8; margin-bottom: 15px; font-size: 1.1em; }
+        .btn-execute {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 15px 10px 15px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+        }
+        .btn-execute:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4); }
+        .output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+            line-height: 1.6;
+        }
+        footer { background: #11998e; color: white; text-align: center; padding: 25px; font-size: 1em; }
+        .note { background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 5px; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 Calculateur 5 : Recettes du Jour</h1>
+            <p>Corrigé Complet avec Commentaires Détaillés</p>
+        </header>
+
+        <div class="content">
+            <div class="partie">
+                <h2>Partie A : Calcul des recettes billetterie</h2>
+                <p><strong>Objectif :</strong> Calculer les recettes totales par catégorie de billets.</p>
+                <div class="note">
+                    💡 <strong>Concepts :</strong> Multiplication par catégorie, addition, calcul de pourcentages, moyenne
+                </div>
+                <button class="btn-execute" onclick="executerPartieA()">▶️ Exécuter Partie A</button>
+                <div id="output-a" class="output"></div>
+            </div>
+
+            <div class="partie">
+                <h2>Partie B : Ajout des recettes concession</h2>
+                <p><strong>Objectif :</strong> Ajouter les recettes de la concession et calculer les répartitions.</p>
+                <div class="note">
+                    💡 <strong>Concepts :</strong> Addition de totaux, calcul de pourcentages, division pour moyenne
+                </div>
+                <button class="btn-execute" onclick="executerPartieB()">▶️ Exécuter Partie B</button>
+                <div id="output-b" class="output"></div>
+            </div>
+
+            <div class="partie">
+                <h2>Partie C : Comparaison avec objectifs</h2>
+                <p><strong>Objectif :</strong> Comparer le réalisé avec les objectifs et donner des recommandations.</p>
+                <div class="note">
+                    💡 <strong>Concepts :</strong> Soustraction d'écarts, comparaisons, conditions pour recommandations
+                </div>
+                <button class="btn-execute" onclick="executerPartieC()">▶️ Exécuter Partie C</button>
+                <div id="output-c" class="output"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>🎬 Projet Cinéma - Formation Développeur Web | Real Conseil © 2025</p>
+            <p>Calculateur 5 : Recettes du Jour - Corrigé Commenté</p>
+        </footer>
+    </div>
+
+    <script>
+        // PARTIE A : RECETTES BILLETTERIE
+        function executerPartieA() {
+            let resultat = "";
+
+            // === VENTES DE BILLETS DU JOUR ===
+            // Nombre de billets vendus par catégorie
+            let billetsEnfant = 45;
+            let billetsEtudiant = 120;
+            let billetsAdulte = 200;
+            let billetsSenior = 35;
+
+            // Prix unitaires (const car ne changent pas)
+            const PRIX_ENFANT = 6.50;
+            const PRIX_ETUDIANT = 8.50;
+            const PRIX_ADULTE = 12.00;
+            const PRIX_SENIOR = 7.50;
+
+            resultat += "=== RECETTES BILLETTERIE ===\n\n";
+            resultat += "VENTES PAR CATÉGORIE :\n";
+
+            // === ÉTAPE 1 : Calculer recettes par catégorie ===
+            // Formule : nombre de billets × prix unitaire
+
+            // Recettes enfants
+            let recettesEnfant = billetsEnfant * PRIX_ENFANT;
+
+            // Recettes étudiants
+            let recettesEtudiant = billetsEtudiant * PRIX_ETUDIANT;
+
+            // Recettes adultes
+            let recettesAdulte = billetsAdulte * PRIX_ADULTE;
+
+            // Recettes seniors
+            let recettesSenior = billetsSenior * PRIX_SENIOR;
+
+            // === ÉTAPE 2 : Calculer le total ===
+            // On additionne toutes les catégories
+            let recettesTotales = recettesEnfant + recettesEtudiant + recettesAdulte + recettesSenior;
+
+            // === ÉTAPE 3 : Calculer les pourcentages ===
+            // Formule : (recettes catégorie / total) × 100
+            let pourcentEnfant = (recettesEnfant / recettesTotales) * 100;
+            let pourcentEtudiant = (recettesEtudiant / recettesTotales) * 100;
+            let pourcentAdulte = (recettesAdulte / recettesTotales) * 100;
+            let pourcentSenior = (recettesSenior / recettesTotales) * 100;
+
+            // === ÉTAPE 4 : Afficher chaque catégorie ===
+            // Format : Catégorie (nombre) : montant€ (pourcentage%)
+            resultat += "Enfants (" + billetsEnfant + ") : " + recettesEnfant.toFixed(2) + "€ (" + pourcentEnfant.toFixed(0) + "%)\n";
+            resultat += "Étudiants (" + billetsEtudiant + ") : " + recettesEtudiant.toFixed(2) + "€ (" + pourcentEtudiant.toFixed(0) + "%)\n";
+            resultat += "Adultes (" + billetsAdulte + ") : " + recettesAdulte.toFixed(2) + "€ (" + pourcentAdulte.toFixed(0) + "%)\n";
+            resultat += "Seniors (" + billetsSenior + ") : " + recettesSenior.toFixed(2) + "€ (" + pourcentSenior.toFixed(0) + "%)\n\n";
+
+            // === ÉTAPE 5 : Calculer le nombre total de spectateurs ===
+            // On additionne tous les billets
+            let totalSpectateurs = billetsEnfant + billetsEtudiant + billetsAdulte + billetsSenior;
+
+            // === ÉTAPE 6 : Calculer le prix moyen ===
+            // Formule : total recettes / nombre de spectateurs
+            let prixMoyen = recettesTotales / totalSpectateurs;
+
+            resultat += "TOTAL BILLETTERIE : " + recettesTotales.toFixed(2) + "€\n";
+            resultat += "Total spectateurs : " + totalSpectateurs + "\n";
+            resultat += "Prix moyen : " + prixMoyen.toFixed(2) + "€\n";
+
+            document.getElementById('output-a').textContent = resultat;
+        }
+
+        // PARTIE B : AJOUT CONCESSION
+        function executerPartieB() {
+            let resultat = "";
+
+            // === DONNÉES (reprises de la Partie A) ===
+            let recettesBilletterie = 3975.00; // Calculé en Partie A
+            let recettesConcession = 1250.00; // Recettes de la concession
+            let totalSpectateurs = 400; // Calculé en Partie A
+
+            resultat += "=== RECETTES TOTALES ===\n\n";
+
+            // === ÉTAPE 1 : Calculer le total global ===
+            // On additionne billetterie + concession
+            let recettesTotales = recettesBilletterie + recettesConcession;
+
+            // === ÉTAPE 2 : Calculer la part de chaque secteur ===
+            // Formule : (secteur / total) × 100
+
+            // Part de la billetterie en %
+            let partBilletterie = (recettesBilletterie / recettesTotales) * 100;
+
+            // Part de la concession en %
+            let partConcession = (recettesConcession / recettesTotales) * 100;
+
+            // === ÉTAPE 3 : Afficher les recettes ===
+            resultat += "Billetterie : " + recettesBilletterie.toFixed(2) + "€ (" + partBilletterie.toFixed(0) + "%)\n";
+            resultat += "Concession : " + recettesConcession.toFixed(2) + "€ (" + partConcession.toFixed(0) + "%)\n";
+            resultat += "──────────────────────────\n";
+            resultat += "TOTAL : " + recettesTotales.toFixed(2) + "€\n\n";
+
+            // === ÉTAPE 4 : Calculer les dépenses moyennes par spectateur ===
+
+            // Dépense moyenne billet (déjà calculé en Partie A : prixMoyen)
+            let depenseMoyenneBillet = recettesBilletterie / totalSpectateurs;
+
+            // Dépense moyenne concession
+            let depenseMoyenneConcession = recettesConcession / totalSpectateurs;
+
+            // Dépense moyenne totale
+            let depenseMoyenneTotal = recettesTotales / totalSpectateurs;
+
+            resultat += "📊 ANALYSE :\n";
+            resultat += "Dépense moyenne/spectateur :\n";
+            resultat += "  - Billet : " + depenseMoyenneBillet.toFixed(2) + "€\n";
+            resultat += "  - Concession : " + depenseMoyenneConcession.toFixed(2) + "€\n";
+            resultat += "  - Total : " + depenseMoyenneTotal.toFixed(2) + "€\n";
+
+            document.getElementById('output-b').textContent = resultat;
+        }
+
+        // PARTIE C : COMPARAISON OBJECTIFS
+        function executerPartieC() {
+            let resultat = "";
+
+            // === OBJECTIFS DU JOUR ===
+            // Ce que le gérant espérait faire
+            let objectifBilletterie = 4500.00;
+            let objectifConcession = 1500.00;
+
+            // === RÉALISÉ (des parties précédentes) ===
+            let recettesBilletterie = 3975.00;
+            let recettesConcession = 1250.00;
+
+            resultat += "=== PERFORMANCE DU JOUR ===\n\n";
+
+            // === ÉTAPE 1 : Calculer les objectifs totaux ===
+            let objectifTotal = objectifBilletterie + objectifConcession;
+
+            // === ÉTAPE 2 : Calculer le réalisé total ===
+            let realiseTotal = recettesBilletterie + recettesConcession;
+
+            resultat += "OBJECTIFS :\n";
+            resultat += "Billetterie : " + objectifBilletterie.toFixed(2) + "€\n";
+            resultat += "Concession : " + objectifConcession.toFixed(2) + "€\n";
+            resultat += "TOTAL : " + objectifTotal.toFixed(2) + "€\n\n";
+
+            // === ÉTAPE 3 : Calculer le taux de réalisation pour chaque ===
+
+            // Taux billetterie : (réalisé / objectif) × 100
+            let tauxBilletterie = (recettesBilletterie / objectifBilletterie) * 100;
+
+            // Taux concession
+            let tauxConcession = (recettesConcession / objectifConcession) * 100;
+
+            resultat += "RÉALISÉ :\n";
+            resultat += "Billetterie : " + recettesBilletterie.toFixed(2) + "€ (" + tauxBilletterie.toFixed(0) + "% de l'objectif)\n";
+            resultat += "Concession : " + recettesConcession.toFixed(2) + "€ (" + tauxConcession.toFixed(0) + "% de l'objectif)\n";
+            resultat += "TOTAL : " + realiseTotal.toFixed(2) + "€\n\n";
+
+            // === ÉTAPE 4 : Calculer l'écart total ===
+            // Écart = réalisé - objectif
+            let ecartTotal = realiseTotal - objectifTotal;
+
+            // === ÉTAPE 5 : Calculer le taux global ===
+            let tauxGlobal = (realiseTotal / objectifTotal) * 100;
+
+            resultat += "📊 TAUX DE RÉALISATION : " + tauxGlobal.toFixed(0) + "%\n";
+            
+            if (ecartTotal >= 0) {
+                // Si positif : dépassement d'objectif
+                resultat += "Écart : +" + ecartTotal.toFixed(2) + "€\n\n";
+            } else {
+                // Si négatif : en dessous de l'objectif
+                resultat += "Écart : " + ecartTotal.toFixed(2) + "€\n\n";
+            }
+
+            // === ÉTAPE 6 : Déterminer si objectif atteint ===
+            if (tauxGlobal >= 100) {
+                resultat += "✅ OBJECTIF ATTEINT\n\n";
+            } else {
+                resultat += "❌ OBJECTIF NON ATTEINT\n\n";
+            }
+
+            // === ÉTAPE 7 : Analyser les écarts par secteur ===
+            let ecartBilletterie = recettesBilletterie - objectifBilletterie;
+            let ecartConcession = recettesConcession - objectifConcession;
+
+            resultat += "📉 ANALYSE :\n";
+
+            // Identifier le point faible (le secteur le plus en retard)
+            // On compare les pourcentages manquants
+            let manqueBilletterie = 100 - tauxBilletterie; // % manquant
+            let manqueConcession = 100 - tauxConcession; // % manquant
+
+            if (manqueConcession > manqueBilletterie) {
+                // La concession est plus en retard
+                resultat += "Point faible : Concession (" + ecartConcession.toFixed(2) + "€, " + manqueConcession.toFixed(0) + "% manquants)\n";
+                resultat += "Billetterie : Correcte (" + ecartBilletterie.toFixed(2) + "€, " + manqueBilletterie.toFixed(0) + "% manquants)\n\n";
+            } else {
+                // La billetterie est plus en retard
+                resultat += "Point faible : Billetterie (" + ecartBilletterie.toFixed(2) + "€, " + manqueBilletterie.toFixed(0) + "% manquants)\n";
+                resultat += "Concession : Correcte (" + ecartConcession.toFixed(2) + "€, " + manqueConcession.toFixed(0) + "% manquants)\n\n";
+            }
+
+            // === ÉTAPE 8 : Donner une recommandation ===
+            resultat += "💡 RECOMMANDATION :\n";
+
+            if (manqueConcession > manqueBilletterie && manqueConcession > 15) {
+                // Problème majeur à la concession
+                resultat += "Améliorer les ventes de concession.\n";
+                resultat += "Proposer plus de formules attractives.\n";
+            } else if (manqueBilletterie > manqueConcession && manqueBilletterie > 15) {
+                // Problème majeur à la billetterie
+                resultat += "Augmenter la fréquentation.\n";
+                resultat += "Prévoir des promotions ou événements.\n";
+            } else if (tauxGlobal >= 90 && tauxGlobal < 100) {
+                // Proche de l'objectif
+                resultat += "Très bon résultat, presque à l'objectif.\n";
+                resultat += "Continuer les efforts.\n";
+            } else if (tauxGlobal >= 100) {
+                // Objectif dépassé
+                resultat += "Excellente performance !\n";
+                resultat += "Objectif dépassé avec succès.\n";
+            } else {
+                // Performances moyennes
+                resultat += "Résultat moyen.\n";
+                resultat += "Analyser les causes et ajuster la stratégie.\n";
+            }
+
+            document.getElementById('output-c').textContent = resultat;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎦 Calculateur 4 - Occupation des Salles</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+        header p { font-size: 1.2em; opacity: 0.9; }
+        .content { padding: 40px; }
+        .partie {
+            background: #fff9e6;
+            border-left: 5px solid #fc4a1a;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        .partie h2 { color: #fc4a1a; font-size: 1.8em; margin-bottom: 15px; }
+        .partie p { color: #555; line-height: 1.8; margin-bottom: 15px; font-size: 1.1em; }
+        .btn-execute {
+            background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 15px 10px 15px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(252, 74, 26, 0.3);
+        }
+        .btn-execute:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(252, 74, 26, 0.4); }
+        .output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+            line-height: 1.6;
+        }
+        .info-box {
+            background: #ffebcc;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        footer { background: #fc4a1a; color: white; text-align: center; padding: 25px; font-size: 1em; }
+        .note { background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 5px; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎦 Calculateur 4 : Occupation des Salles</h1>
+            <p>Corrigé Complet avec Commentaires Détaillés</p>
+        </header>
+
+        <div class="content">
+            <div class="info-box">
+                <h3>📋 Capacité des Salles</h3>
+                <p><strong>Salle 1 :</strong> 150 places</p>
+                <p><strong>Salle 2 :</strong> 200 places</p>
+                <p><strong>Salle 3 :</strong> 100 places</p>
+                <p><strong>Salle 4 :</strong> 250 places</p>
+            </div>
+
+            <div class="partie">
+                <h2>Partie A : Calcul pour une séance</h2>
+                <p><strong>Objectif :</strong> Calculer le taux d'occupation d'une salle et déterminer son statut.</p>
+                <div class="note">
+                    💡 <strong>Concepts :</strong> If/else pour déterminer capacité, calcul de pourcentage, conditions pour statuts
+                </div>
+                <button class="btn-execute" onclick="executerPartieA()">▶️ Exécuter Partie A</button>
+                <div id="output-a" class="output"></div>
+            </div>
+
+            <div class="partie">
+                <h2>Partie B : Projection des recettes</h2>
+                <p><strong>Objectif :</strong> Calculer les recettes par catégorie de billets et le potentiel si sold out.</p>
+                <div class="note">
+                    💡 <strong>Concepts :</strong> Multiplication par catégorie, addition, calcul de moyenne
+                </div>
+                <button class="btn-execute" onclick="executerPartieB()">▶️ Exécuter Partie B</button>
+                <div id="output-b" class="output"></div>
+            </div>
+
+            <div class="partie">
+                <h2>Partie C : Analyse d'une journée complète</h2>
+                <p><strong>Objectif :</strong> Analyser 4 séances et identifier la meilleure/pire performance.</p>
+                <div class="note">
+                    💡 <strong>Concepts :</strong> Comparaisons multiples, recherche de max/min, calcul global
+                </div>
+                <button class="btn-execute" onclick="executerPartieC()">▶️ Exécuter Partie C</button>
+                <div id="output-c" class="output"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>🎬 Projet Cinéma - Formation Développeur Web | Real Conseil © 2025</p>
+            <p>Calculateur 4 : Occupation des Salles - Corrigé Commenté</p>
+        </footer>
+    </div>
+
+    <script>
+        // PARTIE A : CALCUL POUR UNE SÉANCE
+        function executerPartieA() {
+            let resultat = "";
+
+            // === DONNÉES DE LA SÉANCE ===
+            let numeroSalle = 2; // Numéro de la salle (1, 2, 3 ou 4)
+            let billetsVendus = 145; // Nombre de billets vendus
+
+            resultat += "=== OCCUPATION SALLE " + numeroSalle + " ===\n\n";
+
+            // === ÉTAPE 1 : Déterminer la capacité selon le numéro de salle ===
+            // Chaque salle a une capacité différente
+            let capaciteSalle = 0;
+
+            // On utilise if/else pour attribuer la bonne capacité
+            if (numeroSalle === 1) {
+                capaciteSalle = 150; // Salle 1 : 150 places
+            } else if (numeroSalle === 2) {
+                capaciteSalle = 200; // Salle 2 : 200 places
+            } else if (numeroSalle === 3) {
+                capaciteSalle = 100; // Salle 3 : 100 places
+            } else if (numeroSalle === 4) {
+                capaciteSalle = 250; // Salle 4 : 250 places
+            } else {
+                // Si le numéro est invalide
+                capaciteSalle = 0;
+                resultat += "❌ Numéro de salle invalide !\n";
+            }
+
+            resultat += "Capacité totale : " + capaciteSalle + " places\n";
+            resultat += "Billets vendus : " + billetsVendus + "\n";
+
+            // === ÉTAPE 2 : Calculer les places restantes ===
+            // Formule simple : capacité - vendus
+            let placesRestantes = capaciteSalle - billetsVendus;
+            resultat += "Places restantes : " + placesRestantes + "\n\n";
+
+            // === ÉTAPE 3 : Calculer le taux d'occupation en pourcentage ===
+            // Formule : (billets vendus / capacité) × 100
+            let tauxOccupation = (billetsVendus / capaciteSalle) * 100;
+            
+            // toFixed(1) affiche 1 chiffre après la virgule
+            resultat += "Taux d'occupation : " + tauxOccupation.toFixed(1) + "%\n";
+
+            // === ÉTAPE 4 : Déterminer le statut selon le taux ===
+            let statut = ""; // Texte du statut
+            let emoji = ""; // Emoji pour visualiser
+
+            // On utilise if/else pour déterminer le statut
+            if (tauxOccupation < 25) {
+                // Moins de 25% : VIDE
+                statut = "VIDE";
+                emoji = "⚪";
+            } else if (tauxOccupation >= 25 && tauxOccupation < 50) {
+                // Entre 25% et 49% : FAIBLE
+                statut = "FAIBLE";
+                emoji = "🔵";
+            } else if (tauxOccupation >= 50 && tauxOccupation < 75) {
+                // Entre 50% et 74% : MOYEN
+                statut = "MOYEN";
+                emoji = "🟡";
+            } else if (tauxOccupation >= 75 && tauxOccupation < 90) {
+                // Entre 75% et 89% : BON
+                statut = "BON";
+                emoji = "🟢";
+            } else if (tauxOccupation >= 90 && tauxOccupation < 100) {
+                // Entre 90% et 99% : COMPLET
+                statut = "COMPLET";
+                emoji = "🟠";
+            } else if (tauxOccupation === 100) {
+                // Exactement 100% : SOLD OUT
+                statut = "SOLD OUT";
+                emoji = "🔴";
+            } else {
+                statut = "INCONNU";
+                emoji = "❓";
+            }
+
+            resultat += "Statut : " + emoji + " " + statut + "\n\n";
+
+            // === ÉTAPE 5 : Donner un conseil ===
+            if (tauxOccupation < 50) {
+                resultat += "Conseil : Beaucoup de places disponibles\n";
+            } else if (tauxOccupation >= 50 && tauxOccupation < 90) {
+                resultat += "Conseil : Il reste encore des places disponibles\n";
+            } else if (tauxOccupation >= 90 && tauxOccupation < 100) {
+                resultat += "Conseil : Presque complet, dépêchez-vous !\n";
+            } else {
+                resultat += "Conseil : Séance complète, plus de places\n";
+            }
+
+            document.getElementById('output-a').textContent = resultat;
+        }
+
+        // PARTIE B : PROJECTION DES RECETTES
+        function executerPartieB() {
+            let resultat = "";
+
+            // === DONNÉES DE LA SÉANCE ===
+            let numeroSalle = 4;
+            let billetsVendus = 180;
+
+            // Répartition par catégorie (le total doit être égal à billetsVendus)
+            let billetsEnfant = 25;
+            let billetsEtudiant = 60;
+            let billetsAdulte = 80;
+            let billetsSenior = 15;
+
+            // Prix unitaires (on utilise const car ne changent pas)
+            const PRIX_ENFANT = 6.50;
+            const PRIX_ETUDIANT = 8.50;
+            const PRIX_ADULTE = 12.00;
+            const PRIX_SENIOR = 7.50;
+
+            resultat += "=== RAPPORT SALLE " + numeroSalle + " ===\n\n";
+
+            // === ÉTAPE 1 : Déterminer la capacité ===
+            let capaciteSalle = 0;
+            
+            if (numeroSalle === 1) {
+                capaciteSalle = 150;
+            } else if (numeroSalle === 2) {
+                capaciteSalle = 200;
+            } else if (numeroSalle === 3) {
+                capaciteSalle = 100;
+            } else if (numeroSalle === 4) {
+                capaciteSalle = 250;
+            }
+
+            resultat += "Capacité : " + capaciteSalle + " places\n";
+            resultat += "Vendus : " + billetsVendus + " places";
+
+            // Calcul du taux
+            let tauxOccupation = (billetsVendus / capaciteSalle) * 100;
+            resultat += " (" + tauxOccupation.toFixed(0) + "%)\n\n";
+
+            // === ÉTAPE 2 : Calculer les recettes par catégorie ===
+            resultat += "RECETTES PAR CATÉGORIE :\n";
+
+            // Recettes enfants : nombre × prix unitaire
+            let recettesEnfant = billetsEnfant * PRIX_ENFANT;
+            resultat += "Enfants (" + billetsEnfant + ") : " + recettesEnfant.toFixed(2) + "€\n";
+
+            // Recettes étudiants
+            let recettesEtudiant = billetsEtudiant * PRIX_ETUDIANT;
+            resultat += "Étudiants (" + billetsEtudiant + ") : " + recettesEtudiant.toFixed(2) + "€\n";
+
+            // Recettes adultes
+            let recettesAdulte = billetsAdulte * PRIX_ADULTE;
+            resultat += "Adultes (" + billetsAdulte + ") : " + recettesAdulte.toFixed(2) + "€\n";
+
+            // Recettes seniors
+            let recettesSenior = billetsSenior * PRIX_SENIOR;
+            resultat += "Seniors (" + billetsSenior + ") : " + recettesSenior.toFixed(2) + "€\n\n";
+
+            // === ÉTAPE 3 : Total des recettes ===
+            // On additionne toutes les catégories
+            let recettesTotales = recettesEnfant + recettesEtudiant + recettesAdulte + recettesSenior;
+            resultat += "RECETTES TOTALES : " + recettesTotales.toFixed(2) + "€\n";
+
+            // === ÉTAPE 4 : Prix moyen du billet ===
+            // Total des recettes / nombre de billets
+            let prixMoyen = recettesTotales / billetsVendus;
+            resultat += "Prix moyen du billet : " + prixMoyen.toFixed(2) + "€\n\n";
+
+            // === ÉTAPE 5 : Potentiel si sold out ===
+            // Si la salle était pleine à 100% avec uniquement des billets adultes
+            let recettesPotentielles = capaciteSalle * PRIX_ADULTE;
+            
+            resultat += "POTENTIEL :\n";
+            resultat += "Si sold out : " + recettesPotentielles.toFixed(2) + "€\n";
+
+            // === ÉTAPE 6 : Manque à gagner ===
+            // Différence entre potentiel et réalisé
+            let manqueAGagner = recettesPotentielles - recettesTotales;
+            resultat += "Manque à gagner : " + manqueAGagner.toFixed(2) + "€\n";
+
+            document.getElementById('output-b').textContent = resultat;
+        }
+
+        // PARTIE C : ANALYSE JOURNÉE COMPLÈTE
+        function executerPartieC() {
+            let resultat = "";
+
+            // === 4 SÉANCES DE LA JOURNÉE ===
+            // Séance 1 - 10h
+            let seance1_salle = 1;
+            let seance1_vendus = 85;
+
+            // Séance 2 - 14h
+            let seance2_salle = 2;
+            let seance2_vendus = 178;
+
+            // Séance 3 - 17h
+            let seance3_salle = 3;
+            let seance3_vendus = 100;
+
+            // Séance 4 - 20h
+            let seance4_salle = 4;
+            let seance4_vendus = 240;
+
+            let prixMoyenBillet = 10.50; // Estimation globale
+
+            resultat += "=== RAPPORT DE JOURNÉE - SAMEDI ===\n\n";
+
+            // === ÉTAPE 1 : Déterminer capacités ===
+            let capacite1 = 0;
+            if (seance1_salle === 1) { capacite1 = 150; }
+            else if (seance1_salle === 2) { capacite1 = 200; }
+            else if (seance1_salle === 3) { capacite1 = 100; }
+            else if (seance1_salle === 4) { capacite1 = 250; }
+
+            let capacite2 = 0;
+            if (seance2_salle === 1) { capacite2 = 150; }
+            else if (seance2_salle === 2) { capacite2 = 200; }
+            else if (seance2_salle === 3) { capacite2 = 100; }
+            else if (seance2_salle === 4) { capacite2 = 250; }
+
+            let capacite3 = 0;
+            if (seance3_salle === 1) { capacite3 = 150; }
+            else if (seance3_salle === 2) { capacite3 = 200; }
+            else if (seance3_salle === 3) { capacite3 = 100; }
+            else if (seance3_salle === 4) { capacite3 = 250; }
+
+            let capacite4 = 0;
+            if (seance4_salle === 1) { capacite4 = 150; }
+            else if (seance4_salle === 2) { capacite4 = 200; }
+            else if (seance4_salle === 3) { capacite4 = 100; }
+            else if (seance4_salle === 4) { capacite4 = 250; }
+
+            // === ÉTAPE 2 : Calculer taux pour chaque séance ===
+            let taux1 = (seance1_vendus / capacite1) * 100;
+            let taux2 = (seance2_vendus / capacite2) * 100;
+            let taux3 = (seance3_vendus / capacite3) * 100;
+            let taux4 = (seance4_vendus / capacite4) * 100;
+
+            // === ÉTAPE 3 : Afficher les séances ===
+            resultat += "SÉANCES :\n";
+
+            // Séance 1
+            resultat += "10h - Salle " + seance1_salle + " : " + seance1_vendus + "/" + capacite1 + " (" + taux1.toFixed(0) + "%)";
+            if (taux1 < 50) { resultat += " 🔵\n"; }
+            else if (taux1 < 75) { resultat += " 🟡\n"; }
+            else if (taux1 < 100) { resultat += " 🟢\n"; }
+            else { resultat += " 🔴 SOLD OUT\n"; }
+
+            // Séance 2
+            resultat += "14h - Salle " + seance2_salle + " : " + seance2_vendus + "/" + capacite2 + " (" + taux2.toFixed(0) + "%)";
+            if (taux2 < 50) { resultat += " 🔵\n"; }
+            else if (taux2 < 75) { resultat += " 🟡\n"; }
+            else if (taux2 < 100) { resultat += " 🟢\n"; }
+            else { resultat += " 🔴 SOLD OUT\n"; }
+
+            // Séance 3
+            resultat += "17h - Salle " + seance3_salle + " : " + seance3_vendus + "/" + capacite3 + " (" + taux3.toFixed(0) + "%)";
+            if (taux3 < 50) { resultat += " 🔵\n"; }
+            else if (taux3 < 75) { resultat += " 🟡\n"; }
+            else if (taux3 < 100) { resultat += " 🟢\n"; }
+            else { resultat += " 🔴 SOLD OUT\n"; }
+
+            // Séance 4
+            resultat += "20h - Salle " + seance4_salle + " : " + seance4_vendus + "/" + capacite4 + " (" + taux4.toFixed(0) + "%)";
+            if (taux4 < 50) { resultat += " 🔵\n\n"; }
+            else if (taux4 < 75) { resultat += " 🟡\n\n"; }
+            else if (taux4 < 100) { resultat += " 🟢\n\n"; }
+            else { resultat += " 🔴 SOLD OUT\n\n"; }
+
+            // === ÉTAPE 4 : Calculs globaux ===
+            let totalBilletsVendus = seance1_vendus + seance2_vendus + seance3_vendus + seance4_vendus;
+            let capaciteTotale = capacite1 + capacite2 + capacite3 + capacite4;
+            let tauxGlobal = (totalBilletsVendus / capaciteTotale) * 100;
+
+            resultat += "BILAN GLOBAL :\n";
+            resultat += "Total billets vendus : " + totalBilletsVendus + "\n";
+            resultat += "Capacité totale : " + capaciteTotale + " places\n";
+            resultat += "Taux d'occupation : " + tauxGlobal.toFixed(0) + "%\n\n";
+
+            // === ÉTAPE 5 : Recettes ===
+            let recettes = totalBilletsVendus * prixMoyenBillet;
+            resultat += "RECETTES :\n";
+            resultat += totalBilletsVendus + " billets x " + prixMoyenBillet.toFixed(2) + "€ = " + recettes.toFixed(2) + "€\n\n";
+
+            // === ÉTAPE 6 : Meilleure séance (taux max) ===
+            // On compare pour trouver le maximum
+            let meilleurTaux = taux1;
+            let meilleureSeance = "10h Salle 1";
+
+            if (taux2 > meilleurTaux) {
+                meilleurTaux = taux2;
+                meilleureSeance = "14h Salle 2";
+            }
+
+            if (taux3 > meilleurTaux) {
+                meilleurTaux = taux3;
+                meilleureSeance = "17h Salle 3";
+            }
+
+            if (taux4 > meilleurTaux) {
+                meilleurTaux = taux4;
+                meilleureSeance = "20h Salle 4";
+            }
+
+            // === ÉTAPE 7 : Pire séance (taux min) ===
+            let pireTaux = taux1;
+            let pireSeance = "10h Salle 1";
+
+            if (taux2 < pireTaux) {
+                pireTaux = taux2;
+                pireSeance = "14h Salle 2";
+            }
+
+            if (taux3 < pireTaux) {
+                pireTaux = taux3;
+                pireSeance = "17h Salle 3";
+            }
+
+            if (taux4 < pireTaux) {
+                pireTaux = taux4;
+                pireSeance = "20h Salle 4";
+            }
+
+            resultat += "PERFORMANCES :\n";
+            resultat += "🏆 Meilleure séance : " + meilleureSeance + " (" + meilleurTaux.toFixed(0) + "%)\n";
+            resultat += "⚠️  Séance à améliorer : " + pireSeance + " (" + pireTaux.toFixed(0) + "%)\n\n";
+
+            // === ÉTAPE 8 : Statut global ===
+            if (tauxGlobal >= 80) {
+                resultat += "📊 Statut global : 🟢 TRÈS BONNE JOURNÉE\n";
+            } else if (tauxGlobal >= 60) {
+                resultat += "📊 Statut global : 🟡 BONNE JOURNÉE\n";
+            } else if (tauxGlobal >= 40) {
+                resultat += "📊 Statut global : 🟠 JOURNÉE MOYENNE\n";
+            } else {
+                resultat += "📊 Statut global : 🔴 JOURNÉE FAIBLE\n";
+            }
+
+            document.getElementById('output-c').textContent = resultat;
+        }
+    </script>
+</body>
+</html>
