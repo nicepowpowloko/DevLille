@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculatrice Interactive - Cours JavaScript</title>
+    <style>
+      
+        body {
+            
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgb(111, 5, 113);
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #f9f7f7;
+            margin: 0 0 20px 0;
+            font-size: 24px;
+        }
+
+        /* 
+           ÉCRAN DE LA CALCULATRICE
+         */
+        .ecran {
+            background: #021014;
+            color: #ff03b3;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 60px;
+            font-size: 32px;
+            text-align: right;
+            word-wrap: break-word;
+            border: 2px solid rgb(252, 252, 252);
+        }
+
+        /* 
+           GRILLE DE BOUTONS
+         */
+        .boutons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 20px;
+            font-size: 20px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Boutons numériques (gris clair) */
+        .btn-nombre {
+            background: #000000;
+            color: #eef604;
+            border: 2px solid white;
+        }
+
+        .btn-nombre:hover {
+            background: #f903dd;
+            color: rgb(9, 222, 108);
+            
+        }
+
+        /* Boutons opérations (orange) */
+        .btn-operation {
+            background: #01d4f4;
+            color: rgb(21, 21, 21);
+             border: 2px solid rgb(0, 0, 0);
+        }
+
+        .btn-operation:hover {
+            background: #08f08b;
+        }
+
+        /* Bouton égal (vert) */
+        .btn-egal {
+            background: #27ae60;
+            color: white;
+            grid-column: span 2;
+             border: 2px solid rgb(239, 5, 5);
+        }
+
+        .btn-egal:hover {
+            background: #ffffff;
+            color: #f903dd;
+        }
+
+        /* Bouton effacer (rouge) */
+        .btn-effacer {
+            background: #fa1a01;
+            color: white;
+            grid-column: span 2;
+             border: 2px solid rgb(5, 255, 34);
+        }
+
+        .btn-effacer:hover {
+            background: #f2fa05;
+        }
+
+        /* Bouton 0 (prend 2 colonnes) */
+        .btn-zero {
+            grid-column: span 2;
+        }
+
+
+      
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SALOU</h1>
+        
+        <!-- ÉCRAN D'AFFICHAGE -->
+        <div class="ecran" id="ecran">0</div>
+        
+        <!-- GRILLE DE BOUTONS -->
+        <div class="boutons">
+            <!-- Ligne 1: Effacer et opérations -->
+            <button class="btn-effacer" onclick="effacer()">C</button>
+            <button class="btn-operation" onclick="ajouterOperateur('/')">÷</button>
+            <button class="btn-operation" onclick="ajouterOperateur('*')">×</button>
+            
+            <!-- Ligne 2: 7, 8, 9, - -->
+            <button class="btn-nombre" onclick="ajouterNombre('7')">7</button>
+            <button class="btn-nombre" onclick="ajouterNombre('8')">8</button>
+            <button class="btn-nombre" onclick="ajouterNombre('9')">9</button>
+            <button class="btn-operation" onclick="ajouterOperateur('-')">−</button>
+            
+            <!-- Ligne 3: 4, 5, 6, + -->
+            <button class="btn-nombre" onclick="ajouterNombre('4')">4</button>
+            <button class="btn-nombre" onclick="ajouterNombre('5')">5</button>
+            <button class="btn-nombre" onclick="ajouterNombre('6')">6</button>
+            <button class="btn-operation" onclick="ajouterOperateur('+')">+</button>
+            
+            <!-- Ligne 4: 1, 2, 3 -->
+            <button class="btn-nombre" onclick="ajouterNombre('1')">1</button>
+            <button class="btn-nombre" onclick="ajouterNombre('2')">2</button>
+            <button class="btn-nombre" onclick="ajouterNombre('3')">3</button>
+            
+            <!-- Ligne 5: 0, ., = -->
+            <button class="btn-nombre btn-zero" onclick="ajouterNombre('0')">0</button>
+            <button class="btn-nombre" onclick="ajouterNombre('.')">.</button>
+            <button class="btn-egal" onclick="calculer()">=</button>
+        </div>
+
+    </div>
+
+    <script>
+        // ====================================
+        // VARIABLES GLOBALES
+        // ====================================
+        let ecran = document.getElementById('ecran');
+        let calcul = ''; // Stocke l'expression à calculer
+
+        // ====================================
+        // FONCTION 1: AJOUTER UN NOMBRE
+        // ====================================
+        function ajouterNombre(nombre) {
+            // Si l'écran affiche "0" ou une erreur, on remplace
+            if (calcul === '0' || calcul === 'Erreur') {
+                calcul = nombre;
+            } else {
+                // Sinon, on ajoute le nombre à la suite
+                calcul += nombre;
+            }
+            
+            // Mettre à jour l'affichage
+            afficherEcran();
+        }
+
+        // ====================================
+        // FONCTION 2: AJOUTER UN OPÉRATEUR
+        // ====================================
+        function ajouterOperateur(operateur) {
+            // Éviter d'ajouter un opérateur au début
+            if (calcul === '' || calcul === '0') {
+                return;
+            }
+            
+            // Récupérer le dernier caractère
+            let dernierCaractere = calcul[calcul.length - 1];
+            
+            // Si le dernier caractère est déjà un opérateur, on le remplace
+            if (['+', '-', '*', '/'].includes(dernierCaractere)) {
+                calcul = calcul.slice(0, -1) + operateur;
+            } else {
+                // Sinon, on ajoute l'opérateur
+                calcul += operateur;
+            }
+            
+            afficherEcran();
+        }
+
+        // ====================================
+        // FONCTION 3: CALCULER LE RÉSULTAT
+        // ====================================
+        function calculer() {
+            try {
+                // Vérifier si le calcul est vide
+                if (calcul === '' || calcul === '0') {
+                    return;
+                }
+                
+                // Utiliser eval() pour calculer l'expression
+                // Note: eval() peut être dangereux, mais ici c'est sécurisé
+                // car nous contrôlons les entrées
+                let resultat = eval(calcul);
+                
+                // Arrondir à 2 décimales si c'est un nombre décimal
+                if (resultat % 1 !== 0) {
+                    resultat = Math.round(resultat * 100) / 100;
+                }
+                
+                // Afficher le résultat
+                calcul = resultat.toString();
+                afficherEcran();
+                
+            } catch (erreur) {
+                // En cas d'erreur (division par zéro, etc.)
+                calcul = 'Erreur';
+                afficherEcran();
+            }
+        }
+
+        // ====================================
+        // FONCTION 4: EFFACER L'ÉCRAN
+        // ====================================
+        function effacer() {
+            calcul = '0';
+            afficherEcran();
+        }
+
+        // ====================================
+        // FONCTION 5: AFFICHER SUR L'ÉCRAN
+        // ====================================
+        function afficherEcran() {
+            // Afficher le calcul ou "0" si vide
+            ecran.textContent = calcul || '0';
+        }
+
+        // ====================================
+        // BONUS: SUPPORT DU CLAVIER
+        // ====================================
+        document.addEventListener('keydown', function(event) {
+            const touche = event.key;
+            
+            // Chiffres et point
+            if (touche >= '0' && touche <= '9' || touche === '.') {
+                ajouterNombre(touche);
+            }
+            // Opérateurs
+            else if (touche === '+' || touche === '-' || touche === '*' || touche === '/') {
+                ajouterOperateur(touche);
+            }
+            // Entrée = calculer
+            else if (touche === 'Enter' || touche === '=') {
+                calculer();
+            }
+            // Échap ou Suppr = effacer
+            else if (touche === 'Escape' || touche === 'Delete') {
+                effacer();
+            }
+            // Retour arrière = supprimer dernier caractère
+            else if (touche === 'Backspace') {
+                if (calcul.length > 0) {
+                    calcul = calcul.slice(0, -1);
+                    if (calcul === '') calcul = '0';
+                    afficherEcran();
+                }
+            }
+        });
+
+        // ====================================
+        // INITIALISATION
+        // ====================================
+        afficherEcran();
+    </script>
+</body>
+</html>
