@@ -1,6 +1,4 @@
-// ==========================================
-// EXERCICE 2 : CONVERTISSEUR DE TEMPÉRATURE
-// ==========================================
+
 
 function convertirTemperature() {
     // Demander la température
@@ -58,9 +56,9 @@ function convertirTemperature() {
     }
     
     // Afficher le résultat
-    console.log("=== CONVERSION ===");
+    console.log("CONVERSION");
     console.log(temperature + "°" + uniteDepart + " = " + resultat.toFixed(2) + "°" + uniteArrivee);
-    console.log("==================");
+    console.log("");
     
     // Retourner le résultat
     return {

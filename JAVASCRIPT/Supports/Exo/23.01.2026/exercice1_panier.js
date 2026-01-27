@@ -1,13 +1,11 @@
-// ==========================================
-// EXERCICE 1 : GESTIONNAIRE DE PANIER D'ACHAT
-// ==========================================
+
 
 function gererPanier() {
     // Demander le nombre d'articles
     let nbArticles = parseInt(prompt("Combien d'articles voulez-vous acheter ?"));
     
     let totalPanier = 0;
-    let detailPanier = "=== PANIER ===\n";
+    let detailPanier = " PANIER \n";
     
    
     for (let i = 1; i <= nbArticles; i++) {
@@ -43,11 +41,11 @@ function gererPanier() {
     let totalFinal = totalPanier + fraisLivraison;
     
     // Afficher le récapitulatif
-    detailPanier += "---------------\n";
+    detailPanier += "\n";
     detailPanier += "Sous-total : " + totalPanier.toFixed(2) + " €\n";
     detailPanier += "Frais de livraison : " + fraisLivraison.toFixed(2) + " €\n";
     detailPanier += "TOTAL TTC : " + totalFinal.toFixed(2) + " €\n";
-    detailPanier += "===============\n";
+    detailPanier += "\n";
     
     console.log(detailPanier);
     

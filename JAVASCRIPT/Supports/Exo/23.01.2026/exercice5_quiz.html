@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        #quiz-container {
+            background-color: white;
+            padding: 30px;
+          
+        }
+
+        #question {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .choix {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 16px;
+            background-color: #e3f2fd;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .choix:hover {
+            background-color: #f8bf04;
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .correct {
+            background-color: #4CAF50 !important;
+            color: white !important;
+            border-color: #4CAF50 !important;
+        }
+
+        .incorrect {
+            background-color: #f44336 !important;
+            color: white !important;
+            border-color: #f44336 !important;
+        }
+
+        #result {
+            text-align: center;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        #score {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 10px;
+            color: #666;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #cd0a7cf2;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #550cd4;
+        }
+
+        #start-btn {
+            font-size: 20px;
+            padding: 20px 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz</h1>
+    
+    <div id="quiz-container">
+        <div id="start-screen">
+           
+            <button id="start-btn" onclick="demarrerQuiz()">Wikipédia</button>
+        </div>
+
+        <div id="question-screen" style="display: none;">
+            <div id="score">Question <span id="numero-question">1</span>/5</div>
+            <div id="question"></div>
+            <div id="choix-container"></div>
+        </div>
+
+        <div id="result-screen" style="display: none;">
+            <div id="result"></div>
+            <button onclick="location.reload()">Recommencer</button>
+        </div>
+    </div>
+
+   
+    <script src="quiz_simple.js"></script>
+</body>
+</html>

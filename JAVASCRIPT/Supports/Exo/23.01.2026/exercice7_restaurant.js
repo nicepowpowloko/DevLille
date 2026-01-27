@@ -1,6 +1,4 @@
-// ==========================================
-// EXERCICE 7 : GESTIONNAIRE DE RÉSERVATION RESTAURANT
-// ==========================================
+
 
 function reservationRestaurant() {
     // Demander les informations de base
@@ -28,13 +26,13 @@ function reservationRestaurant() {
     }
     
     if (!horairesValides) {
-        console.log("❌ Horaires non disponibles. Services : 12h-14h et 19h-22h");
+        console.log(" Horaires non disponibles. Services : 12h-14h et 19h-22h");
         return null;
     }
     
     // Vérifier la capacité
     if (nbPersonnes > 8) {
-        console.log("❌ Désolé, nous acceptons maximum 8 personnes par réservation");
+        console.log(" Désolé, nous acceptons maximum 8 personnes par réservation");
         return null;
     }
     
@@ -42,7 +40,7 @@ function reservationRestaurant() {
     if (nbPersonnes > 6) {
         let confirmation48h = prompt("Pour plus de 6 personnes, réservation 48h à l'avance. Confirmez-vous ? (oui/non)").toLowerCase();
         if (confirmation48h !== "oui") {
-            console.log("❌ Réservation annulée");
+            console.log(" Réservation annulée");
             return null;
         }
     }
@@ -56,7 +54,7 @@ function reservationRestaurant() {
     }
     
     // Demander les menus pour calculer le prix
-    console.log("\n--- Choix des menus ---");
+    console.log("\nChoix des menus ");
     let prixTotal = 0;
     let detailMenus = "";
     
@@ -109,20 +107,20 @@ function reservationRestaurant() {
     console.log("Nombre de personnes : " + nbPersonnes);
     
     if (aAllergies === "oui") {
-        console.log("⚠️ Allergies signalées : " + listeAllergies);
+        console.log("Allergies signalées : " + listeAllergies);
     }
     
-    console.log("\n--- Détail des menus ---");
+    console.log("\n Détail des menus");
     console.log(detailMenus);
     console.log("PRIX TOTAL ESTIMÉ : " + prixTotal + "€");
-    console.log("====================================");
+    console.log("");
     
     // Message de confirmation
     if (nbPersonnes > 6) {
-        console.log("ℹ️ Grande tablée - Merci de confirmer 48h à l'avance");
+        console.log("ℹGrande tablée - Merci de confirmer 48h à l'avance");
     }
     
-    console.log("\n✅ Réservation confirmée !");
+    console.log("\n Réservation confirmée !");
     console.log("Merci " + nomClient + ", nous vous attendons le " + jour + " à " + heure + "h");
     
     // Retourner toutes les informations

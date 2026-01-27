@@ -74,7 +74,7 @@ function calculerParkingTarif() {
     }
     
     // Afficher le ticket détaillé
-    console.log("=== TICKET DE PARKING ===");
+    console.log("TICKET DE PARKING ");
     console.log("Véhicule : " + typeVehicule);
     console.log("Entrée : " + heureEntree + "h");
     console.log("Sortie : " + heureSortie + "h");
@@ -92,7 +92,7 @@ function calculerParkingTarif() {
     }
     
     console.log("TOTAL À PAYER : " + prixFinal.toFixed(2) + " €");
-    console.log("=========================");
+    console.log("");
     
     // Retourner le résultat
     return {

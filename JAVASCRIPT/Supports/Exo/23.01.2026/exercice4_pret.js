@@ -1,6 +1,4 @@
-// ==========================================
-// EXERCICE 4 : SIMULATEUR DE PRÊT BANCAIRE
-// ==========================================
+
 
 function calculerPret() {
     // Demander les informations
@@ -20,19 +18,19 @@ function calculerPret() {
     let totalInterets = coutTotal - capital;
     
     // Afficher les informations générales
-    console.log("=== SIMULATION DE PRÊT ===");
+    console.log(" SIMULATION DE PRÊT");
     console.log("Capital emprunté : " + capital.toFixed(2) + " €");
     console.log("Durée : " + dureeAnnees + " ans (" + nbMois + " mois)");
     console.log("Taux annuel : " + tauxAnnuel + " %");
     console.log("Mensualité : " + mensualite.toFixed(2) + " €");
     console.log("Coût total du crédit : " + coutTotal.toFixed(2) + " €");
     console.log("Total des intérêts : " + totalInterets.toFixed(2) + " €");
-    console.log("==========================\n");
+    console.log("\n");
     
     // Tableau d'amortissement pour les 12 premiers mois
-    console.log("=== TABLEAU D'AMORTISSEMENT (12 PREMIERS MOIS) ===");
+    console.log("TABLEAU D'AMORTISSEMENT (12 PREMIERS MOIS)");
     console.log("Mois | Mensualité | Intérêts | Capital | Restant dû");
-    console.log("-----------------------------------------------------");
+    console.log("");
     
     let capitalRestant = capital;
     
@@ -56,7 +54,7 @@ function calculerPret() {
         );
     }
     
-    console.log("===================================================\n");
+    console.log("\n");
     
     // Retourner toutes les informations
     return {

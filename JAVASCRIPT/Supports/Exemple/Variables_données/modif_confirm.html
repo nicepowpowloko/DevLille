@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>modif-confirm</title>
+</head>
+<body>
+    <h1>Formulaire médical</h1>
+    <button onclick="exemple()">Poser la question</button>
+
+    <script>
+    
+function demanderAllergiePersonnalise() {
+    
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    `;
+
+    
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        min-width: 300px;
+    `;
+
+   
+    dialog.innerHTML = `
+        <h2 style="margin: 0 0 20px 0; color: #333;">Question médicale</h2>
+        <p style="margin: 0 0 30px 0; font-size: 18px; color: #555;">Êtes-vous allergique ?</p>
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button id="btnOui" style="
+                padding: 12px 30px;
+                background: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+                cursor: pointer;
+                font-weight: bold;
+            ">Oui</button>
+            <button id="btnNon" style="
+                padding: 12px 30px;
+                background: #f44336;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+                cursor: pointer;
+                font-weight: bold;
+            ">Non</button>
+        </div>
+    `;
+
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+
+   
+    return new Promise((resolve) => {
+        document.getElementById('btnOui').onclick = () => {
+            document.body.removeChild(overlay);
+            resolve(true);
+        };
+
+        document.getElementById('btnNon').onclick = () => {
+            document.body.removeChild(overlay);
+            resolve(false);
+        };
+    });
+}
+
+
+async function exemple() {
+    const estAllergique = await demanderAllergiePersonnalise();
+    
+    if (estAllergique) {
+        console.log("L'utilisateur est allergique");
+        alert("Vous avez indiqué être allergique.");
+    } else {
+        console.log("L'utilisateur n'est pas allergique");
+        alert("Vous avez indiqué ne pas être allergique.");
+    }
+}
+
+
+exemple();
+    </script>
+</body>
+</html>
