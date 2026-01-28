@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculatrice</title>
+    <style>
+        #ecran {
+            background-color: #222;
+            color: #0f0;
+            font-size: 32px;
+            text-align: right;
+            padding: 15px;
+            margin-bottom: 15px;
+            min-height: 50px;
+        }
+        button {
+            width: 70px;
+            height: 70px;
+            font-size: 24px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="ecran">0</div>
+    
+    <div>
+        <button id="btn7">7</button>
+        <button id="btn8">8</button>
+        <button id="btn9">9</button>
+        <button id="btn/">/</button>
+    </div>
+    <div>
+        <button id="btn4">4</button>
+        <button id="btn5">5</button>
+        <button id="btn6">6</button>
+        <button id="btn*">*</button>
+    </div>
+    <div>
+        <button id="btn1">1</button>
+        <button id="btn2">2</button>
+        <button id="btn3">3</button>
+        <button id="btn-">-</button>
+    </div>
+    <div>
+        <button id="btnC">C</button>
+        <button id="btn0">0</button>
+        <button id="btnEgal">=</button>
+        <button id="btn+">+</button>
+    </div>
+
+    <script>
+        // Variables pour stocker
+        let valeur1 = "";           
+        let valeur2 = "";           
+        let operateur = "";         
+        let ecranActuel = "";       
+
+        // BOUCLE : Tous les chiffres de 0 à 9
+        for (let i = 0; i <= 9; i++) {
+            document.getElementById("btn" + i).onclick = function() {
+                ecranActuel += this.innerHTML;  
+                document.getElementById("ecran").innerHTML = ecranActuel;
+            };
+        }
+
+        let operateurs = ["+", "-", "*", "/"];
+        for (let i = 0; i < operateurs.length; i++) {
+            document.getElementById("btn" + operateurs[i]).onclick = function() {
+                
+                valeur1 = ecranActuel;
+                
+               
+                operateur = this.innerHTML;
+                
+                
+                ecranActuel = "";
+                
+                console.log("Valeur 1 : " + valeur1);
+                console.log("Opérateur : " + operateur);
+            };
+        }
+
+      
+        document.getElementById("btnEgal").onclick = function() {
+           
+            valeur2 = ecranActuel;
+            
+            console.log("Valeur 2 : " + valeur2);
+            
+            
+            let nombre1 = parseFloat(valeur1);
+            let nombre2 = parseFloat(valeur2);
+            let resultat = 0;
+            
+            
+            if (operateur === "+") {
+                resultat = nombre1 + nombre2;
+            } else if (operateur === "-") {
+                resultat = nombre1 - nombre2;
+            } else if (operateur === "*") {
+                resultat = nombre1 * nombre2;
+            } else if (operateur === "/") {
+                resultat = nombre1 / nombre2;
+            }
+            
+            console.log("Résultat : " + resultat);
+            
+            
+            document.getElementById("ecran").innerHTML = resultat;
+            
+            
+            ecranActuel = resultat.toString();
+            valeur1 = "";
+            valeur2 = "";
+            operateur = "";
+        };
+
+        
+        document.getElementById("btnC").onclick = function() {
+            valeur1 = "";
+            valeur2 = "";
+            operateur = "";
+            ecranActuel = "";
+            document.getElementById("ecran").innerHTML = "0";
+        };
+    </script>
+</body>
+</html>
