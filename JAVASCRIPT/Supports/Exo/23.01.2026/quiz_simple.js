@@ -9,7 +9,7 @@ let questions = [
     },
     {
         question: "Combien font 7 x 8 ?",
-        choixA: "54",
+        choixA: "58",
         choixB: "56",
         choixC: "64",
         reponse: "B"
