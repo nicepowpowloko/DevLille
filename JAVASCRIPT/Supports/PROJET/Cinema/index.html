@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet Cinema</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: white;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .section {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #fa709a;
+            border-left: 4px solid #fa709a;
+            padding-left: 10px;
+            margin-top: 0;
+        }
+        .fichiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            display: block;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-left: 3px solid #007bff;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        a:hover {
+            background-color: #e9ecef;
+            padding-left: 20px;
+        }
+        .dossier {
+            background-color: #e7f3ff;
+            border-left-color: #0066cc;
+            font-weight: bold;
+        }
+        .pdf {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        .retour {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .retour a {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 5px;
+            display: inline-block;
+            border: none;
+        }
+        .retour a:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Projet Cinema</h1>
+
+    <div class="section">
+        <h2>Documentation</h2>
+        <div class="fichiers">
+            <a href="Mini_Projet_Cinéma.pdf" class="pdf">Mini Projet Cinema (PDF)</a>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Dossiers</h2>
+        <div class="fichiers">
+            <a href="Corriges/" class="dossier">Corriges</a>
+        </div>
+    </div>
+
+    <div class="retour">
+        <a href="/Devlille/JAVASCRIPT/Supports/index.html">Retour Supports</a>
+    </div>
+</body>
+</html>
