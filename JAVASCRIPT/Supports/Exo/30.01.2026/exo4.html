@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>École Musique</title>
+    
+    <style>
+
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+           
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #df05d1;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #06ec09;
+            color: black;
+            border: 2px solid black;
+        }
+
+        .eleve {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #f70202;
+        }
+
+        h2 {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>École de Musique</h1>
+
+        <button id="btnTous">Tous</button>
+        <button id="btnPiano">Piano</button>
+        <button id="btnDebutant">Débutant</button>
+        <button id="btnHeures">Plus de 50h</button>
+        <button id="btnAge">15 ans et +</button>
+
+       
+        <div id="resultats"></div>
+    </div>
+
+    <script>
+        // Les élèves
+        const eleves = [
+            { nom: "Tom", age: 12, instrument: "Piano", niveau: "Débutant", heures: 30 },
+            { nom: "Bob", age: 16, instrument: "Guitare", niveau: "Intermédiaire", heures: 65 },
+            { nom: "Antoine", age: 14, instrument: "Piano", niveau: "Avancé", heures: 80 },
+            { nom: "Lou-Ann", age: 10, instrument: "Violon", niveau: "Débutant", heures: 20 },
+            { nom: "Amina", age: 17, instrument: "Piano", niveau: "Intermédiaire", heures: 55 },
+            { nom: "José", age: 13, instrument: "Batterie", niveau: "Débutant", heures: 15 },
+            { nom: "Gabriel", age: 18, instrument: "Guitare", niveau: "Avancé", heures: 100 },
+            { nom: "Marielle", age: 11, instrument: "Piano", niveau: "Débutant", heures: 25 }
+        ];
+
+        const resultats = document.getElementById('resultats');
+
+
+        // On affiche une liste d'élèves
+        function afficher(liste, titre) {
+            resultats.innerHTML = `<h2>${titre}</h2>`;
+            
+            liste.forEach(eleve => {
+                resultats.innerHTML += `
+                    <div class="eleve">
+                        <strong>${eleve.nom}</strong> - ${eleve.age} ans<br>
+                        ${eleve.instrument} - ${eleve.niveau} - ${eleve.heures}h
+                    </div>
+                `;
+            });
+        }
+
+
+        // BOUTON TOUS
+        document.getElementById('btnTous').addEventListener('click', function() {
+            afficher(eleves, 'Tous les élèves');
+        });
+
+
+        // BOUTON PIANO
+        document.getElementById('btnPiano').addEventListener('click', function() {
+            // joueur de piono
+            const piano = eleves.filter(e => e.instrument === 'Piano');
+            afficher(piano, 'Élèves jouant du Piano');
+        });
+
+
+        // débutant
+        document.getElementById('btnDebutant').addEventListener('click', function() {
+            // on garde les débutants
+            const debutant = eleves.filter(e => e.niveau === 'Débutant');
+            afficher(debutant, 'Élèves débutants');
+        });
+
+
+        // 50H
+        document.getElementById('btnHeures').addEventListener('click', function() {
+            // On garde seulement ceux qui ont plus de 50h
+            const heures = eleves.filter(e => e.heures > 50);
+            afficher(heures, 'Élèves avec plus de 50h');
+        });
+
+
+        // 15 ans et plus
+        document.getElementById('btnAge').addEventListener('click', function() {
+            // On garde seulement ceux de 15 ans et plus
+            const age = eleves.filter(e => e.age >= 15);
+            afficher(age, 'Élèves de 15 ans et plus');
+        });
+
+
+        // J'affiche 
+        afficher(eleves, 'Tous les élèves');
+    </script>
+</body>
+</html>

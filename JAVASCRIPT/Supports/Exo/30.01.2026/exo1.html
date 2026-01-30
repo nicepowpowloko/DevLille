@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste de Produits</title>
+    
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: rgb(247, 5, 227);
+            color: rgb(18, 17, 17);
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: rgb(110, 4, 46);
+            color: white;
+        }
+
+        ul {
+            list-style: none;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        li {
+            background-color: rgb(182, 181, 181);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Liste des Produits</h1>
+    
+    <button id="btnCharger">Charger les produits</button>
+    
+    <!-- Liste -->
+    <ul id="listeProduits"></ul>
+
+   
+    <script>
+        // récupére le bouton
+        const btnCharger = document.getElementById('btnCharger');
+
+        // récupére la liste
+        const listeProduits = document.getElementById('listeProduits');
+
+
+        btnCharger.addEventListener('click', function() {
+            
+            // chargement fichier JSON fetch
+
+//  JSON = Un fichier texte qui contient des données (comme une mini base de données)
+
+//Pourquoi c'est mieux ?
+
+//Séparation code / données
+//Le JavaScript = la logique
+//Le JSON = les données
+//C'est plus propre et organisé
+
+//Facile à modifier
+//On peux changer les produits sans toucher au code JavaScript
+
+//Simulation d'une vraie API
+//Dans la vraie vie, les données viennent d'un serveur (API)
+//Le JSON simule cette situation
+//Plus tard, on remplaceras produits.json par une vraie URL d'API
+//JSON fonctionne avec tous les langages (PHP, Python, Java...)
+
+            fetch('produits.json')
+                .then(response => response.json())  // transforme en JavaScript
+        // then = Quand c'est fini faire ça
+                .then(produits => {                 // reçois les produits
+
+//C'est comme une lettre:
+
+//fetch = On reçois une enveloppe fermée
+//response = L'enveloppe (On l'as mais on ne peux pas lire)
+//response.json() = On ouvres l'enveloppe
+//produits = On lis le contenu de la lettre                    
+                    
+                    // vide liste
+                    listeProduits.innerHTML = '';
+                    
+                    // des produit
+                    produits.forEach(produit => {
+                        
+                        //  <li>
+                        const li = document.createElement('li');
+                        
+                        // contenu
+                        li.innerHTML = `
+                            <strong>${produit.nom}</strong><br>
+                            Prix : ${produit.prix} €<br>
+                            Stock : ${produit.stock}
+                        `;
+        // li.innerHTML = "Metttre le code HTML à l'intérieur de l'élément"
+    //C'est comme construire:
+                //createElement('li') = On fabriques une brique 
+                //innerHTML = On décores la brique 
+                //appendChild = On poses la brique sur le mur
+                        
+                        // Si le stock est inférieur à 10
+                        if (produit.stock < 10) {
+                            li.innerHTML += '<br> Stock faible';
+                            li.style.color = 'red';
+                        }
+                        
+                        // J'ajoute <li> dans la liste
+                        listeProduits.appendChild(li);
+                    });
+                });
+        });
+    </script>
+</body>
+</html>

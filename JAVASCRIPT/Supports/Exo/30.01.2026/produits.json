@@ -1,0 +1,26 @@
+
+
+
+
+[
+    {
+        "nom": "Ordinateur",
+        "prix": 899,
+        "stock": 15
+    },
+    {
+        "nom": "Souris",
+        "prix": 29,
+        "stock": 5
+    },
+    {
+        "nom": "Clavier",
+        "prix": 149,
+        "stock": 3
+    },
+    {
+        "nom": "Écran",
+        "prix": 299,
+        "stock": 20
+    }
+]

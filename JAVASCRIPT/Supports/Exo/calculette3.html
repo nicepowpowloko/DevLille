@@ -48,51 +48,92 @@
         <button id="btnEgal">=</button>
         <button id="btn+">+</button>
     </div>
-
     <script>
-        // Variables pour stocker
+        // Variables stocker
         let valeur1 = "";           
         let valeur2 = "";           
         let operateur = "";         
         let ecranActuel = "";       
-
-        // BOUCLE : Tous les chiffres de 0 à 9
+        
+        // BOUCLE chiffres de 0 à 9
         for (let i = 0; i <= 9; i++) {
             document.getElementById("btn" + i).onclick = function() {
                 ecranActuel += this.innerHTML;  
                 document.getElementById("ecran").innerHTML = ecranActuel;
             };
         }
-
+        
+        // BOUCLE opérateurs
         let operateurs = ["+", "-", "*", "/"];
         for (let i = 0; i < operateurs.length; i++) {
             document.getElementById("btn" + operateurs[i]).onclick = function() {
+                // déjà un opérateur et des valeurs, calcul
+                if (valeur1 !== "" && ecranActuel !== "" && operateur !== "") {
+                    valeur2 = ecranActuel;
+                    let nombre1 = parseFloat(valeur1);
+                    let nombre2 = parseFloat(valeur2);
+                    let resultat = calculer(nombre1, nombre2, operateur);
+                    
+                    document.getElementById("ecran").innerHTML = resultat;
+                    valeur1 = resultat.toString();
+                    ecranActuel = "";
+                } else {
+                    // Sinon on stocke première valeur
+                    valeur1 = ecranActuel;
+                    ecranActuel = "";
+                }
                 
-                valeur1 = ecranActuel;
-                
-               
+                // Stock nouvo opérateur
                 operateur = this.innerHTML;
-                
-                
-                ecranActuel = "";
                 
                 console.log("Valeur 1 : " + valeur1);
                 console.log("Opérateur : " + operateur);
             };
         }
-
       
+        // Bouton ÉGAL
         document.getElementById("btnEgal").onclick = function() {
-           
+            // remplissage
+            if (valeur1 === "" || ecranActuel === "" || operateur === "") {
+                console.log("Opération incomplète");
+                return;
+            }
+            
             valeur2 = ecranActuel;
             
             console.log("Valeur 2 : " + valeur2);
             
-            
+            // Conversion en nombres
             let nombre1 = parseFloat(valeur1);
             let nombre2 = parseFloat(valeur2);
-            let resultat = 0;
             
+            // Calcul
+            let resultat = calculer(nombre1, nombre2, operateur);
+            
+            console.log("Résultat : " + resultat);
+            
+            // Affiche résultat
+            document.getElementById("ecran").innerHTML = resultat;
+            
+            // Retour  nouveau calcul
+            ecranActuel = resultat.toString();
+            valeur1 = "";
+            valeur2 = "";
+            operateur = "";
+        };
+        
+        // Bouton CLEAR
+        document.getElementById("btnC").onclick = function() {
+            valeur1 = "";
+            valeur2 = "";
+            operateur = "";
+            ecranActuel = "";
+            document.getElementById("ecran").innerHTML = "0";
+        };
+        
+        // Fonction pour calculer (évite la répétition de code)
+        function calculer(nombre1, nombre2, operateur) {
+            let resultat = 0;
             
             if (operateur === "+") {
                 resultat = nombre1 + nombre2;
@@ -101,29 +142,15 @@
             } else if (operateur === "*") {
                 resultat = nombre1 * nombre2;
             } else if (operateur === "/") {
+                // Protection division par zéro
+                if (nombre2 === 0) {
+                    return "Erreur";
+                }
                 resultat = nombre1 / nombre2;
             }
             
-            console.log("Résultat : " + resultat);
-            
-            
-            document.getElementById("ecran").innerHTML = resultat;
-            
-            
-            ecranActuel = resultat.toString();
-            valeur1 = "";
-            valeur2 = "";
-            operateur = "";
-        };
-
-        
-        document.getElementById("btnC").onclick = function() {
-            valeur1 = "";
-            valeur2 = "";
-            operateur = "";
-            ecranActuel = "";
-            document.getElementById("ecran").innerHTML = "0";
-        };
+            return resultat;
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion Notes</title>
+    
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #resultats {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .eleve {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .stats {
+            background-color: #ffffcc;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Notes</h1>
+    
+    <button id="btnCalculer">Calculer les notes</button>
+    
+    <div id="resultats"></div>
+
+    <script>
+        // Mes élèves et leurs notes
+        const eleves = [
+            { nom: "Salaheddine", notes: [15, 18, 16, 17, 19] },
+            { nom: "Redouane", notes: [12, 10, 13, 11, 14] },
+            { nom: "Ameni", notes: [6, 9, 7, 4, 5] },
+            { nom: "Mathis", notes: [17, 19, 18, 20, 18] },
+            { nom: "Émile", notes: [14, 15, 13, 16, 14] }
+        ];
+
+        // Quand je clique
+        document.getElementById('btnCalculer').addEventListener('click', function() {
+            
+            const resultats = document.getElementById('resultats');
+            resultats.innerHTML = '';  // Je vide
+
+            let totalMoyennes = 0;
+            let meilleurEleve = '';
+            let meilleureMoyenne = 0;
+            let nombreTresBien = 0;
+
+            // chaque éléve
+            eleves.forEach(eleve => {
+
+                // 1. ici la moyenne
+                let somme = 0;
+                eleve.notes.forEach(note => {
+                    somme += note;  // Addition
+                });
+                let moyenne = (somme / eleve.notes.length).toFixed(2);
+
+                // 2. ici la meilleure note
+                let meilleure = Math.max(...eleve.notes);
+
+                // 3. ici la moins bonne note
+                let moinsGonne = Math.min(...eleve.notes);
+
+                // 4. ici la mention
+                let mention = '';
+                if (moyenne >= 16) mention = 'Très bien';
+                else if (moyenne >= 14) mention = 'Bien';
+                else if (moyenne >= 12) mention = 'Assez bien';
+                else if (moyenne >= 10) mention = 'Passable';
+                else mention = 'Insuffisant';
+
+                // ici le nombre d'élèves avec "Très bien"
+                if (moyenne >= 16) nombreTresBien++;
+
+                // ici les statistiques de la classe
+                totalMoyennes += parseFloat(moyenne);
+                if (parseFloat(moyenne) > meilleureMoyenne) {
+                    meilleureMoyenne = parseFloat(moyenne);
+                    meilleurEleve = eleve.nom;
+                }
+
+                // ici j'affiche les résultats de l'élève
+                resultats.innerHTML += `
+                    <div class="eleve">
+                        <h3>${eleve.nom}</h3>
+                        <p>Moyenne : ${moyenne} / 20</p>
+                        <p>Meilleure note : ${meilleure} / 20</p>
+                        <p>Moins bonne note : ${moinsGonne} / 20</p>
+                        <p><strong>${mention}</strong></p>
+                    </div>
+                `;
+            });
+
+            // ici j'affiche les statistiques de la classe
+            let moyenneClasse = (totalMoyennes / eleves.length).toFixed(2);
+
+            resultats.innerHTML += `
+                <div class="stats">
+                    <h2>Statistiques</h2>
+                    <p><strong>Moyenne de la classe :</strong> ${moyenneClasse} / 20</p>
+                    <p><strong>Meilleur élève :</strong> ${meilleurEleve} (${meilleureMoyenne})</p>
+                    <p><strong>Élèves avec "Très bien" :</strong> ${nombreTresBien}</p>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>

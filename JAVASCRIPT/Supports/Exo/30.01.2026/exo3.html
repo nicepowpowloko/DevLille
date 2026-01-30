@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulaire de Présentation</title>
+    
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+        
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #9901c3;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #edf105;
+            color: black;
+        }
+
+        #resultat {
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+            display: none;
+        }
+
+        .succes {
+            background-color: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .erreur {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>F.Présentation</h1>
+
+        <label>Prénom :</label>
+        <input type="text" id="prenom" placeholder="Entrez votre prénom">
+
+        <label>Âge :</label>
+        <input type="number" id="age" placeholder="Entrez votre âge">
+
+        <label>Ville :</label>
+        <input type="text" id="ville" placeholder="Entrez votre ville">
+
+        
+        <button type="button" id="btnAfficher">Afficher</button>
+
+       
+        <p id="resultat"></p>
+    </div>
+
+    <script>
+        // On récupére les getElementById
+        const prenom = document.getElementById('prenom');
+        const age = document.getElementById('age');
+        const ville = document.getElementById('ville');
+        const btnAfficher = document.getElementById('btnAfficher');
+        const resultat = document.getElementById('resultat');
+
+
+        
+        btnAfficher.addEventListener('click', function() {
+
+            // On récupère les valeurs
+            const prenomValeur = prenom.value
+            const ageValeur = age.value;
+            const villeValeur = ville.value;
+
+
+            // On valide
+            if (prenomValeur === '' || ageValeur === '' || villeValeur === '') {
+                resultat.textContent = 'Veuillez remplir tous les champs !';
+                resultat.className = 'erreur';
+                resultat.style.display = 'block';
+                return;
+            }
+
+
+            // On vérifie l'âge
+            if (ageValeur < 20 || ageValeur > 40) {
+                resultat.textContent = ' Âge invalide !';
+                resultat.className = 'erreur';
+                resultat.style.display = 'block';
+                return;
+            }
+
+
+            // on affiche le résultat
+            resultat.textContent = `Je m'appelle ${prenomValeur}, j'ai ${ageValeur} ans et j'habite à ${villeValeur}.`;
+            resultat.className = 'succes';
+            resultat.style.display = 'block';
+
+
+            // on vide les champs
+            prenom.value = '';
+            age.value = '';
+            ville.value = '';
+        });
+    </script>
+</body>
+</html>
