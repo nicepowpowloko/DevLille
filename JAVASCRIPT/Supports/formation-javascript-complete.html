@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formation JavaScript Complète - 15 Modules</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
+<style>
         :root {
             --primary: #f7eb02;
             --secondary: #004E89;
@@ -49,7 +49,7 @@
             margin: 0 auto;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             padding: 0 1rem;
             gap: 1rem;
             position: relative;
@@ -82,6 +82,7 @@
             border: none;
             cursor: pointer;
             padding: 0.5rem;
+            z-index: 1001;
         }
 
         .menu-toggle span {
@@ -179,19 +180,13 @@
             border-left-color: var(--primary);
         }
 
-        /* ========== HERO SECTION ========== */
+        /* Hero Section */
         .hero {
             background: linear-gradient(135deg, #161616 10%, #f0ede9 60%);
             color: rgb(21, 21, 21);
             padding: 3rem 1.5rem;
             text-align: center;
             margin-bottom: 2rem;
-        }
-
-        .hero-logo {
-            max-width: 200px;
-            height: auto;
-            margin-bottom: 1rem;
         }
 
         .hero h1 {
@@ -210,7 +205,7 @@
             opacity: 0.95;
         }
 
-        /* ========== MAIN CONTENT ========== */
+        /* Main Content */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -358,7 +353,6 @@
             border-left: 4px solid var(--warning);
         }
 
-        /* Demo Output */
         .demo-output {
             background: white;
             border: 3px solid var(--primary);
@@ -379,8 +373,6 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'Syne', sans-serif;
-            width: 100%;
-            max-width: 300px;
         }
 
         .demo-button:hover {
@@ -389,7 +381,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -421,7 +412,6 @@
             background: #f8f9fa;
         }
 
-        /* Welcome Screen */
         #welcome {
             text-align: center;
             padding: 2rem 1rem;
@@ -469,7 +459,6 @@
             font-size: clamp(0.9rem, 2vw, 1rem);
         }
 
-        /* Footer */
         footer {
             background: var(--conseil);
             color: white;
@@ -483,7 +472,6 @@
             margin: 0.5rem 0;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 10px;
             height: 10px;
@@ -502,14 +490,8 @@
             background: var(--secondary);
         }
 
-        /* ========== RESPONSIVE MEDIA QUERIES ========== */
-
-        /* Tablettes (768px et moins) */
+        /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
-            .nav-container {
-                padding: 0 1rem;
-            }
-
             .menu-toggle {
                 display: flex;
             }
@@ -563,11 +545,6 @@
                 font-size: 0.85rem;
             }
 
-            .dropdown-content a:hover {
-                padding-left: 3rem;
-            }
-
-            /* Overlay pour fermer le menu */
             .menu-overlay {
                 display: none;
                 position: fixed;
@@ -583,147 +560,26 @@
                 display: block;
             }
 
-            .hero {
-                padding: 2rem 1rem;
-            }
-
             .module {
                 padding: 1rem;
-                border-radius: 10px;
             }
 
             .module-grid {
                 grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .concept, .example, .exercise, .note, .warning {
-                padding: 0.8rem;
-            }
-
-            ul, ol {
-                margin-left: 1.2rem;
-            }
-
-            table {
-                font-size: 0.85rem;
-            }
-
-            th, td {
-                padding: 0.5rem;
             }
         }
 
-        /* Petits mobiles (480px et moins) */
         @media (max-width: 480px) {
             .container {
                 padding: 0.5rem;
             }
 
-            .logo {
-                font-size: 1.2rem;
-            }
-
-            .hero {
-                padding: 1.5rem 0.5rem;
-            }
-
             .module {
                 padding: 0.8rem;
-                margin-bottom: 1rem;
-            }
-
-            .module h2 {
-                font-size: 1.5rem;
-            }
-
-            .module h3 {
-                font-size: 1.2rem;
-            }
-
-            .module h4 {
-                font-size: 1.1rem;
-            }
-
-            .example, .concept, .exercise {
-                padding: 0.6rem;
-                border-radius: 8px;
             }
 
             pre {
                 font-size: 0.75rem;
-            }
-
-            code {
-                font-size: 0.75rem;
-                padding: 0.15rem 0.3rem;
-            }
-
-            .demo-button {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .module-card {
-                padding: 1rem;
-            }
-
-            footer {
-                padding: 1.5rem 0.5rem;
-            }
-
-            table {
-                font-size: 0.75rem;
-            }
-
-            th, td {
-                padding: 0.4rem;
-            }
-        }
-
-        /* Grands écrans (1200px et plus) */
-        @media (min-width: 1200px) {
-            .container {
-                padding: 2rem;
-            }
-
-            .module {
-                padding: 3rem;
-            }
-
-            .nav-link {
-                font-size: 1rem;
-            }
-        }
-
-        /* Orientation paysage sur mobile */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .hero {
-                padding: 1rem;
-            }
-
-            .hero h1 {
-                font-size: 1.5rem;
-            }
-
-            .hero p {
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Print styles */
-        @media print {
-            nav, footer, .demo-button, .menu-toggle {
-                display: none;
-            }
-
-            .module {
-                page-break-inside: avoid;
-                box-shadow: none;
-            }
-
-            body {
-                background: white;
             }
         }
     </style>
@@ -731,7 +587,7 @@
 <body>
     <nav>
         <div class="nav-container">
-            <a href="#" class="logo" onclick="showModule('welcome')"></a>
+            <a href="#" class="logo" onclick="showModule('welcome'); return false;"></a>
             
             <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
                 <span></span>
@@ -743,52 +599,52 @@
                 <li class="nav-item">
                     <a href="#" class="nav-link">Fondamentaux ▼</a>
                     <div class="dropdown-content">
-                        <a href="#" onclick="showModule('module1')">Module 1: Variables & Types</a>
-                        <a href="#" onclick="showModule('module2')">Module 2: Opérateurs</a>
-                        <a href="#" onclick="showModule('module3')">Module 3: Conditions</a>
-                        <a href="#" onclick="showModule('module4')">Module 4: Boucles</a>
+                        <a href="#" onclick="showModule('module1'); return false;">Module 1: Variables & Types</a>
+                        <a href="#" onclick="showModule('module2'); return false;">Module 2: Opérateurs</a>
+                        <a href="#" onclick="showModule('module3'); return false;">Module 3: Conditions</a>
+                        <a href="#" onclick="showModule('module4'); return false;">Module 4: Boucles</a>
                     </div>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">Fonctions & Arrays ▼</a>
                     <div class="dropdown-content">
-                        <a href="#" onclick="showModule('module5')">Module 5: Fonctions</a>
-                        <a href="#" onclick="showModule('module6')">Module 6: Tableaux (Arrays)</a>
+                        <a href="#" onclick="showModule('module5'); return false;">Module 5: Fonctions</a>
+                        <a href="#" onclick="showModule('module6'); return false;">Module 6: Tableaux (Arrays)</a>
                     </div>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">Objets & DOM ▼</a>
                     <div class="dropdown-content">
-                        <a href="#" onclick="showModule('module7')">Module 7: Objets</a>
-                        <a href="#" onclick="showModule('module8')">Module 8: DOM Manipulation</a>
-                        <a href="#" onclick="showModule('module9')">Module 9: Événements</a>
+                        <a href="#" onclick="showModule('module7'); return false;">Module 7: Objets</a>
+                        <a href="#" onclick="showModule('module8'); return false;">Module 8: DOM Manipulation</a>
+                        <a href="#" onclick="showModule('module9'); return false;">Module 9: Événements</a>
                     </div>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">Avancé ▼</a>
                     <div class="dropdown-content">
-                        <a href="#" onclick="showModule('module10')">Module 10: Asynchrone</a>
-                        <a href="#" onclick="showModule('module11')">Module 11: APIs & Fetch</a>
-                        <a href="#" onclick="showModule('module12')">Module 12: Gestion Erreurs</a>
+                        <a href="#" onclick="showModule('module10'); return false;">Module 10: Asynchrone</a>
+                        <a href="#" onclick="showModule('module11'); return false;">Module 11: APIs & Fetch</a>
+                        <a href="#" onclick="showModule('module12'); return false;">Module 12: Gestion Erreurs</a>
                     </div>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">ES6+ ▼</a>
                     <div class="dropdown-content">
-                        <a href="#" onclick="showModule('module13')">Module 13: ES6+ Classes</a>
-                        <a href="#" onclick="showModule('module14')">Module 14: ES6+ Features</a>
-                        <a href="#" onclick="showModule('module15')">Module 15: Storage & JSON</a>
+                        <a href="#" onclick="showModule('module13'); return false;">Module 13: ES6+ Classes</a>
+                        <a href="#" onclick="showModule('module14'); return false;">Module 14: ES6+ Features</a>
+                        <a href="#" onclick="showModule('module15'); return false;">Module 15: Modules</a>
                     </div>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <!-- Overlay pour fermer le menu mobile -->
     <div class="menu-overlay" id="menuOverlay"></div>
 
     <div class="hero">
-        <h1> JAVASCRIPT</h1>
+         <img src="./IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil" class="hero-logo">
+        <h1>JAVASCRIPT</h1>
         <p>JavaScript de A à Z avec 15 modules et exercices pratiques.</p>
     </div>
 
@@ -797,9 +653,9 @@
         <div id="welcome" class="module active">
             <h2>DWWM Supports JAVASCRIPT</h2>
             <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto;">
-                Ces supports couvrent tous les aspects du JavaScript moderne, des bases aux concepts avancés ES6+. 
-                <br><br>
-                Chaque catégorie contient des modules progressifs avec exemples et exercices.
+                Ces supports ouvrent tous les aspects du JavaScript moderne, des bases aux concepts avancés ES6+. 
+                <br>
+                Chaque catégorie contient des modules progressifs.
             </p>
             
             <div class="module-grid">
@@ -821,43 +677,5330 @@
                 </div>
                 <div class="module-card" onclick="showModule('module13')">
                     <h3> ES6+</h3>
-                    <p>Modules 13-15: JavaScript moderne, classes et storage</p>
+                    <p>Modules 13-15: JavaScript moderne et modules</p>
                 </div>
             </div>
         </div>
 
-        <!-- Tous les modules 1-15 restent identiques, je les ai simplement omis ici pour la clarté -->
-        <!-- Vous pouvez copier tout le contenu des modules de votre fichier original -->
+        <!-- MODULE 1: Variables et Types de Données -->
+        <div id="module1" class="module">
+            <h2>Module 1: Variables et Types de Données</h2>
+            
+            <div class="concept">
+                <h3>Concepts Clés</h3>
+                <p><strong>Les variables</strong> sont des conteneurs qui stockent des données. En JavaScript, on peut déclarer des variables avec <code>var</code>, <code>let</code>, ou <code>const</code>.</p>
+            </div>
+
+            <h3>1. Déclaration de Variables</h3>
+            
+            <h4>var (ancienne méthode, à éviter)</h4>
+            <div class="example">
+                <div class="example-title">Exemple avec var:</div>
+                <pre>
+var nom = "Thomas";
+var age = 30;
+console.log(nom); // Affiche: Thomas
+console.log(age); // Affiche: 30
+                </pre>
+            </div>
+
+            <h4>let (moderne, valeur modifiable)</h4>
+            <div class="example">
+                <div class="example-title">Exemple avec let:</div>
+                <pre>
+let prenom = "Marie";
+prenom = "Sophie"; // On peut modifier
+console.log(prenom); // Affiche: Sophie
+                </pre>
+            </div>
+
+            <h4>const (moderne, valeur constante)</h4>
+            <div class="example">
+                <div class="example-title">Exemple avec const:</div>
+                <pre>
+const PI = 3.14159;
+// PI = 3.14; Erreur! On ne peut pas modifier une constante
+console.log(PI); // Affiche: 3.14159
+                </pre>
+            </div>
+
+            <h3>2. Types de Données Primitifs</h3>
+
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Exemple</th>
+                </tr>
+                <tr>
+                    <td><strong>String</strong></td>
+                    <td>Chaîne de caractères (texte)</td>
+                    <td><code>"Bonjour"</code>, <code>'Hello'</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Number</strong></td>
+                    <td>Nombres (entiers ou décimaux)</td>
+                    <td><code>42</code>, <code>3.14</code>, <code>-17</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Boolean</strong></td>
+                    <td>Valeur vraie ou fausse</td>
+                    <td><code>true</code>, <code>false</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Undefined</strong></td>
+                    <td>Variable déclarée mais non assignée</td>
+                    <td><code>let x;</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Null</strong></td>
+                    <td>Absence intentionnelle de valeur</td>
+                    <td><code>let x = null;</code></td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <div class="example-title">Démonstration des types:</div>
+                <pre>
+// String
+let message = "Bienvenue en JavaScript!";
+let citation = 'JavaScript est génial';
+
+// Number
+let age = 25;
+let prix = 19.99;
+let temperature = -5;
+
+// Boolean
+let estConnecte = true;
+let aUnCompte = false;
+
+// Undefined
+let nonDefini;
+console.log(nonDefini); // undefined
+
+// Null
+let vide = null;
+                </pre>
+            </div>
+
+            <h3>3. Vérifier le Type d'une Variable</h3>
+            
+            <div class="example">
+                <div class="example-title">Utilisation de typeof:</div>
+                <pre>
+let nom = "Alice";
+let age = 30;
+let estActif = true;
+
+console.log(typeof nom);      // "string"
+console.log(typeof age);      // "number"
+console.log(typeof estActif); // "boolean"
+                </pre>
+            </div>
+
+            <h3>4. Exemple Interactif</h3>
+            
+            <div class="example">
+                <div class="example-title">Code complet à tester:</div>
+                <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Variables et Types&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Démonstration des Variables&lt;/h1&gt;
+    &lt;div id="resultat"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        // Déclaration de variables
+        const prenom = "Thomas";
+        const age = 32;
+        const estFormateur = true;
+        const specialite = "JavaScript";
         
+        // Affichage dans la page
+        let html = `
+            &lt;h2&gt;Informations:&lt;/h2&gt;
+            &lt;p&gt;&lt;strong&gt;Prénom:&lt;/strong&gt; ${prenom}&lt;/p&gt;
+                    // Utilisation de l'interpolation pour insérer la variable
+            &lt;p&gt;&lt;strong&gt;Âge:&lt;/strong&gt; ${age} ans&lt;/p&gt;
+            &lt;p&gt;&lt;strong&gt;Est formateur:&lt;/strong&gt; ${estFormateur}&lt;/p&gt;
+            &lt;p&gt;&lt;strong&gt;Spécialité:&lt;/strong&gt; ${specialite}&lt;/p&gt;
+            &lt;hr&gt;
+            &lt;h3&gt;Types de données:&lt;/h3&gt;
+            &lt;p&gt;Type de prenom: ${typeof prenom}&lt;/p&gt; 
+                    // typeof retourne une chaîne indiquant le type de la variable
+            &lt;p&gt;Type de age: ${typeof age}&lt;/p&gt;
+            &lt;p&gt;Type de estFormateur: ${typeof estFormateur}&lt;/p&gt;
+        `;
+        
+        document.getElementById('resultat').innerHTML = html;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </pre>
+            </div>
+
+            <div class="exercise">
+                <div class="exercise-title">Exercices Pratiques</div>
+                <ol>
+                    <li>Créez une variable <code>prenom</code> avec votre prénom</li>
+                    <li>Créez une variable <code>age</code> avec votre âge</li>
+                    <li>Créez une variable <code>ville</code> avec votre ville</li>
+                    <li>Affichez ces trois variables avec <code>typeof</code></li>
+                    <li>Créez une constante <code>PAYS</code> avec la valeur "France"</li>
+                </ol>
+            </div>
+
+            <div class="note">
+                <strong>Bonne pratique:</strong> Utilisez <code>const</code> par défaut. N'utilisez <code>let</code> que si vous devez modifier la valeur. N'utilisez jamais <code>var</code>.
+            </div>
+        </div>
+
+        <!-- MODULE 2: Opérateurs -->
+        <div id="module2" class="module">
+            <h2>Module 2: Opérateurs</h2>
+            
+            <div class="concept">
+                <h3> Concepts Clés</h3>
+                <p>Les <strong>opérateurs</strong> permettent d'effectuer des opérations sur les variables et les valeurs. JavaScript propose plusieurs types d'opérateurs.</p>
+            </div>
+
+            <h3>1. Opérateurs Arithmétiques</h3>
+            
+            <table>
+                <tr>
+                    <th>Opérateur</th>
+                    <th>Description</th>
+                    <th>Exemple</th>
+                    <th>Résultat</th>
+                </tr>
+                <tr>
+                    <td><code>+</code></td>
+                    <td>Addition</td>
+                    <td><code>5 + 3</code></td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <td><code>-</code></td>
+                    <td>Soustraction</td>
+                    <td><code>10 - 4</code></td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <td><code>*</code></td>
+                    <td>Multiplication</td>
+                    <td><code>6 * 7</code></td>
+                    <td>42</td>
+                </tr>
+                <tr>
+                    <td><code>/</code></td>
+                    <td>Division</td>
+                    <td><code>20 / 4</code></td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td><code>%</code></td>
+                    <td>Modulo (reste)</td>
+                    <td><code>10 % 3</code></td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td><code>**</code></td>
+                    <td>Puissance</td>
+                    <td><code>2 ** 3</code></td>
+                    <td>8</td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <div class="example-title">Exemples d'opérations arithmétiques:</div>
+                <pre>
+let a = 10;
+let b = 3;
+
+console.log(a + b);  // 13
+console.log(a - b);  // 7
+console.log(a * b);  // 30
+console.log(a / b);  // 3.333...
+console.log(a % b);  // 1 (reste de 10 divisé par 3)
+console.log(a ** b); // 1000 (10 puissance 3)
+                </pre>
+            </div>
+
+            <h3>2. Opérateurs d'Assignation</h3>
+            
+            <table>
+                <tr>
+                    <th>Opérateur</th>
+                    <th>Équivalent</th>
+                    <th>Exemple</th>
+                </tr>
+                <tr>
+                    <td><code>=</code></td>
+                    <td>Assignation simple</td>
+                    <td><code>x = 5</code></td>
+                </tr>
+                <tr>
+                    <td><code>+=</code></td>
+                    <td><code>x = x + y</code></td>
+                    <td><code>x += 3</code></td>
+                </tr>
+                <tr>
+                    <td><code>-=</code></td>
+                    <td><code>x = x - y</code></td>
+                    <td><code>x -= 2</code></td>
+                </tr>
+                <tr>
+                    <td><code>*=</code></td>
+                    <td><code>x = x * y</code></td>
+                    <td><code>x *= 4</code></td>
+                </tr>
+                <tr>
+                    <td><code>/=</code></td>
+                    <td><code>x = x / y</code></td>
+                    <td><code>x /= 2</code></td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <div class="example-title">Utilisation des opérateurs d'assignation:</div>
+                <pre>
+let score = 100;
+
+score += 50;  // score = score + 50 → 150
+score -= 20;  // score = score - 20 → 130
+score *= 2;   // score = score * 2  → 260
+score /= 4;   // score = score / 4  → 65
+
+console.log(score); // 65
+                </pre>
+            </div>
+
+            <h3>3. Opérateurs de Comparaison</h3>
+            
+            <table>
+                <tr>
+                    <th>Opérateur</th>
+                    <th>Description</th>
+                    <th>Exemple</th>
+                    <th>Résultat</th>
+                </tr>
+                <tr>
+                    <td><code>==</code></td>
+                    <td>Égalité (valeur)</td>
+                    <td><code>5 == "5"</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>===</code></td>
+                    <td>Égalité stricte (valeur + type)</td>
+                    <td><code>5 === "5"</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>!=</code></td>
+                    <td>Différent (valeur)</td>
+                    <td><code>5 != "5"</code></td>
+                    <td>false</td>
+                </tr>
+                <tr>
+                    <td><code>!==</code></td>
+                    <td>Différent strict</td>
+                    <td><code>5 !== "5"</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>&gt;</code></td>
+                    <td>Supérieur à</td>
+                    <td><code>10 &gt; 5</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>&lt;</code></td>
+                    <td>Inférieur à</td>
+                    <td><code>3 &lt; 8</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>&gt;=</code></td>
+                    <td>Supérieur ou égal</td>
+                    <td><code>5 &gt;= 5</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>&lt;=</code></td>
+                    <td>Inférieur ou égal</td>
+                    <td><code>4 &lt;= 3</code></td>
+                    <td>false</td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <div class="example-title">Comparaisons en action:</div>
+                <pre>
+let age = 18;
+
+console.log(age == 18);   // true
+console.log(age == "18"); // true (compare seulement la valeur)
+console.log(age === "18");// false (compare valeur ET type)
+console.log(age > 15);    // true
+console.log(age < 20);    // true
+console.log(age >= 18);   // true
+                </pre>
+            </div>
+
+            <div class="note">
+                <strong>Bonne pratique:</strong> Utilisez toujours <code>===</code> et <code>!==</code> au lieu de <code>==</code> et <code>!=</code> pour éviter les comportements inattendus.
+            </div>
+
+            <h3>4. Opérateurs Logiques</h3>
+            
+            <table>
+                <tr>
+                    <th>Opérateur</th>
+                    <th>Description</th>
+                    <th>Exemple</th>
+                    <th>Résultat</th>
+                </tr>
+                <tr>
+                    <td><code>&&</code></td>
+                    <td>ET logique (AND)</td>
+                    <td><code>true && false</code></td>
+                    <td>false</td>
+                </tr>
+                <tr>
+                    <td><code>||</code></td>
+                    <td>OU logique (OR)</td>
+                    <td><code>true || false</code></td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>!</code></td>
+                    <td>NON logique (NOT)</td>
+                    <td><code>!true</code></td>
+                    <td>false</td>
+                </tr>
+            </table>
+
+            <div class="example">
+                <div class="example-title">Opérateurs logiques en pratique:</div>
+                <pre>
+let age = 25;
+let aPermis = true;
+
+// ET (&&) - Les deux conditions doivent être vraies
+let peutConduire = (age >= 18) && aPermis;
+console.log(peutConduire); // true
+
+// OU (||) - Au moins une condition doit être vraie
+let peutEntrer = (age >= 18) || (aPermis === false);
+console.log(peutEntrer); // true
+
+// NON (!) - Inverse la valeur
+let estMineur = !(age >= 18);
+console.log(estMineur); // false
+                </pre>
+            </div>
+
+            <h3>5. Opérateurs d'Incrémentation/Décrémentation</h3>
+            
+            <div class="example">
+                <div class="example-title">++ et --:</div>
+                <pre>
+let compteur = 0;
+
+compteur++;  // Incrémente de 1 → compteur = 1
+compteur++;  // Incrémente de 1 → compteur = 2
+compteur--;  // Décrémente de 1 → compteur = 1
+
+console.log(compteur); // 1
+
+// Différence entre pré et post incrémentation
+let x = 5;
+let y = x++;  // y = 5, puis x = 6 (post-incrémentation)
+let z = ++x;  // x = 7, puis z = 7 (pré-incrémentation)
+                </pre>
+            </div>
+
+            <h3>6. Exemple Interactif Complet</h3>
+            
+            <div class="example">
+                <div class="example-title">Calculatrice simple:</div>
+                <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Calculatrice&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Calculatrice JavaScript&lt;/h1&gt;
+    &lt;div id="calculatrice"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        const nombre1 = 20;
+        const nombre2 = 4;
+        
+        let html = `
+            &lt;h2&gt;Opérations avec ${nombre1} et ${nombre2}:&lt;/h2&gt;
+            &lt;p&gt;Addition: ${nombre1} + ${nombre2} = ${nombre1 + nombre2}&lt;/p&gt;
+            &lt;p&gt;Soustraction: ${nombre1} - ${nombre2} = ${nombre1 - nombre2}&lt;/p&gt;
+            &lt;p&gt;Multiplication: ${nombre1} × ${nombre2} = ${nombre1 * nombre2}&lt;/p&gt;
+            &lt;p&gt;Division: ${nombre1} ÷ ${nombre2} = ${nombre1 / nombre2}&lt;/p&gt;
+            &lt;p&gt;Modulo: ${nombre1} % ${nombre2} = ${nombre1 % nombre2}&lt;/p&gt;
+            &lt;p&gt;Puissance: ${nombre1} ** 2 = ${nombre1 ** 2}&lt;/p&gt;
+            &lt;hr&gt;
+            &lt;h2&gt;Comparaisons:&lt;/h2&gt;
+            &lt;p&gt;${nombre1} &gt; ${nombre2} = ${nombre1 > nombre2}&lt;/p&gt;
+            &lt;p&gt;${nombre1} === ${nombre2} = ${nombre1 === nombre2}&lt;/p&gt;
+            &lt;p&gt;${nombre1} !== ${nombre2} = ${nombre1 !== nombre2}&lt;/p&gt;
+        `;
+        
+        document.getElementById('calculatrice').innerHTML = html;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </pre>
+            </div>
+
+            <div class="exercise">
+                <div class="exercise-title">Exercices Pratiques</div>
+                <ol>
+                    <li>Créez deux variables <code>prix</code> et <code>quantite</code>, calculez le total</li>
+                    <li>Utilisez l'opérateur modulo pour vérifier si un nombre est pair</li>
+                    <li>Créez une variable <code>age</code> et vérifiez s'il est majeur (>= 18)</li>
+                    <li>Utilisez les opérateurs logiques pour vérifier plusieurs conditions</li>
+                    <li>Créez un compteur et incrémentez-le 5 fois</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- MODULE 3: Structures Conditionnelles -->
+        <div id="module3" class="module">
+            <h2>Module 3: Structures Conditionnelles</h2>
+            
+            <div class="concept">
+                <h3>Concepts Clés</h3>
+                <p>Les <strong>structures conditionnelles</strong> permettent d'exécuter du code selon certaines conditions. Elles sont essentielles pour créer une logique de programme.</p>
+            </div>
+
+            <h3>1. La Structure if</h3>
+            
+            <div class="example">
+                <div class="example-title">Syntaxe de base:</div>
+                <pre>
+let age = 20;
+
+if (age >= 18) {
+    console.log("Vous êtes majeur");
+}
+
+// Si la condition est vraie, le code entre {} s'exécute
+// Sinon, il est ignoré
+                </pre>
+            </div>
+
+            <h3>2. if...else</h3>
+            
+            <div class="example">
+                <div class="example-title">Avec une alternative:</div>
+                <pre>
+let temperature = 15;
+
+if (temperature > 25) {
+    console.log("Il fait chaud ");
+} else {
+    console.log("Il fait frais ");
+}
+
+// Résultat: "Il fait frais "
+                </pre>
+            </div>
+
+            <h3>3. if...else if...else</h3>
+            
+            <div class="example">
+                <div class="example-title">Conditions multiples:</div>
+                <pre>
+let note = 15;
+
+if (note >= 16) {
+    console.log("Très bien!");
+} else if (note >= 14) {
+    console.log("Bien");
+} else if (note >= 12) {
+    console.log("Assez bien");
+} else if (note >= 10) {
+    console.log("Passable");
+} else {
+    console.log("Insuffisant");
+}
+
+// Résultat: "Bien"
+                </pre>
+            </div>
+
+            <h3>4. Conditions avec Opérateurs Logiques</h3>
+            
+            <div class="example">
+                <div class="example-title">Combiner plusieurs conditions:</div>
+                <pre>
+let age = 25;
+let aPermis = true;
+
+// ET (&&) - Les deux doivent être vraies
+if (age >= 18 && aPermis) {
+    console.log("Vous pouvez conduire");
+}
+
+// OU (||) - Au moins une doit être vraie
+let estWeekend = true;
+let estVacances = false;
+
+if (estWeekend || estVacances) {
+    console.log("Pas de travail aujourd'hui!");
+}
+
+// NON (!) - Inverse la condition
+let estConnecte = false;
+
+if (!estConnecte) {
+    console.log("Veuillez vous connecter");
+}
+                </pre>
+            </div>
+
+            <h3>5. L'Opérateur Ternaire</h3>
+            
+            <div class="example">
+                <div class="example-title">Condition en une ligne:</div>
+                <pre>
+// Syntaxe: condition ? valeurSiVrai : valeurSiFaux
+
+let age = 20;
+let statut = (age >= 18) ? "majeur" : "mineur";
+console.log(statut); // "majeur"
+
+// Équivalent avec if/else:
+let statut2;
+if (age >= 18) {
+    statut2 = "majeur";
+} else {
+    statut2 = "mineur";
+}
+                </pre>
+            </div>
+
+            <h3>6. Switch Statement</h3>
+            
+            <div class="example">
+                <div class="example-title">Pour tester plusieurs valeurs spécifiques:</div>
+                <pre>
+let jour = "lundi";
+
+switch (jour) {
+    case "lundi":
+        console.log("Début de semaine");
+        break;
+    case "mercredi":
+        console.log("Milieu de semaine");
+        break;
+    case "vendredi":
+        console.log("Bientôt le weekend!");
+        break;
+    case "samedi":
+    case "dimanche":
+        console.log("Weekend! ");
+        break;
+    default:
+        console.log("Jour normal");
+}
+
+// Résultat: "Début de semaine"
+                </pre>
+            </div>
+
+            <div class="warning">
+                <strong>Important:</strong> N'oubliez pas le <code>break</code> dans les case du switch, sinon le code continuera à s'exécuter dans les cases suivants!
+            </div>
+
+            <h3>7. Exemple Interactif Complet</h3>
+            
+            <div class="example">
+                <div class="example-title">Système de notes avec affichage visuel:</div>
+                <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Système de Notes&lt;/title&gt;
+    &lt;style&gt;
+        .resultat {
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .excellent { background: #d4edda; color: #155724; }
+        .bien { background: #cce5ff; color: #004085; }
+        .passable { background: #fff3cd; color: #856404; }
+        .insuffisant { background: #f8d7da; color: #721c24; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Évaluation des Notes&lt;/h1&gt;
+    &lt;div id="resultats"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        // Fonction pour évaluer une note
+        function evaluerNote(nom, note) {
+            let appreciation, classe;
+            
+            if (note >= 16) {
+                appreciation = "Excellent!";
+                classe = "excellent";
+            } else if (note >= 14) {
+                appreciation = "Très bien";
+                classe = "bien";
+            } else if (note >= 12) {
+                appreciation = "Bien";
+                classe = "bien";
+            } else if (note >= 10) {
+                appreciation = "Passable";
+                classe = "passable";
+            } else {
+                appreciation = "Insuffisant";
+                classe = "insuffisant";
+            }
+            
+            return `
+                &lt;div class="resultat ${classe}"&gt;
+                    &lt;strong&gt;${nom}:&lt;/strong&gt; ${note}/20 - ${appreciation}
+                &lt;/div&gt;
+            `;
+        }
+        
+        // Évaluer plusieurs étudiants
+        let html = "";
+        html += evaluerNote("Alice", 17);
+        html += evaluerNote("Bob", 13);
+        html += evaluerNote("Charlie", 9);
+        html += evaluerNote("Diana", 15);
+        
+        // Vérification avec switch
+        let jourSemaine = 3; // Mercredi
+        let messageJour;
+        
+        switch(jourSemaine) {
+            case 1:
+                messageJour = "Lundi - Bon courage!";
+                break;
+            case 2:
+                messageJour = "Mardi";
+                break;
+            case 3:
+                messageJour = "Mercredi - Milieu de semaine!";
+                break;
+            case 4:
+                messageJour = "Jeudi";
+                break;
+            case 5:
+                messageJour = "Vendredi - Bientôt le weekend!";
+                break;
+            default:
+                messageJour = "Weekend!";
+        }
+        
+        html += `&lt;hr&gt;&lt;p&gt;&lt;strong&gt;Aujourd'hui:&lt;/strong&gt; ${messageJour}&lt;/p&gt;`;
+        
+        document.getElementById('resultats').innerHTML = html;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </pre>
+            </div>
+
+            <h3>8. Valeurs Truthy et Falsy</h3>
+            
+            <div class="concept">
+                <p>En JavaScript, certaines valeurs sont considérées comme "fausses" (falsy) dans un contexte booléen:</p>
+                <ul>
+                    <li><code>false</code></li>
+                    <li><code>0</code></li>
+                    <li><code>""</code> (chaîne vide)</li>
+                    <li><code>null</code></li>
+                    <li><code>undefined</code></li>
+                    <li><code>NaN</code></li>
+                </ul>
+                <p>Toutes les autres valeurs sont "vraies" (truthy).</p>
+            </div>
+
+            <div class="example">
+                <div class="example-title">Utilisation des valeurs truthy/falsy:</div>
+                <pre>
+let nom = "";
+
+if (nom) {
+    console.log("Bonjour " + nom);
+} else {
+    console.log("Nom non défini"); // Ce code s'exécute
+}
+
+let age = 0;
+
+if (age) {
+    console.log("Âge: " + age);
+} else {
+    console.log("Âge invalide"); // Ce code s'exécute
+}
+                </pre>
+            </div>
+
+            <div class="exercise">
+                <div class="exercise-title">Exercices Pratiques</div>
+                <ol>
+                    <li>Créez un programme qui vérifie si un nombre est positif, négatif ou nul</li>
+                    <li>Écrivez un système qui donne des réductions selon l'âge (enfant, adulte, senior)</li>
+                    <li>Créez un vérificateur de mot de passe avec plusieurs conditions (longueur, caractères spéciaux, etc.)</li>
+                    <li>Utilisez switch pour créer un menu de restaurant selon le jour</li>
+                    <li>Combinez plusieurs conditions avec && et || pour un système d'accès</li>
+                </ol>
+            </div>
+
+            <div class="note">
+                <strong>Bonne pratique:</strong> Utilisez des noms de variables explicites pour vos conditions. <code>if (estMajeur && aPermis)</code> est plus lisible que <code>if (x && y)</code>.
+            </div>
+        </div>
+
+        <!-- MODULE 4: Boucles -->
+        <div id="module4" class="module">
+            <h2>Module 4: Boucles (Loops)</h2>
+            
+            <div class="concept">
+                <h3>Concepts Clés</h3>
+                <p>Les <strong>boucles</strong> permettent de répéter du code plusieurs fois. Elles sont essentielles pour traiter des collections de données ou répéter des actions.</p>
+            </div>
+
+            <h3>1. La Boucle for</h3>
+            
+            <div class="example">
+                <div class="example-title">Syntaxe et utilisation:</div>
+                <pre>
+// Syntaxe: for (initialisation; condition; incrémentation)
+
+for (let i = 0; i < 5; i++) {
+    console.log("Itération numéro: " + i);
+}
+
+/* Affiche:
+Itération numéro: 0
+Itération numéro: 1
+Itération numéro: 2
+Itération numéro: 3
+Itération numéro: 4
+*/
+
+// Compter de 1 à 10
+for (let i = 1; i <= 10; i++) {
+    console.log(i);
+}
+
+// Compter à l'envers
+for (let i = 10; i >= 0; i--) {
+    console.log("Décompte: " + i);
+}
+                </pre>
+            </div>
+
+            <h3>2. La Boucle while</h3>
+            
+            <div class="example">
+                <div class="example-title">Répéter tant qu'une condition est vraie:</div>
+                <pre>
+let compteur = 0;
+
+while (compteur < 5) {
+    console.log("Compteur: " + compteur);
+    compteur++;
+}
+
+/* Affiche:
+Compteur: 0
+Compteur: 1
+Compteur: 2
+Compteur: 3
+Compteur: 4
+*/
+
+// Exemple pratique
+let essais = 0;
+let motDePasse = "";
+
+while (motDePasse !== "secret" && essais < 3) {
+    console.log("Essai numéro " + (essais + 1));
+    essais++;
+}
+                </pre>
+            </div>
+
+            <h3>3. La Boucle do...while</h3>
+            
+            <div class="example">
+                <div class="example-title">Exécuter au moins une fois:</div>
+                <pre>
+let nombre = 0;
+
+do {
+    console.log("Nombre: " + nombre);
+    nombre++;
+} while (nombre < 3);
+
+/* Affiche:
+Nombre: 0
+Nombre: 1
+Nombre: 2
+*/
+
+// Différence avec while: do...while s'exécute AU MOINS UNE FOIS
+let x = 10;
+
+do {
+    console.log("Ceci s'affiche!"); // S'affiche une fois
+} while (x < 5);
+
+while (x < 5) {
+    console.log("Ceci ne s'affiche pas"); //  Ne s'affiche jamais
+}
+                </pre>
+            </div>
+
+            <h3>4. break et continue</h3>
+            
+            <div class="example">
+                <div class="example-title">Contrôler le flux des boucles:</div>
+                <pre>
+// break - Arrête complètement la boucle
+for (let i = 0; i < 10; i++) {
+    if (i === 5) {
+        break; // Sort de la boucle
+    }
+    console.log(i); // Affiche: 0, 1, 2, 3, 4
+}
+
+// continue - Passe à l'itération suivante
+for (let i = 0; i < 10; i++) {
+    if (i % 2 === 0) {
+        continue; // Saute les nombres pairs
+    }
+    console.log(i); // Affiche: 1, 3, 5, 7, 9
+}
+
+// Exemple pratique
+for (let i = 1; i <= 20; i++) {
+    // Sauter les nombres divisibles par 3
+    if (i % 3 === 0) {
+        continue;
+    }
+    // Arrêter à 15
+    if (i > 15) {
+        break;
+    }
+    console.log(i);
+}
+                </pre>
+            </div>
+
+            <h3>5. Boucles Imbriquées</h3>
+            
+            <div class="example">
+                <div class="example-title">Une boucle dans une autre boucle:</div>
+                <pre>
+// Table de multiplication
+for (let i = 1; i <= 5; i++) {
+    for (let j = 1; j <= 5; j++) {
+        console.log(`${i} × ${j} = ${i * j}`);
+    }
+    console.log("---");
+}
+
+// Créer un motif
+for (let ligne = 1; ligne <= 5; ligne++) {
+    let motif = "";
+    for (let etoile = 1; etoile <= ligne; etoile++) {
+        motif += "★ ";
+    }
+    console.log(motif);
+}
+
+/* Affiche:
+★ 
+★ ★ 
+★ ★ ★ 
+★ ★ ★ ★ 
+★ ★ ★ ★ ★ 
+*/
+                </pre>
+            </div>
+
+            <h3>6. for...of (Parcourir des Arrays)</h3>
+            
+            <div class="example">
+                <div class="example-title">Boucle moderne pour les tableaux:</div>
+                <pre>
+let fruits = ["Pomme", "Banane", "Orange", "Fraise"];
+
+// Parcourir chaque élément
+for (let fruit of fruits) {
+    console.log("J'aime les " + fruit + "s");
+}
+
+/* Affiche:
+J'aime les Pommes
+J'aime les Bananes
+J'aime les Oranges
+J'aime les Fraises
+*/
+
+// Avec les strings
+let mot = "JavaScript";
+for (let lettre of mot) {
+    console.log(lettre);
+}
+                </pre>
+            </div>
+
+            <h3>7. Exemple Interactif Complet</h3>
+            
+            <div class="example">
+                <div class="example-title">Générateur de liste avec boucles:</div>
+                <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Boucles JavaScript&lt;/title&gt;
+    &lt;style&gt;
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .section {
+            background: #f0f0f0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        td, th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .star-pattern {
+            font-size: 24px;
+            line-height: 1.5;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Démonstration des Boucles&lt;/h1&gt;
+    
+    &lt;div class="section"&gt;
+        &lt;h2&gt;1. Compteur Simple (for)&lt;/h2&gt;
+        &lt;div id="compteur"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="section"&gt;
+        &lt;h2&gt;2. Table de Multiplication&lt;/h2&gt;
+        &lt;div id="table"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="section"&gt;
+        &lt;h2&gt;3. Nombres Pairs et Impairs&lt;/h2&gt;
+        &lt;div id="pairs-impairs"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="section"&gt;
+        &lt;h2&gt;4. Motif d'Étoiles&lt;/h2&gt;
+        &lt;div id="motif" class="star-pattern"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        // 1. Compteur simple
+        let compteurHTML = "&lt;p&gt;Comptage de 1 à 10: ";
+        for (let i = 1; i <= 10; i++) {
+            compteurHTML += i;
+            if (i < 10) compteurHTML += ", ";
+        }
+        compteurHTML += "&lt;/p&gt;";
+        document.getElementById('compteur').innerHTML = compteurHTML;
+
+        // 2. Table de multiplication de 5
+        let tableHTML = "&lt;table&gt;&lt;tr&gt;&lt;th&gt;Opération&lt;/th&gt;&lt;th&gt;Résultat&lt;/th&gt;&lt;/tr&gt;";
+        for (let i = 1; i <= 10; i++) {
+            tableHTML += `&lt;tr&gt;&lt;td&gt;5 × ${i}&lt;/td&gt;&lt;td&gt;${5 * i}&lt;/td&gt;&lt;/tr&gt;`;
+        }
+        tableHTML += "&lt;/table&gt;";
+        document.getElementById('table').innerHTML = tableHTML;
+
+        // 3. Séparer pairs et impairs
+        let pairs = [];
+        let impairs = [];
+        
+        for (let i = 1; i <= 20; i++) {
+            if (i % 2 === 0) {
+                pairs.push(i);
+            } else {
+                impairs.push(i);
+            }
+        }
+        
+        let pairsImpa irsHTML = `
+            &lt;p&gt;&lt;strong&gt;Nombres pairs:&lt;/strong&gt; ${pairs.join(", ")}&lt;/p&gt;
+            &lt;p&gt;&lt;strong&gt;Nombres impairs:&lt;/strong&gt; ${impairs.join(", ")}&lt;/p&gt;
+        `;
+        document.getElementById('pairs-impairs').innerHTML = pairsImpapirsHTML;
+
+        // 4. Motif d'étoiles
+        let motifHTML = "";
+        for (let ligne = 1; ligne <= 5; ligne++) {
+            for (let etoile = 1; etoile <= ligne; etoile++) {
+                motifHTML += " ";
+            }
+            motifHTML += "&lt;br&gt;";
+        }
+        document.getElementById('motif').innerHTML = motifHTML;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </pre>
+            </div>
+
+            <h3>8. Choisir la Bonne Boucle</h3>
+            
+            <table>
+                <tr>
+                    <th>Boucle</th>
+                    <th>Quand l'utiliser</th>
+                </tr>
+                <tr>
+                    <td><strong>for</strong></td>
+                    <td>Quand vous connaissez le nombre d'itérations</td>
+                </tr>
+                <tr>
+                    <td><strong>while</strong></td>
+                    <td>Quand vous ne connaissez pas le nombre d'itérations à l'avance</td>
+                </tr>
+                <tr>
+                    <td><strong>do...while</strong></td>
+                    <td>Quand vous devez exécuter le code au moins une fois</td>
+                </tr>
+                <tr>
+                    <td><strong>for...of</strong></td>
+                    <td>Pour parcourir des arrays ou des strings</td>
+                </tr>
+            </table>
+
+            <div class="exercise">
+                <div class="exercise-title"> Exercices Pratiques</div>
+                <ol>
+                    <li>Créez une boucle qui affiche les nombres de 1 à 100</li>
+                    <li>Affichez uniquement les multiples de 5 entre 1 et 50</li>
+                    <li>Créez une table de multiplication complète (de 1 à 10)</li>
+                    <li>Faites un compte à rebours de 10 à 0</li>
+                    <li>Créez un motif de triangle avec des astérisques (5 lignes)</li>
+                    <li>Trouvez la somme des nombres de 1 à 100 avec une boucle</li>
+                    <li>Parcourez un tableau de prénoms et affichez chacun</li>
+                </ol>
+            </div>
+
+            <div class="warning">
+                <strong>Attention aux boucles infinies!</strong> Assurez-vous que votre condition de boucle puisse devenir fausse, sinon votre programme se bloquera.
+            </div>
+
+            <div class="note">
+                <strong>Bonne pratique:</strong> Utilisez des noms de variables significatifs comme <code>i</code> pour index, <code>ligne</code>, <code>colonne</code>, etc. Cela rend votre code plus lisible.
+            </div>
+        </div>
+
+        <!-- Placeholder pour les autres modules (5-15) -->
+        <!-- Je vais continuer avec les modules 5-15... -->
+        
+        <!-- MODULE 5: Fonctions -->
+        <div id="module5" class="module">
+            <h2>Module 5: Fonctions</h2>
+            
+            <div class="concept">
+                <h3>Concepts Clés</h3>
+                <p>Les <strong>fonctions</strong> sont des blocs de code réutilisables qui effectuent une tâche spécifique. Elles permettent d'organiser et de structurer votre code.</p>
+            </div>
+
+            <h3>1. Déclarer une Fonction</h3>
+            
+            <div class="example">
+                <div class="example-title">Syntaxe de base:</div>
+                <pre>
+// Déclaration de fonction
+function direBonjour() {
+    console.log("Bonjour!");
+}
+
+// Appel de la fonction
+direBonjour(); // Affiche: Bonjour!
+
+// Fonction avec paramètres
+function saluer(nom) {
+    console.log("Bonjour " + nom + "!");
+}
+
+saluer("Thomas"); // Affiche: Bonjour Thomas!
+saluer("Marie");  // Affiche: Bonjour Marie!
+                </pre>
+            </div>
+
+            <h3>2. Paramètres et Arguments</h3>
+            
+            <div class="example">
+                <div class="example-title">Passer des valeurs aux fonctions:</div>
+                <pre>
+// Fonction avec plusieurs paramètres
+function additionner(a, b) {
+    let resultat = a + b;
+    console.log(resultat);
+}
+
+additionner(5, 3);  // Affiche: 8
+additionner(10, 20); // Affiche: 30
+
+// Paramètres par défaut (ES6)
+function saluerAvecTitre(nom, titre = "M.") {
+    console.log(`Bonjour ${titre} ${nom}`);
+}
+
+saluerAvecTitre("Dupont");          // Bonjour M. Dupont
+saluerAvecTitre("Martin", "Mme");   // Bonjour Mme Martin
+                </pre>
+            </div>
+
+            <h3>3. Return - Retourner des Valeurs</h3>
+            
+            <div class="example">
+                <div class="example-title">Récupérer le résultat d'une fonction:</div>
+                <pre>
+function multiplier(a, b) {
+    return a * b;
+}
+
+let resultat = multiplier(4, 5);
+console.log(resultat); // 20
+
+// Utiliser directement le résultat
+console.log(multiplier(3, 7)); // 21
+
+// Fonction de calcul complexe
+function calculerAire(longueur, largeur) {
+    let aire = longueur * largeur;
+    return aire;
+}
+
+let aireSalon = calculerAire(5, 4);
+console.log("L'aire est: " + aireSalon + " m²");
+                </pre>
+            </div>
+
+            <div class="note">
+                <strong>Important:</strong> Le code après <code>return</code> ne s'exécute jamais. <code>return</code> termine immédiatement la fonction.
+            </div>
+
+            <h3>4. Fonctions Expressions</h3>
+            
+            <div class="example">
+                <div class="example-title">Assigner une fonction à une variable:</div>
+                <pre>
+// Expression de fonction
+const soustraire = function(a, b) {
+    return a - b;
+};
+
+console.log(soustraire(10, 3)); // 7
+
+// Différence: le hoisting
+//  Fonctionne (déclaration de fonction)
+direBonjour();
+function direBonjour() {
+    console.log("Bonjour!");
+}
+
+//  Erreur (expression de fonction)
+// direAuRevoir(); // Erreur!
+const direAuRevoir = function() {
+    console.log("Au revoir!");
+};
+                </pre>
+            </div>
+
+            <h3>5. Arrow Functions (ES6)</h3>
+            
+            <div class="example">
+                <div class="example-title">Syntaxe moderne et concise:</div>
+                <pre>
+// Syntaxe traditionnelle
+const addition = function(a, b) {
+    return a + b;
+};
+
+// Arrow function équivalente
+const additionFlecha = (a, b) => {
+    return a + b;
+};
+
+// Encore plus concis (return implicite)
+const additionCourt = (a, b) => a + b;
+
+console.log(additionCourt(5, 3)); // 8
+
+// Un seul paramètre (parenthèses optionnelles)
+const double = x => x * 2;
+console.log(double(5)); // 10
+
+// Sans paramètre
+const direBonjour = () => console.log("Bonjour!");
+direBonjour();
+                </pre>
+            </div>
+
+            <h3>6. Scope (Portée) des Variables</h3>
+            
+            <div class="example">
+                <div class="example-title">Variables locales vs globales:</div>
+                <pre>
+// Variable globale
+let nomGlobal = "Thomas";
+
+function afficherNom() {
+    // Variable locale
+    let nomLocal = "Marie";
+    console.log(nomGlobal); //  Accessible
+    console.log(nomLocal);  //  Accessible
+}
+
+afficherNom();
+console.log(nomGlobal); //  Accessible
+// console.log(nomLocal); //  Erreur! n'existe pas ici
+
+// Block scope avec let et const
+if (true) {
+    let x = 10;
+    const y = 20;
+    var z = 30;
+}
+
+// console.log(x); //  Erreur
+// console.log(y); //  Erreur
+console.log(z);    //  30 (var n'a pas de block scope!)
+                </pre>
+            </div>
+
+            <h3>7. Exemple Interactif Complet</h3>
+            
+            <div class="example">
+                <div class="example-title">Calculatrice avec fonctions:</div>
+                <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Calculatrice avec Fonctions&lt;/title&gt;
+    &lt;style&gt;
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .calculatrice {
+            background: #f0f0f0;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        .operation {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        h2 {
+            color: #333;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="calculatrice"&gt;
+        &lt;h1&gt;Calculatrice JavaScript&lt;/h1&gt;
+        &lt;div id="resultats"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        // Fonction addition
+        function additionner(a, b) {
+            return a + b;
+        }
+
+        // Fonction soustraction
+        function soustraire(a, b) {
+            return a - b;
+        }
+
+        // Fonction multiplication
+        function multiplier(a, b) {
+            return a * b;
+        }
+
+        // Fonction division
+        function diviser(a, b) {
+            if (b === 0) {
+                return "Erreur: Division par zéro!";
+            }
+            return a / b;
+        }
+
+        // Fonction puissance
+        const puissance = (base, exposant) => base ** exposant;
+
+        // Fonction calculer pourcentage
+        const calculerPourcentage = (nombre, pourcentage) => {
+            return (nombre * pourcentage) / 100;
+        };
+
+        // Fonction vérifier nombre pair
+        const estPair = (nombre) => nombre % 2 === 0;
+
+        // Afficher les résultats
+        const num1 = 20;
+        const num2 = 4;
+
+        let html = `
+            &lt;h2&gt;Calculs avec ${num1} et ${num2}:&lt;/h2&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;Addition:&lt;/strong&gt; ${num1} + ${num2} = ${additionner(num1, num2)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;Soustraction:&lt;/strong&gt; ${num1} - ${num2} = ${soustraire(num1, num2)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;Multiplication:&lt;/strong&gt; ${num1} × ${num2} = ${multiplier(num1, num2)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;Division:&lt;/strong&gt; ${num1} ÷ ${num2} = ${diviser(num1, num2)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;Puissance:&lt;/strong&gt; ${num1}² = ${puissance(num1, 2)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;20% de ${num1}:&lt;/strong&gt; ${calculerPourcentage(num1, 20)}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;${num1} est pair?&lt;/strong&gt; ${estPair(num1) ? "Oui" : "Non"}
+            &lt;/div&gt;
+            &lt;div class="operation"&gt;
+                &lt;strong&gt;${num2} est pair?&lt;/strong&gt; ${estPair(num2) ? "Oui" : "Non"}
+            &lt;/div&gt;
+        `;
+
+        document.getElementById('resultats').innerHTML = html;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </pre>
+            </div>
+
+            <div class="exercise">
+                <div class="exercise-title"> Exercices Pratiques</div>
+                <ol>
+                    <li>Créez une fonction qui calcule l'aire d'un rectangle</li>
+                    <li>Créez une fonction qui convertit des Celsius en Fahrenheit</li>
+                    <li>Écrivez une fonction qui retourne le plus grand de deux nombres</li>
+                    <li>Créez une arrow function qui vérifie si un nombre est positif</li>
+                    <li>Faites une fonction qui calcule la moyenne de 3 nombres</li>
+                    <li>Créez une fonction avec paramètres par défaut pour saluer quelqu'un</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Continuer avec les modules 6-15... -->
+        <!-- Pour garder ce fichier gérable, je vais ajouter des placeholders -->
+        
+ 
+
+
+
+<!-- MODULE 6: Tableaux (Arrays) - COMPLET -->
+<div id="module6" class="module">
+    <h2>Module 6: Tableaux Avancés (Arrays)</h2>
+    
+    <div class="concept">
+        <h3> Concepts Clés</h3>
+        <p>Les <strong>tableaux (arrays)</strong> sont des structures de données essentielles. JavaScript moderne offre des méthodes puissantes pour les manipuler efficacement.</p>
     </div>
 
+    <h3>1. Créer des Tableaux</h3>
+    <div class="example">
+        <div class="example-title">Différentes façons de créer un array:</div>
+        <pre>
+// Méthode littérale (recommandée)
+let fruits = ["Pomme", "Banane", "Orange"];
+
+// Avec Array constructor
+let nombres = new Array(1, 2, 3, 4, 5);
+
+// Tableau vide
+let vide = [];
+
+// Accéder aux éléments
+console.log(fruits[0]); // "Pomme"
+console.log(fruits.length); // 3
+
+// Modifier un élément
+fruits[1] = "Fraise";
+console.log(fruits); // ["Pomme", "Fraise", "Orange"]
+        </pre>
+    </div>
+
+    <h3>2. Méthodes de Base</h3>
+    <table>
+        <tr>
+            <th>Méthode</th>
+            <th>Description</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>push()</code></td>
+            <td>Ajoute à la fin</td>
+            <td><code>arr.push("Nouveau")</code></td>
+        </tr>
+        <tr>
+            <td><code>pop()</code></td>
+            <td>Enlève le dernier</td>
+            <td><code>arr.pop()</code></td>
+        </tr>
+        <tr>
+            <td><code>unshift()</code></td>
+            <td>Ajoute au début</td>
+            <td><code>arr.unshift("Premier")</code></td>
+        </tr>
+        <tr>
+            <td><code>shift()</code></td>
+            <td>Enlève le premier</td>
+            <td><code>arr.shift()</code></td>
+        </tr>
+        <tr>
+            <td><code>splice()</code></td>
+            <td>Ajoute/supprime n'importe où</td>
+            <td><code>arr.splice(1, 2)</code></td>
+        </tr>
+        <tr>
+            <td><code>slice()</code></td>
+            <td>Copie une portion</td>
+            <td><code>arr.slice(1, 3)</code></td>
+        </tr>
+    </table>
+
+    <div class="example">
+        <div class="example-title">Exemples de manipulation de base:</div>
+        <pre>
+let fruits = ["Pomme", "Banane", "Orange"];
+
+// Ajouter à la fin
+fruits.push("Fraise");
+console.log(fruits); // ["Pomme", "Banane", "Orange", "Fraise"]
+
+// Enlever le dernier
+let dernier = fruits.pop();
+console.log(dernier); // "Fraise"
+console.log(fruits); // ["Pomme", "Banane", "Orange"]
+
+// Ajouter au début
+fruits.unshift("Mangue");
+console.log(fruits); // ["Mangue", "Pomme", "Banane", "Orange"]
+
+// Enlever le premier
+let premier = fruits.shift();
+console.log(premier); // "Mangue"
+
+// Splice - Supprimer et ajouter
+fruits.splice(1, 1, "Kiwi", "Pêche"); // À l'index 1, supprime 1, ajoute 2
+console.log(fruits); // ["Pomme", "Kiwi", "Pêche", "Orange"]
+        </pre>
+    </div>
+
+    <h3>3. map() - Transformer Chaque Élément</h3>
+    
+    <div class="concept">
+        <p><strong>map()</strong> crée un NOUVEAU tableau en transformant chaque élément. C'est l'une des méthodes les plus utilisées en JavaScript moderne !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Utilisation de map():</div>
+        <pre>
+// Doubler tous les nombres
+let nombres = [1, 2, 3, 4, 5];
+let doubles = nombres.map(n => n * 2);
+console.log(doubles); // [2, 4, 6, 8, 10]
+
+// Mettre en majuscules
+let noms = ["alice", "bob", "charlie"];
+let majuscules = noms.map(nom => nom.toUpperCase());
+console.log(majuscules); // ["ALICE", "BOB", "CHARLIE"]
+
+// Extraire une propriété d'objets
+let users = [
+    { nom: "Alice", age: 25 },
+    { nom: "Bob", age: 30 },
+    { nom: "Charlie", age: 35 }
+];
+
+let nomsUsers = users.map(user => user.nom);
+console.log(nomsUsers); // ["Alice", "Bob", "Charlie"]
+
+// Créer du HTML
+let fruits = ["Pomme", "Banane", "Orange"];
+let html = fruits.map(fruit => `<li>${fruit}</li>`);
+console.log(html); // ["<li>Pomme</li>", "<li>Banane</li>", "<li>Orange</li>"]
+        </pre>
+    </div>
+
+    <h3>4. filter() - Filtrer les Éléments</h3>
+    
+    <div class="concept">
+        <p><strong>filter()</strong> crée un nouveau tableau avec seulement les éléments qui passent le test (condition vraie).</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Utilisation de filter():</div>
+        <pre>
+// Nombres pairs
+let nombres = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+let pairs = nombres.filter(n => n % 2 === 0);
+console.log(pairs); // [2, 4, 6, 8, 10]
+
+// Nombres supérieurs à 5
+let grands = nombres.filter(n => n > 5);
+console.log(grands); // [6, 7, 8, 9, 10]
+
+// Filtrer des objets
+let produits = [
+    { nom: "Laptop", prix: 1000 },
+    { nom: "Souris", prix: 25 },
+    { nom: "Clavier", prix: 75 },
+    { nom: "Écran", prix: 300 }
+];
+
+let produitsAbordables = produits.filter(p => p.prix < 100);
+console.log(produitsAbordables);
+// [{ nom: "Souris", prix: 25 }, { nom: "Clavier", prix: 75 }]
+
+// Filtrer par nom
+let fruits = ["Pomme", "Banane", "Orange", "Poire"];
+let avecP = fruits.filter(fruit => fruit.startsWith("P"));
+console.log(avecP); // ["Pomme", "Poire"]
+        </pre>
+    </div>
+
+    <h3>5. reduce() - Réduire à Une Valeur</h3>
+    
+    <div class="concept">
+        <p><strong>reduce()</strong> réduit un tableau à une seule valeur en appliquant une fonction accumulateur.</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Utilisation de reduce():</div>
+        <pre>
+// Somme de nombres
+let nombres = [1, 2, 3, 4, 5];
+let somme = nombres.reduce((acc, n) => acc + n, 0);
+console.log(somme); // 15
+
+// Produit
+let produit = nombres.reduce((acc, n) => acc * n, 1);
+console.log(produit); // 120
+
+// Trouver le maximum
+let max = nombres.reduce((acc, n) => n > acc ? n : acc, nombres[0]);
+console.log(max); // 5
+
+// Compter les occurrences
+let fruits = ["pomme", "banane", "pomme", "orange", "banane", "pomme"];
+let compte = fruits.reduce((acc, fruit) => {
+    acc[fruit] = (acc[fruit] || 0) + 1;
+    return acc;
+}, {});
+console.log(compte); 
+// { pomme: 3, banane: 2, orange: 1 }
+
+// Calculer un total de prix
+let produits = [
+    { nom: "Laptop", prix: 1000 },
+    { nom: "Souris", prix: 25 },
+    { nom: "Clavier", prix: 75 }
+];
+
+let total = produits.reduce((acc, p) => acc + p.prix, 0);
+console.log(total); // 1100
+        </pre>
+    </div>
+
+    <h3>6.  Autres Méthodes Essentielles</h3>
+
+    <table>
+        <tr>
+            <th>Méthode</th>
+            <th>Description</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><code>find()</code></td>
+            <td>Trouve le premier élément qui passe le test</td>
+            <td><code>arr.find(x => x > 5)</code></td>
+        </tr>
+        <tr>
+            <td><code>findIndex()</code></td>
+            <td>Trouve l'index du premier élément</td>
+            <td><code>arr.findIndex(x => x > 5)</code></td>
+        </tr>
+        <tr>
+            <td><code>some()</code></td>
+            <td>Teste si AU MOINS UN élément passe le test</td>
+            <td><code>arr.some(x => x > 5)</code></td>
+        </tr>
+        <tr>
+            <td><code>every()</code></td>
+            <td>Teste si TOUS les éléments passent le test</td>
+            <td><code>arr.every(x => x > 0)</code></td>
+        </tr>
+        <tr>
+            <td><code>includes()</code></td>
+            <td>Vérifie si un élément existe</td>
+            <td><code>arr.includes("Pomme")</code></td>
+        </tr>
+        <tr>
+            <td><code>indexOf()</code></td>
+            <td>Trouve l'index d'un élément</td>
+            <td><code>arr.indexOf("Pomme")</code></td>
+        </tr>
+    </table>
+
+    <div class="example">
+        <div class="example-title">Exemples des méthodes:</div>
+        <pre>
+let nombres = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// find() - Trouve le premier nombre > 5
+let premierGrand = nombres.find(n => n > 5);
+console.log(premierGrand); // 6
+
+// findIndex() - Trouve l'index
+let indexGrand = nombres.findIndex(n => n > 5);
+console.log(indexGrand); // 5 (l'index de 6)
+
+// some() - Au moins un nombre pair ?
+let aPair = nombres.some(n => n % 2 === 0);
+console.log(aPair); // true
+
+// every() - Tous positifs ?
+let tousPositifs = nombres.every(n => n > 0);
+console.log(tousPositifs); // true
+
+// includes() - Contient 5 ?
+let contient5 = nombres.includes(5);
+console.log(contient5); // true
+
+// indexOf() - Position de 5
+let position = nombres.indexOf(5);
+console.log(position); // 4
+        </pre>
+    </div>
+
+    <h3>7. sort() et reverse()</h3>
+
+    <div class="example">
+        <div class="example-title">Trier et inverser:</div>
+        <pre>
+// Trier des nombres (ATTENTION au piège!)
+let nombres = [10, 5, 40, 25, 1000, 1];
+
+//  MAUVAIS - trie comme des strings
+nombres.sort();
+console.log(nombres); // [1, 10, 1000, 25, 40, 5]
+
+//  BON - trie numériquement
+nombres.sort((a, b) => a - b);
+console.log(nombres); // [1, 5, 10, 25, 40, 1000]
+
+// Ordre décroissant
+nombres.sort((a, b) => b - a);
+console.log(nombres); // [1000, 40, 25, 10, 5, 1]
+
+// Trier des strings (ordre alphabétique)
+let fruits = ["Banane", "Orange", "Pomme", "Kiwi"];
+fruits.sort();
+console.log(fruits); // ["Banane", "Kiwi", "Orange", "Pomme"]
+
+// Reverse - Inverser l'ordre
+fruits.reverse();
+console.log(fruits); // ["Pomme", "Orange", "Kiwi", "Banane"]
+
+// Trier des objets par propriété
+let users = [
+    { nom: "Charlie", age: 35 },
+    { nom: "Alice", age: 25 },
+    { nom: "Bob", age: 30 }
+];
+
+users.sort((a, b) => a.age - b.age);
+console.log(users);
+// [{ nom: "Alice", age: 25 }, { nom: "Bob", age: 30 }, { nom: "Charlie", age: 35 }]
+        </pre>
+    </div>
+
+    <h3>8.  Spread Operator avec Arrays</h3>
+
+    <div class="example">
+        <div class="example-title">Utiliser ... (spread):</div>
+        <pre>
+// Fusionner des arrays
+let arr1 = [1, 2, 3];
+let arr2 = [4, 5, 6];
+let fusion = [...arr1, ...arr2];
+console.log(fusion); // [1, 2, 3, 4, 5, 6]
+
+// Copier un array (copie superficielle)
+let original = [1, 2, 3];
+let copie = [...original];
+copie.push(4);
+console.log(original); // [1, 2, 3] (pas modifié)
+console.log(copie);    // [1, 2, 3, 4]
+
+// Ajouter des éléments
+let fruits = ["Pomme", "Banane"];
+let nouveaux = ["Kiwi", ...fruits, "Orange"];
+console.log(nouveaux); // ["Kiwi", "Pomme", "Banane", "Orange"]
+
+// Trouver le maximum
+let nombres = [5, 2, 8, 1, 9, 3];
+let max = Math.max(...nombres);
+console.log(max); // 9
+
+// Convertir string en array de caractères
+let mot = "Hello";
+let lettres = [...mot];
+console.log(lettres); // ["H", "e", "l", "l", "o"]
+        </pre>
+    </div>
+
+    <h3>9. Chaîner les Méthodes</h3>
+
+    <div class="example">
+        <div class="example-title">Combiner plusieurs méthodes:</div>
+        <pre>
+let nombres = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// Filtrer les pairs, les doubler, puis calculer la somme
+let resultat = nombres
+    .filter(n => n % 2 === 0)  // [2, 4, 6, 8, 10]
+    .map(n => n * 2)            // [4, 8, 12, 16, 20]
+    .reduce((acc, n) => acc + n, 0); // 60
+
+console.log(resultat); // 60
+
+// Exemple avec des objets
+let produits = [
+    { nom: "Laptop", prix: 1000, categorie: "tech" },
+    { nom: "Souris", prix: 25, categorie: "tech" },
+    { nom: "Chaise", prix: 150, categorie: "mobilier" },
+    { nom: "Clavier", prix: 75, categorie: "tech" },
+    { nom: "Bureau", prix: 300, categorie: "mobilier" }
+];
+
+// Produits tech de moins de 100€, triés par prix
+let techAbordable = produits
+    .filter(p => p.categorie === "tech")
+    .filter(p => p.prix < 100)
+    .sort((a, b) => a.prix - b.prix)
+    .map(p => p.nom);
+
+console.log(techAbordable); // ["Souris", "Clavier"]
+        </pre>
+    </div>
+
+    <h3>10. Exemple Complet Interactif</h3>
+
+    <div class="example">
+        <div class="example-title">Gestion de produits avec toutes les méthodes:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Gestionnaire de Produits&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; }
+        .produit { border: 1px solid #ddd; padding: 15px; margin: 10px 0; }
+        .stats { background: #f0f0f0; padding: 15px; margin: 20px 0; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Catalogue de Produits&lt;/h1&gt;
+    &lt;div id="stats"&gt;&lt;/div&gt;
+    &lt;div id="produits"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let produits = [
+            { id: 1, nom: "Laptop Pro", prix: 1200, stock: 5, categorie: "tech" },
+            { id: 2, nom: "Souris Gaming", prix: 45, stock: 15, categorie: "tech" },
+            { id: 3, nom: "Chaise Bureau", prix: 250, stock: 8, categorie: "mobilier" },
+            { id: 4, nom: "Clavier Mécanique", prix: 120, stock: 0, categorie: "tech" },
+            { id: 5, nom: "Écran 27\"", prix: 350, stock: 3, categorie: "tech" },
+            { id: 6, nom: "Bureau Assis-Debout", prix: 500, stock: 2, categorie: "mobilier" }
+        ];
+
+        // STATISTIQUES avec reduce()
+        let stats = {
+            total: produits.length,
+            valeurTotale: produits.reduce((acc, p) => acc + (p.prix * p.stock), 0),
+            prixMoyen: produits.reduce((acc, p) => acc + p.prix, 0) / produits.length,
+            enStock: produits.filter(p => p.stock > 0).length,
+            rupture: produits.filter(p => p.stock === 0).length
+        };
+
+        document.getElementById('stats').innerHTML = `
+            &lt;div class="stats"&gt;
+                &lt;h2&gt;Statistiques&lt;/h2&gt;
+                &lt;p&gt;&lt;strong&gt;Total produits:&lt;/strong&gt; ${stats.total}&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Valeur totale stock:&lt;/strong&gt; ${stats.valeurTotale}€&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Prix moyen:&lt;/strong&gt; ${stats.prixMoyen.toFixed(2)}€&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;En stock:&lt;/strong&gt; ${stats.enStock} | &lt;strong&gt;Rupture:&lt;/strong&gt; ${stats.rupture}&lt;/p&gt;
+            &lt;/div&gt;
+        `;
+
+        // AFFICHER les produits tech en stock, triés par prix
+        let produitsAfficher = produits
+            .filter(p => p.categorie === "tech")
+            .filter(p => p.stock > 0)
+            .sort((a, b) => a.prix - b.prix);
+
+        let html = produitsAfficher
+            .map(p => `
+                &lt;div class="produit"&gt;
+                    &lt;h3&gt;${p.nom}&lt;/h3&gt;
+                    &lt;p&gt;&lt;strong&gt;Prix:&lt;/strong&gt; ${p.prix}€&lt;/p&gt;
+                    &lt;p&gt;&lt;strong&gt;Stock:&lt;/strong&gt; ${p.stock} unités&lt;/p&gt;
+                    &lt;p&gt;&lt;strong&gt;Catégorie:&lt;/strong&gt; ${p.categorie}&lt;/p&gt;
+                &lt;/div&gt;
+            `)
+            .join('');
+
+        document.getElementById('produits').innerHTML = 
+            '&lt;h2&gt;Produits Tech en Stock (triés par prix)&lt;/h2&gt;' + html;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title">Exercices Pratiques</div>
+        <ol>
+            <li>Créez un array de 10 nombres et utilisez map() pour les mettre au carré</li>
+            <li>Avec filter(), gardez seulement les nombres > 20</li>
+            <li>Utilisez reduce() pour calculer la somme d'un array de prix</li>
+            <li>Créez un array d'objets (étudiants avec nom et note) et :
+                <ul>
+                    <li>Filtrez ceux qui ont plus de 10/20</li>
+                    <li>Triez par note décroissante</li>
+                    <li>Extrayez seulement les noms avec map()</li>
+                </ul>
+            </li>
+            <li>Utilisez find() pour trouver le premier produit en rupture de stock</li>
+            <li>Combinez plusieurs méthodes pour résoudre un problème complexe</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <strong> À retenir :</strong> map(), filter() et reduce() sont les 3 méthodes les plus importantes du JavaScript moderne. Maîtrise-les absolument !
+    </div>
+</div>
+
+
+<!-- MODULE 7: Objets -->
+<div id="module7" class="module">
+    <h2>Module 7: Objets Avancés</h2>
+    
+    <div class="concept">
+        <h3> Concepts Clés</h3>
+        <p>Les <strong>objets</strong> sont des collections de propriétés (paires clé-valeur). JavaScript moderne offre de nombreuses fonctionnalités puissantes pour les manipuler.</p>
+    </div>
+
+    <h3>1. Créer des Objets</h3>
+    
+    <div class="example">
+        <div class="example-title">Différentes façons de créer des objets:</div>
+        <pre>
+// Objet littéral (le plus courant)
+let personne = {
+    nom: "Dupont",
+    prenom: "Marie",
+    age: 30,
+    ville: "Paris"
+};
+
+// Objet vide
+let vide = {};
+
+// Avec new Object (rare)
+let obj = new Object();
+obj.nom = "Test";
+
+// Accéder aux propriétés
+console.log(personne.nom);        // "Dupont" (notation point)
+console.log(personne["prenom"]);  // "Marie" (notation crochet)
+
+// Modifier une propriété
+personne.age = 31;
+
+// Ajouter une propriété
+personne.email = "marie@email.com";
+
+// Supprimer une propriété
+delete personne.ville;
+        </pre>
+    </div>
+
+    <h3>2. Méthodes dans les Objets</h3>
+    
+    <div class="example">
+        <div class="example-title">Fonctions à l'intérieur des objets:</div>
+        <pre>
+let voiture = {
+    marque: "Toyota",
+    modele: "Corolla",
+    annee: 2020,
+    km: 15000,
+    
+    // Méthode classique
+    demarrer: function() {
+        console.log("La voiture démarre!");
+    },
+    
+    // Syntaxe ES6 (recommandée)
+    klaxonner() {
+        console.log("Beep beep!");
+    },
+    
+    // Utiliser 'this' pour accéder aux propriétés
+    afficherInfo() {
+        console.log(`${this.marque} ${this.modele} (${this.annee})`);
+    },
+    
+    rouler(distance) {
+        this.km += distance;
+        console.log(`Vous avez roulé ${distance} km. Total: ${this.km} km`);
+    }
+};
+
+voiture.demarrer();        // "La voiture démarre!"
+voiture.klaxonner();       // "Beep beep!"
+voiture.afficherInfo();    // "Toyota Corolla (2020)"
+voiture.rouler(50);        // "Vous avez roulé 50 km. Total: 15050 km"
+        </pre>
+    </div>
+
+    <h3>3.  Object.keys(), Object.values(), Object.entries()</h3>
+    
+    <div class="concept">
+        <p>Ces méthodes <strong>ESSENTIELLES</strong> permettent de transformer un objet en tableau pour pouvoir utiliser les méthodes d'array (map, filter, etc.)</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Les 3 méthodes indispensables:</div>
+        <pre>
+let utilisateur = {
+    nom: "Martin",
+    prenom: "Alice",
+    age: 28,
+    ville: "Lyon",
+    actif: true
+};
+
+// Object.keys() - Retourne un ARRAY des clés
+let cles = Object.keys(utilisateur);
+console.log(cles); 
+// ["nom", "prenom", "age", "ville", "actif"]
+
+// Object.values() - Retourne un ARRAY des valeurs
+let valeurs = Object.values(utilisateur);
+console.log(valeurs); 
+// ["Martin", "Alice", 28, "Lyon", true]
+
+// Object.entries() - Retourne un ARRAY de paires [clé, valeur]
+let entrees = Object.entries(utilisateur);
+console.log(entrees);
+// [
+//   ["nom", "Martin"],
+//   ["prenom", "Alice"],
+//   ["age", 28],
+//   ["ville", "Lyon"],
+//   ["actif", true]
+// ]
+
+// UTILISATION PRATIQUE - Afficher toutes les propriétés
+Object.keys(utilisateur).forEach(cle => {
+    console.log(`${cle}: ${utilisateur[cle]}`);
+});
+
+// Filtrer les propriétés
+let clesCourtes = Object.keys(utilisateur).filter(cle => cle.length < 5);
+console.log(clesCourtes); // ["nom", "age", "actif"]
+
+// Compter les propriétés
+let nombreProps = Object.keys(utilisateur).length;
+console.log(nombreProps); // 5
+        </pre>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Cas d'usage avancés:</div>
+        <pre>
+let produits = {
+    laptop: 1000,
+    souris: 25,
+    clavier: 75,
+    ecran: 300
+};
+
+// Calculer le total avec reduce()
+let total = Object.values(produits).reduce((acc, prix) => acc + prix, 0);
+console.log(total); // 1400
+
+// Trouver le produit le plus cher
+let entries = Object.entries(produits);
+let plusCher = entries.reduce((max, [nom, prix]) => {
+    return prix > max[1] ? [nom, prix] : max;
+}, entries[0]);
+console.log(plusCher); // ["laptop", 1000]
+
+// Filtrer les produits < 100€
+let abordables = Object.entries(produits)
+    .filter(([nom, prix]) => prix < 100)
+    .map(([nom, prix]) => nom);
+console.log(abordables); // ["souris", "clavier"]
+
+// Créer un nouvel objet avec prix augmentés de 10%
+let nouveauxPrix = {};
+Object.entries(produits).forEach(([nom, prix]) => {
+    nouveauxPrix[nom] = prix * 1.1;
+});
+console.log(nouveauxPrix);
+// { laptop: 1100, souris: 27.5, clavier: 82.5, ecran: 330 }
+        </pre>
+    </div>
+
+    <h3>4. Parcourir un Objet</h3>
+    
+    <div class="example">
+        <div class="example-title">Différentes méthodes:</div>
+        <pre>
+let etudiant = {
+    nom: "Dubois",
+    age: 22,
+    note: 15,
+    classe: "Terminal"
+};
+
+// Méthode 1: for...in (classique)
+for (let cle in etudiant) {
+    console.log(`${cle}: ${etudiant[cle]}`);
+}
+
+// Méthode 2: Object.keys() + forEach (moderne)
+Object.keys(etudiant).forEach(cle => {
+    console.log(`${cle}: ${etudiant[cle]}`);
+});
+
+// Méthode 3: Object.entries() + for...of (ES6+)
+for (let [cle, valeur] of Object.entries(etudiant)) {
+    console.log(`${cle}: ${valeur}`);
+}
+
+// Méthode 4: Object.entries() + forEach
+Object.entries(etudiant).forEach(([cle, valeur]) => {
+    console.log(`${cle}: ${valeur}`);
+});
+        </pre>
+    </div>
+
+    <h3>5.  Destructuration d'Objets (ES6)</h3>
+    
+    <div class="concept">
+        <p>La <strong>destructuration</strong> permet d'extraire des propriétés d'un objet en une seule ligne. C'est ultra pratique et très utilisé !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Syntaxe et utilisation:</div>
+        <pre>
+let personne = {
+    nom: "Dubois",
+    prenom: "Sophie",
+    age: 28,
+    ville: "Lyon",
+    pays: "France"
+};
+
+//  Méthode classique (longue)
+let nom = personne.nom;
+let age = personne.age;
+let ville = personne.ville;
+
+//  Avec destructuration (moderne)
+let { nom, age, ville } = personne;
+console.log(nom);   // "Dubois"
+console.log(age);   // 28
+console.log(ville); // "Lyon"
+
+// Renommer les variables
+let { nom: nomPersonne, age: agePersonne } = personne;
+console.log(nomPersonne); // "Dubois"
+console.log(agePersonne); // 28
+
+// Valeurs par défaut
+let { nom, pays, profession = "Inconnu" } = personne;
+console.log(profession); // "Inconnu" (n'existe pas dans l'objet)
+
+// Destructuration partielle
+let { nom, prenom } = personne; // On prend juste ce qu'on veut
+
+// Rest operator (...)
+let { nom, age, ...reste } = personne;
+console.log(reste); // { ville: "Lyon", pays: "France" }
+        </pre>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Destructuration dans les fonctions:</div>
+        <pre>
+// Au lieu de passer tout l'objet
+function afficherPersonne(personne) {
+    console.log(personne.nom + " " + personne.prenom);
+}
+
+// On peut destructurer directement dans les paramètres
+function afficherPersonne({ nom, prenom }) {
+    console.log(nom + " " + prenom);
+}
+
+let user = { nom: "Martin", prenom: "Alice", age: 30 };
+afficherPersonne(user); // "Martin Alice"
+
+// Avec valeurs par défaut
+function creerUtilisateur({ nom, age, role = "user" }) {
+    console.log(`${nom}, ${age} ans, rôle: ${role}`);
+}
+
+creerUtilisateur({ nom: "Bob", age: 25 }); 
+// "Bob, 25 ans, rôle: user"
+
+creerUtilisateur({ nom: "Alice", age: 30, role: "admin" }); 
+// "Alice, 30 ans, rôle: admin"
+        </pre>
+    </div>
+
+    <h3>6.  Spread Operator avec Objets (...)</h3>
+    
+    <div class="example">
+        <div class="example-title">Copier et fusionner des objets:</div>
+        <pre>
+// Copier un objet (copie superficielle)
+let original = { nom: "Alice", age: 30 };
+let copie = { ...original };
+copie.age = 31;
+
+console.log(original.age); // 30 (pas modifié)
+console.log(copie.age);    // 31
+
+// Fusionner des objets
+let obj1 = { a: 1, b: 2 };
+let obj2 = { c: 3, d: 4 };
+let fusion = { ...obj1, ...obj2 };
+console.log(fusion); // { a: 1, b: 2, c: 3, d: 4 }
+
+// Écraser des propriétés
+let user = { nom: "Alice", age: 30, ville: "Paris" };
+let updatedUser = { ...user, age: 31, email: "alice@mail.com" };
+console.log(updatedUser);
+// { nom: "Alice", age: 31, ville: "Paris", email: "alice@mail.com" }
+
+// Cas pratique: Mise à jour immutable
+let state = { count: 0, user: "Alice" };
+// Au lieu de state.count++ (mute l'objet)
+state = { ...state, count: state.count + 1 }; // Crée un nouvel objet
+
+// Combiner plusieurs sources
+let defaults = { theme: "light", lang: "fr" };
+let userSettings = { lang: "en" };
+let settings = { ...defaults, ...userSettings };
+console.log(settings); // { theme: "light", lang: "en" }
+        </pre>
+    </div>
+
+    <h3>7. Object.assign()</h3>
+    
+    <div class="example">
+        <div class="example-title">Méthode alternative pour fusionner:</div>
+        <pre>
+// Object.assign(cible, source1, source2, ...)
+let obj1 = { a: 1, b: 2 };
+let obj2 = { b: 3, c: 4 };
+let obj3 = { d: 5 };
+
+let resultat = Object.assign({}, obj1, obj2, obj3);
+console.log(resultat); // { a: 1, b: 3, c: 4, d: 5 }
+
+// Si on ne met pas {} au début, obj1 est modifié !
+Object.assign(obj1, obj2);
+console.log(obj1); // { a: 1, b: 3, c: 4 } (modifié!)
+
+// Cloner un objet
+let original = { nom: "Alice", age: 30 };
+let clone = Object.assign({}, original);
+
+// Note: Le spread operator est plus moderne et lisible
+let clone2 = { ...original }; // Préféré
+        </pre>
+    </div>
+
+    <h3>8. Objets Imbriqués</h3>
+    
+    <div class="example">
+        <div class="example-title">Travailler avec des structures complexes:</div>
+        <pre>
+let entreprise = {
+    nom: "TechCorp",
+    adresse: {
+        rue: "123 Avenue Tech",
+        ville: "Paris",
+        codePostal: "75001",
+        pays: "France"
+    },
+    employes: [
+        { nom: "Alice", poste: "Dev", salaire: 50000 },
+        { nom: "Bob", poste: "Designer", salaire: 45000 },
+        { nom: "Charlie", poste: "Manager", salaire: 60000 }
+    ],
+    fondation: 2015
+};
+
+// Accès aux propriétés imbriquées
+console.log(entreprise.adresse.ville); // "Paris"
+console.log(entreprise.employes[0].nom); // "Alice"
+
+// Destructuration imbriquée
+let { 
+    nom, 
+    adresse: { ville, pays },
+    employes 
+} = entreprise;
+
+console.log(ville); // "Paris"
+console.log(pays); // "France"
+
+// Calculer le salaire total
+let totalSalaires = entreprise.employes
+    .reduce((acc, emp) => acc + emp.salaire, 0);
+console.log(totalSalaires); // 155000
+
+// Trouver un employé
+let manager = entreprise.employes
+    .find(emp => emp.poste === "Manager");
+console.log(manager); // { nom: "Charlie", poste: "Manager", salaire: 60000 }
+
+// Mettre à jour un employé (immutable)
+let nouvelleEntreprise = {
+    ...entreprise,
+    employes: entreprise.employes.map(emp => 
+        emp.nom === "Alice" 
+            ? { ...emp, salaire: 55000 } 
+            : emp
+    )
+};
+        </pre>
+    </div>
+
+    <h3>9. Vérifier l'Existence de Propriétés</h3>
+    
+    <div class="example">
+        <div class="example-title">Différentes méthodes:</div>
+        <pre>
+let user = {
+    nom: "Alice",
+    age: 30,
+    email: null
+};
+
+// Méthode 1: in
+console.log("nom" in user);    // true
+console.log("ville" in user);  // false
+
+// Méthode 2: hasOwnProperty()
+console.log(user.hasOwnProperty("nom")); // true
+console.log(user.hasOwnProperty("ville")); // false
+
+// Méthode 3: undefined (attention aux faux positifs!)
+console.log(user.nom !== undefined);    // true
+console.log(user.ville !== undefined);  // false
+console.log(user.email !== undefined);  // true (email existe mais vaut null!)
+
+// Méthode 4: Optional chaining (?.)
+console.log(user?.adresse?.rue); // undefined (pas d'erreur)
+        </pre>
+    </div>
+
+    <h3>10. Exemple Complet Interactif</h3>
+    
+    <div class="example">
+        <div class="example-title">Application de gestion d'utilisateurs:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Gestion Utilisateurs&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: Arial; max-width: 900px; margin: 50px auto; }
+        .user-card { border: 2px solid #2C3F77; padding: 20px; margin: 15px 0; border-radius: 10px; }
+        .stats { background: #f0f0f0; padding: 20px; margin: 20px 0; border-radius: 8px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Base de Données Utilisateurs&lt;/h1&gt;
+    &lt;div id="stats"&gt;&lt;/div&gt;
+    &lt;div id="users"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let users = [
+            { 
+                id: 1, 
+                nom: "Dupont", 
+                prenom: "Alice", 
+                age: 28, 
+                ville: "Paris",
+                role: "admin",
+                actif: true
+            },
+            { 
+                id: 2, 
+                nom: "Martin", 
+                prenom: "Bob", 
+                age: 35, 
+                ville: "Lyon",
+                role: "user",
+                actif: true
+            },
+            { 
+                id: 3, 
+                nom: "Dubois", 
+                prenom: "Charlie", 
+                age: 42, 
+                ville: "Marseille",
+                role: "user",
+                actif: false
+            },
+            { 
+                id: 4, 
+                nom: "Lefebvre", 
+                prenom: "Diana", 
+                age: 31, 
+                ville: "Paris",
+                role: "moderator",
+                actif: true
+            }
+        ];
+
+        // STATISTIQUES avec Object.keys, Object.values, reduce
+        let stats = {
+            total: users.length,
+            actifs: users.filter(u => u.actif).length,
+            ageMoyen: users.reduce((acc, u) => acc + u.age, 0) / users.length,
+            parVille: users.reduce((acc, u) => {
+                acc[u.ville] = (acc[u.ville] || 0) + 1;
+                return acc;
+            }, {}),
+            parRole: users.reduce((acc, u) => {
+                acc[u.role] = (acc[u.role] || 0) + 1;
+                return acc;
+            }, {})
+        };
+
+        // Afficher les stats
+        let statsHTML = `
+            &lt;div class="stats"&gt;
+                &lt;h2&gt;Statistiques&lt;/h2&gt;
+                &lt;p&gt;&lt;strong&gt;Total:&lt;/strong&gt; ${stats.total} utilisateurs&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Actifs:&lt;/strong&gt; ${stats.actifs}&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Âge moyen:&lt;/strong&gt; ${stats.ageMoyen.toFixed(1)} ans&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Par ville:&lt;/strong&gt; 
+                    ${Object.entries(stats.parVille).map(([ville, count]) => 
+                        `${ville}: ${count}`
+                    ).join(', ')}
+                &lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Par rôle:&lt;/strong&gt; 
+                    ${Object.entries(stats.parRole).map(([role, count]) => 
+                        `${role}: ${count}`
+                    ).join(', ')}
+                &lt;/p&gt;
+            &lt;/div&gt;
+        `;
+        document.getElementById('stats').innerHTML = statsHTML;
+
+        // Afficher les utilisateurs actifs de Paris
+        let usersHTML = users
+            .filter(u => u.actif && u.ville === "Paris")
+            .map(({ nom, prenom, age, role }) => `
+                &lt;div class="user-card"&gt;
+                    &lt;h3&gt;${prenom} ${nom}&lt;/h3&gt;
+                    &lt;p&gt;&lt;strong&gt;Âge:&lt;/strong&gt; ${age} ans&lt;/p&gt;
+                    &lt;p&gt;&lt;strong&gt;Rôle:&lt;/strong&gt; ${role}&lt;/p&gt;
+                &lt;/div&gt;
+            `)
+            .join('');
+
+        document.getElementById('users').innerHTML = 
+            '&lt;h2&gt;Utilisateurs actifs à Paris&lt;/h2&gt;' + usersHTML;
+
+        // Démonstration des méthodes Object
+        console.log("=== DÉMONSTRATION ===");
+        
+        let user = users[0];
+        console.log("Clés:", Object.keys(user));
+        console.log("Valeurs:", Object.values(user));
+        console.log("Entrées:", Object.entries(user));
+        
+        // Destructuration
+        let { nom, prenom, ...infos } = user;
+        console.log("Nom complet:", prenom, nom);
+        console.log("Autres infos:", infos);
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Créez un objet "livre" avec titre, auteur, pages, année, lu (boolean)</li>
+            <li>Utilisez Object.keys() pour afficher toutes les propriétés</li>
+            <li>Utilisez Object.values() pour calculer le nombre de pages total de plusieurs livres</li>
+            <li>Créez un objet avec des produits et leurs prix, puis :
+                <ul>
+                    <li>Trouvez le produit le plus cher avec Object.entries()</li>
+                    <li>Calculez le prix moyen</li>
+                    <li>Créez un nouveau objet avec tous les prix augmentés de 10%</li>
+                </ul>
+            </li>
+            <li>Utilisez la destructuration pour extraire des propriétés d'un utilisateur</li>
+            <li>Fusionnez deux objets avec le spread operator</li>
+            <li>Créez une fonction qui prend un objet en paramètre et utilise la destructuration</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <strong> À retenir :</strong> Object.keys(), Object.values(), Object.entries() + destructuration + spread operator = Les outils essentiels pour manipuler les objets en JavaScript moderne !
+    </div>
+</div>
+
+<!-- MODULE 8: DOM Manipulation -->
+<div id="module8" class="module">
+    <h2>Module 8: DOM - Sélection & Manipulation Complète</h2>
+    
+    <div class="concept">
+        <h3>Concepts Clés</h3>
+        <p>Le <strong>DOM (Document Object Model)</strong> représente la structure HTML d'une page web. JavaScript peut sélectionner et modifier n'importe quel élément du DOM pour créer des pages interactives.</p>
+    </div>
+
+    <h3>1. SÉLECTION D'ÉLÉMENTS - LES BASES ESSENTIELLES</h3>
+    
+    <div class="warning">
+        <strong>SECTION CRITIQUE</strong> : Ces méthodes sont LA BASE du JavaScript web. Tu DOIS absolument les maîtriser !
+    </div>
+
+    <h4>getElementById() - Sélectionner par ID</h4>
+    
+    <div class="example">
+        <div class="example-title">La méthode la plus basique et rapide:</div>
+        <pre>
+// HTML
+&lt;div id="titre"&gt;Mon Titre&lt;/div&gt;
+&lt;p id="description"&gt;Une description&lt;/p&gt;
+
+// JavaScript
+let titre = document.getElementById("titre");
+console.log(titre); // &lt;div id="titre"&gt;Mon Titre&lt;/div&gt;
+
+// Modifier le contenu
+titre.textContent = "Nouveau Titre";
+
+// IMPORTANT: getElementById retourne UN SEUL élément ou null
+let inexistant = document.getElementById("rien");
+console.log(inexistant); // null
+        </pre>
+    </div>
+
+    <h4>getElementsByClassName() - Sélectionner par Classe</h4>
+    
+    <div class="example">
+        <div class="example-title">Retourne une HTMLCollection (ressemble à un array):</div>
+        <pre>
+// HTML
+&lt;div class="box"&gt;Box 1&lt;/div&gt;
+&lt;div class="box"&gt;Box 2&lt;/div&gt;
+&lt;div class="box"&gt;Box 3&lt;/div&gt;
+
+// JavaScript
+let boxes = document.getElementsByClassName("box");
+console.log(boxes); // HTMLCollection(3)
+console.log(boxes.length); // 3
+
+// Accéder à un élément spécifique
+console.log(boxes[0]); // Premier élément
+console.log(boxes[1]); // Deuxième élément
+
+// ATTENTION: Ce n'est PAS un vrai array !
+// Pour utiliser forEach, il faut convertir :
+Array.from(boxes).forEach(box => {
+    box.style.color = "red";
+});
+
+// Ou avec une boucle classique
+for (let i = 0; i < boxes.length; i++) {
+    boxes[i].textContent = "Box " + (i + 1);
+}
+        </pre>
+    </div>
+
+    <h4>getElementsByTagName() - Sélectionner par Balise</h4>
+    
+    <div class="example">
+        <div class="example-title">Sélectionner tous les éléments d'un type:</div>
+        <pre>
+// Sélectionner tous les paragraphes
+let paragraphes = document.getElementsByTagName("p");
+console.log(paragraphes.length);
+
+// Tous les divs
+let divs = document.getElementsByTagName("div");
+
+// Tous les liens
+let liens = document.getElementsByTagName("a");
+
+// Changer tous les paragraphes en rouge
+Array.from(paragraphes).forEach(p => {
+    p.style.color = "red";
+});
+        </pre>
+    </div>
+
+    <h4>querySelector() - Sélecteur CSS Moderne (1 élément)</h4>
+    
+    <div class="concept">
+        <p><strong>querySelector()</strong> est LA méthode moderne recommandée ! Elle utilise la syntaxe CSS et retourne le PREMIER élément trouvé.</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Syntaxe CSS puissante:</div>
+        <pre>
+// Par ID
+let titre = document.querySelector("#titre");
+
+// Par classe
+let premierBox = document.querySelector(".box");
+
+// Par balise
+let premierP = document.querySelector("p");
+
+// Sélecteurs complexes
+let premierLienDansNav = document.querySelector("nav a");
+let inputEmail = document.querySelector("input[type='email']");
+let premierLiDansUl = document.querySelector("ul li");
+
+// Pseudo-classes
+let premierEnfant = document.querySelector("ul li:first-child");
+let dernierEnfant = document.querySelector("ul li:last-child");
+let deuxieme = document.querySelector("ul li:nth-child(2)");
+
+// Combiner plusieurs sélecteurs
+let btn = document.querySelector("button.primary");
+let div = document.querySelector("div#content.active");
+
+// IMPORTANT: Retourne null si rien n'est trouvé
+let element = document.querySelector(".inexistant");
+console.log(element); // null
+        </pre>
+    </div>
+
+    <h4>querySelectorAll() - Sélecteur CSS Moderne (tous)</h4>
+    
+    <div class="concept">
+        <p><strong>querySelectorAll()</strong> retourne TOUS les éléments qui correspondent. C'est la plus flexible et puissante !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Sélectionner plusieurs éléments:</div>
+        <pre>
+// Toutes les div
+let divs = document.querySelectorAll("div");
+
+// Toutes les box
+let boxes = document.querySelectorAll(".box");
+
+// Tous les liens dans la nav
+let navLinks = document.querySelectorAll("nav a");
+
+// Tous les inputs de type text
+let textInputs = document.querySelectorAll("input[type='text']");
+
+// AVANTAGE: Retourne une NodeList (on peut utiliser forEach directement!)
+boxes.forEach(box => {
+    box.style.backgroundColor = "blue";
+});
+
+// Convertir en array pour utiliser map, filter, etc.
+let boxArray = Array.from(boxes);
+let textes = boxArray.map(box => box.textContent);
+
+// IMPORTANT: Retourne une NodeList vide si rien n'est trouvé
+let vide = document.querySelectorAll(".inexistant");
+console.log(vide.length); // 0
+        </pre>
+    </div>
+
+    <h3>2. Tableau Comparatif des Méthodes</h3>
+    
+    <table>
+        <tr>
+            <th>Méthode</th>
+            <th>Retourne</th>
+            <th>Peut forEach?</th>
+            <th>Vitesse</th>
+            <th>Recommandé?</th>
+        </tr>
+        <tr>
+            <td><code>getElementById()</code></td>
+            <td>1 élément ou null</td>
+            <td>N/A</td>
+            <td>Très rapide</td>
+            <td>Oui pour ID</td>
+        </tr>
+        <tr>
+            <td><code>getElementsByClassName()</code></td>
+            <td>HTMLCollection</td>
+            <td>Non (Array.from)</td>
+            <td>Rapide</td>
+            <td>querySelector préféré</td>
+        </tr>
+        <tr>
+            <td><code>getElementsByTagName()</code></td>
+            <td>HTMLCollection</td>
+            <td>Non (Array.from)</td>
+            <td>Rapide</td>
+            <td>querySelector préféré</td>
+        </tr>
+        <tr>
+            <td><code>querySelector()</code></td>
+            <td>1 élément ou null</td>
+            <td>N/A</td>
+            <td>Plus lent</td>
+            <td>OUI - Moderne</td>
+        </tr>
+        <tr>
+            <td><code>querySelectorAll()</code></td>
+            <td>NodeList</td>
+            <td>Oui</td>
+            <td>Plus lent</td>
+            <td>OUI - Flexible</td>
+        </tr>
+    </table>
+
+    <h3>3.  Manipulation du Contenu</h3>
+
+    <h4>textContent vs innerHTML vs innerText</h4>
+    
+    <div class="concept">
+        <p>3 propriétés différentes pour modifier le contenu. Comprendre leurs différences est CRUCIAL !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Les 3 méthodes expliquées:</div>
+        <pre>
+// HTML de départ
+&lt;div id="demo"&gt;
+    &lt;strong&gt;Texte&lt;/strong&gt; en gras
+&lt;/div&gt;
+
+let div = document.querySelector("#demo");
+
+// 1. textContent - Récupère/définit TOUT le texte (ignore HTML)
+console.log(div.textContent); // "Texte en gras"
+div.textContent = "Nouveau texte";
+// Résultat: &lt;div id="demo"&gt;Nouveau texte&lt;/div&gt;
+
+// 2. innerHTML - Récupère/définit le HTML
+console.log(div.innerHTML); // "&lt;strong&gt;Texte&lt;/strong&gt; en gras"
+div.innerHTML = "&lt;em&gt;Texte en italique&lt;/em&gt;";
+// Résultat: &lt;div id="demo"&gt;&lt;em&gt;Texte en italique&lt;/em&gt;&lt;/div&gt;
+
+// 3. innerText - Comme textContent mais respecte le CSS (rare)
+console.log(div.innerText); // Texte visible à l'écran
+
+// DANGER avec innerHTML - Risque de sécurité (XSS)
+let userInput = "&lt;img src=x onerror=alert('XSS')&gt;";
+div.innerHTML = userInput; //  DANGEREUX !
+div.textContent = userInput; //  SÛR (affiche le texte brut)
+
+// Recommandation:
+// - textContent pour du texte simple (plus rapide et sûr)
+// - innerHTML quand vous devez insérer du HTML (attention sécurité)
+        </pre>
+    </div>
+
+    <h3>4. Attributs HTML</h3>
+    
+    <div class="example">
+        <div class="example-title">getAttribute() et setAttribute():</div>
+        <pre>
+// HTML
+&lt;img id="photo" src="photo1.jpg" alt="Ma photo" data-id="123"&gt;
+&lt;a id="lien" href="https://google.com"&gt;Google&lt;/a&gt;
+
+let img = document.querySelector("#photo");
+let lien = document.querySelector("#lien");
+
+// Lire un attribut
+let src = img.getAttribute("src");
+console.log(src); // "photo1.jpg"
+
+let href = lien.getAttribute("href");
+console.log(href); // "https://google.com"
+
+// Modifier un attribut
+img.setAttribute("src", "photo2.jpg");
+img.setAttribute("alt", "Nouvelle photo");
+
+// Ajouter un nouvel attribut
+img.setAttribute("title", "Survolez-moi");
+
+// Supprimer un attribut
+img.removeAttribute("title");
+
+// Vérifier si un attribut existe
+if (img.hasAttribute("data-id")) {
+    console.log("L'attribut data-id existe");
+}
+
+// Accès direct (raccourci pour attributs standards)
+img.src = "photo3.jpg"; // Équivaut à setAttribute("src", ...)
+lien.href = "https://example.com";
+
+// Attributs data-*
+let id = img.getAttribute("data-id"); // "123"
+// Ou avec dataset (moderne)
+let id2 = img.dataset.id; // "123"
+        </pre>
+    </div>
+
+    <h3>5. Classes CSS avec classList</h3>
+    
+    <div class="concept">
+        <p><strong>classList</strong> est LA méthode moderne pour gérer les classes CSS. Beaucoup plus pratique que className !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Méthodes de classList:</div>
+        <pre>
+// HTML
+&lt;div id="box" class="container blue"&gt;Ma boîte&lt;/div&gt;
+
+let box = document.querySelector("#box");
+
+// Ajouter une classe
+box.classList.add("active");
+// Résultat: class="container blue active"
+
+// Ajouter plusieurs classes
+box.classList.add("large", "shadow");
+// Résultat: class="container blue active large shadow"
+
+// Retirer une classe
+box.classList.remove("blue");
+// Résultat: class="container active large shadow"
+
+// Toggle (ajouter si absente, retirer si présente)
+box.classList.toggle("active"); // Retire "active"
+box.classList.toggle("active"); // Ajoute "active"
+
+// Vérifier si une classe existe
+if (box.classList.contains("active")) {
+    console.log("La classe active est présente");
+}
+
+// Remplacer une classe
+box.classList.replace("large", "small");
+
+// Exemple pratique: Menu toggle
+let menu = document.querySelector("#menu");
+let bouton = document.querySelector("#menuBtn");
+
+bouton.addEventListener("click", () => {
+    menu.classList.toggle("open");
+});
+
+// Ancienne méthode (à éviter)
+box.className = "nouvelle-classe"; // Écrase toutes les classes!
+
+// Lire toutes les classes
+console.log(box.className); // String: "container active small shadow"
+console.log(box.classList);  // DOMTokenList: ["container", "active", "small", "shadow"]
+        </pre>
+    </div>
+
+    <h3>6. Styles CSS avec JavaScript</h3>
+    
+    <div class="example">
+        <div class="example-title">Modifier les styles inline:</div>
+        <pre>
+let element = document.querySelector("#box");
+
+// Modifier un style
+element.style.color = "red";
+element.style.backgroundColor = "blue"; // Notez le camelCase!
+element.style.fontSize = "20px";
+element.style.padding = "10px";
+
+// Plusieurs styles en une fois
+element.style.cssText = `
+    color: white;
+    background-color: black;
+    padding: 20px;
+    border-radius: 10px;
+`;
+
+// Lire un style (attention: retourne seulement les styles inline!)
+console.log(element.style.color); // "white"
+
+// Pour lire TOUS les styles (y compris CSS externes)
+let styles = window.getComputedStyle(element);
+console.log(styles.color); // Valeur réelle affichée
+console.log(styles.fontSize);
+
+// Supprimer un style
+element.style.color = "";
+
+// RECOMMANDATION: Préférer classList pour les styles
+// Au lieu de :
+element.style.display = "none";
+// Faire :
+element.classList.add("hidden"); // Et définir .hidden { display: none; } en CSS
+        </pre>
+    </div>
+
+    <h3>7. Créer et Ajouter des Éléments</h3>
+    
+    <div class="example">
+        <div class="example-title">createElement() et appendChild():</div>
+        <pre>
+// Créer un nouvel élément
+let newDiv = document.createElement("div");
+
+// Ajouter du contenu
+newDiv.textContent = "Je suis un nouveau div";
+
+// Ajouter des classes
+newDiv.classList.add("box", "new");
+
+// Ajouter des attributs
+newDiv.setAttribute("data-id", "123");
+
+// Ajouter des styles
+newDiv.style.padding = "10px";
+newDiv.style.backgroundColor = "lightblue";
+
+// Ajouter à la page (à la fin du body)
+document.body.appendChild(newDiv);
+
+// Ajouter dans un conteneur spécifique
+let container = document.querySelector("#container");
+container.appendChild(newDiv);
+
+// Créer plusieurs éléments
+for (let i = 1; i <= 5; i++) {
+    let item = document.createElement("li");
+    item.textContent = `Item ${i}`;
+    document.querySelector("ul").appendChild(item);
+}
+
+// Créer une structure complète
+let card = document.createElement("div");
+card.className = "card";
+card.innerHTML = `
+    &lt;h3&gt;Titre de la carte&lt;/h3&gt;
+    &lt;p&gt;Description de la carte&lt;/p&gt;
+    &lt;button&gt;Cliquez-moi&lt;/button&gt;
+`;
+container.appendChild(card);
+        </pre>
+    </div>
+
+    <h3>8. insertBefore() et insertAdjacentHTML()</h3>
+    
+    <div class="example">
+        <div class="example-title">Insérer à des positions spécifiques:</div>
+        <pre>
+let container = document.querySelector("#container");
+
+// insertBefore(nouveau, existant)
+let newElement = document.createElement("p");
+newElement.textContent = "Nouveau paragraphe";
+
+let firstP = container.querySelector("p");
+container.insertBefore(newElement, firstP); // Insère AVANT le premier p
+
+// insertAdjacentHTML - Très pratique!
+// 4 positions: beforebegin, afterbegin, beforeend, afterend
+
+let div = document.querySelector("#demo");
+div.insertAdjacentHTML("beforebegin", "&lt;p&gt;Avant le div&lt;/p&gt;");
+div.insertAdjacentHTML("afterbegin", "&lt;p&gt;Début du div&lt;/p&gt;");
+div.insertAdjacentHTML("beforeend", "&lt;p&gt;Fin du div&lt;/p&gt;");
+div.insertAdjacentHTML("afterend", "&lt;p&gt;Après le div&lt;/p&gt;");
+
+// prepend() et append() (moderne)
+container.prepend(newElement); // Ajoute au début
+container.append(newElement);  // Ajoute à la fin
+        </pre>
+    </div>
+
+    <h3>9.  Supprimer des Éléments</h3>
+    
+    <div class="example">
+        <div class="example-title">remove() et removeChild():</div>
+        <pre>
+let element = document.querySelector("#aSupprimer");
+
+// Méthode moderne (recommandée)
+element.remove();
+
+// Ancienne méthode
+let parent = element.parentElement;
+parent.removeChild(element);
+
+// Supprimer tous les enfants d'un élément
+let container = document.querySelector("#container");
+container.innerHTML = ""; // Méthode rapide
+
+// Ou en boucle
+while (container.firstChild) {
+    container.removeChild(container.firstChild);
+}
+
+// Supprimer tous les éléments d'une classe
+document.querySelectorAll(".aSupprimer").forEach(el => {
+    el.remove();
+});
+        </pre>
+    </div>
+
+    <h3>10. Exemple Complet Interactif</h3>
+    
+    <div class="example">
+        <div class="example-title">Application de liste de tâches complète:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Todo List&lt;/title&gt;
+    &lt;style&gt;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; }
+        h1 { color: #2C3F77; margin-bottom: 20px; }
+        .input-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; background: #2C3F77; color: white; border: none; 
+                 border-radius: 5px; cursor: pointer; }
+        button:hover { background: #A0866B; }
+        .task { display: flex; align-items: center; gap: 10px; padding: 15px; 
+                border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px; }
+        .task.completed { background: #e8f5e9; text-decoration: line-through; opacity: 0.6; }
+        .task-text { flex: 1; }
+        .delete-btn { background: #f44336; padding: 5px 10px; }
+        .stats { background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt; Ma Liste de Tâches&lt;/h1&gt;
+    
+    &lt;div class="stats" id="stats"&gt;&lt;/div&gt;
+    
+    &lt;div class="input-container"&gt;
+        &lt;input type="text" id="taskInput" placeholder="Nouvelle tâche..."&gt;
+        &lt;button id="addBtn"&gt;Ajouter&lt;/button&gt;
+    &lt;/div&gt;
+    
+    &lt;div id="taskList"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        // Sélection des éléments
+        let taskInput = document.getElementById("taskInput");
+        let addBtn = document.getElementById("addBtn");
+        let taskList = document.getElementById("taskList");
+        let stats = document.getElementById("stats");
+
+        // Fonction pour mettre à jour les stats
+        function updateStats() {
+            let allTasks = document.querySelectorAll(".task");
+            let completed = document.querySelectorAll(".task.completed");
+            let remaining = allTasks.length - completed.length;
+            
+            stats.innerHTML = `
+                &lt;strong&gt;Total:&lt;/strong&gt; ${allTasks.length} | 
+                &lt;strong&gt;Complétées:&lt;/strong&gt; ${completed.length} | 
+                &lt;strong&gt;Restantes:&lt;/strong&gt; ${remaining}
+            `;
+        }
+
+        // Fonction pour créer une tâche
+        function createTask(text) {
+            // Créer le container de la tâche
+            let task = document.createElement("div");
+            task.classList.add("task");
+            
+            // Checkbox
+            let checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.addEventListener("change", function() {
+                task.classList.toggle("completed");
+                updateStats();
+            });
+            
+            // Texte de la tâche
+            let taskText = document.createElement("span");
+            taskText.classList.add("task-text");
+            taskText.textContent = text;
+            
+            // Bouton supprimer
+            let deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Supprimer";
+            deleteBtn.classList.add("delete-btn");
+            deleteBtn.addEventListener("click", function() {
+                task.remove();
+                updateStats();
+            });
+            
+            // Assembler les éléments
+            task.appendChild(checkbox);
+            task.appendChild(taskText);
+            task.appendChild(deleteBtn);
+            
+            return task;
+        }
+
+        // Ajouter une tâche
+        function addTask() {
+            let text = taskInput.value.trim();
+            
+            if (text === "") {
+                alert("Veuillez entrer une tâche !");
+                return;
+            }
+            
+            let task = createTask(text);
+            taskList.appendChild(task);
+            
+            taskInput.value = "";
+            taskInput.focus();
+            
+            updateStats();
+        }
+
+        // Event listeners
+        addBtn.addEventListener("click", addTask);
+        
+        taskInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                addTask();
+            }
+        });
+
+        // Initialiser les stats
+        updateStats();
+        
+        // Ajouter quelques tâches par défaut
+        ["Apprendre JavaScript", "Faire les courses", "Sport"].forEach(task => {
+            taskList.appendChild(createTask(task));
+        });
+        updateStats();
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Sélectionnez un élément par ID et changez son texte</li>
+            <li>Sélectionnez tous les paragraphes et changez leur couleur</li>
+            <li>Créez 5 div avec createElement et ajoutez-les à la page</li>
+            <li>Ajoutez une classe "active" à un élément au clic</li>
+            <li>Créez un bouton qui supprime un élément</li>
+            <li>Créez une galerie d'images dynamique</li>
+            <li>Faites un système de tabs/onglets</li>
+            <li>Créez un compteur qui s'incrémente au clic</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <strong> À retenir :</strong> 
+        <ul>
+            <li>getElementById pour un seul élément</li>
+            <li>querySelector / querySelectorAll pour tout le reste (syntaxe CSS)</li>
+            <li>textContent pour texte, innerHTML pour HTML</li>
+            <li>classList pour gérer les classes CSS</li>
+            <li>createElement + appendChild pour créer des éléments</li>
+        </ul>
+    </div>
+</div>
+
+<!-- MODULE 9: Événements -->
+<div id="module9" class="module">
+    <h2>Module 9: Événements</h2>
+    
+    <div class="concept">
+        <h3>📚 Concepts Clés</h3>
+        <p>Les <strong>événements</strong> permettent de réagir aux actions de l'utilisateur (clics, saisie clavier, mouvements de souris, etc.).</p>
+    </div>
+
+    <h3>1. addEventListener()</h3>
+    <div class="example">
+        <div class="example-title">Écouter les événements:</div>
+        <pre>
+// Syntaxe
+element.addEventListener("type", function);
+
+// Exemple: Click
+let bouton = document.querySelector("#monBouton");
+bouton.addEventListener("click", function() {
+    console.log("Bouton cliqué!");
+});
+
+// Avec arrow function
+bouton.addEventListener("click", () => {
+    console.log("Cliqué!");
+});
+
+// Fonction nommée
+function gererClic() {
+    console.log("Clic géré!");
+}
+bouton.addEventListener("click", gererClic);
+        </pre>
+    </div>
+
+    <h3>2. Événements Courants</h3>
+    <table>
+        <tr>
+            <th>Événement</th>
+            <th>Description</th>
+            <th>Usage</th>
+        </tr>
+        <tr>
+            <td><code>click</code></td>
+            <td>Clic de souris</td>
+            <td>Boutons, liens</td>
+        </tr>
+        <tr>
+            <td><code>dblclick</code></td>
+            <td>Double-clic</td>
+            <td>Actions spéciales</td>
+        </tr>
+        <tr>
+            <td><code>mouseover</code></td>
+            <td>Souris sur l'élément</td>
+            <td>Tooltips, hover</td>
+        </tr>
+        <tr>
+            <td><code>keydown</code></td>
+            <td>Touche pressée</td>
+            <td>Saisie clavier</td>
+        </tr>
+        <tr>
+            <td><code>submit</code></td>
+            <td>Soumission formulaire</td>
+            <td>Validation</td>
+        </tr>
+        <tr>
+            <td><code>change</code></td>
+            <td>Changement de valeur</td>
+            <td>Inputs, selects</td>
+        </tr>
+    </table>
+
+    <h3>3. L'Objet Event</h3>
+    <div class="example">
+        <div class="example-title">Informations sur l'événement:</div>
+        <pre>
+bouton.addEventListener("click", function(event) {
+    console.log(event.type);       // "click"
+    console.log(event.target);     // L'élément cliqué
+    console.log(event.clientX);    // Position X de la souris
+    console.log(event.clientY);    // Position Y de la souris
+});
+
+// Empêcher le comportement par défaut
+lien.addEventListener("click", function(e) {
+    e.preventDefault();
+    console.log("Lien désactivé");
+});
+
+// Stopper la propagation
+div.addEventListener("click", function(e) {
+    e.stopPropagation();
+});
+        </pre>
+    </div>
+
+    <h3>4. Événements Formulaire</h3>
+    <div class="example">
+        <div class="example-title">Gérer les formulaires:</div>
+        <pre>
+let formulaire = document.querySelector("#monForm");
+
+formulaire.addEventListener("submit", function(e) {
+    e.preventDefault(); // Empêcher l'envoi
+    
+    let nom = document.querySelector("#nom").value;
+    let email = document.querySelector("#email").value;
+    
+    if (nom === "" || email === "") {
+        alert("Veuillez remplir tous les champs");
+        return;
+    }
+    
+    console.log("Nom:", nom);
+    console.log("Email:", email);
+});
+
+// Input en temps réel
+let input = document.querySelector("#recherche");
+input.addEventListener("input", function(e) {
+    console.log("Recherche:", e.target.value);
+});
+        </pre>
+    </div>
+
+    <h3>5. Événements Clavier</h3>
+    <div class="example">
+        <div class="example-title">Gérer le clavier:</div>
+        <pre>
+document.addEventListener("keydown", function(e) {
+    console.log("Touche:", e.key);
+    console.log("Code:", e.keyCode);
+    
+    if (e.key === "Enter") {
+        console.log("Entrée pressée!");
+    }
+    
+    if (e.key === "Escape") {
+        console.log("Échap pressée!");
+    }
+    
+    // Combinaisons
+    if (e.ctrlKey && e.key === "s") {
+        e.preventDefault();
+        console.log("Ctrl+S pressé!");
+    }
+});
+        </pre>
+    </div>
+
+    <h3>6. Exemple Complet: Calculatrice</h3>
+    <div class="example">
+        <div class="example-title">Application interactive:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Calculatrice&lt;/title&gt;
+    &lt;style&gt;
+        .calc { max-width: 300px; margin: 50px auto; }
+        #display { 
+            width: 100%; 
+            padding: 20px; 
+            font-size: 24px; 
+            text-align: right;
+            border: 2px solid #333;
+        }
+        .buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+        button { padding: 20px; font-size: 18px; cursor: pointer; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="calc"&gt;
+        &lt;input type="text" id="display" readonly&gt;
+        &lt;div class="buttons"&gt;
+            &lt;button class="nombre"&gt;7&lt;/button&gt;
+            &lt;button class="nombre"&gt;8&lt;/button&gt;
+            &lt;button class="nombre"&gt;9&lt;/button&gt;
+            &lt;button class="operateur"&gt;/&lt;/button&gt;
+            &lt;button class="nombre"&gt;4&lt;/button&gt;
+            &lt;button class="nombre"&gt;5&lt;/button&gt;
+            &lt;button class="nombre"&gt;6&lt;/button&gt;
+            &lt;button class="operateur"&gt;*&lt;/button&gt;
+            &lt;button class="nombre"&gt;1&lt;/button&gt;
+            &lt;button class="nombre"&gt;2&lt;/button&gt;
+            &lt;button class="nombre"&gt;3&lt;/button&gt;
+            &lt;button class="operateur"&gt;-&lt;/button&gt;
+            &lt;button class="nombre"&gt;0&lt;/button&gt;
+            &lt;button id="effacer"&gt;C&lt;/button&gt;
+            &lt;button id="egal"&gt;=&lt;/button&gt;
+            &lt;button class="operateur"&gt;+&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        let display = document.getElementById("display");
+        let nombres = document.querySelectorAll(".nombre");
+        let operateurs = document.querySelectorAll(".operateur");
+        let egal = document.getElementById("egal");
+        let effacer = document.getElementById("effacer");
+
+        // Ajouter un nombre
+        nombres.forEach(btn => {
+            btn.addEventListener("click", function() {
+                display.value += this.textContent;
+            });
+        });
+
+        // Ajouter un opérateur
+        operateurs.forEach(btn => {
+            btn.addEventListener("click", function() {
+                display.value += " " + this.textContent + " ";
+            });
+        });
+
+        // Calculer
+        egal.addEventListener("click", function() {
+            try {
+                display.value = eval(display.value);
+            } catch(e) {
+                display.value = "Erreur";
+            }
+        });
+
+        // Effacer
+        effacer.addEventListener("click", function() {
+            display.value = "";
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Créez un bouton qui change de couleur au clic</li>
+            <li>Faites un compteur de clics avec affichage</li>
+            <li>Créez un formulaire avec validation en temps réel</li>
+            <li>Faites une div qui suit la souris</li>
+            <li>Créez un jeu simple (pierre-papier-ciseaux)</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 10: JavaScript Asynchrone -->
+<div id="module10" class="module">
+    <h2>Module 10: JavaScript Asynchrone</h2>
+    
+    <div class="concept">
+        <h3>📚 Concepts Clés</h3>
+        <p>Le JavaScript <strong>asynchrone</strong> permet d'exécuter du code sans bloquer le reste du programme. Essentiel pour les appels API, les timers, etc.</p>
+    </div>
+
+    <h3>1. setTimeout et setInterval</h3>
+    <div class="example">
+        <div class="example-title">Délais et intervalles:</div>
+        <pre>
+// setTimeout - Exécute une fois après un délai
+setTimeout(function() {
+    console.log("Exécuté après 2 secondes");
+}, 2000);
+
+// Avec arrow function
+setTimeout(() => {
+    console.log("Hello!");
+}, 1000);
+
+// setInterval - Répète à intervalles réguliers
+let compteur = 0;
+let interval = setInterval(() => {
+    compteur++;
+    console.log(compteur);
+    
+    if (compteur === 5) {
+        clearInterval(interval); // Arrête l'intervalle
+    }
+}, 1000);
+
+// clearTimeout - Annule un setTimeout
+let timer = setTimeout(() => console.log("Jamais exécuté"), 5000);
+clearTimeout(timer);
+        </pre>
+    </div>
+
+    <h3>2. Callbacks</h3>
+    <div class="example">
+        <div class="example-title">Fonctions de rappel:</div>
+        <pre>
+// Callback simple
+function faireQuelqueChose(callback) {
+    console.log("Début...");
+    setTimeout(() => {
+        callback();
+    }, 1000);
+}
+
+faireQuelqueChose(function() {
+    console.log("Terminé!");
+});
+
+// Callback avec paramètres
+function chargerDonnees(url, callback) {
+    setTimeout(() => {
+        let donnees = {id: 1, nom: "Test"};
+        callback(donnees);
+    }, 1000);
+}
+
+chargerDonnees("api/users", function(data) {
+    console.log(data);
+});
+        </pre>
+    </div>
+
+    <h3>3. Promises (Promesses)</h3>
+    <div class="example">
+        <div class="example-title">Gestion moderne de l'asynchrone:</div>
+        <pre>
+// Créer une Promise
+let maPromesse = new Promise((resolve, reject) => {
+    let succes = true;
+    
+    setTimeout(() => {
+        if (succes) {
+            resolve("Succès!");
+        } else {
+            reject("Erreur!");
+        }
+    }, 1000);
+});
+
+// Utiliser une Promise
+maPromesse
+    .then(resultat => {
+        console.log(resultat); // "Succès!"
+    })
+    .catch(erreur => {
+        console.error(erreur);
+    });
+
+// Chaînage de Promises
+fetch("https://api.example.com/data")
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+        </pre>
+    </div>
+
+    <h3>4. Async/Await (ES2017)</h3>
+    <div class="example">
+        <div class="example-title">Syntaxe moderne et lisible:</div>
+        <pre>
+// Fonction async
+async function chargerDonnees() {
+    try {
+        let response = await fetch("https://api.example.com/users");
+        let data = await response.json();
+        console.log(data);
+        return data;
+    } catch (error) {
+        console.error("Erreur:", error);
+    }
+}
+
+// Appel
+chargerDonnees();
+
+// Exemple avec plusieurs appels
+async function chargerTout() {
+    try {
+        let users = await fetch("/api/users").then(r => r.json());
+        let posts = await fetch("/api/posts").then(r => r.json());
+        
+        console.log("Users:", users);
+        console.log("Posts:", posts);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// Promise.all - Attendre plusieurs promises
+async function chargerParallele() {
+    try {
+        let [users, posts] = await Promise.all([
+            fetch("/api/users").then(r => r.json()),
+            fetch("/api/posts").then(r => r.json())
+        ]);
+        
+        console.log(users, posts);
+    } catch (error) {
+        console.error(error);
+    }
+}
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Créez un compte à rebours avec setInterval</li>
+            <li>Faites une fonction qui retourne une Promise</li>
+            <li>Utilisez async/await pour charger des données</li>
+            <li>Créez un système de chargement avec délai</li>
+            <li>Faites une animation avec setTimeout</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 11: APIs et Fetch -->
+<div id="module11" class="module">
+    <h2>Module 11: APIs et Fetch</h2>
+    
+    <div class="concept">
+        <h3>Concepts Clés</h3>
+        <p><strong>Fetch API</strong> permet de faire des requêtes HTTP pour récupérer ou envoyer des données à un serveur.</p>
+    </div>
+
+    <h3>1. Fetch Basique</h3>
+    <div class="example">
+        <div class="example-title">GET Request:</div>
+        <pre>
+// Simple GET
+fetch("https://jsonplaceholder.typicode.com/users")
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error("Erreur:", error);
+    });
+
+// Avec async/await
+async function getUsers() {
+    try {
+        let response = await fetch("https://jsonplaceholder.typicode.com/users");
+        let users = await response.json();
+        console.log(users);
+        return users;
+    } catch (error) {
+        console.error("Erreur:", error);
+    }
+}
+
+getUsers();
+        </pre>
+    </div>
+
+    <h3>2. POST, PUT, DELETE</h3>
+    <div class="example">
+        <div class="example-title">Autres méthodes HTTP:</div>
+        <pre>
+// POST - Créer
+async function creerUser(userData) {
+    try {
+        let response = await fetch("https://jsonplaceholder.typicode.com/users", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(userData)
+        });
+        
+        let data = await response.json();
+        console.log("Créé:", data);
+    } catch (error) {
+        console.error("Erreur:", error);
+    }
+}
+
+// PUT - Modifier
+async function modifierUser(id, userData) {
+    let response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData)
+    });
+    return response.json();
+}
+
+// DELETE - Supprimer
+async function supprimerUser(id) {
+    await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+        method: "DELETE"
+    });
+}
+        </pre>
+    </div>
+
+    <h3>3. Exemple Complet</h3>
+    <div class="example">
+        <div class="example-title">Application de blog:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Blog Posts&lt;/title&gt;
+    &lt;style&gt;
+        .post {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .loading { text-align: center; font-size: 20px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Articles de Blog&lt;/h1&gt;
+    &lt;button id="chargerBtn"&gt;Charger les articles&lt;/button&gt;
+    &lt;div id="container"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let container = document.getElementById("container");
+        let bouton = document.getElementById("chargerBtn");
+
+        async function chargerPosts() {
+            try {
+                // Afficher loading
+                container.innerHTML = '&lt;p class="loading"&gt;Chargement...&lt;/p&gt;';
+                
+                // Récupérer les données
+                let response = await fetch("https://jsonplaceholder.typicode.com/posts");
+                let posts = await response.json();
+                
+                // Limiter à 5 posts
+                posts = posts.slice(0, 5);
+                
+                // Afficher
+                container.innerHTML = "";
+                posts.forEach(post => {
+                    let postDiv = document.createElement("div");
+                    postDiv.classList.add("post");
+                    postDiv.innerHTML = `
+                        &lt;h2&gt;${post.title}&lt;/h2&gt;
+                        &lt;p&gt;${post.body}&lt;/p&gt;
+                        &lt;small&gt;Post #${post.id}&lt;/small&gt;
+                    `;
+                    container.appendChild(postDiv);
+                });
+                
+            } catch (error) {
+                container.innerHTML = `&lt;p style="color: red;"&gt;Erreur: ${error.message}&lt;/p&gt;`;
+            }
+        }
+
+        bouton.addEventListener("click", chargerPosts);
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Récupérez une liste d'utilisateurs et affichez-les</li>
+            <li>Créez un formulaire qui envoie des données en POST</li>
+            <li>Faites une recherche en temps réel avec une API</li>
+            <li>Affichez des photos depuis une API</li>
+            <li>Créez un système de pagination pour les résultats</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 12: Gestion des Erreurs -->
+<div id="module12" class="module">
+    <h2>Module 12: Gestion des Erreurs</h2>
+    
+    <div class="concept">
+        <h3>📚 Concepts Clés</h3>
+        <p>La <strong>gestion des erreurs</strong> permet de gérer les problèmes sans faire planter l'application.</p>
+    </div>
+
+    <h3>1. Try...Catch</h3>
+    <div class="example">
+        <div class="example-title">Capturer les erreurs:</div>
+        <pre>
+// Syntaxe de base
+try {
+    // Code qui peut causer une erreur
+    let resultat = riskyFunction();
+    console.log(resultat);
+} catch (error) {
+    // Gérer l'erreur
+    console.error("Une erreur est survenue:", error.message);
+} finally {
+    // Toujours exécuté
+    console.log("Nettoyage...");
+}
+
+// Exemple concret
+try {
+    let data = JSON.parse('{"nom": "Test"}');
+    console.log(data.nom);
+} catch (error) {
+    console.error("JSON invalide:", error);
+}
+        </pre>
+    </div>
+
+    <h3>2. Throw - Lancer des Erreurs</h3>
+    <div class="example">
+        <div class="example-title">Créer ses propres erreurs:</div>
+        <pre>
+function diviser(a, b) {
+    if (b === 0) {
+        throw new Error("Division par zéro impossible!");
+    }
+    return a / b;
+}
+
+try {
+    let resultat = diviser(10, 0);
+    console.log(resultat);
+} catch (error) {
+    console.error("Erreur:", error.message);
+}
+
+// Types d'erreurs
+throw new Error("Erreur générique");
+throw new TypeError("Mauvais type");
+throw new RangeError("Hors limites");
+throw new ReferenceError("Variable inexistante");
+        </pre>
+    </div>
+
+    <h3>3. Async Error Handling</h3>
+    <div class="example">
+        <div class="example-title">Erreurs avec async/await:</div>
+        <pre>
+async function chargerDonnees() {
+    try {
+        let response = await fetch("https://api.example.com/data");
+        
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
+        
+        let data = await response.json();
+        return data;
+        
+    } catch (error) {
+        console.error("Erreur de chargement:", error.message);
+        // Gérer l'erreur (afficher message, réessayer, etc.)
+        return null;
+    }
+}
+
+// Avec Promise
+fetch("https://api.example.com/data")
+    .then(response => {
+        if (!response.ok) throw new Error("Erreur HTTP");
+        return response.json();
+    })
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title">Exercices Pratiques</div>
+        <ol>
+            <li>Créez une fonction de validation avec throw</li>
+            <li>Gérez les erreurs d'un appel API</li>
+            <li>Faites un système de retry en cas d'erreur</li>
+            <li>Créez des erreurs personnalisées</li>
+            <li>Loggez les erreurs dans la console</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 13: ES6+ Classes -->
+<div id="module13" class="module">
+    <h2>Module 13: Classes ES6+</h2>
+    
+    <div class="concept">
+        <h3> Concepts Clés</h3>
+        <p>Les <strong>classes</strong> ES6+ offrent une syntaxe moderne pour la programmation orientée objet en JavaScript.</p>
+    </div>
+
+    <h3>1. Créer une Classe</h3>
+    <div class="example">
+        <div class="example-title">Syntaxe de base:</div>
+        <pre>
+class Personne {
+    // Constructeur
+    constructor(nom, age) {
+        this.nom = nom;
+        this.age = age;
+    }
+    
+    // Méthode
+    sePresenter() {
+        console.log(`Je suis ${this.nom}, j'ai ${this.age} ans`);
+    }
+    
+    // Méthode
+    vieillir() {
+        this.age++;
+    }
+}
+
+// Créer une instance
+let marie = new Personne("Marie", 30);
+marie.sePresenter(); // "Je suis Marie, j'ai 30 ans"
+marie.vieillir();
+console.log(marie.age); // 31
+        </pre>
+    </div>
+
+    <h3>2. Héritage</h3>
+    <div class="example">
+        <div class="example-title">Étendre une classe:</div>
+        <pre>
+class Animal {
+    constructor(nom) {
+        this.nom = nom;
+    }
+    
+    parler() {
+        console.log(`${this.nom} fait du bruit`);
+    }
+}
+
+class Chien extends Animal {
+    constructor(nom, race) {
+        super(nom); // Appelle le constructeur parent
+        this.race = race;
+    }
+    
+    parler() {
+        console.log(`${this.nom} aboie: Woof!`);
+    }
+    
+    courir() {
+        console.log(`${this.nom} court vite`);
+    }
+}
+
+let rex = new Chien("Rex", "Labrador");
+rex.parler();  // "Rex aboie: Woof!"
+rex.courir();  // "Rex court vite"
+        </pre>
+    </div>
+
+    <h3>3. Getters et Setters</h3>
+    <div class="example">
+        <div class="example-title">Propriétés calculées:</div>
+        <pre>
+class Rectangle {
+    constructor(largeur, hauteur) {
+        this.largeur = largeur;
+        this.hauteur = hauteur;
+    }
+    
+    // Getter
+    get aire() {
+        return this.largeur * this.hauteur;
+    }
+    
+    // Setter
+    set dimensions({largeur, hauteur}) {
+        this.largeur = largeur;
+        this.hauteur = hauteur;
+    }
+    
+    // Getter
+    get perimetre() {
+        return 2 * (this.largeur + this.hauteur);
+    }
+}
+
+let rect = new Rectangle(10, 5);
+console.log(rect.aire);      // 50
+console.log(rect.perimetre); // 30
+
+rect.dimensions = {largeur: 20, hauteur: 10};
+console.log(rect.aire);      // 200
+        </pre>
+    </div>
+
+    <h3>4. Méthodes Statiques</h3>
+    <div class="example">
+        <div class="example-title">Méthodes de classe:</div>
+        <pre>
+class MathUtils {
+    static addition(a, b) {
+        return a + b;
+    }
+    
+    static multiplication(a, b) {
+        return a * b;
+    }
+    
+    static PI = 3.14159;
+}
+
+// Appel sans instance
+console.log(MathUtils.addition(5, 3));       // 8
+console.log(MathUtils.multiplication(4, 2)); // 8
+console.log(MathUtils.PI);                   // 3.14159
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title">Exercices Pratiques</div>
+        <ol>
+            <li>Créez une classe Voiture avec propriétés et méthodes</li>
+            <li>Créez une classe Etudiant qui hérite de Personne</li>
+            <li>Ajoutez des getters/setters à une classe</li>
+            <li>Créez une classe avec méthodes statiques</li>
+            <li>Faites un système de compte bancaire avec classes</li>
+        </ol>
+    </div>
+</div>
+
+<!-- MODULE 14: ES6+ Features -->
+<div id="module14" class="module">
+    <h2>Module 14: Fonctionnalités ES6+ Avancées</h2>
+    
+    <div class="concept">
+        <h3> Concepts Clés</h3>
+        <p>ES6+ (ECMAScript 2015 et suivants) apporte de nombreuses fonctionnalités modernes qui simplifient et améliorent le code JavaScript.</p>
+    </div>
+
+    <h3>1.  Template Literals (Backticks)</h3>
+    
+    <div class="concept">
+        <p>Les <strong>template literals</strong> utilisent les backticks (`) et permettent d'insérer des variables et expressions directement dans les strings. C'est ESSENTIEL en JavaScript moderne !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Syntaxe et utilisation:</div>
+        <pre>
+let nom = "Thomas";
+let age = 32;
+
+//  Ancienne méthode (concaténation)
+let message1 = "Bonjour, je suis " + nom + " et j'ai " + age + " ans";
+
+//  Template literals (moderne)
+let message2 = `Bonjour, je suis ${nom} et j'ai ${age} ans`;
+
+console.log(message2); // "Bonjour, je suis Thomas et j'ai 32 ans"
+
+// Expressions dans les template literals
+let prix = 100;
+let message3 = `Le prix avec TVA est: ${prix * 1.2}€`;
+console.log(message3); // "Le prix avec TVA est: 120€"
+
+// Appel de fonctions
+function majuscule(str) {
+    return str.toUpperCase();
+}
+let msg = `Bonjour ${majuscule(nom)}`;
+console.log(msg); // "Bonjour THOMAS"
+
+// Opérations
+let a = 5;
+let b = 10;
+console.log(`${a} + ${b} = ${a + b}`); // "5 + 10 = 15"
+
+// Conditions (ternaire)
+let estAdulte = age >= 18;
+let statut = `Vous êtes ${estAdulte ? "majeur" : "mineur"}`;
+        </pre>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Strings multi-lignes:</div>
+        <pre>
+//  Ancienne méthode
+let html1 = "&lt;div&gt;\n" +
+            "  &lt;h1&gt;Titre&lt;/h1&gt;\n" +
+            "  &lt;p&gt;Paragraphe&lt;/p&gt;\n" +
+            "&lt;/div&gt;";
+
+//  Template literals (beaucoup plus lisible!)
+let html2 = `
+    &lt;div&gt;
+        &lt;h1&gt;Titre&lt;/h1&gt;
+        &lt;p&gt;Paragraphe&lt;/p&gt;
+    &lt;/div&gt;
+`;
+
+// Cas pratique: Générer du HTML dynamique
+let user = { nom: "Alice", age: 28, role: "admin" };
+let card = `
+    &lt;div class="user-card"&gt;
+        &lt;h2&gt;${user.nom}&lt;/h2&gt;
+        &lt;p&gt;Âge: ${user.age} ans&lt;/p&gt;
+        &lt;p&gt;Rôle: ${user.role}&lt;/p&gt;
+    &lt;/div&gt;
+`;
+
+// Utilisation avec des arrays
+let produits = ["Laptop", "Souris", "Clavier"];
+let liste = `
+    &lt;ul&gt;
+        ${produits.map(p => `&lt;li&gt;${p}&lt;/li&gt;`).join('')}
+    &lt;/ul&gt;
+`;
+        </pre>
+    </div>
+
+    <h3>2.  Arrow Functions (Fonctions Fléchées)</h3>
+    
+    <div class="concept">
+        <p>Les <strong>arrow functions</strong> sont une syntaxe plus courte pour écrire des fonctions. Très utilisées avec map, filter, forEach, etc.</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Syntaxe et exemples:</div>
+        <pre>
+// Fonction classique
+function addition(a, b) {
+    return a + b;
+}
+
+// Arrow function équivalente
+const addition = (a, b) => {
+    return a + b;
+};
+
+// Version encore plus courte (return implicite)
+const addition = (a, b) => a + b;
+
+console.log(addition(5, 3)); // 8
+
+// Avec un seul paramètre (parenthèses optionnelles)
+const double = x => x * 2;
+const carre = x => x * x;
+
+console.log(double(5)); // 10
+console.log(carre(5));  // 25
+
+// Sans paramètre
+const direBonjour = () => console.log("Bonjour!");
+const obtenirDate = () => new Date();
+
+direBonjour(); // "Bonjour!"
+
+// Avec plusieurs lignes
+const calculer = (a, b) => {
+    let somme = a + b;
+    let produit = a * b;
+    return { somme, produit };
+};
+
+console.log(calculer(5, 3)); // { somme: 8, produit: 15 }
+
+// Retourner un objet (attention aux parenthèses!)
+const creerUser = (nom, age) => ({ nom, age });
+// OU
+const creerUser = (nom, age) => {
+    return { nom, age };
+};
+        </pre>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Utilisation avec les méthodes d'array:</div>
+        <pre>
+let nombres = [1, 2, 3, 4, 5];
+
+//  Avec fonction classique
+let doubles = nombres.map(function(n) {
+    return n * 2;
+});
+
+//  Avec arrow function (plus court!)
+let doubles = nombres.map(n => n * 2);
+
+// filter
+let pairs = nombres.filter(n => n % 2 === 0);
+
+// reduce
+let somme = nombres.reduce((acc, n) => acc + n, 0);
+
+// forEach
+nombres.forEach(n => console.log(n));
+
+// Chaînage
+let resultat = nombres
+    .filter(n => n > 2)
+    .map(n => n * 2)
+    .reduce((acc, n) => acc + n, 0);
+
+console.log(resultat); // 24
+
+// Avec objets
+let users = [
+    { nom: "Alice", age: 25 },
+    { nom: "Bob", age: 30 },
+    { nom: "Charlie", age: 35 }
+];
+
+let noms = users.map(u => u.nom);
+let adultes = users.filter(u => u.age >= 30);
+let ageMoyen = users.reduce((acc, u) => acc + u.age, 0) / users.length;
+        </pre>
+    </div>
+
+    <h3>3.  Destructuration (Arrays et Objets)</h3>
+    
+    <div class="example">
+        <div class="example-title">Destructuration d'arrays:</div>
+        <pre>
+// Array simple
+let nombres = [1, 2, 3, 4, 5];
+
+//  Méthode classique
+let premier = nombres[0];
+let deuxieme = nombres[1];
+let troisieme = nombres[2];
+
+//  Destructuration
+let [premier, deuxieme, troisieme] = nombres;
+console.log(premier);  // 1
+console.log(deuxieme); // 2
+console.log(troisieme); // 3
+
+// Ignorer des éléments
+let [a, , c] = nombres; // On skip le 2ème
+console.log(a, c); // 1, 3
+
+// Rest operator (...)
+let [premier, deuxieme, ...reste] = nombres;
+console.log(premier);  // 1
+console.log(deuxieme); // 2
+console.log(reste);    // [3, 4, 5]
+
+// Valeurs par défaut
+let [x, y, z = 0] = [1, 2];
+console.log(z); // 0 (valeur par défaut)
+
+// Échanger des variables
+let a = 1, b = 2;
+[a, b] = [b, a]; // Échange!
+console.log(a, b); // 2, 1
+        </pre>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Destructuration d'objets:</div>
+        <pre>
+let personne = {
+    nom: "Dupont",
+    prenom: "Marie",
+    age: 30,
+    ville: "Paris"
+};
+
+//  Méthode classique
+let nom = personne.nom;
+let age = personne.age;
+
+//  Destructuration
+let { nom, age } = personne;
+console.log(nom, age); // "Dupont", 30
+
+// Renommer
+let { nom: nomPersonne, age: agePersonne } = personne;
+console.log(nomPersonne); // "Dupont"
+
+// Valeurs par défaut
+let { nom, pays = "France" } = personne;
+console.log(pays); // "France"
+
+// Rest operator
+let { nom, age, ...autres } = personne;
+console.log(autres); // { prenom: "Marie", ville: "Paris" }
+
+// Destructuration imbriquée
+let user = {
+    nom: "Alice",
+    adresse: {
+        rue: "123 Main St",
+        ville: "Paris",
+        cp: "75001"
+    }
+};
+
+let { nom, adresse: { ville, cp } } = user;
+console.log(ville); // "Paris"
+console.log(cp);    // "75001"
+        </pre>
+    </div>
+
+    <h3>4. Spread Operator (...)</h3>
+    
+    <div class="example">
+        <div class="example-title">Avec arrays et objets:</div>
+        <pre>
+// Arrays
+let arr1 = [1, 2, 3];
+let arr2 = [4, 5, 6];
+
+// Fusionner
+let fusion = [...arr1, ...arr2];
+console.log(fusion); // [1, 2, 3, 4, 5, 6]
+
+// Copier
+let copie = [...arr1];
+
+// Ajouter des éléments
+let nouveau = [0, ...arr1, 4];
+console.log(nouveau); // [0, 1, 2, 3, 4]
+
+// Objets
+let obj1 = { a: 1, b: 2 };
+let obj2 = { c: 3, d: 4 };
+
+// Fusionner
+let fusion = { ...obj1, ...obj2 };
+console.log(fusion); // { a: 1, b: 2, c: 3, d: 4 }
+
+// Copier et modifier
+let user = { nom: "Alice", age: 30 };
+let newUser = { ...user, age: 31 };
+console.log(newUser); // { nom: "Alice", age: 31 }
+
+// Passer un array en arguments
+let nombres = [5, 3, 8, 1];
+console.log(Math.max(...nombres)); // 8
+        </pre>
+    </div>
+
+    <h3>5.  Optional Chaining (?.)</h3>
+    
+    <div class="concept">
+        <p><strong>Optional chaining</strong> permet d'accéder en toute sécurité à des propriétés imbriquées sans risquer une erreur si une valeur intermédiaire est null ou undefined.</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Éviter les erreurs:</div>
+        <pre>
+let user = {
+    nom: "Alice",
+    adresse: {
+        ville: "Paris"
+    }
+};
+
+//  Sans optional chaining (risque d'erreur)
+// let cp = user.adresse.codePostal.numero; // ERREUR!
+
+//  Avec optional chaining
+let cp = user.adresse?.codePostal?.numero;
+console.log(cp); // undefined (pas d'erreur)
+
+// Avec méthodes
+let resultat = user.getInfo?.(); // Appelle seulement si la méthode existe
+
+// Avec arrays
+let users = null;
+let premier = users?.[0]?.nom;
+console.log(premier); // undefined
+
+// Cas pratique
+let data = {
+    user: {
+        profile: {
+            settings: {
+                theme: "dark"
+            }
+        }
+    }
+};
+
+// Sans optional chaining (long et risqué)
+let theme;
+if (data && data.user && data.user.profile && data.user.profile.settings) {
+    theme = data.user.profile.settings.theme;
+}
+
+// Avec optional chaining (court et sûr)
+let theme = data?.user?.profile?.settings?.theme;
+console.log(theme); // "dark"
+        </pre>
+    </div>
+
+    <h3>6.  Nullish Coalescing (??)</h3>
+    
+    <div class="concept">
+        <p><strong>Nullish coalescing (??)</strong> retourne la valeur de droite SEULEMENT si celle de gauche est null ou undefined (pas si elle est 0, "", false).</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Différence avec || :</div>
+        <pre>
+// Problème avec || (considère 0, "", false comme falsy)
+let count = 0;
+let resultat1 = count || 10;
+console.log(resultat1); // 10 (pas ce qu'on veut!)
+
+// Solution avec ??
+let resultat2 = count ?? 10;
+console.log(resultat2); // 0 (correct!)
+
+// Exemples
+let nom = null;
+let nomDefaut = nom ?? "Anonyme";
+console.log(nomDefaut); // "Anonyme"
+
+let age = 0;
+let ageDefaut = age ?? 18;
+console.log(ageDefaut); // 0 (garde la vraie valeur)
+
+let texte = "";
+let texteDefaut = texte ?? "Texte par défaut";
+console.log(texteDefaut); // "" (garde la chaîne vide)
+
+// Comparaison || vs ??
+let valeur = 0;
+console.log(valeur || 10);  // 10 (0 est falsy)
+console.log(valeur ?? 10);  // 0 (0 n'est pas null/undefined)
+
+valeur = false;
+console.log(valeur || 10);  // 10 (false est falsy)
+console.log(valeur ?? 10);  // false (false n'est pas null/undefined)
+
+valeur = null;
+console.log(valeur || 10);  // 10
+console.log(valeur ?? 10);  // 10 (même résultat)
+
+// Cas pratique
+function afficher(options) {
+    let theme = options?.theme ?? "light";
+    let taille = options?.taille ?? 14;
+    console.log(`Theme: ${theme}, Taille: ${taille}`);
+}
+
+afficher({ theme: "dark" }); // Theme: dark, Taille: 14
+afficher({ taille: 0 });      // Theme: light, Taille: 0 (garde le 0!)
+        </pre>
+    </div>
+
+    <h3>7. Propriétés Courtes (Shorthand)</h3>
+    
+    <div class="example">
+        <div class="example-title">Syntaxe simplifiée:</div>
+        <pre>
+let nom = "Alice";
+let age = 30;
+
+//  Ancienne méthode
+let user1 = {
+    nom: nom,
+    age: age
+};
+
+//  Propriété courte (si même nom)
+let user2 = { nom, age };
+console.log(user2); // { nom: "Alice", age: 30 }
+
+// Méthodes courtes
+let obj = {
+    //  Ancienne
+    direBonjour: function() {
+        console.log("Bonjour");
+    },
+    
+    //  Courte
+    direAuRevoir() {
+        console.log("Au revoir");
+    }
+};
+
+// Cas pratique: Retourner des objets
+function creerUser(nom, age, ville) {
+    return { nom, age, ville }; // Au lieu de { nom: nom, age: age, ville: ville }
+}
+        </pre>
+    </div>
+
+    <h3>8. Map et Set</h3>
+    
+    <div class="example">
+        <div class="example-title">Nouvelles structures de données:</div>
+        <pre>
+// Map - Comme un objet mais meilleur
+let map = new Map();
+
+// Ajouter des entrées
+map.set("nom", "Alice");
+map.set("age", 30);
+map.set(1, "un");
+
+// Récupérer
+console.log(map.get("nom")); // "Alice"
+
+// Vérifier
+console.log(map.has("age")); // true
+
+// Supprimer
+map.delete("age");
+
+// Taille
+console.log(map.size); // 2
+
+// Itérer
+for (let [cle, valeur] of map) {
+    console.log(`${cle}: ${valeur}`);
+}
+
+// Set - Valeurs uniques
+let set = new Set();
+
+// Ajouter
+set.add(1);
+set.add(2);
+set.add(2); // Ignoré (déjà présent)
+set.add(3);
+
+console.log(set); // Set {1, 2, 3}
+console.log(set.size); // 3
+
+// Vérifier
+console.log(set.has(2)); // true
+
+// Supprimer
+set.delete(2);
+
+// Convertir array en Set pour supprimer les doublons
+let nombres = [1, 2, 2, 3, 3, 3, 4, 5, 5];
+let unique = [...new Set(nombres)];
+console.log(unique); // [1, 2, 3, 4, 5]
+        </pre>
+    </div>
+
+    <h3>9. Exemple Complet</h3>
+    
+    <div class="example">
+        <div class="example-title">Application utilisant toutes les features ES6+:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;ES6+ Demo&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; }
+        .user-card { border: 2px solid #2C3F77; padding: 20px; margin: 10px 0; 
+                     border-radius: 10px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Liste d'Utilisateurs ES6+&lt;/h1&gt;
+    &lt;div id="container"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        // Données
+        const users = [
+            { nom: "Dupont", prenom: "Alice", age: 28, ville: "Paris", actif: true },
+            { nom: "Martin", prenom: "Bob", age: 35, ville: "Lyon", actif: true },
+            { nom: "Dubois", prenom: "Charlie", age: 42, ville: "Paris", actif: false },
+            { nom: "Lefebvre", prenom: "Diana", age: 31, ville: "Marseille", actif: true }
+        ];
+
+        // Fonction avec destructuration et template literals
+        const creerCard = ({ nom, prenom, age, ville, actif }) => `
+            &lt;div class="user-card"&gt;
+                &lt;h2&gt;${prenom} ${nom}&lt;/h2&gt;
+                &lt;p&gt;&lt;strong&gt;Âge:&lt;/strong&gt; ${age} ans&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Ville:&lt;/strong&gt; ${ville}&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Statut:&lt;/strong&gt; ${actif ? " Actif" : " Inactif"}&lt;/p&gt;
+            &lt;/div&gt;
+        `;
+
+        // Filtrer et mapper avec arrow functions
+        const html = users
+            .filter(u => u.actif)  // Seulement les actifs
+            .map(creerCard)        // Créer les cards
+            .join('');             // Joindre en string
+
+        document.getElementById('container').innerHTML = html;
+
+        // Statistiques avec reduce et destructuration
+        const stats = users.reduce((acc, user) => ({
+            total: acc.total + 1,
+            actifs: acc.actifs + (user.actif ? 1 : 0),
+            ageMoyen: acc.ageMoyen + user.age
+        }), { total: 0, actifs: 0, ageMoyen: 0 });
+
+        stats.ageMoyen = stats.ageMoyen / stats.total;
+
+        // Optional chaining et nullish coalescing
+        const config = {
+            theme: null,
+            taille: 0
+        };
+
+        const theme = config?.theme ?? "light";
+        const taille = config?.taille ?? 14;
+
+        console.log(`Theme: ${theme}, Taille: ${taille}`);
+
+        // Spread operator
+        const nouveauxUsers = [
+            ...users,
+            { nom: "Nouveau", prenom: "Eric", age: 25, ville: "Nice", actif: true }
+        ];
+
+        console.log(`Total users: ${nouveauxUsers.length}`);
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Réécrivez une fonction classique en arrow function</li>
+            <li>Utilisez template literals pour créer du HTML dynamique</li>
+            <li>Destructurez un objet et un array</li>
+            <li>Utilisez optional chaining sur un objet imbriqué</li>
+            <li>Comparez || et ?? avec différentes valeurs (0, "", false, null)</li>
+            <li>Fusionnez plusieurs objets avec le spread operator</li>
+            <li>Créez un Set pour supprimer les doublons d'un array</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <strong> À retenir :</strong> Template literals, arrow functions, destructuration, spread operator, optional chaining et nullish coalescing sont les features ES6+ les plus importantes à maîtriser !
+    </div>
+</div>
+
+<!-- MODULE 15: Modules JavaScript -->
+<div id="module15" class="module">
+    <h2>Module 15: Storage & JSON</h2>
+    
+    <div class="concept">
+        <h3>Concepts Clés</h3>
+        <p>Le <strong>Web Storage</strong> (localStorage et sessionStorage) permet de sauvegarder des données dans le navigateur. <strong>JSON</strong> est le format standard pour échanger et stocker des données structurées.</p>
+    </div>
+
+    <div class="warning">
+        <strong>MODULE ESSENTIEL</strong> : Le storage est crucial pour créer des applications qui sauvegardent des données côté client (préférences, paniers, etc.)
+    </div>
+
+    <h3>1. localStorage - Stockage Permanent</h3>
+    
+    <div class="concept">
+        <p><strong>localStorage</strong> stocke des données qui persistent même après fermeture du navigateur. Limite: environ 5-10 MB par domaine.</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Méthodes de base:</div>
+        <pre>
+// Sauvegarder une donnée (key-value)
+localStorage.setItem("nom", "Alice");
+localStorage.setItem("age", "30");
+localStorage.setItem("theme", "dark");
+
+// Récupérer une donnée
+let nom = localStorage.getItem("nom");
+console.log(nom); // "Alice"
+
+let age = localStorage.getItem("age");
+console.log(age); // "30" (ATTENTION: toujours en string!)
+
+// Convertir en nombre si besoin
+let ageNombre = parseInt(localStorage.getItem("age"));
+console.log(ageNombre); // 30 (number)
+
+// Supprimer une donnée
+localStorage.removeItem("theme");
+
+// Tout supprimer
+localStorage.clear();
+
+// Vérifier si une clé existe
+if (localStorage.getItem("nom")) {
+    console.log("Le nom existe");
+}
+
+// Nombre de clés
+console.log(localStorage.length);
+
+// Parcourir toutes les clés
+for (let i = 0; i < localStorage.length; i++) {
+    let cle = localStorage.key(i);
+    let valeur = localStorage.getItem(cle);
+    console.log(`${cle}: ${valeur}`);
+}
+        </pre>
+    </div>
+
+    <h3>2. sessionStorage - Stockage Temporaire</h3>
+    
+    <div class="concept">
+        <p><strong>sessionStorage</strong> fonctionne exactement comme localStorage MAIS les données sont supprimées à la fermeture de l'onglet/navigateur.</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Même API que localStorage:</div>
+        <pre>
+// Sauvegarder
+sessionStorage.setItem("tempData", "Données temporaires");
+
+// Récupérer
+let data = sessionStorage.getItem("tempData");
+
+// Supprimer
+sessionStorage.removeItem("tempData");
+
+// Tout supprimer
+sessionStorage.clear();
+
+// Cas d'usage: données de formulaire temporaires
+sessionStorage.setItem("formStep", "2");
+sessionStorage.setItem("formData", "...");
+        </pre>
+    </div>
+
+    <h3>3. localStorage vs sessionStorage</h3>
+    
+    <table>
+        <tr>
+            <th>Caractéristique</th>
+            <th>localStorage</th>
+            <th>sessionStorage</th>
+        </tr>
+        <tr>
+            <td>Durée de vie</td>
+            <td>Permanent (jusqu'à suppression manuelle)</td>
+            <td>Temporaire (fermeture onglet)</td>
+        </tr>
+        <tr>
+            <td>Capacité</td>
+            <td>~5-10 MB</td>
+            <td>~5-10 MB</td>
+        </tr>
+        <tr>
+            <td>Partage entre onglets</td>
+            <td> Oui</td>
+            <td> Non (isolé par onglet)</td>
+        </tr>
+        <tr>
+            <td>API</td>
+            <td>Identique</td>
+            <td>Identique</td>
+        </tr>
+        <tr>
+            <td>Cas d'usage</td>
+            <td>Préférences, panier, settings</td>
+            <td>Données temporaires, formulaires</td>
+        </tr>
+    </table>
+
+    <h3>4. JSON - JavaScript Object Notation</h3>
+    
+    <div class="concept">
+        <p><strong>JSON</strong> est un format texte pour représenter des données structurées. ESSENTIEL car localStorage ne peut stocker que des strings !</p>
+    </div>
+
+    <h4>JSON.stringify() - Objet → String</h4>
+    
+    <div class="example">
+        <div class="example-title">Convertir un objet en JSON:</div>
+        <pre>
+// Objet JavaScript
+let user = {
+    nom: "Alice",
+    age: 30,
+    ville: "Paris",
+    actif: true
+};
+
+// Convertir en JSON string
+let userJSON = JSON.stringify(user);
+console.log(userJSON);
+// '{"nom":"Alice","age":30,"ville":"Paris","actif":true}'
+
+console.log(typeof userJSON); // "string"
+
+// Avec un array
+let nombres = [1, 2, 3, 4, 5];
+let nombresJSON = JSON.stringify(nombres);
+console.log(nombresJSON); // '[1,2,3,4,5]'
+
+// Avec des objets imbriqués
+let data = {
+    user: {
+        nom: "Bob",
+        adresse: {
+            rue: "123 Main St",
+            ville: "Lyon"
+        }
+    },
+    timestamp: new Date()
+};
+
+let dataJSON = JSON.stringify(data);
+console.log(dataJSON);
+
+// Formatage lisible (avec indentation)
+let dataPretty = JSON.stringify(data, null, 2);
+console.log(dataPretty);
+/*
+{
+  "user": {
+    "nom": "Bob",
+    "adresse": {
+      "rue": "123 Main St",
+      "ville": "Lyon"
+    }
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+*/
+        </pre>
+    </div>
+
+    <h4>JSON.parse() - String → Objet</h4>
+    
+    <div class="example">
+        <div class="example-title">Convertir JSON en objet:</div>
+        <pre>
+// String JSON
+let userJSON = '{"nom":"Alice","age":30,"ville":"Paris"}';
+
+// Convertir en objet
+let user = JSON.parse(userJSON);
+console.log(user); // { nom: "Alice", age: 30, ville: "Paris" }
+console.log(typeof user); // "object"
+
+// Accéder aux propriétés
+console.log(user.nom);   // "Alice"
+console.log(user.age);   // 30
+
+// Avec array
+let nombresJSON = '[1,2,3,4,5]';
+let nombres = JSON.parse(nombresJSON);
+console.log(nombres); // [1, 2, 3, 4, 5]
+
+// ATTENTION aux erreurs de parsing
+try {
+    let mauvais = JSON.parse("pas du json");
+} catch (error) {
+    console.error("Erreur de parsing:", error);
+}
+
+// Vérifier avant de parser
+let json = localStorage.getItem("data");
+if (json) {
+    try {
+        let data = JSON.parse(json);
+        console.log(data);
+    } catch (e) {
+        console.error("JSON invalide");
+    }
+}
+        </pre>
+    </div>
+
+    <h3>5. Stocker des Objets et Arrays</h3>
+    
+    <div class="concept">
+        <p>Pour stocker des objets/arrays dans localStorage, il FAUT les convertir en JSON !</p>
+    </div>
+
+    <div class="example">
+        <div class="example-title">Pattern complet:</div>
+        <pre>
+// Sauvegarder un objet
+let user = {
+    nom: "Alice",
+    age: 30,
+    preferences: {
+        theme: "dark",
+        langue: "fr"
+    }
+};
+
+// MAUVAIS - Stocke "[object Object]"
+localStorage.setItem("user", user);
+
+// BON - Convertir en JSON d'abord
+localStorage.setItem("user", JSON.stringify(user));
+
+// Récupérer l'objet
+let userJSON = localStorage.getItem("user");
+let userRecupere = JSON.parse(userJSON);
+console.log(userRecupere); // { nom: "Alice", age: 30, ... }
+
+// Pattern complet avec vérification
+function sauvegarderUser(user) {
+    try {
+        localStorage.setItem("user", JSON.stringify(user));
+        return true;
+    } catch (e) {
+        console.error("Erreur de sauvegarde:", e);
+        return false;
+    }
+}
+
+function chargerUser() {
+    try {
+        let json = localStorage.getItem("user");
+        return json ? JSON.parse(json) : null;
+    } catch (e) {
+        console.error("Erreur de chargement:", e);
+        return null;
+    }
+}
+
+// Utilisation
+sauvegarderUser(user);
+let chargé = chargerUser();
+console.log(chargé);
+        </pre>
+    </div>
+
+    <h3>6. Exemples Pratiques</h3>
+
+    <h4>Exemple 1: Sauvegarder des Préférences</h4>
+    
+    <div class="example">
+        <div class="example-title">Thème et préférences utilisateur:</div>
+        <pre>
+// Sauvegarder le thème
+function sauvegarderTheme(theme) {
+    localStorage.setItem("theme", theme);
+    appliquerTheme(theme);
+}
+
+function chargerTheme() {
+    let theme = localStorage.getItem("theme");
+    return theme || "light"; // Valeur par défaut
+}
+
+function appliquerTheme(theme) {
+    document.body.className = theme;
+}
+
+// Au chargement de la page
+document.addEventListener("DOMContentLoaded", () => {
+    let theme = chargerTheme();
+    appliquerTheme(theme);
+});
+
+// Bouton pour changer le thème
+document.getElementById("themeBtn").addEventListener("click", () => {
+    let themeActuel = chargerTheme();
+    let nouveauTheme = themeActuel === "light" ? "dark" : "light";
+    sauvegarderTheme(nouveauTheme);
+});
+        </pre>
+    </div>
+
+    <h4>Exemple 2: Panier d'Achat</h4>
+    
+    <div class="example">
+        <div class="example-title">Persister un panier:</div>
+        <pre>
+// Objet panier
+let panier = {
+    items: [],
+    total: 0
+};
+
+// Ajouter un produit
+function ajouterAuPanier(produit) {
+    panier.items.push(produit);
+    panier.total += produit.prix;
+    sauvegarderPanier();
+}
+
+// Sauvegarder
+function sauvegarderPanier() {
+    localStorage.setItem("panier", JSON.stringify(panier));
+}
+
+// Charger
+function chargerPanier() {
+    let json = localStorage.getItem("panier");
+    if (json) {
+        panier = JSON.parse(json);
+    }
+}
+
+// Vider
+function viderPanier() {
+    panier = { items: [], total: 0 };
+    localStorage.removeItem("panier");
+}
+
+// Initialiser au chargement
+chargerPanier();
+
+// Exemple d'utilisation
+ajouterAuPanier({ nom: "Laptop", prix: 1000 });
+ajouterAuPanier({ nom: "Souris", prix: 25 });
+console.log(panier);
+        </pre>
+    </div>
+
+    <h4>Exemple 3: Liste de Tâches Persistante</h4>
+    
+    <div class="example">
+        <div class="example-title">Todo list avec localStorage:</div>
+        <pre>
+let taches = [];
+
+// Charger les tâches
+function chargerTaches() {
+    let json = localStorage.getItem("taches");
+    taches = json ? JSON.parse(json) : [];
+    afficherTaches();
+}
+
+// Sauvegarder les tâches
+function sauvegarderTaches() {
+    localStorage.setItem("taches", JSON.stringify(taches));
+}
+
+// Ajouter une tâche
+function ajouterTache(texte) {
+    let tache = {
+        id: Date.now(),
+        texte: texte,
+        completee: false,
+        date: new Date().toISOString()
+    };
+    taches.push(tache);
+    sauvegarderTaches();
+    afficherTaches();
+}
+
+// Supprimer une tâche
+function supprimerTache(id) {
+    taches = taches.filter(t => t.id !== id);
+    sauvegarderTaches();
+    afficherTaches();
+}
+
+// Toggle complétée
+function toggleTache(id) {
+    let tache = taches.find(t => t.id === id);
+    if (tache) {
+        tache.completee = !tache.completee;
+        sauvegarderTaches();
+        afficherTaches();
+    }
+}
+
+// Afficher
+function afficherTaches() {
+    let html = taches.map(t => `
+        &lt;div class="tache ${t.completee ? 'completee' : ''}"&gt;
+            &lt;input type="checkbox" ${t.completee ? 'checked' : ''} 
+                   onchange="toggleTache(${t.id})"&gt;
+            &lt;span&gt;${t.texte}&lt;/span&gt;
+            &lt;button onclick="supprimerTache(${t.id})"&gt;&lt;/button&gt;
+        &lt;/div&gt;
+    `).join('');
+    
+    document.getElementById('listeTaches').innerHTML = html;
+}
+
+// Initialiser
+chargerTaches();
+        </pre>
+    </div>
+
+    <h3>7. Exemple Complet Interactif</h3>
+    
+    <div class="example">
+        <div class="example-title">Application complète avec localStorage:</div>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Notes Persistantes&lt;/title&gt;
+    &lt;style&gt;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        h1 { color: #2C3F77; margin-bottom: 20px; }
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; background: #2C3F77; color: white; 
+                 border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #A0866B; }
+        .note { background: #fff3cd; padding: 15px; margin: 10px 0; 
+                border-radius: 5px; border-left: 4px solid #ffc107; }
+        .note-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .note-title { font-weight: bold; font-size: 1.1em; }
+        .note-date { color: #666; font-size: 0.9em; }
+        .delete-btn { background: #f44336; padding: 5px 10px; font-size: 0.9em; }
+        .stats { background: #e3f2fd; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Mes Notes Persistantes&lt;/h1&gt;
+    
+    &lt;div class="stats" id="stats"&gt;&lt;/div&gt;
+    
+    &lt;div class="controls"&gt;
+        &lt;input type="text" id="titreInput" placeholder="Titre de la note..."&gt;
+        &lt;input type="text" id="contenuInput" placeholder="Contenu..."&gt;
+        &lt;button id="ajouterBtn"&gt;Ajouter&lt;/button&gt;
+        &lt;button id="exportBtn"&gt;Exporter JSON&lt;/button&gt;
+        &lt;button id="clearBtn" style="background: #f44336;"&gt;Tout Supprimer&lt;/button&gt;
+    &lt;/div&gt;
+    
+    &lt;div id="notesContainer"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let notes = [];
+
+        // Charger les notes au démarrage
+        function chargerNotes() {
+            try {
+                let json = localStorage.getItem("notes");
+                notes = json ? JSON.parse(json) : [];
+            } catch (e) {
+                console.error("Erreur de chargement:", e);
+                notes = [];
+            }
+            afficherNotes();
+            afficherStats();
+        }
+
+        // Sauvegarder les notes
+        function sauvegarderNotes() {
+            try {
+                localStorage.setItem("notes", JSON.stringify(notes));
+                return true;
+            } catch (e) {
+                console.error("Erreur de sauvegarde:", e);
+                if (e.name === "QuotaExceededError") {
+                    alert("Espace de stockage plein!");
+                }
+                return false;
+            }
+        }
+
+        // Ajouter une note
+        function ajouterNote() {
+            let titre = document.getElementById("titreInput").value.trim();
+            let contenu = document.getElementById("contenuInput").value.trim();
+            
+            if (!titre || !contenu) {
+                alert("Remplissez tous les champs!");
+                return;
+            }
+            
+            let note = {
+                id: Date.now(),
+                titre: titre,
+                contenu: contenu,
+                date: new Date().toLocaleString("fr-FR")
+            };
+            
+            notes.unshift(note); // Ajouter au début
+            sauvegarderNotes();
+            
+            document.getElementById("titreInput").value = "";
+            document.getElementById("contenuInput").value = "";
+            
+            afficherNotes();
+            afficherStats();
+        }
+
+        // Supprimer une note
+        function supprimerNote(id) {
+            if (confirm("Supprimer cette note?")) {
+                notes = notes.filter(n => n.id !== id);
+                sauvegarderNotes();
+                afficherNotes();
+                afficherStats();
+            }
+        }
+
+        // Afficher les notes
+        function afficherNotes() {
+            let html = notes.map(note => `
+                &lt;div class="note"&gt;
+                    &lt;div class="note-header"&gt;
+                        &lt;span class="note-title"&gt;${note.titre}&lt;/span&gt;
+                        &lt;span class="note-date"&gt;${note.date}&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;p&gt;${note.contenu}&lt;/p&gt;
+                    &lt;button class="delete-btn" onclick="supprimerNote(${note.id})"&gt;
+                        Supprimer
+                    &lt;/button&gt;
+                &lt;/div&gt;
+            `).join('');
+            
+            document.getElementById('notesContainer').innerHTML = html || 
+                '&lt;p style="text-align: center; color: #666;"&gt;Aucune note&lt;/p&gt;';
+        }
+
+        // Afficher les stats
+        function afficherStats() {
+            let taille = new Blob([JSON.stringify(notes)]).size;
+            document.getElementById('stats').innerHTML = `
+                &lt;strong&gt;Total:&lt;/strong&gt; ${notes.length} notes | 
+                &lt;strong&gt;Taille:&lt;/strong&gt; ${taille} octets
+            `;
+        }
+
+        // Exporter en JSON
+        function exporterJSON() {
+            let json = JSON.stringify(notes, null, 2);
+            let blob = new Blob([json], { type: 'application/json' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'notes.json';
+            a.click();
+        }
+
+        // Tout supprimer
+        function toutSupprimer() {
+            if (confirm("Supprimer TOUTES les notes?")) {
+                notes = [];
+                localStorage.removeItem("notes");
+                afficherNotes();
+                afficherStats();
+            }
+        }
+
+        // Event listeners
+        document.getElementById("ajouterBtn").addEventListener("click", ajouterNote);
+        document.getElementById("exportBtn").addEventListener("click", exporterJSON);
+        document.getElementById("clearBtn").addEventListener("click", toutSupprimer);
+        
+        document.getElementById("contenuInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") ajouterNote();
+        });
+
+        // Charger au démarrage
+        chargerNotes();
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </div>
+
+    <h3>8. Bonnes Pratiques et Pièges</h3>
+    
+    <div class="warning">
+        <strong>Points d'attention :</strong>
+        <ul>
+            <li>localStorage stocke UNIQUEMENT des strings</li>
+            <li>Toujours utiliser JSON.stringify() / JSON.parse() pour objets/arrays</li>
+            <li>Limite de ~5-10 MB selon navigateur</li>
+            <li>Gérer les erreurs (try/catch) car peut être plein ou désactivé</li>
+            <li>Ne PAS stocker d'informations sensibles (mots de passe, etc.)</li>
+            <li>Vérifier si localStorage existe (navigation privée)</li>
+        </ul>
+    </div>
+
+    <div class="note">
+        <strong>Bonnes pratiques :</strong>
+        <ul>
+            <li>Préfixer les clés (ex: "app_user", "app_settings")</li>
+            <li>Valider les données avant de parse</li>
+            <li>Avoir des valeurs par défaut</li>
+            <li>Nettoyer les données obsolètes</li>
+            <li>Versionner vos données si structure change</li>
+        </ul>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-title"> Exercices Pratiques</div>
+        <ol>
+            <li>Créez un système de sauvegarde de préférences (thème, langue)</li>
+            <li>Faites une liste de courses qui persiste</li>
+            <li>Créez un compteur de visites</li>
+            <li>Sauvegardez l'historique de recherche</li>
+            <li>Faites un système de favoris</li>
+            <li>Créez un panier d'achat persistant</li>
+            <li>Sauvegardez la progression dans un jeu</li>
+        </ol>
+    </div>
+
+    <div class="note">
+        <strong>À retenir :</strong> localStorage + JSON.stringify/parse = La combinaison parfaite pour sauvegarder des données dans le navigateur !
+    </div>
+</div>
+
+
+<!-- FIN DES MODULES 6 À 15 -->
+
+
+
     <footer>
-        <p>© 2026 Formation DWWM - Développeur Web et Web Mobile</p>
-        <p>Thomas - Formateur Real Conseil - Cours de JavaScript</p>
+        <p>2026 Formation DWWM développeur web web mobile Lille</p>
+        <p>Thomas ( formateur realConseil ) cours de JavaScript</p>
     </footer>
 
     <script>
-        // Fonction pour afficher un module
         function showModule(moduleId) {
-            // Cacher tous les modules
             const modules = document.querySelectorAll('.module');
             modules.forEach(module => {
                 module.classList.remove('active');
             });
 
-            // Afficher le module sélectionné
             const selectedModule = document.getElementById(moduleId);
             if (selectedModule) {
                 selectedModule.classList.add('active');
-                // Scroll vers le haut
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-
-            // Fermer le menu mobile
             closeMenu();
         }
 
-        // Gestion du menu hamburger
+        // Menu hamburger
         const menuToggle = document.getElementById('menuToggle');
         const navMenu = document.getElementById('navMenu');
         const menuOverlay = document.getElementById('menuOverlay');
@@ -866,16 +6009,14 @@
             navMenu.classList.add('active');
             menuOverlay.classList.add('active');
             menuToggle.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Empêcher le scroll
+            document.body.style.overflow = 'hidden';
         }
 
         function closeMenu() {
             navMenu.classList.remove('active');
             menuOverlay.classList.remove('active');
             menuToggle.classList.remove('active');
-            document.body.style.overflow = ''; // Réactiver le scroll
-            
-            // Fermer tous les dropdowns
+            document.body.style.overflow = '';
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
@@ -891,42 +6032,41 @@
 
         menuOverlay.addEventListener('click', closeMenu);
 
-        // Gestion des dropdowns sur mobile
-        if (window.innerWidth <= 768) {
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    // Si le lien a un dropdown
+        // Dropdowns mobiles
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
                     const parentItem = this.parentElement;
                     const dropdown = parentItem.querySelector('.dropdown-content');
-                    
                     if (dropdown) {
                         e.preventDefault();
                         parentItem.classList.toggle('active');
                     }
-                });
+                }
             });
-        }
+        });
 
-        // Empêcher le comportement par défaut des liens
         document.querySelectorAll('a[href="#"]').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
             });
         });
 
-        // Réinitialiser le menu lors du redimensionnement
         window.addEventListener('resize', function() {
             if (window.innerWidth > 768) {
                 closeMenu();
             }
         });
 
-        // Fermer le menu en appuyant sur Échap
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && navMenu.classList.contains('active')) {
                 closeMenu();
             }
         });
     </script>
+
+
+
+
 </body>
 </html>
