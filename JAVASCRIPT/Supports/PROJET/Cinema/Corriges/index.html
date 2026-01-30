@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corriges - Projet Cinema</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: white;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .section {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #28a745;
+            border-left: 4px solid #28a745;
+            padding-left: 10px;
+            margin-top: 0;
+        }
+        .fichiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 10px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            display: block;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-left: 3px solid #28a745;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        a:hover {
+            background-color: #d4edda;
+            padding-left: 20px;
+        }
+        .retour {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .retour a {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 5px;
+            display: inline-block;
+            border: none;
+        }
+        .retour a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Corriges - Projet Cinema</h1>
+
+    <div class="section">
+        <h2>Calculateurs</h2>
+        <div class="fichiers">
+            <a href="calculateur1-tarifs-billetterie.html">Calculateur 1 - Tarifs billetterie</a>
+            <a href="calculateur2-menu-concession.html">Calculateur 2 - Menu concession</a>
+            <a href="calculateur3-abonnement.html">Calculateur 3 - Abonnement</a>
+            <a href="calculateur4-occupation-salles.html">Calculateur 4 - Occupation salles</a>
+            <a href="calculateur5-recettes-jour.html">Calculateur 5 - Recettes du jour</a>
+        </div>
+    </div>
+
+    <div class="retour">
+        <a href="/Devlille/JAVASCRIPT/Supports/PROJET/Cinema/index.html">Retour Projet Cinema</a>
+    </div>
+</body>
+</html>
