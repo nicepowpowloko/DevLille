@@ -27,8 +27,8 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         h2 {
-            color: #a8edea;
-            border-left: 4px solid #a8edea;
+            color: #667eea;
+            border-left: 4px solid #667eea;
             padding-left: 10px;
             margin-top: 0;
         }
@@ -46,6 +46,15 @@
         a:hover {
             background-color: #e9ecef;
             padding-left: 20px;
+        }
+        .dossier {
+            background-color: #e7f3ff;
+            border-left-color: #0066cc;
+        }
+        .fichier-principal {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+            font-weight: bold;
         }
         .retour {
             text-align: center;
@@ -65,23 +74,22 @@
     </style>
 </head>
 <body>
-    <h1>Supports de cours JavaScript</h1>
+    <h1> Supports de cours JavaScript</h1>
 
-    <!-- Exemple Variables et Données -->
+    <!-- Fichiers principaux -->
     <div class="section">
-        <h2>Exemples : Variables et Données</h2>
-        <a href="Exemple/Variables_données/booleans.html"> Booléens</a>
-        <a href="Exemple/Variables_données/calculatrice.html"> Calculatrice</a>
-        <a href="Exemple/Variables_données/charAt.html"> charAt()</a>
-        <a href="Exemple/Variables_données/includes.html"> includes()</a>
-        <a href="Exemple/Variables_données/initial.html"> Initiales</a>
-        <a href="Exemple/Variables_données/length.html">length</a>
-        <a href="Exemple/Variables_données/modif_confirm.html"> Confirm</a>
-        <a href="Exemple/Variables_données/test-cinema.html"> Test Cinéma (HTML)</a>
-        <a href="Exemple/Variables_données/test-cinéma.js"> Test Cinéma (JS)</a>
-        <a href="Exemple/Variables_données/toLowerCase.html"> toLowerCase()</a>
-        <a href="Exemple/Variables_données/validation_formu.html"> Validation formulaire</a>
-        <a href="Exemple/Variables_données/variables.html"> Variables</a>
+        <h2> Documents principaux</h2>
+        <a href="formation-javascript-complete.html" class="fichier-principal">📖 Formation JavaScript Complète</a>
+        <a href="index.html"> Index</a>
+    </div>
+
+    <!-- Dossiers -->
+    <div class="section">
+        <h2>Dossiers de ressources</h2>
+        <a href="Exemple/Variables_données/" class="dossier"> Exemples : Variables et Données</a>
+        <a href="Exo/" class="dossier"> Exercices</a>
+        <a href="IMG/" class="dossier"> Images</a>
+        <a href="PROJET/Cinema/" class="dossier"> Projet : Cinéma</a>
     </div>
 
     <div class="retour">
