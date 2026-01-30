@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercices JavaScript</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: white;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .section {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #f5576c;
+            border-left: 4px solid #f5576c;
+            padding-left: 10px;
+            margin-top: 0;
+        }
+        .fichiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 10px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            display: block;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-left: 3px solid #007bff;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        a:hover {
+            background-color: #e9ecef;
+            padding-left: 20px;
+        }
+        .dossier {
+            background-color: #e7f3ff;
+            border-left-color: #0066cc;
+            font-weight: bold;
+        }
+        .retour {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .retour a {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 5px;
+            display: inline-block;
+            border: none;
+        }
+        .retour a:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Exercices JavaScript</h1>
+
+    <!-- Dossiers par date -->
+    <div class="section">
+        <h2>Exercices par date</h2>
+        <div class="fichiers">
+            <a href="23.01.2026/" class="dossier">23 janvier 2026</a>
+            <a href="30.01.2026/" class="dossier">30 janvier 2026</a>
+        </div>
+    </div>
+
+    <!-- Dossier CONDITION -->
+    <div class="section">
+        <h2>Structures conditionnelles</h2>
+        <div class="fichiers">
+            <a href="CONDITION/" class="dossier">CONDITION</a>
+        </div>
+    </div>
+
+    <!-- Fichiers d'exercices -->
+    <div class="section">
+        <h2>Exercices HTML</h2>
+        <div class="fichiers">
+            <a href="calculatrice-inte.html">Calculatrice interactive</a>
+            <a href="calculette2.html">Calculette 2</a>
+            <a href="calculette3.html">Calculette 3</a>
+            <a href="donnee1.html">Donnée 1</a>
+            <a href="exercice1_temperature.html">Exercice 1 : Température</a>
+            <a href="exercice2_trajet.html">Exercice 2 : Trajet</a>
+            <a href="exercice3_likes.html">Exercice 3 : Likes</a>
+            <a href="exercice4_moyenne.html">Exercice 4 : Moyenne</a>
+            <a href="exercice5_reduction.html">Exercice 5 : Réduction</a>
+            <a href="exercice6_password.html">Exercice 6 : Password</a>
+            <a href="exo_intro.html">Exercice : Introduction</a>
+            <a href="exo_variable_donnee.html"> Exercice : Variables et données</a>
+            <a href="index.html">Index</a>
+            <a href="variable1.html">Variable 1</a>
+        </div>
+    </div>
+
+    <!-- Fichiers JavaScript et PDF -->
+    <div class="section">
+        <h2>Autres fichiers</h2>
+        <div class="fichiers">
+            <a href="billeterie.js">Billeterie (JS)</a>
+            <a href="Exo_Variable_donnee_16.01.2026.pdf">Exercice Variables (PDF)</a>
+        </div>
+    </div>
+
+    <div class="retour">
+        <a href="/Devlille/JAVASCRIPT/Supports/index.html">Retour Supports</a>
+    </div>
+</body>
+</html>
