@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supports - JavaScript</title>
+    <title>Variables et Données - Exemples</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +14,7 @@
         }
         h1 {
             color: white;
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
             border-radius: 10px;
             text-align: center;
@@ -32,12 +32,16 @@
             padding-left: 10px;
             margin-top: 0;
         }
+        .fichiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+        }
         a {
             color: #007bff;
             text-decoration: none;
             display: block;
             padding: 12px;
-            margin: 8px 0;
             background-color: #f8f9fa;
             border-left: 3px solid #007bff;
             border-radius: 5px;
@@ -46,15 +50,6 @@
         a:hover {
             background-color: #e9ecef;
             padding-left: 20px;
-        }
-        .dossier {
-            background-color: #e7f3ff;
-            border-left-color: #0066cc;
-        }
-        .fichier-principal {
-            background-color: #fff3cd;
-            border-left-color: #ffc107;
-            font-weight: bold;
         }
         .retour {
             text-align: center;
@@ -74,26 +69,34 @@
     </style>
 </head>
 <body>
-    <h1> Supports de cours JavaScript</h1>
+    <h1>Exemples : Variables et Données</h1>
 
-    <!-- Fichiers principaux -->
     <div class="section">
-        <h2> Documents principaux</h2>
-        <a href="formation-javascript-complete.html" class="fichier-principal">📖 Formation JavaScript Complète</a>
-        
+        <h2>Fichiers HTML</h2>
+        <div class="fichiers">
+            <a href="booleans.html">Booléens</a>
+            <a href="calculatrice.html"> Calculatrice</a>
+            <a href="charAt.html">charAt()</a>
+            <a href="includes.html"> includes()</a>
+            <a href="initial.html"> Initiales</a>
+            <a href="length.html"> length</a>
+            <a href="modif_confirm.html"> Confirm</a>
+            <a href="test-cinema.html"> Test Cinéma (HTML)</a>
+            <a href="toLowerCase.html"> toLowerCase()</a>
+            <a href="validation_formu.html"> Validation formulaire</a>
+            <a href="variables.html"> Variables</a>
+        </div>
     </div>
 
-    <!-- Dossiers -->
     <div class="section">
-        <h2>Dossiers de ressources</h2>
-        <a href="Exemple/Variables_données/" class="dossier"> Exemples : Variables et Données</a>
-        <a href="Exo/" class="dossier"> Exercices</a>
-        <a href="IMG/" class="dossier"> Images</a>
-        <a href="PROJET/Cinema/" class="dossier"> Projet : Cinéma</a>
+        <h2>Fichiers JavaScript</h2>
+        <div class="fichiers">
+            <a href="test-cinéma.js"> Test Cinéma (JS)</a>
+        </div>
     </div>
 
     <div class="retour">
-        <a href="../"> Retour JavaScript</a>
+        <a href="/Devlille/JAVASCRIPT/Supports/index.html">Retour Supports</a>
     </div>
 </body>
 </html>
