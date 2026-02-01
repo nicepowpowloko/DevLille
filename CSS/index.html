@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UI/UX Design</title>
+    <title>Base HTML</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +14,7 @@
         }
         h1 {
             color: white;
-            background: linear-gradient(135deg, #2C3F77 0%, #A0866B 100%);
+             background: linear-gradient(135deg, #2C3F77 0%, #A0866B 100%);
             padding: 20px;
             border-radius: 10px;
             text-align: center;
@@ -37,6 +37,7 @@
             text-decoration: none;
             display: block;
             padding: 12px;
+            margin: 8px 0;
             background-color: #f8f9fa;
             border-left: 3px solid #2C3F77;
             border-radius: 5px;
@@ -45,6 +46,10 @@
         a:hover {
             background-color: #e9ecef;
             padding-left: 20px;
+        }
+        .pdf {
+            background-color: #f8f9fa;
+            border-left-color:#2C3F77 ;
         }
         .retour {
             text-align: center;
@@ -64,16 +69,15 @@
     </style>
 </head>
 <body>
-    <h1>UI/UX Design</h1>
+    <h1>Supports de cours CSS</h1>
 
     <div class="section">
-        <h2>Support PDF</h2>
-        <a href="UX-UI-Design.pdf">UX UI Design</a>
-        <a href="./utilisation_figma.pdf">Utilisation Figma</a>
+        <h2>Supports PDF</h2>
+        <a href="./Exercice-FM.pdf" class="pdf">Gestion d'équipes</a>
+       
     </div>
-
-    <div class="retour">
-         <a href="../index.html">Retour</a>
-    </div>
+    
 </body>
-</html>
+             <div class="retour">
+        <a href="../index.html">Retour à l'accueil</a>
+    </div>   
