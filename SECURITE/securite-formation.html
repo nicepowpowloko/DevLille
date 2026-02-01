@@ -279,16 +279,175 @@
                 font-size: 1.8em;
             }
         }
+
+/* Bouton burger (caché par défaut) */
+.burger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 10px;
+    background: #2c3e50;
+    border: none;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    border-radius: 5px;
+}
+
+.burger span {
+    width: 25px;
+    height: 3px;
+    background: white;
+    margin: 3px 0;
+    transition: 0.3s;
+}
+
+/* Navigation responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    h2 {
+        font-size: 1.3em;
+        margin-top: 20px;
+    }
+
+    h3 {
+        font-size: 1.1em;
+    }
+
+    h4 {
+        font-size: 1em;
+    }
+
+    ul {
+        margin-left: 25px;
+    }
+
+    .note, .exemple, .important {
+        padding: 12px;
+        font-size: 0.95em;
+    }
+
+    .burger {
+        display: flex;
+    }
+
+    nav {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 80%;
+        height: 100vh;
+       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        transition: left 0.3s;
+        z-index: 999;
+        overflow-y: auto;
+        padding-top: 60px;
+    }
+
+    nav.active {
+        left: 0;
+    }
+
+    nav ul {
+        flex-direction: column;
+        padding: 0;
+    }
+
+    nav ul li {
+        width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    nav ul li a {
+        display: block;
+        padding: 15px 20px;
+        width: 100%;
+    }
+
+    nav ul li ul {
+        position: static;
+        display: none;
+        background: rgba(0,0,0,0.2);
+    }
+
+    nav ul li:hover > ul,
+    nav ul li.active > ul {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.3em;
+    }
+
+    h2 {
+        font-size: 1.2em;
+    }
+
+    h3 {
+        font-size: 1em;
+    }
+
+    h4 {
+        font-size: 0.95em;
+    }
+
+    ul {
+        margin-left: 20px;
+    }
+
+    li {
+        font-size: 0.95em;
+    }
+
+    code {
+        font-size: 0.9em;
+    }
+
+    .note, .exemple, .important {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+}
+
+
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="90px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" style="display: block; margin: 0 auto;" width="90px" alt="">
             <h1>Sécurité Web</h1>
             <p>Développement Web Web Mobile</p>
         </div>
     </header>
+
+<button class="burger" onclick="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
 
     <nav>
         <ul>
@@ -871,5 +1030,31 @@ app.use(cors({
             }
         }
     </script>
+
+<script>
+function toggleMenu() {
+    const nav = document.querySelector('nav');
+    nav.classList.toggle('active');
+}
+
+// Fermer le menu quand on clique sur un lien
+document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', () => {
+        document.querySelector('nav').classList.remove('active');
+    });
+});
+
+// Fermer le menu si on clique en dehors
+document.addEventListener('click', (e) => {
+    const nav = document.querySelector('nav');
+    const burger = document.querySelector('.burger');
+    
+    if (!nav.contains(e.target) && !burger.contains(e.target)) {
+        nav.classList.remove('active');
+    }
+});
+</script>
+
+
 </body>
 </html>
