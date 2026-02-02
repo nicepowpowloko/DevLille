@@ -6,14 +6,11 @@
     <title>Formation CSS Complète - Real Conseil</title>
     <style>
 
-
-  :root {
+        :root {
            
             --real:#A0866B;
             --conseil:#2C3F77;
         }
-
-
         * {
             margin: 0;
             padding: 0;
@@ -24,10 +21,8 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-             background: linear-gradient(135deg, #2C3F77 0%, #A0866B 100%);
-            color: rgb(20, 20, 20);
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
             min-height: 100vh;
-            padding-top: 80px;
         }
 
         .container {
@@ -46,13 +41,13 @@
         }
 
         header h1 {
-            color: #2C3F77;
+            color: var(--conseil);
             font-size: 2.5em;
             margin-bottom: 10px;
         }
 
         header p {
-            color: #666;
+            color: #010101;
             font-size: 1.2em;
         }
 
@@ -63,63 +58,186 @@
             margin-top: 15px;
         }
 
-        /* NAVIGATION PRINCIPALE */
+        /* ==================== NAVIGATION ==================== */
         nav {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            position: fixed;
-            top: 10px;
-            left: 20px;
-            right: 20px;
+            background: var(--conseil);
+            position: sticky;
+            top: 0;
             z-index: 1000;
+            
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            align-items: stretch;
+            position: relative;
         }
 
-        .nav-brand {
-            font-weight: bold;
-            color: #2C3F77;
-            font-size: 1.2em;
-        }
-
-        .nav-toggle {
+        /* Bouton hamburger (mobile) */
+        .menu-toggle {
             display: none;
             background: none;
             border: none;
-            font-size: 1.5em;
-            color: #667eea;
+            color: white;
+            font-size: 1.8em;
+            padding: 15px 20px;
             cursor: pointer;
-            padding: 5px;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
         }
 
+        /* Menu principal */
         .nav-menu {
-            list-style: none;
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
+            list-style: none;
+            width: 100%;
         }
 
-        .nav-menu a {
+        .nav-item {
+            position: relative;
+            flex: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 20px;
+            color: white;
             text-decoration: none;
-            color: #667eea;
-            padding: 8px 15px;
-            border-radius: 8px;
-            transition: all 0.3s;
             font-weight: 500;
-            font-size: 0.95em;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            height: 100%;
+            cursor: pointer;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-item:last-child .nav-link {
+            border-right: none;
+        }
+
+        .nav-link:hover,
+        .nav-item.active .nav-link {
+            background-color: var(--conseil);
+        }
+
+        .nav-link::after {
+            content: ' ▼';
+            font-size: 0.7em;
+            margin-left: 5px;
+        }
+
+        /* Sous-menus */
+        .submenu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #2c3e50;
+            min-width: 280px;
+            max-width: 350px;
+            z-index: 1000;
+        }
+
+        .nav-item:hover .submenu,
+        .nav-item.active .submenu {
             display: block;
         }
 
-        .nav-menu a:hover {
-            background: #667eea;
+        .submenu a {
+            display: block;
+            padding: 12px 20px;
             color: white;
-            transform: translateY(-2px);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: background-color 0.3s;
+             transition: all 0.3s;      
+             font-size: 0.95em;
+        }
+.submenu a:last-child {        /* ✅ AJOUTÉ - Dernier élément */
+    border-bottom: none;
+    border-radius: 0 0 8px 8px;
+}
+        .submenu a:hover {
+            background-color: var(--real);
+            border-left: 4px solid rgb(3, 27, 252);
+            
         }
 
+        /* ==================== RESPONSIVE ==================== */
+       @media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 350px;
+        height: 100vh;
+        background: #3d5a80;
+        flex-direction: column;
+        overflow-y: auto;
+        transition: right 0.3s ease;
+        padding-top: 60px;
+    }
+
+    .nav-menu.active {
+        right: 0;
+    }
+
+    .nav-item {
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        position: relative;
+    }
+
+    /* IMPORTANT : Désactiver complètement le hover sur mobile */
+    .nav-item:hover .submenu {
+        display: none !important;
+    }
+
+    .nav-link {
+        border-right: none;
+        padding: 10px 20px;
+        justify-content: space-between;
+    }
+
+    .submenu {
+        position: relative !important; /* Pas absolute sur mobile */
+        display: none !important;
+        background: #2c3e50;
+        box-shadow: none;
+        width: 100%;
+        border-radius: 0;
+        top: auto !important;
+        left: auto !important;
+    }
+
+    /* Affichage seulement quand la classe active est présente */
+    .nav-item.active .submenu {
+        display: block !important;
+    }
+
+    .submenu a {
+        padding: 12px 20px 12px 40px;
+        font-size: 0.9em;
+    }
+
+    .submenu a:hover {
+        padding-left: 45px;
+        background-color: #1a252f;
+    }
+}
+
+        /* ==================== MODULES ==================== */
         .module {
             background: white;
             padding: 40px;
@@ -129,7 +247,7 @@
         }
 
         .module h2 {
-            color: #2C3F77;
+            color: var(--conseil);
             font-size: 2em;
             margin-bottom: 20px;
             padding-bottom: 10px;
@@ -168,14 +286,14 @@
 
         .example {
             background: #e8f4f8;
-            border-left: 4px solid var(--conseil);
+            border-left: 4px solid --var(--real);
             padding: 20px;
             margin: 20px 0;
             border-radius: 8px;
         }
 
         .example h4 {
-            color: #764ba2;
+            color: var(--conseil);
             margin-top: 0;
         }
 
@@ -183,7 +301,6 @@
             background: #fff3cd;
             border-left: 4px solid #ffc107;
             padding: 15px;
-            color: #333;
             margin: 20px 0;
             border-radius: 8px;
         }
@@ -193,7 +310,6 @@
             border-left: 4px solid #28a745;
             padding: 15px;
             margin: 20px 0;
-            color: #333;
             border-radius: 8px;
         }
 
@@ -219,8 +335,8 @@
         }
 
         th {
-            background: var(--conseil);
-            color: rgb(244, 242, 242);
+            background: #667eea;
+            color: white;
         }
 
         tr:nth-child(even) {
@@ -241,74 +357,9 @@
             margin-bottom: 10px;
         }
 
-        /* RESPONSIVE DESIGN */
-        @media (max-width: 1024px) {
-            .nav-menu {
-                gap: 8px;
-            }
-
-            .nav-menu a {
-                padding: 6px 12px;
-                font-size: 0.9em;
-            }
-        }
-
         @media (max-width: 768px) {
-            body {
-                padding-top: 70px;
-            }
-
             header h1 {
                 font-size: 1.8em;
-            }
-
-            nav {
-                top: 10px;
-                left: 10px;
-                right: 10px;
-                padding: 10px 15px;
-            }
-
-            .nav-toggle {
-                display: block;
-            }
-
-            .nav-menu {
-                position: fixed;
-                top: 60px;
-                left: 10px;
-                right: 10px;
-                background: white;
-                flex-direction: column;
-                padding: 20px;
-                border-radius: 15px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                max-height: 0;
-                overflow: hidden;
-                opacity: 0;
-                transition: all 0.3s ease;
-                gap: 0;
-            }
-
-            .nav-menu.active {
-                max-height: 500px;
-                opacity: 1;
-                margin-top: 10px;
-            }
-
-            .nav-menu li {
-                width: 100%;
-                border-bottom: 1px solid #f0f0f0;
-            }
-
-            .nav-menu li:last-child {
-                border-bottom: none;
-            }
-
-            .nav-menu a {
-                padding: 12px 15px;
-                font-size: 1em;
-                width: 100%;
             }
 
             .module {
@@ -336,45 +387,78 @@
             .module h3 {
                 font-size: 1.2em;
             }
-
-            .code-block {
-                padding: 15px;
-                font-size: 0.9em;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- NAVIGATION FIXE -->
+    <!-- NAVIGATION -->
     <nav>
-        <div class="nav-brand">CSS Formation</div>
-        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-            ☰
-        </button>
-        <ul class="nav-menu" id="navMenu">
-            <li><a href="#module1" onclick="closeMenu()">M1: Intro</a></li>
-            <li><a href="#module2" onclick="closeMenu()">M2: Sélecteurs</a></li>
-            <li><a href="#module3" onclick="closeMenu()">M3: Couleurs</a></li>
-            <li><a href="#module4" onclick="closeMenu()">M4: Box Model</a></li>
-            <li><a href="#module5" onclick="closeMenu()">M5: Position</a></li>
-            <li><a href="#module6" onclick="closeMenu()">M6: Flexbox</a></li>
-            <li><a href="#module7" onclick="closeMenu()">M7: Grid</a></li>
-            <li><a href="#module8" onclick="closeMenu()">M8: Responsive</a></li>
-            <li><a href="#module9" onclick="closeMenu()">M9: Transitions</a></li>
-            <li><a href="#module10" onclick="closeMenu()">M10: Animations</a></li>
-            <li><a href="#module11" onclick="closeMenu()">M11: Transform</a></li>
-            <li><a href="#module12" onclick="closeMenu()">M12: Pseudo</a></li>
-            <li><a href="#module13" onclick="closeMenu()">M13: Variables</a></li>
-            <li><a href="#module14" onclick="closeMenu()">M14: Optimisation</a></li>
-            <li><a href="#module15" onclick="closeMenu()">M15: Projets</a></li>
-        </ul>
+        <div class="nav-container">
+
+ <a href="#" class="logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
+    <img src="https://1000logos.net/wp-content/uploads/2020/09/CSS-Logo-2011.png" width="100" alt="Real Conseil Logo">
+</a>
+
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <span class="nav-link">Fondamentaux</span>
+                    <div class="submenu">
+                        <a href="#module1">Module 1: Introduction au CSS</a>
+                        <a href="#module2">Module 2: Les Sélecteurs CSS</a>
+                        <a href="#module3">Module 3: Couleurs et Texte</a>
+                        <a href="#module4">Module 4: Le Box Model</a>
+                    </div>
+                </li>
+                
+                <li class="nav-item">
+                    <span class="nav-link">Layout & Position</span>
+                    <div class="submenu">
+                        <a href="#module5">Module 5: Positionnement</a>
+                        <a href="#module6">Module 6: Flexbox</a>
+                        <a href="#module7">Module 7: CSS Grid</a>
+                        <a href="#module8">Module 8: Responsive Design</a>
+                    </div>
+                </li>
+                
+                <li class="nav-item">
+                    <span class="nav-link">Animations</span>
+                    <div class="submenu">
+                        <a href="#module9">Module 9: Transitions CSS</a>
+                        <a href="#module10">Module 10: Animations CSS</a>
+                        <a href="#module11">Module 11: Transformations CSS</a>
+                    </div>
+                </li>
+                
+                <li class="nav-item">
+                    <span class="nav-link">Avancé</span>
+                    <div class="submenu">
+                        <a href="#module12">Module 12: Pseudo-classes</a>
+                        <a href="#module13">Module 13: Variables CSS</a>
+                        <a href="#module14">Module 14: Optimisation</a>
+                    </div>
+                </li>
+                
+                <li class="nav-item">
+                    <span class="nav-link">Projets</span>
+                    <div class="submenu">
+                        <a href="#module15">Module 15: Projets Pratiques</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </nav>
+
+    <!-- Overlay pour mobile -->
+    <div class="nav-overlay" id="navOverlay"></div>
 
     <div class="container">
         <header>
-            <h1>Formation CSS Complète</h1>
-            <p>Maîtrisez le style et la présentation web</p>
-            <div class="logo">REAL CONSEIL - Formation Professionnelle</div>
+            <h1>CSS</h1>
+            <p>Cascading Style Sheets</p>
+            
+             <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="Real Conseil" class="hero-logo">
         </header>
 
         <!-- MODULE 1 -->
@@ -508,7 +592,7 @@ h1 {
             </div>
 
             <div class="important">
-                <strong>Important :</strong> Un ID doit être unique sur la page. Utilisez les classes pour les styles réutilisables.
+                <strong> Important :</strong> Un ID doit être unique sur la page. Utilisez les classes pour les styles réutilisables.
             </div>
 
             <h3>2.2 Sélecteurs combinés</h3>
@@ -597,6 +681,10 @@ p {
 h1 {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }</code>
+            </div>
+
+            <div class="tip">
+                <strong> Astuce :</strong> Pour une meilleure lisibilité, utilisez line-height entre 1.4 et 1.8 pour les paragraphes.
             </div>
         </section>
 
@@ -730,6 +818,10 @@ button {
     z-index: 2;
 }</code>
             </div>
+
+            <div class="important">
+                <strong> Important :</strong> Pour utiliser z-index, l'élément doit avoir une position autre que static.
+            </div>
         </section>
 
         <!-- MODULE 6 -->
@@ -836,6 +928,10 @@ button {
     grid-area: header;
 }</code>
             </div>
+
+            <div class="important">
+                <strong> Différence :</strong> Flexbox = 1D (ligne OU colonne), Grid = 2D (lignes ET colonnes).
+            </div>
         </section>
 
         <!-- MODULE 8 -->
@@ -878,7 +974,7 @@ button {
             </div>
 
             <div class="tip">
-                <strong> Astuce :</strong> Approche Mobile First recommandée : commencez par mobile, puis ajoutez des styles pour écrans plus grands.
+                <strong> Astuce :</strong> Mobile First recommandé : commencez par mobile, puis ajoutez pour écrans plus grands.
             </div>
         </section>
 
@@ -954,6 +1050,10 @@ button:hover {
     50% { transform: translateY(-20px); }
 }</code>
             </div>
+
+            <div class="tip">
+                <strong> Astuce :</strong> Utilisez animation-fill-mode: forwards pour garder le dernier état.
+            </div>
         </section>
 
         <!-- MODULE 11 -->
@@ -996,6 +1096,10 @@ button:hover {
     left: 50%;
     transform: translate(-50%, -50%);
 }</code>
+            </div>
+
+            <div class="important">
+                <strong> Performance :</strong> Transform est très performant, utilisez-le plutôt que top/left/margin.
             </div>
         </section>
 
@@ -1047,6 +1151,10 @@ p::first-letter {
     color: black;
 }</code>
             </div>
+
+            <div class="tip">
+                <strong> Astuce :</strong> Les pseudo-éléments ::before et ::after nécessitent toujours la propriété content.
+            </div>
         </section>
 
         <!-- MODULE 13 -->
@@ -1096,7 +1204,7 @@ body {
             </div>
 
             <div class="tip">
-                <strong> Astuce :</strong> Les variables CSS facilitent la création de systèmes de design cohérents et maintenables.
+                <strong> Astuce :</strong> Les variables CSS facilitent la création de systèmes de design cohérents.
             </div>
         </section>
 
@@ -1137,6 +1245,10 @@ div.container div.content ul li a {
                 <li> Minifier en production</li>
                 <li> Commenter le code complexe</li>
             </ul>
+
+            <div class="important">
+                <strong> Règle d'or :</strong> Code simple, maintenable et performant avant tout.
+            </div>
         </section>
 
         <!-- MODULE 15 -->
@@ -1191,55 +1303,79 @@ div.container div.content ul li a {
             </div>
 
             <div class="important">
-                <strong> Conseil final :</strong> La pratique régulière est la clé. Recréez des designs, expérimentez et apprenez de vos erreurs !
+                <strong> Conseil final :</strong> La pratique régulière est la clé. Recréez des designs et apprenez de vos erreurs !
             </div>
         </section>
 
         <!-- FOOTER -->
-        <footer>
-             <p>2026 Formation DWWM développeur web web mobile Lille</p>
-            <p>&copy;Thomas ( formateur realConseil ) cours de CSS</p>
-            <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="50px" alt="">
+    <footer>
+        <p>2026 Formation DWWM développeur web web mobile Lille</p>
+        <p>&copy; Thomas cours de CSS</p>
+        <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="50px" alt="">
             <img src="../JAVASCRIPT/Supports/IMG/Region.jpg" width="50px" alt="">
             <img src="../JAVASCRIPT/Supports/IMG/U.E.jpg" width="70px" alt="">
-        
-        </footer>
+    </footer>
     </div>
 
-    <!-- SCRIPT POUR LE MENU HAMBURGER -->
+    <!-- JAVASCRIPT -->
     <script>
-        const navToggle = document.getElementById('navToggle');
+        const menuToggle = document.getElementById('menuToggle');
         const navMenu = document.getElementById('navMenu');
+        const navOverlay = document.getElementById('navOverlay');
+        const navItems = document.querySelectorAll('.nav-item');
 
-        navToggle.addEventListener('click', function() {
+        // Toggle menu mobile
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
             navMenu.classList.toggle('active');
-            // Change l'icône
+            navOverlay.classList.toggle('active');
             this.textContent = navMenu.classList.contains('active') ? '✕' : '☰';
         });
 
-        // Ferme le menu quand on clique sur un lien
-        function closeMenu() {
-            if (window.innerWidth <= 768) {
-                navMenu.classList.remove('active');
-                navToggle.textContent = '☰';
-            }
-        }
-
-        // Ferme le menu si on clique en dehors
-        document.addEventListener('click', function(event) {
-            if (!navToggle.contains(event.target) && !navMenu.contains(event.target)) {
-                navMenu.classList.remove('active');
-                navToggle.textContent = '☰';
-            }
+        // Fermer le menu en cliquant sur l'overlay
+        navOverlay.addEventListener('click', function() {
+            navMenu.classList.remove('active');
+            navOverlay.classList.remove('active');
+            menuToggle.textContent = '☰';
         });
 
-        // Gestion du scroll smooth
+        // Gestion des sous-menus sur mobile
+        navItems.forEach(item => {
+            const link = item.querySelector('.nav-link');
+            link.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    // Fermer les autres
+                    navItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    // Toggle celui-ci
+                    item.classList.toggle('active');
+                }
+            });
+        });
+
+        // Fermer le menu mobile lors du clic sur un lien de sous-menu
+        document.querySelectorAll('.submenu a').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    navMenu.classList.remove('active');
+                    navOverlay.classList.remove('active');
+                    menuToggle.textContent = '☰';
+                    navItems.forEach(item => item.classList.remove('active'));
+                }
+            });
+        });
+
+        // Scroll smooth
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    const offset = 80; // Hauteur de la nav
+                    const offset = 60;
                     const targetPosition = target.offsetTop - offset;
                     window.scrollTo({
                         top: targetPosition,
