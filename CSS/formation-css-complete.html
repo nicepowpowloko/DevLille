@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formation CSS Complète - Real Conseil</title>
+    <style>
+
+
+  :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+             background: linear-gradient(135deg, #2C3F77 0%, #A0866B 100%);
+            color: rgb(20, 20, 20);
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            color: #2C3F77;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: #764ba2;
+            font-size: 1.1em;
+            margin-top: 15px;
+        }
+
+        /* NAVIGATION PRINCIPALE */
+        nav {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 10px;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-weight: bold;
+            color: #2C3F77;
+            font-size: 1.2em;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: #667eea;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #667eea;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+            font-size: 0.95em;
+            display: block;
+        }
+
+        .nav-menu a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .module {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .module h2 {
+            color: #2C3F77;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--real);
+        }
+
+        .module h3 {
+            color: var(--real);
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .module h4 {
+            color: var(--conseil);
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border-left: 4px solid var(--conseil);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: 'Courier New', monospace;
+            color: #333;
+            display: block;
+            white-space: pre;
+        }
+
+        .example {
+            background: #e8f4f8;
+            border-left: 4px solid var(--conseil);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .example h4 {
+            color: #764ba2;
+            margin-top: 0;
+        }
+
+        .important {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            color: #333;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .tip {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            color: #333;
+            border-radius: 8px;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: var(--conseil);
+            color: rgb(244, 242, 242);
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        footer {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        footer p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 1024px) {
+            .nav-menu {
+                gap: 8px;
+            }
+
+            .nav-menu a {
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            nav {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                padding: 10px 15px;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 60px;
+                left: 10px;
+                right: 10px;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                max-height: 0;
+                overflow: hidden;
+                opacity: 0;
+                transition: all 0.3s ease;
+                gap: 0;
+            }
+
+            .nav-menu.active {
+                max-height: 500px;
+                opacity: 1;
+                margin-top: 10px;
+            }
+
+            .nav-menu li {
+                width: 100%;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .nav-menu li:last-child {
+                border-bottom: none;
+            }
+
+            .nav-menu a {
+                padding: 12px 15px;
+                font-size: 1em;
+                width: 100%;
+            }
+
+            .module {
+                padding: 20px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            header p {
+                font-size: 1em;
+            }
+
+            .module h2 {
+                font-size: 1.5em;
+            }
+
+            .module h3 {
+                font-size: 1.2em;
+            }
+
+            .code-block {
+                padding: 15px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION FIXE -->
+    <nav>
+        <div class="nav-brand">CSS Formation</div>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            ☰
+        </button>
+        <ul class="nav-menu" id="navMenu">
+            <li><a href="#module1" onclick="closeMenu()">M1: Intro</a></li>
+            <li><a href="#module2" onclick="closeMenu()">M2: Sélecteurs</a></li>
+            <li><a href="#module3" onclick="closeMenu()">M3: Couleurs</a></li>
+            <li><a href="#module4" onclick="closeMenu()">M4: Box Model</a></li>
+            <li><a href="#module5" onclick="closeMenu()">M5: Position</a></li>
+            <li><a href="#module6" onclick="closeMenu()">M6: Flexbox</a></li>
+            <li><a href="#module7" onclick="closeMenu()">M7: Grid</a></li>
+            <li><a href="#module8" onclick="closeMenu()">M8: Responsive</a></li>
+            <li><a href="#module9" onclick="closeMenu()">M9: Transitions</a></li>
+            <li><a href="#module10" onclick="closeMenu()">M10: Animations</a></li>
+            <li><a href="#module11" onclick="closeMenu()">M11: Transform</a></li>
+            <li><a href="#module12" onclick="closeMenu()">M12: Pseudo</a></li>
+            <li><a href="#module13" onclick="closeMenu()">M13: Variables</a></li>
+            <li><a href="#module14" onclick="closeMenu()">M14: Optimisation</a></li>
+            <li><a href="#module15" onclick="closeMenu()">M15: Projets</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Formation CSS Complète</h1>
+            <p>Maîtrisez le style et la présentation web</p>
+            <div class="logo">REAL CONSEIL - Formation Professionnelle</div>
+        </header>
+
+        <!-- MODULE 1 -->
+        <section id="module1" class="module">
+            <h2>Module 1 : Introduction au CSS</h2>
+            
+            <h3>1.1 Qu'est-ce que le CSS ?</h3>
+            <p>CSS (Cascading Style Sheets) est le langage utilisé pour styliser et mettre en page les documents HTML. Il permet de séparer le contenu (HTML) de la présentation (CSS).</p>
+
+            <h4>Les trois façons d'intégrer du CSS :</h4>
+            
+            <div class="code-block">
+                <code>&lt;!-- 1. CSS Inline (dans l'élément HTML) --&gt;
+&lt;p style="color: blue; font-size: 16px;"&gt;Texte en bleu&lt;/p&gt;
+
+&lt;!-- 2. CSS Interne (dans la balise &lt;style&gt;) --&gt;
+&lt;head&gt;
+    &lt;style&gt;
+        p {
+            color: blue;
+            font-size: 16px;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;!-- 3. CSS Externe (fichier séparé - RECOMMANDÉ) --&gt;
+&lt;head&gt;
+    &lt;link rel="stylesheet" href="styles.css"&gt;
+&lt;/head&gt;</code>
+            </div>
+
+            <h3>1.2 Structure d'une règle CSS</h3>
+            <div class="code-block">
+                <code>sélecteur {
+    propriété: valeur;
+    autre-propriété: autre-valeur;
+}
+
+/* Exemple */
+h1 {
+    color: red;
+    font-size: 32px;
+    text-align: center;
+}</code>
+            </div>
+
+            <div class="important">
+                <strong> Important :</strong> Chaque déclaration CSS se termine par un point-virgule (;). Les accolades {} délimitent le bloc de déclarations.
+            </div>
+
+            <h3>1.3 Les commentaires CSS</h3>
+            <div class="code-block">
+                <code>/* Ceci est un commentaire sur une ligne */
+
+/* 
+   Ceci est un commentaire
+   sur plusieurs lignes
+*/
+
+h1 {
+    color: blue; /* Commentaire en fin de ligne */
+}</code>
+            </div>
+
+            <div class="example">
+                <h4>Exemple pratique : Premier fichier CSS</h4>
+                <div class="code-block">
+                    <code>/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+}
+
+p {
+    color: #666;
+    line-height: 1.6;
+}</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 2 -->
+        <section id="module2" class="module">
+            <h2>Module 2 : Les Sélecteurs CSS</h2>
+            
+            <h3>2.1 Sélecteurs de base</h3>
+            
+            <h4>Sélecteur d'élément (type)</h4>
+            <div class="code-block">
+                <code>/* Sélectionne tous les paragraphes */
+p {
+    color: blue;
+}
+
+/* Sélectionne tous les titres h1 */
+h1 {
+    font-size: 32px;
+}</code>
+            </div>
+
+            <h4>Sélecteur de classe (.)</h4>
+            <div class="code-block">
+                <code>/* HTML */
+&lt;p class="important"&gt;Texte important&lt;/p&gt;
+
+/* CSS */
+.important {
+    color: red;
+    font-weight: bold;
+}</code>
+            </div>
+
+            <h4>Sélecteur d'identifiant (#)</h4>
+            <div class="code-block">
+                <code>/* HTML */
+&lt;div id="header"&gt;En-tête&lt;/div&gt;
+
+/* CSS */
+#header {
+    background-color: navy;
+    color: white;
+    padding: 20px;
+}</code>
+            </div>
+
+            <div class="important">
+                <strong>Important :</strong> Un ID doit être unique sur la page. Utilisez les classes pour les styles réutilisables.
+            </div>
+
+            <h3>2.2 Sélecteurs combinés</h3>
+            <div class="code-block">
+                <code>/* Sélecteur descendant (espace) */
+div p {
+    color: blue;
+}
+
+/* Sélecteur enfant direct (&gt;) */
+ul &gt; li {
+    list-style: none;
+}
+
+/* Sélecteur de frère adjacent (+) */
+h1 + p {
+    font-weight: bold;
+}
+
+/* Sélecteur de frères généraux (~) */
+h1 ~ p {
+    margin-top: 10px;
+}</code>
+            </div>
+
+            <div class="tip">
+                <strong> Astuce :</strong> Utilisez des sélecteurs spécifiques mais pas trop complexes pour une meilleure maintenabilité.
+            </div>
+        </section>
+
+        <!-- MODULE 3 -->
+        <section id="module3" class="module">
+            <h2>Module 3 : Couleurs et Texte</h2>
+            
+            <h3>3.1 Les couleurs en CSS</h3>
+            <div class="code-block">
+                <code>/* Hexadécimal */
+h1 {
+    color: #FF0000;
+}
+
+/* RGB */
+div {
+    color: rgb(255, 0, 0);
+}
+
+/* RGBA (avec transparence) */
+.overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* HSL */
+button {
+    background-color: hsl(200, 100%, 50%);
+}</code>
+            </div>
+
+            <h3>3.2 Propriétés de texte</h3>
+            <div class="code-block">
+                <code>/* Famille de police */
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Taille */
+p {
+    font-size: 16px;
+}
+
+/* Graisse */
+p {
+    font-weight: bold;
+}
+
+/* Alignement */
+h1 {
+    text-align: center;
+}
+
+/* Hauteur de ligne */
+p {
+    line-height: 1.6;
+}
+
+/* Ombre portée */
+h1 {
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}</code>
+            </div>
+        </section>
+
+        <!-- MODULE 4 -->
+        <section id="module4" class="module">
+            <h2>Module 4 : Le Box Model</h2>
+            
+            <h3>4.1 Comprendre le Box Model</h3>
+            <p>Chaque élément HTML est une boîte rectangulaire composée de :</p>
+            <ul>
+                <li><strong>Content</strong> : Le contenu</li>
+                <li><strong>Padding</strong> : Espacement intérieur</li>
+                <li><strong>Border</strong> : La bordure</li>
+                <li><strong>Margin</strong> : Espacement extérieur</li>
+            </ul>
+
+            <h3>4.2 Padding, Border, Margin</h3>
+            <div class="code-block">
+                <code>/* Padding */
+div {
+    padding: 20px;
+}
+
+/* Border */
+div {
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
+/* Margin */
+div {
+    margin: 20px;
+}
+
+/* Centrer horizontalement */
+.center {
+    width: 800px;
+    margin: 0 auto;
+}</code>
+            </div>
+
+            <h3>4.3 Box-sizing</h3>
+            <div class="code-block">
+                <code>/* Recommandé pour tous les éléments */
+* {
+    box-sizing: border-box;
+}
+
+/* La largeur inclut padding et border */
+.box {
+    box-sizing: border-box;
+    width: 300px;
+    padding: 20px;
+    border: 5px solid black;
+}</code>
+            </div>
+
+            <div class="tip">
+                <strong> Astuce :</strong> Utilisez toujours box-sizing: border-box pour un calcul intuitif des dimensions.
+            </div>
+        </section>
+
+        <!-- MODULE 5 -->
+        <section id="module5" class="module">
+            <h2>Module 5 : Positionnement</h2>
+            
+            <h3>5.1 Display</h3>
+            <div class="code-block">
+                <code>/* Block */
+div {
+    display: block;
+}
+
+/* Inline */
+span {
+    display: inline;
+}
+
+/* Inline-block */
+button {
+    display: inline-block;
+}
+
+/* None */
+.hidden {
+    display: none;
+}</code>
+            </div>
+
+            <h3>5.2 Position</h3>
+            <div class="code-block">
+                <code>/* Relative */
+.box {
+    position: relative;
+    top: 20px;
+    left: 30px;
+}
+
+/* Absolute */
+.overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+/* Fixed */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+/* Sticky */
+.sticky-header {
+    position: sticky;
+    top: 0;
+}</code>
+            </div>
+
+            <h3>5.3 Z-index</h3>
+            <div class="code-block">
+                <code>/* Superposition */
+.layer-1 {
+    position: relative;
+    z-index: 1;
+}
+
+.layer-2 {
+    position: relative;
+    z-index: 2;
+}</code>
+            </div>
+        </section>
+
+        <!-- MODULE 6 -->
+        <section id="module6" class="module">
+            <h2>Module 6 : Flexbox</h2>
+            
+            <h3>6.1 Créer un conteneur Flex</h3>
+            <div class="code-block">
+                <code>.container {
+    display: flex;
+}</code>
+            </div>
+
+            <h3>6.2 Propriétés du conteneur</h3>
+            <div class="code-block">
+                <code>/* Direction */
+.container {
+    flex-direction: row; /* ou column */
+}
+
+/* Retour à la ligne */
+.container {
+    flex-wrap: wrap;
+}
+
+/* Alignement horizontal */
+.container {
+    justify-content: center;
+    /* flex-start, flex-end, space-between, space-around */
+}
+
+/* Alignement vertical */
+.container {
+    align-items: center;
+    /* flex-start, flex-end, stretch, baseline */
+}</code>
+            </div>
+
+            <h3>6.3 Propriétés des enfants</h3>
+            <div class="code-block">
+                <code>/* Flex */
+.item {
+    flex: 1; /* flex-grow, flex-shrink, flex-basis */
+}
+
+/* Alignement individuel */
+.item {
+    align-self: flex-start;
+}</code>
+            </div>
+
+            <div class="tip">
+                <strong> Astuce :</strong> Pour centrer parfaitement : display: flex + justify-content: center + align-items: center.
+            </div>
+        </section>
+
+        <!-- MODULE 7 -->
+        <section id="module7" class="module">
+            <h2>Module 7 : CSS Grid</h2>
+            
+            <h3>7.1 Créer une grille</h3>
+            <div class="code-block">
+                <code>.container {
+    display: grid;
+}</code>
+            </div>
+
+            <h3>7.2 Définir les colonnes et lignes</h3>
+            <div class="code-block">
+                <code>/* Colonnes */
+.grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    /* ou repeat(3, 1fr) */
+}
+
+/* Responsive */
+.grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* Espacement */
+.grid {
+    gap: 20px;
+}</code>
+            </div>
+
+            <h3>7.3 Placement des éléments</h3>
+            <div class="code-block">
+                <code>/* Grid-column */
+.item {
+    grid-column: 1 / 3;
+    grid-row: span 2;
+}
+
+/* Grid-area */
+.container {
+    grid-template-areas:
+        "header header"
+        "sidebar content"
+        "footer footer";
+}
+
+.header {
+    grid-area: header;
+}</code>
+            </div>
+        </section>
+
+        <!-- MODULE 8 -->
+        <section id="module8" class="module">
+            <h2>Module 8 : Responsive Design</h2>
+            
+            <h3>8.1 Meta Viewport</h3>
+            <div class="code-block">
+                <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code>
+            </div>
+
+            <h3>8.2 Media Queries</h3>
+            <div class="code-block">
+                <code>/* Mobile First */
+.container {
+    width: 100%;
+}
+
+/* Tablette */
+@media (min-width: 768px) {
+    .container {
+        width: 750px;
+    }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .container {
+        width: 960px;
+    }
+}</code>
+            </div>
+
+            <h3>8.3 Images responsive</h3>
+            <div class="code-block">
+                <code>img {
+    max-width: 100%;
+    height: auto;
+}</code>
+            </div>
+
+            <div class="tip">
+                <strong> Astuce :</strong> Approche Mobile First recommandée : commencez par mobile, puis ajoutez des styles pour écrans plus grands.
+            </div>
+        </section>
+
+        <!-- MODULE 9 -->
+        <section id="module9" class="module">
+            <h2>Module 9 : Transitions CSS</h2>
+            
+            <h3>9.1 Syntaxe de base</h3>
+            <div class="code-block">
+                <code>/* Transition simple */
+button {
+    background-color: blue;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: red;
+}
+
+/* Plusieurs propriétés */
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}</code>
+            </div>
+
+            <div class="important">
+                <strong> Performance :</strong> Privilégiez transform et opacity pour de meilleures performances.
+            </div>
+        </section>
+
+        <!-- MODULE 10 -->
+        <section id="module10" class="module">
+            <h2>Module 10 : Animations CSS</h2>
+            
+            <h3>10.1 Keyframes</h3>
+            <div class="code-block">
+                <code>/* Définir l'animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Appliquer */
+.element {
+    animation: fadeIn 1s ease-in-out;
+}</code>
+            </div>
+
+            <h3>10.2 Animations courantes</h3>
+            <div class="code-block">
+                <code>/* Rotation infinie */
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spinner {
+    animation: rotate 1s linear infinite;
+}
+
+/* Bounce */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}</code>
+            </div>
+        </section>
+
+        <!-- MODULE 11 -->
+        <section id="module11" class="module">
+            <h2>Module 11 : Transformations CSS</h2>
+            
+            <h3>11.1 Transformations 2D</h3>
+            <div class="code-block">
+                <code>/* Translate (déplacement) */
+.element {
+    transform: translate(50px, 100px);
+}
+
+/* Scale (mise à l'échelle) */
+.element {
+    transform: scale(1.5);
+}
+
+/* Rotate (rotation) */
+.element {
+    transform: rotate(45deg);
+}
+
+/* Skew (inclinaison) */
+.element {
+    transform: skew(20deg, 10deg);
+}
+
+/* Combinaison */
+.element {
+    transform: translate(50px, 0) rotate(45deg) scale(1.2);
+}</code>
+            </div>
+
+            <h3>11.2 Centrage parfait</h3>
+            <div class="code-block">
+                <code>.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}</code>
+            </div>
+        </section>
+
+        <!-- MODULE 12 -->
+        <section id="module12" class="module">
+            <h2>Module 12 : Pseudo-classes et Pseudo-éléments</h2>
+            
+            <h3>12.1 Pseudo-classes</h3>
+            <div class="code-block">
+                <code>/* Interaction */
+a:hover { color: red; }
+button:active { transform: scale(0.95); }
+input:focus { border-color: blue; }
+
+/* Structure */
+li:first-child { font-weight: bold; }
+li:last-child { margin-bottom: 0; }
+tr:nth-child(odd) { background: #f0f0f0; }
+
+/* État */
+input:checked { border-color: green; }
+input:disabled { opacity: 0.5; }
+input:valid { border-color: green; }
+input:invalid { border-color: red; }</code>
+            </div>
+
+            <h3>12.2 Pseudo-éléments</h3>
+            <div class="code-block">
+                <code>/* ::before et ::after */
+.element::before {
+    content: "→ ";
+    color: blue;
+}
+
+.element::after {
+    content: " ←";
+    color: red;
+}
+
+/* ::first-letter */
+p::first-letter {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+/* ::selection */
+::selection {
+    background-color: yellow;
+    color: black;
+}</code>
+            </div>
+        </section>
+
+        <!-- MODULE 13 -->
+        <section id="module13" class="module">
+            <h2>Module 13 : Variables CSS</h2>
+            
+            <h3>13.1 Déclarer et utiliser</h3>
+            <div class="code-block">
+                <code>/* Déclarer */
+:root {
+    --primary-color: #3498db;
+    --spacing: 20px;
+    --border-radius: 10px;
+}
+
+/* Utiliser */
+button {
+    background-color: var(--primary-color);
+    padding: var(--spacing);
+    border-radius: var(--border-radius);
+}
+
+/* Fallback */
+.element {
+    color: var(--text-color, #333);
+}</code>
+            </div>
+
+            <h3>13.2 Thème sombre/clair</h3>
+            <div class="code-block">
+                <code>/* Thème clair */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+}
+
+/* Thème sombre */
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #ffffff;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}</code>
+            </div>
+
+            <div class="tip">
+                <strong> Astuce :</strong> Les variables CSS facilitent la création de systèmes de design cohérents et maintenables.
+            </div>
+        </section>
+
+        <!-- MODULE 14 -->
+        <section id="module14" class="module">
+            <h2>Module 14 : Optimisation et Bonnes Pratiques</h2>
+            
+            <h3>14.1 Nomenclature BEM</h3>
+            <div class="code-block">
+                <code>/* Block Element Modifier */
+.card { }
+.card__header { }
+.card__title { }
+.card--featured { }
+.card__title--centered { }</code>
+            </div>
+
+            <h3>14.2 Sélecteurs performants</h3>
+            <div class="code-block">
+                <code>/*  ÉVITER */
+div.container div.content ul li a {
+    color: blue;
+}
+
+/*  MIEUX */
+.nav-link {
+    color: blue;
+}</code>
+            </div>
+
+            <h3>14.3 Checklist</h3>
+            <ul>
+                <li> Sélecteurs simples et efficaces</li>
+                <li> Éviter !important</li>
+                <li> Transform et opacity pour animations</li>
+                <li> Variables CSS pour cohérence</li>
+                <li> Approche Mobile First</li>
+                <li> Minifier en production</li>
+                <li> Commenter le code complexe</li>
+            </ul>
+        </section>
+
+        <!-- MODULE 15 -->
+        <section id="module15" class="module">
+            <h2>Module 15 : Projets Pratiques</h2>
+            
+            <h3>15.1 Projet 1 : Page de profil</h3>
+            <div class="example">
+                <h4>Objectif</h4>
+                <p>Créer une page de profil responsive avec photo, infos et compétences.</p>
+                <h4>Compétences</h4>
+                <ul>
+                    <li>Box model et positionnement</li>
+                    <li>Flexbox</li>
+                    <li>Responsive design</li>
+                    <li>Transitions</li>
+                </ul>
+            </div>
+
+            <h3>15.2 Projet 2 : Menu responsive</h3>
+            <div class="example">
+                <h4>Objectif</h4>
+                <p>Menu qui se transforme en hamburger sur mobile.</p>
+            </div>
+
+            <h3>15.3 Projet 3 : Galerie Grid</h3>
+            <div class="example">
+                <h4>Objectif</h4>
+                <p>Galerie responsive avec CSS Grid et effets hover.</p>
+            </div>
+
+            <h3>15.4 Projet 4 : Formulaire stylisé</h3>
+            <div class="example">
+                <h4>Objectif</h4>
+                <p>Formulaire avec validation visuelle et animations.</p>
+            </div>
+
+            <h3>15.5 Projet 5 : Landing page</h3>
+            <div class="example">
+                <h4>Objectif</h4>
+                <p>Landing page complète avec toutes les compétences CSS.</p>
+                <h4>Sections</h4>
+                <ul>
+                    <li>Header avec navigation fixe</li>
+                    <li>Hero section plein écran</li>
+                    <li>Grille de fonctionnalités</li>
+                    <li>Section about</li>
+                    <li>Témoignages</li>
+                    <li>Call-to-action</li>
+                    <li>Footer</li>
+                </ul>
+            </div>
+
+            <div class="important">
+                <strong> Conseil final :</strong> La pratique régulière est la clé. Recréez des designs, expérimentez et apprenez de vos erreurs !
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer>
+             <p>2026 Formation DWWM développeur web web mobile Lille</p>
+            <p>&copy;Thomas ( formateur realConseil ) cours de CSS</p>
+            <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/Region.jpg" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/U.E.jpg" width="70px" alt="">
+        
+        </footer>
+    </div>
+
+    <!-- SCRIPT POUR LE MENU HAMBURGER -->
+    <script>
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        navToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            // Change l'icône
+            this.textContent = navMenu.classList.contains('active') ? '✕' : '☰';
+        });
+
+        // Ferme le menu quand on clique sur un lien
+        function closeMenu() {
+            if (window.innerWidth <= 768) {
+                navMenu.classList.remove('active');
+                navToggle.textContent = '☰';
+            }
+        }
+
+        // Ferme le menu si on clique en dehors
+        document.addEventListener('click', function(event) {
+            if (!navToggle.contains(event.target) && !navMenu.contains(event.target)) {
+                navMenu.classList.remove('active');
+                navToggle.textContent = '☰';
+            }
+        });
+
+        // Gestion du scroll smooth
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80; // Hauteur de la nav
+                    const targetPosition = target.offsetTop - offset;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
