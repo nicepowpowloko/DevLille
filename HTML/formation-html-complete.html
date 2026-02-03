@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Formation HTML complète avec Real Conseil - 15 modules pour maîtriser le HTML5">
+    <meta name="author" content="Real Conseil">
+    <title>Formation HTML Complète - Real Conseil</title>
+    <style>
+
+ :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .module-selector {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 3px solid var(--real);
+        }
+
+        .module-selector label {
+            display: block;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--conseil);
+        }
+
+        .module-selector select {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid var(--real);
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .module-selector select:hover {
+            border-color: var(--conseil);
+            
+        }
+
+        .module-selector select:focus {
+            outline: none;
+           border-color: var(--conseil);
+
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .module {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .module.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            color: var(--conseil);
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--real);
+        }
+
+        h3 {
+            color: var(--conseil);
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--conseil);
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border-left: 5px solid var(--conseil);
+        }
+
+        .code-block code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+            white-space: pre;
+        }
+
+        .example {
+            background: #f0f7ff;
+            border-left: 5px solid var(--conseil);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .example h4 {
+            color: var(--conseil);
+            margin-bottom: 10px;
+        }
+
+        .tip {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .tip strong {
+            color: #856404;
+        }
+
+        .warning {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning strong {
+            color: #721c24;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .nav-button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .prev-button {
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+        }
+
+        .prev-button:hover:not(:disabled) {
+            transform: translateX(-5px);
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+        }
+
+        .next-button:hover:not(:disabled) {
+            transform: translateX(5px);
+            
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        footer {
+            background: #2d2d2d;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 0;
+            display: block;
+            flex-wrap: wrap;
+            
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .nav-button {
+                padding: 12px 20px;
+                font-size: 0.9em;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Formation HTML</h1>
+            <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png"width="100px" alt="">
+        </header>
+
+        <div class="module-selector">
+            <label for="moduleSelect">Sélectionnez un module :</label>
+            <select id="moduleSelect" onchange="changeModule()">
+                <option value="0">Module 1 : Introduction au HTML</option>
+                <option value="1">Module 2 : Structure d'une page HTML</option>
+                <option value="2">Module 3 : Les balises de texte</option>
+                <option value="3">Module 4 : Les listes</option>
+                <option value="4">Module 5 : Les liens hypertextes</option>
+                <option value="5">Module 6 : Les images</option>
+                <option value="6">Module 7 : Les tableaux</option>
+                <option value="7">Module 8 : Les formulaires (Partie 1)</option>
+                <option value="8">Module 9 : Les formulaires (Partie 2)</option>
+                <option value="9">Module 10 : Structuration sémantique</option>
+                <option value="10">Module 11 : Multimédia (Audio & Vidéo)</option>
+                <option value="11">Module 12 : Balises Meta et SEO</option>
+                <option value="12">Module 13 : Accessibilité Web</option>
+                <option value="13">Module 14 : HTML5 avancé</option>
+                <option value="14">Module 15 : Bonnes pratiques et validation</option>
+            </select>
+        </div>
+
+        <div class="content">
+            <div class="module active" id="moduleContainer">
+                <!-- Le contenu sera chargé dynamiquement ici -->
+            </div>
+        </div>
+
+        <footer>
+             <p>2026 Formation DWWM développeur web web mobile Lille</p>
+            <p>&copy; Thomas cours de HTML</p>
+            <img src="../JAVASCRIPT/Supports/IMG/Real.jpg" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/Region.jpg" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/U.E.jpg" width="70px" alt="">
+        </footer>
+    </div>
+
+    <!-- Chargement du contenu des modules -->
+    <script src="formation-html-modules.js"></script>
+    
+    <script>
+        let currentModule = 0;
+        const totalModules = 15;
+
+        // Charger le contenu d'un module
+        function loadModuleContent(index) {
+            const container = document.getElementById('moduleContainer');
+            const module = modulesHTML[index];
+            
+            if (module) {
+                container.innerHTML = module.content + `
+                    <div class="navigation">
+                        <button class="nav-button prev-button" onclick="previousModule()" ${index === 0 ? 'disabled' : ''}>⬅ Précédent</button>
+                        <button class="nav-button next-button" onclick="nextModule()" ${index === totalModules - 1 ? 'disabled' : ''}>Suivant ➡</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Charger le module sélectionné dans le dropdown
+        function changeModule() {
+            const select = document.getElementById('moduleSelect');
+            currentModule = parseInt(select.value);
+            showModule(currentModule);
+        }
+
+        // Afficher un module spécifique
+        function showModule(index) {
+            currentModule = index;
+            
+            // Mettre à jour le dropdown
+            document.getElementById('moduleSelect').value = index;
+            
+            // Charger le contenu
+            loadModuleContent(index);
+            
+            // Scroller en haut
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Module suivant
+        function nextModule() {
+            if (currentModule < totalModules - 1) {
+                currentModule++;
+                showModule(currentModule);
+            }
+        }
+
+        // Module précédent
+        function previousModule() {
+            if (currentModule > 0) {
+                currentModule--;
+                showModule(currentModule);
+            }
+        }
+
+        // Navigation au clavier
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' && currentModule < totalModules - 1) {
+                nextModule();
+            } else if (e.key === 'ArrowLeft' && currentModule > 0) {
+                previousModule();
+            }
+        });
+
+        // Initialisation - Charger le premier module
+        window.addEventListener('load', function() {
+            loadModuleContent(0);
+        });
+    </script>
+</body>
+</html>
