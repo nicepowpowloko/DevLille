@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive - Supports de cours</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            background: linear-gradient(135deg, #2C3F77 0%, #A0866B 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .dossier {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #A0866B;
+            border-left: 4px solid #A0866B;
+            padding-left: 10px;
+            margin-top: 0;
+        }
+        .fichiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+        }
+        a {
+            color: #2C3F77;
+            text-decoration: none;
+            display: block;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-left: 3px solid #2C3F77;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        a:hover {
+            background-color: #e9ecef;
+            padding-left: 20px;
+        }
+        .retour {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .retour a {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 5px;
+            display: inline-block;
+            border: none;
+        }
+        .retour a:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Responsive - Supports de cours</h1>
+
+    <!-- DOSSIERS -->
+    <div class="dossier">
+        <h2> Dossiers</h2>
+        <div class="fichiers">
+            <a href="./formation-responsive-web-design.html">Support</a>
+        </div>
+    </div>
+
+   
+
+    <div class="retour">
+        <a href="../index.html">Retour à l'accueil</a>
+    </div>
+</body>
+</html>

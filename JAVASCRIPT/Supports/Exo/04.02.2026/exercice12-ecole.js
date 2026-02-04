@@ -1,11 +1,4 @@
-/*
- * ============================================
- * EXERCICE 12 : Gestion d'une école
- * ============================================
- * Niveau : Avancé
- * Real Conseil - Formation DWWM
- * ============================================
- */
+
 
 // Création de l'objet école complet avec objets imbriqués
 const ecole = {
@@ -32,7 +25,7 @@ const ecole = {
     ajouterClasse(classe) {
         // Vérifier que la classe a les bonnes propriétés
         if (!classe.niveau) {
-            console.log("❌ Erreur : la classe doit avoir un niveau");
+            console.log(" Erreur : la classe doit avoir un niveau");
             return false;
         }
         
@@ -40,7 +33,7 @@ const ecole = {
         classe.eleves = classe.eleves || [];
         
         this.classes.push(classe);
-        console.log(`✅ Classe ${classe.niveau} ajoutée`);
+        console.log(` Classe ${classe.niveau} ajoutée`);
         return true;
     },
     
@@ -50,7 +43,7 @@ const ecole = {
         const classe = this.classes.find(c => c.niveau === niveau);
         
         if (!classe) {
-            console.log(`❌ Classe ${niveau} non trouvée`);
+            console.log(` Classe ${niveau} non trouvée`);
             return false;
         }
         
@@ -58,7 +51,7 @@ const ecole = {
         eleve.notes = eleve.notes || [];
         
         classe.eleves.push(eleve);
-        console.log(`✅ ${eleve.prenom} ${eleve.nom} ajouté(e) à la classe ${niveau}`);
+        console.log(` ${eleve.prenom} ${eleve.nom} ajouté(e) à la classe ${niveau}`);
         return true;
     },
     
@@ -82,20 +75,20 @@ const ecole = {
         }
         
         if (!eleveTrouve) {
-            console.log("❌ Élève non trouvé");
+            console.log(" Élève non trouvé");
             return null;
         }
         
         // Calculer la moyenne
         if (eleveTrouve.notes.length === 0) {
-            console.log("⚠️ Aucune note pour cet élève");
+            console.log(" Aucune note pour cet élève");
             return 0;
         }
         
         const somme = eleveTrouve.notes.reduce((total, note) => total + note, 0);
         const moyenne = somme / eleveTrouve.notes.length;
         
-        console.log(`\n📊 Moyenne de ${eleveTrouve.prenom} ${eleveTrouve.nom} (${classeTrouvee.niveau}) :`);
+        console.log(`\n Moyenne de ${eleveTrouve.prenom} ${eleveTrouve.nom} (${classeTrouvee.niveau}) :`);
         console.log(`   Notes : ${eleveTrouve.notes.join(", ")}`);
         console.log(`   Moyenne : ${moyenne.toFixed(2)}/20`);
         
@@ -107,12 +100,12 @@ const ecole = {
         const classe = this.classes.find(c => c.niveau === niveau);
         
         if (!classe) {
-            console.log(`❌ Classe ${niveau} non trouvée`);
+            console.log(` Classe ${niveau} non trouvée`);
             return null;
         }
         
         if (classe.eleves.length === 0) {
-            console.log("⚠️ Aucun élève dans cette classe");
+            console.log(" Aucun élève dans cette classe");
             return 0;
         }
         
@@ -130,13 +123,13 @@ const ecole = {
         });
         
         if (nbEleves === 0) {
-            console.log("⚠️ Aucun élève avec des notes");
+            console.log(" Aucun élève avec des notes");
             return 0;
         }
         
         const moyenneClasse = totalMoyennes / nbEleves;
         
-        console.log(`\n📊 Moyenne de la classe ${niveau} : ${moyenneClasse.toFixed(2)}/20`);
+        console.log(`\n Moyenne de la classe ${niveau} : ${moyenneClasse.toFixed(2)}/20`);
         console.log(`   Nombre d'élèves : ${nbEleves}`);
         
         return moyenneClasse;
@@ -165,13 +158,13 @@ const ecole = {
         });
         
         if (meilleur) {
-            console.log("\n🏆 === MEILLEUR ÉLÈVE DE L'ÉCOLE ===");
+            console.log("\n MEILLEUR ÉLÈVE DE L'ÉCOLE ");
             console.log(`   ${meilleur.prenom} ${meilleur.nom}`);
             console.log(`   Classe : ${meilleureClasse}`);
             console.log(`   Moyenne : ${meilleureMoyenne.toFixed(2)}/20`);
             console.log(`   Notes : ${meilleur.notes.join(", ")}`);
         } else {
-            console.log("❌ Aucun élève avec des notes");
+            console.log(" Aucun élève avec des notes");
         }
         
         return meilleur;
@@ -179,11 +172,11 @@ const ecole = {
     
     // Méthode pour afficher les statistiques de l'école
     afficherStatistiquesEcole() {
-        console.log("\n" + "=".repeat(70));
-        console.log(`📊 STATISTIQUES - ${this.nom.toUpperCase()}`);
-        console.log("=".repeat(70));
+        console.log("\n" + "".repeat(70));
+        console.log(` STATISTIQUES - ${this.nom.toUpperCase()}`);
+        console.log("".repeat(70));
         
-        console.log(`\n📚 Nombre de classes : ${this.classes.length}`);
+        console.log(`\n Nombre de classes : ${this.classes.length}`);
         
         let totalEleves = 0;
         let totalNotes = 0;
@@ -193,7 +186,7 @@ const ecole = {
         this.classes.forEach(classe => {
             totalEleves += classe.eleves.length;
             
-            console.log(`\n📖 Classe ${classe.niveau} : ${classe.eleves.length} élève(s)`);
+            console.log(`\n Classe ${classe.niveau} : ${classe.eleves.length} élève(s)`);
             
             classe.eleves.forEach(eleve => {
                 const somme = eleve.notes.reduce((total, note) => total + note, 0);
@@ -209,14 +202,14 @@ const ecole = {
             });
         });
         
-        console.log(`\n👥 Total élèves : ${totalEleves}`);
+        console.log(`\n Total élèves : ${totalEleves}`);
         
         if (nombreNotes > 0) {
             const moyenneGenerale = totalNotes / nombreNotes;
-            console.log(`📈 Moyenne générale de l'école : ${moyenneGenerale.toFixed(2)}/20`);
+            console.log(` Moyenne générale de l'école : ${moyenneGenerale.toFixed(2)}/20`);
         }
         
-        console.log("=".repeat(70) + "\n");
+        console.log("".repeat(70) + "\n");
     },
     
     // Méthode pour supprimer un élève
@@ -229,19 +222,19 @@ const ecole = {
             
             if (index !== -1) {
                 const eleveSuppr = classe.eleves.splice(index, 1)[0];
-                console.log(`🗑️ ${eleveSuppr.prenom} ${eleveSuppr.nom} supprimé(e) de ${classe.niveau}`);
+                console.log(` ${eleveSuppr.prenom} ${eleveSuppr.nom} supprimé(e) de ${classe.niveau}`);
                 return true;
             }
         }
         
-        console.log("❌ Élève non trouvé");
+        console.log(" Élève non trouvé");
         return false;
     },
     
     // Méthode pour ajouter une note à un élève
     ajouterNote(nom, prenom, note) {
         if (note < 0 || note > 20) {
-            console.log("❌ La note doit être entre 0 et 20");
+            console.log(" La note doit être entre 0 et 20");
             return false;
         }
         
@@ -253,21 +246,21 @@ const ecole = {
             
             if (eleve) {
                 eleve.notes.push(note);
-                console.log(`✅ Note ${note}/20 ajoutée à ${eleve.prenom} ${eleve.nom}`);
+                console.log(` Note ${note}/20 ajoutée à ${eleve.prenom} ${eleve.nom}`);
                 return true;
             }
         }
         
-        console.log("❌ Élève non trouvé");
+        console.log(" Élève non trouvé");
         return false;
     },
     
     // Méthode pour lister tous les élèves par classe
     listerEleves() {
-        console.log(`\n👥 === LISTE DES ÉLÈVES - ${this.nom} ===\n`);
+        console.log(`\n  LISTE DES ÉLÈVES - ${this.nom} \n`);
         
         this.classes.forEach(classe => {
-            console.log(`📖 Classe ${classe.niveau} (${classe.eleves.length} élève(s)) :`);
+            console.log(` Classe ${classe.niveau} (${classe.eleves.length} élève(s)) :`);
             
             classe.eleves.forEach((eleve, index) => {
                 const somme = eleve.notes.reduce((total, note) => total + note, 0);
@@ -281,23 +274,21 @@ const ecole = {
     }
 };
 
-// ========================================
-// TESTS DU SYSTÈME
-// ========================================
-console.log("=== TEST DU SYSTÈME DE GESTION D'ÉCOLE ===\n");
+
+console.log("TEST DU SYSTÈME DE GESTION D'ÉCOLE \n");
 
 // Afficher les statistiques initiales
 ecole.afficherStatistiquesEcole();
 
 // Ajouter une nouvelle classe
-console.log("--- Ajout d'une classe ---");
+console.log(" Ajout d'une classe ");
 ecole.ajouterClasse({
     niveau: "Designer Web",
     eleves: []
 });
 
 // Ajouter des élèves à cette nouvelle classe
-console.log("\n--- Ajout d'élèves ---");
+console.log("\n Ajout d'élèves ");
 ecole.ajouterEleve("Designer Web", {
     nom: "Rousseau",
     prenom: "Emma",
@@ -311,17 +302,17 @@ ecole.ajouterEleve("DWWM", {
 });
 
 // Ajouter des notes à un élève existant
-console.log("\n--- Ajout de notes ---");
+console.log("\n Ajout de notes ");
 ecole.ajouterNote("Dupont", "Marie", 18);
 ecole.ajouterNote("Martin", "Lucas", 15);
 
 // Calculer la moyenne d'un élève
-console.log("\n--- Calcul de moyennes individuelles ---");
+console.log("\n Calcul de moyennes individuelles ");
 ecole.calculerMoyenneEleve("Bernard", "Sophie");
 ecole.calculerMoyenneEleve("Dupont", "Marie");
 
 // Calculer la moyenne d'une classe
-console.log("\n--- Calcul de moyennes de classe ---");
+console.log("\n Calcul de moyennes de classe ");
 ecole.calculerMoyenneClasse("DWWM");
 ecole.calculerMoyenneClasse("CDA");
 

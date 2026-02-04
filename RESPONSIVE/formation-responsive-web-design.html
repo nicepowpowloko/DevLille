@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formation Responsive Web Design - DWWM</title>
+    <style>
+
+         :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        header {
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: var(--conseil);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: block;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background: var(--real);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 50px;
+            scroll-margin-top: 60px;
+        }
+
+        h2 {
+            color: var(--conseil);
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--real);
+        }
+
+        h3 {
+            color: var(--conseil);
+            font-size: 1.5em;
+            margin: 25px 0 15px;
+        }
+
+        h4 {
+            color: var(--conseil);
+            font-size: 1.2em;
+            margin: 20px 0 10px;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 5px solid var(--conseil);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid var(--real);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid var(--conseil);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .code-block code {
+            display: block;
+        }
+
+        .example {
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .demo-box {
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .exercise {
+            background: #fff9e6;
+            border: 2px solid #ffcc00;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .exercise h3 {
+            color: #ff9900;
+            margin-top: 0;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .highlight {
+            background: yellow;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .responsive-demo {
+            background: #f0f0f0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .device-frame {
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px auto;
+            background: white;
+        }
+
+        .mobile-frame {
+            max-width: 375px;
+        }
+
+        .tablet-frame {
+            max-width: 768px;
+        }
+
+        .desktop-frame {
+            max-width: 100%;
+        }
+
+        /* Responsive styles pour la démonstration */
+        @media screen and (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .code-block {
+                font-size: 0.85em;
+                padding: 15px;
+            }
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Responsive Web Design</h1>
+             <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png"width="100px" alt="">
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#concepts">Concepts</a></li>
+                <li><a href="#viewport">Viewport</a></li>
+                <li><a href="#media-queries">Media Queries</a></li>
+                <li><a href="#layouts">Layouts</a></li>
+                <li><a href="#images">Images</a></li>
+                <li><a href="#typographie">Typographie</a></li>
+                <li><a href="#exercices">Exercices</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <!-- INTRODUCTION -->
+            <section id="introduction">
+                <h2> Introduction au Responsive Web Design</h2>
+                
+                <h3>Qu'est-ce que le Responsive Web Design ?</h3>
+                <p>Le <strong>Responsive Web Design (RWD)</strong> est une approche de conception web qui permet à un site de s'adapter automatiquement à différentes tailles d'écran et résolutions. L'objectif est d'offrir une expérience utilisateur optimale sur tous les appareils : ordinateurs de bureau, tablettes et smartphones.</p>
+
+                <div class="info-box">
+                    <h4> Statistiques importantes</h4>
+                    <ul>
+                        <li>Plus de <strong>60% du trafic web</strong> provient d'appareils mobiles</li>
+                        <li>Google privilégie les sites <strong>mobile-first</strong> dans son indexation</li>
+                        <li>75% des utilisateurs jugent la crédibilité d'une entreprise sur la qualité de son site mobile</li>
+                    </ul>
+                </div>
+
+                <h3>Les trois piliers du Responsive Design</h3>
+                <ol>
+                    <li><strong>Grilles fluides (Fluid Grids)</strong> : Utilisation de pourcentages plutôt que de pixels fixes</li>
+                    <li><strong>Images flexibles (Flexible Images)</strong> : Images qui s'adaptent à leur conteneur</li>
+                    <li><strong>Media Queries</strong> : Règles CSS conditionnelles selon les caractéristiques de l'appareil</li>
+                </ol>
+
+                <h3>Approches du design responsive</h3>
+                
+                <h4>Mobile First</h4>
+                <p>Conception en partant des petits écrans vers les grands écrans. C'est l'approche recommandée aujourd'hui.</p>
+                <div class="success-box">
+                    <strong>Avantages :</strong>
+                    <ul>
+                        <li>Meilleure performance sur mobile</li>
+                        <li>Priorisation du contenu essentiel</li>
+                        <li>Meilleur pour le SEO</li>
+                    </ul>
+                </div>
+
+                <h4>Desktop First</h4>
+                <p>Conception en partant des grands écrans vers les petits écrans (approche traditionnelle).</p>
+            </section>
+
+            <!-- CONCEPTS FONDAMENTAUX -->
+            <section id="concepts">
+                <h2>Concepts Fondamentaux</h2>
+
+                <h3>Unités relatives vs absolues</h3>
+                
+                <h4>Unités absolues (à éviter pour le responsive)</h4>
+                <div class="code-block"><code>/* Unités fixes - NON responsive */
+.container {
+    width: 960px;    /* Pixels fixes */
+    height: 500px;
+    font-size: 16px;
+}</code></div>
+
+                <h4>Unités relatives (recommandées)</h4>
+                <div class="code-block"><code>/* Unités relatives - RESPONSIVE */
+.container {
+    width: 80%;           /* Pourcentage du parent */
+    max-width: 1200px;    /* Limite maximale */
+    font-size: 1rem;      /* Relatif à la taille de police racine */
+    padding: 2em;         /* Relatif à la taille de police de l'élément */
+    margin: 5vw;          /* 5% de la largeur du viewport */
+}</code></div>
+
+                <h3>Tableau des unités CSS</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Unité</th>
+                            <th>Description</th>
+                            <th>Utilisation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>%</strong></td>
+                            <td>Pourcentage du parent</td>
+                            <td>Largeurs, hauteurs, marges</td>
+                        </tr>
+                        <tr>
+                            <td><strong>em</strong></td>
+                            <td>Relatif à la taille de police de l'élément</td>
+                            <td>Paddings, marges, espacements</td>
+                        </tr>
+                        <tr>
+                            <td><strong>rem</strong></td>
+                            <td>Relatif à la taille de police racine (html)</td>
+                            <td>Tailles de police, espacements globaux</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vw</strong></td>
+                            <td>1% de la largeur du viewport</td>
+                            <td>Largeurs fluides, typographie responsive</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vh</strong></td>
+                            <td>1% de la hauteur du viewport</td>
+                            <td>Sections pleine hauteur</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vmin</strong></td>
+                            <td>1% de la plus petite dimension du viewport</td>
+                            <td>Éléments proportionnels</td>
+                        </tr>
+                        <tr>
+                            <td><strong>vmax</strong></td>
+                            <td>1% de la plus grande dimension du viewport</td>
+                            <td>Éléments proportionnels</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="example">
+                    <h4>Exemple pratique : Comparaison des unités</h4>
+                    <div class="code-block"><code>/* html { font-size: 16px; } par défaut */
+
+.element1 {
+    font-size: 16px;     /* Toujours 16px */
+}
+
+.element2 {
+    font-size: 1rem;     /* 16px (relatif à html) */
+}
+
+.element3 {
+    font-size: 1em;      /* 16px si le parent = 16px */
+}                         /* 32px si le parent = 32px */
+
+.element4 {
+    font-size: 2vw;      /* Sur écran 1920px = 38.4px */
+}                        /* Sur écran 375px = 7.5px */</code></div>
+                </div>
+            </section>
+
+            <!-- VIEWPORT -->
+            <section id="viewport">
+                <h2>Le Viewport et la Meta Tag</h2>
+
+                <h3>Qu'est-ce que le viewport ?</h3>
+                <p>Le <strong>viewport</strong> est la zone visible de la page web dans le navigateur. Sans configuration appropriée, les sites s'affichent mal sur mobile.</p>
+
+                <div class="warning-box">
+                    <h4>Important !</h4>
+                    <p>Sans la balise viewport, les navigateurs mobiles affichent la page comme sur un écran de bureau (généralement 980px) et la réduisent pour qu'elle tienne dans l'écran.</p>
+                </div>
+
+                <h3>La balise meta viewport (OBLIGATOIRE)</h3>
+                <div class="code-block"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="fr"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Mon site responsive&lt;/title&gt;
+&lt;/head&gt;</code></div>
+
+                <h3>Attributs de la meta viewport</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Attribut</th>
+                            <th>Description</th>
+                            <th>Valeurs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>width</strong></td>
+                            <td>Largeur du viewport</td>
+                            <td>device-width (recommandé) ou valeur en pixels</td>
+                        </tr>
+                        <tr>
+                            <td><strong>initial-scale</strong></td>
+                            <td>Niveau de zoom initial</td>
+                            <td>1.0 (recommandé, pas de zoom)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>minimum-scale</strong></td>
+                            <td>Zoom minimum autorisé</td>
+                            <td>0.5 à 1.0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>maximum-scale</strong></td>
+                            <td>Zoom maximum autorisé</td>
+                            <td>1.0 à 10.0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>user-scalable</strong></td>
+                            <td>Autoriser le zoom utilisateur</td>
+                            <td>yes (recommandé) ou no</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="warning-box">
+                    <h4>Accessibilité</h4>
+                    <p>N'utilisez JAMAIS <code>user-scalable=no</code> ou <code>maximum-scale=1.0</code> car cela empêche les utilisateurs malvoyants de zoomer sur votre contenu.</p>
+                </div>
+            </section>
+
+            <!-- MEDIA QUERIES -->
+            <section id="media-queries">
+                <h2>Les Media Queries</h2>
+
+                <h3>Qu'est-ce qu'une Media Query ?</h3>
+                <p>Les <strong>Media Queries</strong> permettent d'appliquer des styles CSS spécifiques selon les caractéristiques de l'appareil (taille d'écran, orientation, résolution, etc.).</p>
+
+                <h3>Syntaxe de base</h3>
+                <div class="code-block"><code>/* Syntaxe générale */
+@media type-de-media and (caractéristique: valeur) {
+    /* Règles CSS */
+}</code></div>
+
+                <h3>Types de media</h3>
+                <ul>
+                    <li><strong>screen</strong> : Écrans (ordinateurs, tablettes, smartphones) - Le plus utilisé</li>
+                    <li><strong>print</strong> : Impression</li>
+                    <li><strong>all</strong> : Tous les types (valeur par défaut)</li>
+                </ul>
+
+                <h3>Caractéristiques principales</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Caractéristique</th>
+                            <th>Description</th>
+                            <th>Exemple</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>width</strong></td>
+                            <td>Largeur exacte du viewport</td>
+                            <td>width: 768px</td>
+                        </tr>
+                        <tr>
+                            <td><strong>min-width</strong></td>
+                            <td>Largeur minimale</td>
+                            <td>min-width: 768px</td>
+                        </tr>
+                        <tr>
+                            <td><strong>max-width</strong></td>
+                            <td>Largeur maximale</td>
+                            <td>max-width: 767px</td>
+                        </tr>
+                        <tr>
+                            <td><strong>height</strong></td>
+                            <td>Hauteur du viewport</td>
+                            <td>height: 600px</td>
+                        </tr>
+                        <tr>
+                            <td><strong>orientation</strong></td>
+                            <td>Portrait ou paysage</td>
+                            <td>orientation: landscape</td>
+                        </tr>
+                        <tr>
+                            <td><strong>aspect-ratio</strong></td>
+                            <td>Ratio largeur/hauteur</td>
+                            <td>aspect-ratio: 16/9</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Breakpoints standards</h3>
+                <div class="info-box">
+                    <h4>Points de rupture recommandés</h4>
+                    <ul>
+                        <li><strong>Mobile</strong> : 320px à 480px</li>
+                        <li><strong>Tablette portrait</strong> : 481px à 768px</li>
+                        <li><strong>Tablette paysage</strong> : 769px à 1024px</li>
+                        <li><strong>Desktop</strong> : 1025px à 1200px</li>
+                        <li><strong>Large desktop</strong> : 1201px et plus</li>
+                    </ul>
+                </div>
+
+                <h3>Approche Mobile First (Recommandée)</h3>
+                <div class="code-block"><code>/* Mobile First : on part du mobile vers le desktop */
+
+/* Styles de base pour mobile (320px et plus) */
+.container {
+    width: 100%;
+    padding: 15px;
+    font-size: 14px;
+}
+
+.menu {
+    display: none; /* Menu caché par défaut sur mobile */
+}
+
+.menu-button {
+    display: block; /* Bouton burger visible */
+}
+
+/* Tablette (768px et plus) */
+@media screen and (min-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 20px;
+        font-size: 16px;
+    }
+    
+    .menu {
+        display: flex; /* Menu visible */
+    }
+    
+    .menu-button {
+        display: none; /* Bouton burger caché */
+    }
+}
+
+/* Desktop (1024px et plus) */
+@media screen and (min-width: 1024px) {
+    .container {
+        width: 80%;
+        max-width: 1200px;
+        padding: 30px;
+        font-size: 18px;
+    }
+}
+
+/* Large Desktop (1440px et plus) */
+@media screen and (min-width: 1440px) {
+    .container {
+        max-width: 1400px;
+    }
+}</code></div>
+
+                <h3>Approche Desktop First</h3>
+                <div class="code-block"><code>/* Desktop First : on part du desktop vers le mobile */
+
+/* Styles de base pour desktop */
+.container {
+    width: 80%;
+    max-width: 1200px;
+    padding: 30px;
+    font-size: 18px;
+}
+
+.menu {
+    display: flex;
+}
+
+.menu-button {
+    display: none;
+}
+
+/* Tablette (max 1023px) */
+@media screen and (max-width: 1023px) {
+    .container {
+        width: 90%;
+        padding: 20px;
+        font-size: 16px;
+    }
+}
+
+/* Mobile (max 767px) */
+@media screen and (max-width: 767px) {
+    .container {
+        width: 100%;
+        padding: 15px;
+        font-size: 14px;
+    }
+    
+    .menu {
+        display: none;
+    }
+    
+    .menu-button {
+        display: block;
+    }
+}</code></div>
+
+                <h3>Opérateurs logiques</h3>
+                <div class="code-block"><code>/* AND : Combine plusieurs conditions */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    /* Styles pour tablettes uniquement */
+}
+
+/* OR : Avec une virgule */
+@media screen and (max-width: 480px), screen and (orientation: portrait) {
+    /* Mobile OU orientation portrait */
+}
+
+/* NOT : Inverse la condition */
+@media not screen and (min-width: 1024px) {
+    /* Tous les appareils SAUF desktop */
+}</code></div>
+
+                <h3>Exemples pratiques</h3>
+                <div class="example">
+                    <h4>Exemple 1 : Grille responsive</h4>
+                    <div class="code-block"><code>/* Grille qui s'adapte */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr; /* 1 colonne sur mobile */
+    gap: 20px;
+}
+
+/* 2 colonnes sur tablette */
+@media screen and (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 3 colonnes sur desktop */
+@media screen and (min-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 4 colonnes sur grand écran */
+@media screen and (min-width: 1440px) {
+    .grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}</code></div>
+                </div>
+
+                <div class="example">
+                    <h4>Exemple 2 : Orientation</h4>
+                    <div class="code-block"><code>/* Mode portrait (hauteur > largeur) */
+@media screen and (orientation: portrait) {
+    .hero {
+        height: 50vh;
+    }
+    
+    .sidebar {
+        display: none;
+    }
+}
+
+/* Mode paysage (largeur > hauteur) */
+@media screen and (orientation: landscape) {
+    .hero {
+        height: 80vh;
+    }
+    
+    .sidebar {
+        display: block;
+    }
+}</code></div>
+                </div>
+
+                <div class="example">
+                    <h4>Exemple 3 : Navigation responsive</h4>
+                    <div class="code-block"><code>/* Navigation mobile */
+.nav {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    height: 100vh;
+    background: #333;
+    transition: left 0.3s;
+}
+
+.nav.active {
+    left: 0;
+}
+
+.nav-toggle {
+    display: block;
+    font-size: 24px;
+}
+
+/* Navigation desktop */
+@media screen and (min-width: 768px) {
+    .nav {
+        position: static;
+        flex-direction: row;
+        width: auto;
+        height: auto;
+        left: 0;
+    }
+    
+    .nav-toggle {
+        display: none;
+    }
+}</code></div>
+                </div>
+            </section>
+
+            <!-- LAYOUTS RESPONSIVE -->
+            <section id="layouts">
+                <h2>Layouts Responsive</h2>
+
+                <h3>1. Flexbox pour le responsive</h3>
+                <p>Flexbox est parfait pour créer des layouts adaptatifs en une dimension (ligne ou colonne).</p>
+
+                <div class="code-block"><code>/* Container flexible */
+.flex-container {
+    display: flex;
+    flex-wrap: wrap; /* Permet le retour à la ligne */
+    gap: 20px;
+}
+
+/* Items flexibles */
+.flex-item {
+    flex: 1 1 300px; /* grow shrink basis */
+    /* L'item grandit, rétrécit, et a une base de 300px */
+}
+
+/* Exemple : 3 colonnes qui deviennent 1 colonne sur mobile */
+@media screen and (max-width: 768px) {
+    .flex-item {
+        flex: 1 1 100%; /* Prend toute la largeur */
+    }
+}</code></div>
+
+                <div class="demo-grid">
+                    <div class="demo-box">Box 1</div>
+                    <div class="demo-box">Box 2</div>
+                    <div class="demo-box">Box 3</div>
+                </div>
+
+                <h3>2. CSS Grid pour le responsive</h3>
+                <p>CSS Grid est idéal pour les layouts complexes en deux dimensions.</p>
+
+                <div class="code-block"><code>/* Grid responsive avec auto-fit */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Grid avec zones nommées */
+.layout {
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "sidebar main"
+        "footer footer";
+    gap: 20px;
+}
+
+.header { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.main { grid-area: main; }
+.footer { grid-area: footer; }
+
+/* Sur mobile : tout en colonne */
+@media screen and (max-width: 768px) {
+    .layout {
+        grid-template-areas:
+            "header"
+            "main"
+            "sidebar"
+            "footer";
+    }
+}</code></div>
+
+                <h3>3. Layout classique responsive</h3>
+                <div class="example">
+                    <h4>Template complet mobile-first</h4>
+                    <div class="code-block"><code>/* Structure HTML suggérée :
+&lt;div class="page-container"&gt;
+    &lt;header class="header"&gt;...&lt;/header&gt;
+    &lt;nav class="nav"&gt;...&lt;/nav&gt;
+    &lt;main class="main-content"&gt;...&lt;/main&gt;
+    &lt;aside class="sidebar"&gt;...&lt;/aside&gt;
+    &lt;footer class="footer"&gt;...&lt;/footer&gt;
+&lt;/div&gt;
+*/
+
+/* Mobile First */
+.page-container {
+    display: grid;
+    grid-template-areas:
+        "header"
+        "nav"
+        "main"
+        "sidebar"
+        "footer";
+    min-height: 100vh;
+}
+
+.header {
+    grid-area: header;
+    padding: 20px;
+}
+
+.nav {
+    grid-area: nav;
+    padding: 10px;
+}
+
+.main-content {
+    grid-area: main;
+    padding: 20px;
+}
+
+.sidebar {
+    grid-area: sidebar;
+    padding: 20px;
+}
+
+.footer {
+    grid-area: footer;
+    padding: 20px;
+}
+
+/* Tablette : sidebar à côté du contenu */
+@media screen and (min-width: 768px) {
+    .page-container {
+        grid-template-areas:
+            "header header"
+            "nav nav"
+            "main sidebar"
+            "footer footer";
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+/* Desktop : nav horizontale */
+@media screen and (min-width: 1024px) {
+    .page-container {
+        grid-template-areas:
+            "header header header"
+            "nav nav nav"
+            "main main sidebar"
+            "footer footer footer";
+        grid-template-columns: 1fr 1fr 300px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+}</code></div>
+                </div>
+
+                <h3>4. Container queries (Moderne)</h3>
+                <p>Les container queries permettent de styler un élément en fonction de la taille de son conteneur parent (et non du viewport).</p>
+
+                <div class="code-block"><code>/* Définir un container */
+.card-container {
+    container-type: inline-size;
+    container-name: card;
+}
+
+/* Query sur le container */
+@container card (min-width: 400px) {
+    .card {
+        display: flex;
+        flex-direction: row;
+    }
+}
+
+@container card (max-width: 399px) {
+    .card {
+        display: flex;
+        flex-direction: column;
+    }
+}</code></div>
+
+                <div class="warning-box">
+                    <h4>Compatibilité</h4>
+                    <p>Les container queries sont supportées par les navigateurs modernes (Chrome 105+, Firefox 110+, Safari 16+). Vérifiez la compatibilité sur <a href="https://caniuse.com/css-container-queries" target="_blank">caniuse.com</a></p>
+                </div>
+            </section>
+
+            <!-- IMAGES RESPONSIVE -->
+            <section id="images">
+                <h2>Images Responsive</h2>
+
+                <h3>1. Images fluides de base</h3>
+                <div class="code-block"><code>/* Rendre toutes les images fluides */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Alternative avec object-fit */
+img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover; /* ou contain, fill, none, scale-down */
+}</code></div>
+
+                <h3>2. L'élément &lt;picture&gt;</h3>
+                <p>L'élément <code>&lt;picture&gt;</code> permet de fournir différentes versions d'une image selon la taille d'écran ou la résolution.</p>
+
+                <div class="code-block"><code>&lt;picture&gt;
+    &lt;!-- Image pour grand écran --&gt;
+    &lt;source media="(min-width: 1024px)" srcset="image-large.jpg"&gt;
+    
+    &lt;!-- Image pour tablette --&gt;
+    &lt;source media="(min-width: 768px)" srcset="image-medium.jpg"&gt;
+    
+    &lt;!-- Image par défaut (mobile) --&gt;
+    &lt;img src="image-small.jpg" alt="Description"&gt;
+&lt;/picture&gt;</code></div>
+
+                <h3>3. L'attribut srcset</h3>
+                <p>L'attribut <code>srcset</code> permet au navigateur de choisir l'image la plus appropriée selon la résolution de l'écran.</p>
+
+                <div class="code-block"><code>&lt;!-- Selon la largeur --&gt;
+&lt;img src="image-400.jpg"
+     srcset="image-400.jpg 400w,
+             image-800.jpg 800w,
+             image-1200.jpg 1200w"
+     sizes="(max-width: 600px) 100vw,
+            (max-width: 1000px) 50vw,
+            33vw"
+     alt="Description"&gt;
+
+&lt;!-- Selon la densité de pixels --&gt;
+&lt;img src="image.jpg"
+     srcset="image.jpg 1x,
+             image@2x.jpg 2x,
+             image@3x.jpg 3x"
+     alt="Description"&gt;</code></div>
+
+                <h3>4. Images d'arrière-plan responsive</h3>
+                <div class="code-block"><code>/* CSS pour images d'arrière-plan adaptatives */
+.hero {
+    background-image: url('hero-mobile.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 50vh;
+}
+
+@media screen and (min-width: 768px) {
+    .hero {
+        background-image: url('hero-tablet.jpg');
+        height: 60vh;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .hero {
+        background-image: url('hero-desktop.jpg');
+        height: 70vh;
+    }
+}
+
+@media screen and (min-width: 1440px) {
+    .hero {
+        background-image: url('hero-large.jpg');
+        height: 80vh;
+    }
+}</code></div>
+
+                <h3>5. Format WebP moderne</h3>
+                <div class="code-block"><code>&lt;picture&gt;
+    &lt;!-- Format moderne WebP --&gt;
+    &lt;source type="image/webp" srcset="image.webp"&gt;
+    
+    &lt;!-- Format de secours --&gt;
+    &lt;img src="image.jpg" alt="Description"&gt;
+&lt;/picture&gt;</code></div>
+
+                <h3>6. Lazy Loading</h3>
+                <p>Le lazy loading permet de charger les images uniquement quand elles sont visibles, améliorant les performances.</p>
+
+                <div class="code-block"><code>&lt;!-- Lazy loading natif --&gt;
+&lt;img src="image.jpg" alt="Description" loading="lazy"&gt;
+
+&lt;!-- Pour les iframes aussi --&gt;
+&lt;iframe src="video.html" loading="lazy"&gt;&lt;/iframe&gt;</code></div>
+
+                <div class="success-box">
+                    <h4>Bonnes pratiques pour les images</h4>
+                    <ul>
+                        <li>Toujours définir <code>max-width: 100%</code> sur les images</li>
+                        <li>Utiliser <code>height: auto</code> pour conserver les proportions</li>
+                        <li>Optimiser les images avant de les uploader (compression)</li>
+                        <li>Fournir plusieurs tailles avec srcset</li>
+                        <li>Utiliser le format WebP quand c'est possible</li>
+                        <li>Toujours inclure un attribut alt descriptif</li>
+                        <li>Utiliser lazy loading pour les images en dessous de la ligne de flottaison</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- TYPOGRAPHIE RESPONSIVE -->
+            <section id="typographie">
+                <h2>Typographie Responsive</h2>
+
+                <h3>1. Tailles de police fluides</h3>
+                
+                <h4>Méthode avec rem</h4>
+                <div class="code-block"><code>/* Définir la base dans html */
+html {
+    font-size: 16px; /* Taille de base */
+}
+
+/* Mobile */
+body {
+    font-size: 1rem; /* 16px */
+    line-height: 1.6;
+}
+
+h1 { font-size: 2rem; }    /* 32px */
+h2 { font-size: 1.75rem; } /* 28px */
+h3 { font-size: 1.5rem; }  /* 24px */
+
+/* Tablette */
+@media screen and (min-width: 768px) {
+    html {
+        font-size: 18px; /* Toutes les valeurs en rem augmentent */
+    }
+}
+
+/* Desktop */
+@media screen and (min-width: 1024px) {
+    html {
+        font-size: 20px;
+    }
+}</code></div>
+
+                <h4>Méthode avec vw (viewport width)</h4>
+                <div class="code-block"><code>/* Taille fluide basée sur la largeur du viewport */
+h1 {
+    font-size: calc(1.5rem + 2vw);
+    /* Sur mobile 375px : ~24px */
+    /* Sur desktop 1920px : ~62px */
+}
+
+/* Avec limites min et max */
+h1 {
+    font-size: clamp(1.5rem, 2vw + 1rem, 3rem);
+    /* Minimum : 24px */
+    /* Fluide : 2vw + 16px */
+    /* Maximum : 48px */
+}</code></div>
+
+                <h3>2. La fonction clamp() (Moderne et recommandée)</h3>
+                <p>La fonction <code>clamp()</code> permet de définir une taille fluide avec des limites minimales et maximales.</p>
+
+                <div class="code-block"><code>/* Syntaxe : clamp(MIN, PRÉFÉRÉ, MAX) */
+
+body {
+    font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+    /* Min: 16px, Fluide, Max: 20px */
+}
+
+h1 {
+    font-size: clamp(2rem, 1.5rem + 2vw, 4rem);
+    /* Min: 32px, Fluide, Max: 64px */
+}
+
+h2 {
+    font-size: clamp(1.5rem, 1.2rem + 1.5vw, 3rem);
+    /* Min: 24px, Fluide, Max: 48px */
+}
+
+h3 {
+    font-size: clamp(1.25rem, 1rem + 1vw, 2rem);
+    /* Min: 20px, Fluide, Max: 32px */
+}</code></div>
+
+                <h3>3. Échelle typographique complète</h3>
+                <div class="example">
+                    <div class="code-block"><code>/* Système typographique responsive complet */
+:root {
+    --font-size-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+    --font-size-small: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
+    --font-size-h1: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+    --font-size-h2: clamp(1.75rem, 1.3rem + 1.5vw, 2.75rem);
+    --font-size-h3: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
+    --font-size-h4: clamp(1.25rem, 1.1rem + 0.5vw, 1.75rem);
+}
+
+body {
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+}
+
+small, .small {
+    font-size: var(--font-size-small);
+}
+
+h1 { font-size: var(--font-size-h1); }
+h2 { font-size: var(--font-size-h2); }
+h3 { font-size: var(--font-size-h3); }
+h4 { font-size: var(--font-size-h4); }</code></div>
+                </div>
+
+                <h3>4. Line-height responsive</h3>
+                <div class="code-block"><code>/* Line-height adaptatif */
+body {
+    line-height: 1.6; /* Mobile : plus compact */
+}
+
+@media screen and (min-width: 768px) {
+    body {
+        line-height: 1.7; /* Tablette : plus aéré */
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    body {
+        line-height: 1.8; /* Desktop : maximum lisibilité */
+    }
+}
+
+/* Ou avec clamp */
+p {
+    line-height: clamp(1.5, 1.4 + 0.2vw, 1.8);
+}</code></div>
+
+                <h3>5. Largeur de ligne optimale</h3>
+                <p>Pour une lecture confortable, une ligne devrait contenir entre 50 et 75 caractères.</p>
+
+                <div class="code-block"><code>/* Limiter la largeur du texte */
+.content p {
+    max-width: 65ch; /* 65 caractères max */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Ou avec une valeur en pixels */
+.content {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 0 20px;
+}</code></div>
+
+                <h3>6. Espacements fluides</h3>
+                <div class="code-block"><code>/* Espacements adaptatifs */
+section {
+    padding: clamp(2rem, 5vw, 5rem) clamp(1rem, 3vw, 3rem);
+    margin-bottom: clamp(2rem, 4vw, 4rem);
+}
+
+.card {
+    padding: clamp(1rem, 2vw, 2rem);
+    gap: clamp(0.5rem, 1vw, 1.5rem);
+}</code></div>
+
+                <div class="success-box">
+                    <h4>Bonnes pratiques typographiques</h4>
+                    <ul>
+                        <li>Utiliser <code>clamp()</code> pour des tailles fluides avec limites</li>
+                        <li>Taille de base minimum : 16px pour le body</li>
+                        <li>Contraste minimum : 4.5:1 pour le texte normal</li>
+                        <li>Line-height entre 1.5 et 1.8 pour la lisibilité</li>
+                        <li>Largeur de ligne maximum : 65-75 caractères</li>
+                        <li>Utiliser des polices web-safe ou des Google Fonts</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- EXERCICES PRATIQUES -->
+            <section id="exercices">
+                <h2>Exercices Pratiques</h2>
+
+                <div class="exercise">
+                    <h3>Exercice 1 : Page d'accueil responsive (Niveau Débutant)</h3>
+                    <h4>Objectif</h4>
+                    <p>Créer une page d'accueil simple qui s'adapte du mobile au desktop.</p>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créer une structure HTML avec :
+                            <ul>
+                                <li>Un header avec logo et navigation</li>
+                                <li>Une section hero avec titre et bouton</li>
+                                <li>Une section "Services" avec 3 cartes</li>
+                                <li>Un footer</li>
+                            </ul>
+                        </li>
+                        <li>Appliquer les styles CSS en Mobile First</li>
+                        <li>Ajouter les breakpoints pour tablette (768px) et desktop (1024px)</li>
+                        <li>Les 3 cartes doivent être :
+                            <ul>
+                                <li>En colonne sur mobile</li>
+                                <li>Sur 2 lignes sur tablette</li>
+                                <li>Sur une ligne sur desktop</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h4>Critères de réussite</h4>
+                    <ul>
+                        <li>Meta viewport présente</li>
+                        <li>Images fluides (max-width: 100%)</li>
+                        <li>Au moins 2 media queries</li>
+                        <li>Navigation qui s'adapte</li>
+                        <li>Pas de scroll horizontal sur mobile</li>
+                    </ul>
+                </div>
+
+                <div class="exercise">
+                    <h3>Exercice 2 : Grille de produits (Niveau Intermédiaire)</h3>
+                    <h4>Objectif</h4>
+                    <p>Créer une grille de produits e-commerce responsive avec CSS Grid.</p>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créer 12 cartes produit avec :
+                            <ul>
+                                <li>Image</li>
+                                <li>Titre</li>
+                                <li>Prix</li>
+                                <li>Bouton "Ajouter au panier"</li>
+                            </ul>
+                        </li>
+                        <li>Utiliser CSS Grid avec auto-fit</li>
+                        <li>Affichage :
+                            <ul>
+                                <li>Mobile (< 768px) : 1 colonne</li>
+                                <li>Tablette (768-1023px) : 2 colonnes</li>
+                                <li>Desktop (1024-1439px) : 3 colonnes</li>
+                                <li>Large (≥ 1440px) : 4 colonnes</li>
+                            </ul>
+                        </li>
+                        <li>Ajouter une barre de recherche responsive</li>
+                    </ol>
+
+                    <h4>Bonus</h4>
+                    <ul>
+                        <li>Ajouter des filtres dans une sidebar qui disparaît sur mobile</li>
+                        <li>Effet hover sur les cartes</li>
+                        <li>Animation au survol</li>
+                    </ul>
+                </div>
+
+                <div class="exercise">
+                    <h3>Exercice 3 : Dashboard responsive (Niveau Avancé)</h3>
+                    <h4>Objectif</h4>
+                    <p>Créer un tableau de bord d'administration avec layouts complexes.</p>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Structure :
+                            <ul>
+                                <li>Sidebar de navigation</li>
+                                <li>Header avec profil utilisateur</li>
+                                <li>Contenu principal avec widgets (stats, graphiques, tableaux)</li>
+                            </ul>
+                        </li>
+                        <li>Comportement :
+                            <ul>
+                                <li>Mobile : Sidebar cachée, menu burger, widgets empilés</li>
+                                <li>Tablette : Sidebar réduite (icônes seuls), widgets sur 2 colonnes</li>
+                                <li>Desktop : Sidebar complète, widgets sur 3-4 colonnes</li>
+                            </ul>
+                        </li>
+                        <li>Utiliser CSS Grid pour le layout principal</li>
+                        <li>Utiliser Flexbox pour les widgets</li>
+                        <li>Implémenter un menu burger fonctionnel (JavaScript)</li>
+                    </ol>
+
+                    <h4>Fonctionnalités JavaScript requises</h4>
+                    <ul>
+                        <li>Toggle du menu burger</li>
+                        <li>Gestion de la sidebar (ouvrir/fermer)</li>
+                        <li>Responsive navbar avec dropdown</li>
+                    </ul>
+                </div>
+
+                <div class="exercise">
+                    <h3>Exercice 4 : Blog responsive (Niveau Intermédiaire)</h3>
+                    <h4>Objectif</h4>
+                    <p>Créer une page de blog avec articles et sidebar responsive.</p>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Layout :
+                            <ul>
+                                <li>Header avec navigation</li>
+                                <li>Zone principale pour les articles</li>
+                                <li>Sidebar avec catégories et articles populaires</li>
+                                <li>Footer avec liens</li>
+                            </ul>
+                        </li>
+                        <li>Articles avec :
+                            <ul>
+                                <li>Image responsive</li>
+                                <li>Titre, date, auteur</li>
+                                <li>Extrait du texte</li>
+                                <li>Bouton "Lire la suite"</li>
+                            </ul>
+                        </li>
+                        <li>Comportement responsive :
+                            <ul>
+                                <li>Mobile : Sidebar en dessous du contenu</li>
+                                <li>Tablette : Sidebar à côté (30% de largeur)</li>
+                                <li>Desktop : Layout fixe avec max-width</li>
+                            </ul>
+                        </li>
+                        <li>Typographie responsive avec clamp()</li>
+                    </ol>
+                </div>
+
+                <div class="exercise">
+                    <h3>Exercice 5 : Galerie d'images (Niveau Débutant)</h3>
+                    <h4>Objectif</h4>
+                    <p>Créer une galerie photo responsive avec lightbox.</p>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créer 16 images dans une grille</li>
+                        <li>Utiliser CSS Grid avec auto-fit</li>
+                        <li>Images :
+                            <ul>
+                                <li>Ratio carré (aspect-ratio: 1/1)</li>
+                                <li>Object-fit: cover</li>
+                                <li>Transition au survol</li>
+                            </ul>
+                        </li>
+                        <li>Grille responsive :
+                            <ul>
+                                <li>Mobile : 2 colonnes</li>
+                                <li>Tablette : 3 colonnes</li>
+                                <li>Desktop : 4 colonnes</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h4>Bonus</h4>
+                    <ul>
+                        <li>Effet de zoom au survol</li>
+                        <li>Overlay avec titre au survol</li>
+                        <li>Système de filtres par catégorie</li>
+                    </ul>
+                </div>
+
+                <div class="exercise">
+                    <h3>Projet Final : Site vitrine complet (Niveau Expert)</h3>
+                    <h4>Objectif</h4>
+                    <p>Créer un site vitrine professionnel multi-pages entièrement responsive.</p>
+                    
+                    <h4>Pages à créer</h4>
+                    <ol>
+                        <li><strong>Accueil</strong> : Hero, services, témoignages, CTA</li>
+                        <li><strong>À propos</strong> : Timeline, équipe, valeurs</li>
+                        <li><strong>Services</strong> : Grille de services détaillés</li>
+                        <li><strong>Portfolio</strong> : Galerie filtrée de projets</li>
+                        <li><strong>Blog</strong> : Liste d'articles avec pagination</li>
+                        <li><strong>Contact</strong> : Formulaire + carte Google Maps</li>
+                    </ol>
+
+                    <h4>Contraintes techniques</h4>
+                    <ul>
+                        <li>Mobile First obligatoire</li>
+                        <li>Au moins 4 breakpoints différents</li>
+                        <li>Navigation responsive avec menu burger</li>
+                        <li>Images optimisées avec srcset et formats WebP</li>
+                        <li>Typographie fluide avec clamp()</li>
+                        <li>Formulaire de contact validé</li>
+                        <li>Animations CSS (transitions, transforms)</li>
+                        <li>Performance : Lighthouse score > 90</li>
+                        <li>Accessibilité : Validation WCAG niveau AA</li>
+                    </ul>
+
+                    <h4>Critères d'évaluation</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Critère</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Respect du responsive sur tous appareils</td>
+                                <td>30</td>
+                            </tr>
+                            <tr>
+                                <td>Qualité du code (sémantique, organisation)</td>
+                                <td>20</td>
+                            </tr>
+                            <tr>
+                                <td>Design et esthétique</td>
+                                <td>15</td>
+                            </tr>
+                            <tr>
+                                <td>Performance et optimisation</td>
+                                <td>15</td>
+                            </tr>
+                            <tr>
+                                <td>Accessibilité</td>
+                                <td>10</td>
+                            </tr>
+                            <tr>
+                                <td>Fonctionnalités JavaScript</td>
+                                <td>10</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="success-box">
+                    <h4>Ressources pour les exercices</h4>
+                    <ul>
+                        <li><strong>Images gratuites</strong> : Unsplash, Pexels, Pixabay</li>
+                        <li><strong>Icônes</strong> : Font Awesome, Ionicons, Material Icons</li>
+                        <li><strong>Polices</strong> : Google Fonts</li>
+                        <li><strong>Outils de test</strong> : Chrome DevTools, Responsive Design Mode</li>
+                        <li><strong>Validation</strong> : W3C Validator, Lighthouse</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- BONUS : Outils et ressources -->
+            <section id="bonus">
+                <h2>Outils et Ressources</h2>
+
+                <h3>Outils de développement</h3>
+                <div class="info-box">
+                    <h4>Chrome DevTools</h4>
+                    <ul>
+                        <li><strong>F12</strong> ou <strong>Ctrl+Shift+I</strong> : Ouvrir les DevTools</li>
+                        <li><strong>Ctrl+Shift+M</strong> : Mode responsive</li>
+                        <li>Tester différentes tailles d'écran</li>
+                        <li>Simuler différents appareils</li>
+                        <li>Throttling réseau pour tester les performances</li>
+                    </ul>
+                </div>
+
+                <h3>Frameworks CSS responsive</h3>
+                <ul>
+                    <li><strong>Bootstrap</strong> : Le plus populaire, système de grille 12 colonnes</li>
+                    <li><strong>Tailwind CSS</strong> : Utility-first, très flexible</li>
+                    <li><strong>Foundation</strong> : Professionnel et complet</li>
+                    <li><strong>Bulma</strong> : Moderne et basé sur Flexbox</li>
+                </ul>
+
+                <h3>Sites de référence</h3>
+                <ul>
+                    <li><strong>MDN Web Docs</strong> : Documentation complète CSS</li>
+                    <li><strong>CSS-Tricks</strong> : Guides et tutoriels</li>
+                    <li><strong>Can I Use</strong> : Compatibilité des fonctionnalités CSS</li>
+                    <li><strong>Responsive Design Checker</strong> : Tester sur différents appareils</li>
+                </ul>
+
+                <h3>Checklist responsive</h3>
+                <div class="example">
+                    <h4>Avant de livrer un projet responsive</h4>
+                    <ol>
+                        <li> Meta viewport présente et correcte</li>
+                        <li> Aucun scroll horizontal sur mobile</li>
+                        <li>Images optimisées et fluides</li>
+                        <li>Tailles de police lisibles (min 16px)</li>
+                        <li>Zones cliquables suffisamment grandes (min 44x44px)</li>
+                        <li>Navigation utilisable sur mobile</li>
+                        <li>Formulaires ergonomiques sur mobile</li>
+                        <li>Test sur Chrome, Firefox, Safari</li>
+                        <li>Test sur vraies appareils si possible</li>
+                        <li>Validation W3C HTML et CSS</li>
+                        <li>Score Lighthouse > 90</li>
+                        <li>Accessibilité vérifiée (contraste, focus)</li>
+                    </ol>
+                </div>
+
+                <h3>Pièges courants à éviter</h3>
+                <div class="warning-box">
+                    <h4> Erreurs fréquentes</h4>
+                    <ul>
+                        <li>Oublier la meta viewport</li>
+                        <li>Utiliser des largeurs fixes en pixels</li>
+                        <li>Ne pas tester sur de vrais appareils</li>
+                        <li>Tailles de police trop petites sur mobile</li>
+                        <li>Boutons/liens trop petits pour être cliqués</li>
+                        <li>Images non optimisées (poids trop lourd)</li>
+                        <li>Utiliser max-width au lieu de min-width en mobile-first</li>
+                        <li>Négliger l'accessibilité</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+             <p>2026 Formation DWWM développeur web web mobile Lille</p>
+            <p>&copy; Thomas cours de HTML</p>
+            <img src="../JAVASCRIPT/Supports/IMG/Real.jpg" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/Region.jpg" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/U.E.jpg" width="70px" alt="">
+        </footer>
+    </div>
+</body>
+</html>

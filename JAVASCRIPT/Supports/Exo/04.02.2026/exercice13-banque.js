@@ -1,11 +1,4 @@
-/*
- * ============================================
- * EXERCICE 13 : Application bancaire complète
- * ============================================
- * Niveau : Avancé
- * Real Conseil - Formation DWWM
- * ============================================
- */
+
 
 // Création de l'objet banque avec gestion complète des comptes
 const banque = {
@@ -36,7 +29,7 @@ const banque = {
         // Ajouter le compte à la liste
         this.comptes.push(nouveauCompte);
         
-        console.log(`\n✅ Compte créé avec succès !`);
+        console.log(`\n Compte créé avec succès !`);
         console.log(`   Numéro de compte : ${nouveauCompte.numero}`);
         console.log(`   Titulaire : ${titulaire}`);
         console.log(`   Solde initial : ${soldeInitial.toFixed(2)}€`);
@@ -54,12 +47,12 @@ const banque = {
         const compte = this.trouverCompte(numeroCompte);
         
         if (!compte) {
-            console.log("❌ Compte non trouvé");
+            console.log(" Compte non trouvé");
             return false;
         }
         
         if (montant <= 0) {
-            console.log("❌ Le montant doit être positif");
+            console.log(" Le montant doit être positif");
             return false;
         }
         
@@ -74,7 +67,7 @@ const banque = {
             soldeApres: compte.solde
         });
         
-        console.log(`\n✅ Dépôt effectué`);
+        console.log(`\n Dépôt effectué`);
         console.log(`   Compte : ${compte.numero}`);
         console.log(`   Montant déposé : ${montant.toFixed(2)}€`);
         console.log(`   Nouveau solde : ${compte.solde.toFixed(2)}€`);
@@ -87,17 +80,17 @@ const banque = {
         const compte = this.trouverCompte(numeroCompte);
         
         if (!compte) {
-            console.log("❌ Compte non trouvé");
+            console.log(" Compte non trouvé");
             return false;
         }
         
         if (montant <= 0) {
-            console.log("❌ Le montant doit être positif");
+            console.log(" Le montant doit être positif");
             return false;
         }
         
         if (compte.solde < montant) {
-            console.log(`❌ Solde insuffisant`);
+            console.log(` Solde insuffisant`);
             console.log(`   Solde disponible : ${compte.solde.toFixed(2)}€`);
             console.log(`   Montant demandé : ${montant.toFixed(2)}€`);
             return false;
@@ -114,7 +107,7 @@ const banque = {
             soldeApres: compte.solde
         });
         
-        console.log(`\n✅ Retrait effectué`);
+        console.log(`\n Retrait effectué`);
         console.log(`   Compte : ${compte.numero}`);
         console.log(`   Montant retiré : ${montant.toFixed(2)}€`);
         console.log(`   Nouveau solde : ${compte.solde.toFixed(2)}€`);
@@ -128,17 +121,17 @@ const banque = {
         const destination = this.trouverCompte(compteDestination);
         
         if (!source || !destination) {
-            console.log("❌ Un des comptes n'existe pas");
+            console.log(" Un des comptes n'existe pas");
             return false;
         }
         
         if (montant <= 0) {
-            console.log("❌ Le montant doit être positif");
+            console.log(" Le montant doit être positif");
             return false;
         }
         
         if (source.solde < montant) {
-            console.log("❌ Solde insuffisant sur le compte source");
+            console.log(" Solde insuffisant sur le compte source");
             console.log(`   Solde disponible : ${source.solde.toFixed(2)}€`);
             return false;
         }
@@ -165,7 +158,7 @@ const banque = {
             soldeApres: destination.solde
         });
         
-        console.log(`\n✅ Virement effectué`);
+        console.log(`\n Virement effectué`);
         console.log(`   De : Compte ${source.numero} (${source.titulaire})`);
         console.log(`   Vers : Compte ${destination.numero} (${destination.titulaire})`);
         console.log(`   Montant : ${montant.toFixed(2)}€`);
@@ -180,13 +173,13 @@ const banque = {
         const compte = this.trouverCompte(numeroCompte);
         
         if (!compte) {
-            console.log("❌ Compte non trouvé");
+            console.log(" Compte non trouvé");
             return;
         }
         
-        console.log("\n" + "=".repeat(80));
-        console.log(`📜 HISTORIQUE DU COMPTE ${compte.numero} - ${compte.titulaire}`);
-        console.log("=".repeat(80));
+        console.log("\n" + "".repeat(80));
+        console.log(` HISTORIQUE DU COMPTE ${compte.numero} - ${compte.titulaire}`);
+        console.log("".repeat(80));
         console.log(`Solde actuel : ${compte.solde.toFixed(2)}€`);
         console.log("");
         
@@ -203,7 +196,7 @@ const banque = {
             });
         }
         
-        console.log("=".repeat(80) + "\n");
+        console.log("".repeat(80) + "\n");
     },
     
     // Méthode pour calculer les intérêts sur un compte
@@ -211,12 +204,12 @@ const banque = {
         const compte = this.trouverCompte(numeroCompte);
         
         if (!compte) {
-            console.log("❌ Compte non trouvé");
+            console.log(" Compte non trouvé");
             return false;
         }
         
         if (tauxAnnuel <= 0 || tauxAnnuel > 20) {
-            console.log("❌ Le taux doit être entre 0 et 20%");
+            console.log(" Le taux doit être entre 0 et 20%");
             return false;
         }
         
@@ -232,7 +225,7 @@ const banque = {
             soldeApres: compte.solde
         });
         
-        console.log(`\n✅ Intérêts calculés et ajoutés`);
+        console.log(`\n Intérêts calculés et ajoutés`);
         console.log(`   Compte : ${compte.numero}`);
         console.log(`   Taux : ${tauxAnnuel}%`);
         console.log(`   Intérêts : ${interets.toFixed(2)}€`);
@@ -243,7 +236,7 @@ const banque = {
     
     // Méthode pour afficher tous les comptes
     afficherTousLesComptes() {
-        console.log(`\n💼 === ${this.nom.toUpperCase()} ===`);
+        console.log(`\n ${this.nom.toUpperCase()} `);
         console.log(`Nombre de comptes : ${this.comptes.length}`);
         console.log("");
         
@@ -262,7 +255,7 @@ const banque = {
     // Méthode pour calculer le solde total de tous les comptes
     calculerSoldeTotal() {
         const total = this.comptes.reduce((somme, compte) => somme + compte.solde, 0);
-        console.log(`\n💰 Solde total de la banque : ${total.toFixed(2)}€`);
+        console.log(`\n Solde total de la banque : ${total.toFixed(2)}€`);
         return total;
     },
     
@@ -271,20 +264,20 @@ const banque = {
         const index = this.comptes.findIndex(c => c.numero === numeroCompte);
         
         if (index === -1) {
-            console.log("❌ Compte non trouvé");
+            console.log(" Compte non trouvé");
             return false;
         }
         
         const compte = this.comptes[index];
         
         if (compte.solde > 0) {
-            console.log(`⚠️ Le compte a encore un solde de ${compte.solde.toFixed(2)}€`);
+            console.log(` Le compte a encore un solde de ${compte.solde.toFixed(2)}€`);
             console.log("   Veuillez retirer l'argent avant de fermer le compte");
             return false;
         }
         
         this.comptes.splice(index, 1);
-        console.log(`\n✅ Compte ${numeroCompte} fermé avec succès`);
+        console.log(`\n Compte ${numeroCompte} fermé avec succès`);
         
         return true;
     },
@@ -294,7 +287,7 @@ const banque = {
         const compte = this.trouverCompte(numeroCompte);
         
         if (!compte) {
-            console.log("❌ Compte non trouvé");
+            console.log(" Compte non trouvé");
             return;
         }
         
@@ -313,7 +306,7 @@ const banque = {
             }
         });
         
-        console.log(`\n📊 === STATISTIQUES COMPTE ${compte.numero} ===`);
+        console.log(`\n STATISTIQUES COMPTE ${compte.numero} `);
         console.log(`Titulaire : ${compte.titulaire}`);
         console.log(`Solde actuel : ${compte.solde.toFixed(2)}€`);
         console.log(`\nDépôts :`);
@@ -330,11 +323,11 @@ const banque = {
         const compte = this.trouverCompte(numeroCompte);
         
         if (!compte) {
-            console.log("❌ Compte non trouvé");
+            console.log(" Compte non trouvé");
             return;
         }
         
-        console.log(`\n📋 Les ${nombre} dernières transactions :`);
+        console.log(`\n Les ${nombre} dernières transactions :`);
         
         const dernieres = compte.historique.slice(-nombre).reverse();
         
@@ -347,32 +340,30 @@ const banque = {
     }
 };
 
-// ========================================
-// TESTS DU SYSTÈME BANCAIRE
-// ========================================
-console.log("=== TEST DU SYSTÈME BANCAIRE COMPLET ===");
+
+console.log(" TEST DU SYSTÈME BANCAIRE COMPLET ");
 
 // Créer des comptes
-console.log("\n--- Création de comptes ---");
+console.log("\n Création de comptes ");
 const compte1 = banque.creerCompte("Marie Dupont", 1000);
 const compte2 = banque.creerCompte("Lucas Martin", 500);
 const compte3 = banque.creerCompte("Sophie Bernard", 2000);
 
 // Effectuer des opérations
-console.log("\n--- Opérations bancaires ---");
+console.log("\n Opérations bancaires ");
 banque.deposer(compte1, 500);
 banque.retirer(compte1, 200);
 banque.deposer(compte2, 300);
 
 // Effectuer un virement
-console.log("\n--- Virement ---");
+console.log("\n Virement ");
 banque.virer(compte1, compte2, 300);
 
 // Essayer un virement impossible
 banque.virer(compte2, compte1, 5000);
 
 // Calculer des intérêts
-console.log("\n--- Calcul d'intérêts ---");
+console.log("\n Calcul d'intérêts ");
 banque.calculerInterets(compte1, 2);
 banque.calculerInterets(compte3, 1.5);
 
@@ -393,10 +384,10 @@ banque.calculerSoldeTotal();
 
 /*
  * EXPLICATIONS :
- * ==============
+
  * 
  * STRUCTURE D'UN COMPTE :
- * =======================
+
  * {
  *   numero: 1001,
  *   titulaire: "Marie Dupont",
@@ -412,7 +403,7 @@ banque.calculerSoldeTotal();
  * }
  * 
  * GESTION DE L'HISTORIQUE :
- * =========================
+ 
  * - Chaque opération est enregistrée avec :
  *   * Date et heure exacte
  *   * Type d'opération
@@ -420,24 +411,24 @@ banque.calculerSoldeTotal();
  *   * Solde après l'opération
  * 
  * MÉTHODES DE DATES :
- * ===================
+
  * new Date() : crée un objet date avec l'heure actuelle
  * .toLocaleString('fr-FR') : formate la date en français
  * 
  * CALCULS :
- * =========
+
  * - Intérêts : solde × (taux / 100)
  * - Virement : retrait du compte source + dépôt au compte destination
  * 
  * VALIDATIONS :
- * =============
+
  * - Vérifier que le compte existe
  * - Vérifier que le montant est positif
  * - Vérifier qu'il y a assez d'argent pour un retrait
  * - Vérifier le taux d'intérêt
  * 
  * MÉTHODES DE TABLEAUX :
- * ======================
+
  * - push() : ajoute un élément à la fin
  * - find() : trouve un élément
  * - findIndex() : trouve l'index d'un élément
@@ -447,32 +438,19 @@ banque.calculerSoldeTotal();
  * - reverse() : inverse l'ordre du tableau
  * 
  * FONCTIONNALITÉS IMPLÉMENTÉES :
- * ===============================
- * ✅ Créer un compte avec solde initial
- * ✅ Déposer de l'argent
- * ✅ Retirer de l'argent (avec vérification)
- * ✅ Virer entre deux comptes
- * ✅ Historique complet de toutes les opérations
- * ✅ Calcul d'intérêts
- * ✅ Affichage de l'historique formaté
- * ✅ Statistiques par compte
- * ✅ Dernières transactions
- * ✅ Liste de tous les comptes
- * ✅ Solde total de la banque
- * ✅ Fermeture de compte
+
+ *  Créer un compte avec solde initial
+ *  Déposer de l'argent
+ *  Retirer de l'argent (avec vérification)
+ *  Virer entre deux comptes
+ *  Historique complet de toutes les opérations
+ *  Calcul d'intérêts
+ *  Affichage de l'historique formaté
+ *  Statistiques par compte
+ *  Dernières transactions
+ *  Liste de tous les comptes
+ *  Solde total de la banque
+ *  Fermeture de compte
  * 
- * AMÉLIORATIONS POSSIBLES :
- * =========================
- * - Découvert autorisé
- * - Frais bancaires
- * - Différents types de comptes (épargne, courant)
- * - Cartes bancaires avec limites
- * - Prêts et crédits
- * - Placements et investissements
- * - Alertes SMS/Email
- * - Export PDF des relevés
- * - Virements programmés
- * - Multi-devises
- * - Authentification sécurisée
- * - Interface graphique
+ 
  */

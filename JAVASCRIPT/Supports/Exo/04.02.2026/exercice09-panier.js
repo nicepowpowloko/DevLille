@@ -41,9 +41,9 @@ const panier = {
     
     // Méthode pour afficher le panier
     afficherPanier() {
-        console.log("\n" + "=".repeat(70));
+        console.log("\n" + "".repeat(70));
         console.log(" PANIER D'ACHAT");
-        console.log("=".repeat(70));
+        console.log("".repeat(70));
         
         if (this.articles.length === 0) {
             console.log("Le panier est vide ");
@@ -55,14 +55,14 @@ const panier = {
                 console.log(`   Prix unitaire : ${article.prix.toFixed(2)}€`);
                 console.log(`   Quantité : ${article.quantite}`);
                 console.log(`   Sous-total : ${sousTotal.toFixed(2)}€`);
-                console.log("-".repeat(70));
+                console.log("".repeat(70));
             });
             
             // Afficher le total
             console.log(`\n TOTAL : ${this.calculerTotal().toFixed(2)}€`);
         }
         
-        console.log("=".repeat(70) + "\n");
+        console.log("".repeat(70) + "\n");
     },
     
     // Méthode pour vider le panier
@@ -167,7 +167,7 @@ panier.afficherPanier();
 panier.appliquerReduction(10);
 
 // Simulation d'un achat complet
-console.log("\n=== SIMULATION D'ACHAT COMPLET ===");
+console.log("\n SIMULATION D'ACHAT COMPLET ");
 const panierTest = {
     ...panier,
     articles: []

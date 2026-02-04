@@ -1,11 +1,4 @@
-/*
- * ============================================
- * EXERCICE 11 : Système de bibliothèque
- * ============================================
- * Niveau : Avancé
- * Real Conseil - Formation DWWM
- * ============================================
- */
+
 
 // Création de l'objet bibliothèque complet
 const bibliotheque = {
@@ -22,7 +15,7 @@ const bibliotheque = {
     ajouterLivre(livre) {
         // Vérifier que toutes les propriétés sont présentes
         if (!livre.titre || !livre.auteur || !livre.annee) {
-            console.log("❌ Erreur : propriétés manquantes (titre, auteur, annee requis)");
+            console.log(" Erreur : propriétés manquantes (titre, auteur, annee requis)");
             return false;
         }
         
@@ -30,48 +23,48 @@ const bibliotheque = {
         livre.disponible = livre.disponible !== undefined ? livre.disponible : true;
         
         this.livres.push(livre);
-        console.log(`✅ "${livre.titre}" par ${livre.auteur} ajouté à la bibliothèque`);
+        console.log(` "${livre.titre}" par ${livre.auteur} ajouté à la bibliothèque`);
         return true;
     },
     
     // Méthode pour rechercher par titre
     rechercherParTitre(titre) {
-        console.log(`\n🔍 Recherche de : "${titre}"`);
+        console.log(`\n Recherche de : "${titre}"`);
         
         const livre = this.livres.find(l => 
             l.titre.toLowerCase().includes(titre.toLowerCase())
         );
         
         if (livre) {
-            console.log("\n📖 Livre trouvé :");
+            console.log("\n Livre trouvé :");
             console.log(`   Titre : ${livre.titre}`);
             console.log(`   Auteur : ${livre.auteur}`);
             console.log(`   Année : ${livre.annee}`);
-            console.log(`   Statut : ${livre.disponible ? "✅ Disponible" : "❌ Emprunté"}`);
+            console.log(`   Statut : ${livre.disponible ? " Disponible" : " Emprunté"}`);
             return livre;
         } else {
-            console.log("❌ Aucun livre trouvé avec ce titre");
+            console.log(" Aucun livre trouvé avec ce titre");
             return null;
         }
     },
     
     // Méthode pour rechercher par auteur
     rechercherParAuteur(auteur) {
-        console.log(`\n🔍 Recherche des livres de : ${auteur}`);
+        console.log(`\n Recherche des livres de : ${auteur}`);
         
         const livresTrouves = this.livres.filter(l => 
             l.auteur.toLowerCase().includes(auteur.toLowerCase())
         );
         
         if (livresTrouves.length > 0) {
-            console.log(`\n📚 ${livresTrouves.length} livre(s) trouvé(s) :`);
+            console.log(`\n ${livresTrouves.length} livre(s) trouvé(s) :`);
             livresTrouves.forEach((livre, index) => {
                 console.log(`\n${index + 1}. ${livre.titre} (${livre.annee})`);
-                console.log(`   Statut : ${livre.disponible ? "✅ Disponible" : "❌ Emprunté"}`);
+                console.log(`   Statut : ${livre.disponible ? " Disponible" : " Emprunté"}`);
             });
             return livresTrouves;
         } else {
-            console.log("❌ Aucun livre trouvé pour cet auteur");
+            console.log(" Aucun livre trouvé pour cet auteur");
             return [];
         }
     },
@@ -83,17 +76,17 @@ const bibliotheque = {
         );
         
         if (!livre) {
-            console.log(`❌ Le livre "${titre}" n'existe pas dans la bibliothèque`);
+            console.log(` Le livre "${titre}" n'existe pas dans la bibliothèque`);
             return false;
         }
         
         if (!livre.disponible) {
-            console.log(`⚠️ "${livre.titre}" est déjà emprunté`);
+            console.log(` "${livre.titre}" est déjà emprunté`);
             return false;
         }
         
         livre.disponible = false;
-        console.log(`✅ "${livre.titre}" emprunté avec succès`);
+        console.log(` "${livre.titre}" emprunté avec succès`);
         return true;
     },
     
@@ -104,17 +97,17 @@ const bibliotheque = {
         );
         
         if (!livre) {
-            console.log(`❌ Le livre "${titre}" n'existe pas dans la bibliothèque`);
+            console.log(` Le livre "${titre}" n'existe pas dans la bibliothèque`);
             return false;
         }
         
         if (livre.disponible) {
-            console.log(`⚠️ "${livre.titre}" n'était pas emprunté`);
+            console.log(` "${livre.titre}" n'était pas emprunté`);
             return false;
         }
         
         livre.disponible = true;
-        console.log(`✅ "${livre.titre}" rendu avec succès`);
+        console.log(` "${livre.titre}" rendu avec succès`);
         return true;
     },
     
@@ -122,7 +115,7 @@ const bibliotheque = {
     livresDisponibles() {
         const disponibles = this.livres.filter(l => l.disponible);
         
-        console.log(`\n📗 LIVRES DISPONIBLES (${disponibles.length}) :`);
+        console.log(`\n LIVRES DISPONIBLES (${disponibles.length}) :`);
         
         if (disponibles.length === 0) {
             console.log("Aucun livre disponible actuellement");
@@ -158,19 +151,19 @@ const bibliotheque = {
             livresParAuteur[livre.auteur] = (livresParAuteur[livre.auteur] || 0) + 1;
         });
         
-        console.log("\n" + "=".repeat(70));
-        console.log(`📊 STATISTIQUES - ${this.nom.toUpperCase()}`);
-        console.log("=".repeat(70));
-        console.log(`\n📚 Collection :`);
+        console.log("\n" + "".repeat(70));
+        console.log(` STATISTIQUES - ${this.nom.toUpperCase()}`);
+        console.log("".repeat(70));
+        console.log(`\n Collection :`);
         console.log(`   Total de livres : ${total}`);
         console.log(`   Livres disponibles : ${disponibles} (${((disponibles/total)*100).toFixed(1)}%)`);
         console.log(`   Livres empruntés : ${empruntes} (${tauxEmprunt.toFixed(1)}%)`);
         
-        console.log(`\n📅 Période :`);
+        console.log(`\n Période :`);
         console.log(`   Livre le plus ancien : "${plusAncien.titre}" (${plusAncien.annee})`);
         console.log(`   Livre le plus récent : "${plusRecent.titre}" (${plusRecent.annee})`);
         
-        console.log(`\n✍️ Auteurs :`);
+        console.log(`\n Auteurs :`);
         console.log(`   Nombre d'auteurs différents : ${Object.keys(livresParAuteur).length}`);
         console.log(`   Top 3 auteurs :`);
         
@@ -182,7 +175,7 @@ const bibliotheque = {
             console.log(`      ${index + 1}. ${auteur} : ${nombre} livre(s)`);
         });
         
-        console.log("=".repeat(70) + "\n");
+        console.log("".repeat(70) + "\n");
     },
     
     // Méthode pour supprimer un livre
@@ -193,41 +186,39 @@ const bibliotheque = {
         
         if (index !== -1) {
             const livreSupprime = this.livres.splice(index, 1)[0];
-            console.log(`🗑️ "${livreSupprime.titre}" supprimé de la bibliothèque`);
+            console.log(` "${livreSupprime.titre}" supprimé de la bibliothèque`);
             return true;
         } else {
-            console.log(`❌ Livre "${titre}" non trouvé`);
+            console.log(` Livre "${titre}" non trouvé`);
             return false;
         }
     },
     
     // Méthode pour afficher tous les livres
     afficherTousLesLivres() {
-        console.log(`\n📚 CATALOGUE COMPLET - ${this.nom}`);
-        console.log("=".repeat(70));
+        console.log(`\n CATALOGUE COMPLET - ${this.nom}`);
+        console.log("".repeat(70));
         
         this.livres.forEach((livre, index) => {
-            const statut = livre.disponible ? "✅ Disponible" : "❌ Emprunté";
+            const statut = livre.disponible ? " Disponible" : " Emprunté";
             console.log(`\n${index + 1}. ${livre.titre}`);
             console.log(`   Auteur : ${livre.auteur}`);
             console.log(`   Année : ${livre.annee}`);
             console.log(`   ${statut}`);
         });
         
-        console.log("\n" + "=".repeat(70));
+        console.log("\n" + "".repeat(70));
     }
 };
 
-// ========================================
-// TESTS DU SYSTÈME
-// ========================================
-console.log("=== TEST DU SYSTÈME DE BIBLIOTHÈQUE ===\n");
+
+console.log(" TEST DU SYSTÈME DE BIBLIOTHÈQUE \n");
 
 // Afficher tous les livres
 bibliotheque.afficherTousLesLivres();
 
 // Ajouter un nouveau livre
-console.log("\n--- Ajout de livres ---");
+console.log("\n Ajout de livres");
 bibliotheque.ajouterLivre({
     titre: "Les Misérables",
     auteur: "Victor Hugo",
@@ -247,7 +238,7 @@ bibliotheque.rechercherParTitre("1984");
 bibliotheque.rechercherParAuteur("Victor Hugo");
 
 // Emprunter des livres
-console.log("\n--- Emprunts ---");
+console.log("\n Emprunts ");
 bibliotheque.emprunter("1984");
 bibliotheque.emprunter("Le Petit Prince");
 bibliotheque.emprunter("1984");  // Déjà emprunté
@@ -256,7 +247,7 @@ bibliotheque.emprunter("1984");  // Déjà emprunté
 bibliotheque.livresDisponibles();
 
 // Rendre un livre
-console.log("\n--- Retours ---");
+console.log("\n Retours ");
 bibliotheque.rendre("1984");
 bibliotheque.rendre("Harry Potter à l'école des sorciers");
 
@@ -268,10 +259,10 @@ bibliotheque.livresDisponibles();
 
 /*
  * EXPLICATIONS :
- * ==============
+
  * 
  * MÉTHODES DE TABLEAU UTILISÉES :
- * ================================
+ 
  * - find() : trouve le premier élément qui correspond
  * - filter() : filtre les éléments selon une condition
  * - findIndex() : trouve l'index du premier élément qui correspond
@@ -283,41 +274,41 @@ bibliotheque.livresDisponibles();
  * - slice() : extrait une portion du tableau
  * 
  * MÉTHODES DE CHAÎNES :
- * =====================
+
  * - toLowerCase() : convertit en minuscules pour comparaison insensible à la casse
  * - includes() : vérifie si une chaîne contient une sous-chaîne
  * - toUpperCase() : convertit en majuscules
  * 
  * OPÉRATEUR TERNAIRE :
- * ====================
+
  * condition ? valeurSiVrai : valeurSiFaux
  * Exemple : livre.disponible ? "Disponible" : "Emprunté"
  * 
  * OPÉRATEUR LOGIQUE || :
- * ======================
+
  * valeur1 || valeur2
  * Retourne valeur1 si elle est truthy, sinon valeur2
  * Exemple : compteur[auteur] || 0
  * 
  * DESTRUCTURATION :
- * =================
+ 
  * const [cle, valeur] = paire
  * Extrait automatiquement les valeurs d'un tableau
  * 
  * FONCTIONNALITÉS IMPLÉMENTÉES :
- * ===============================
- * ✅ Ajouter des livres avec validation
- * ✅ Rechercher par titre (recherche partielle)
- * ✅ Rechercher par auteur (recherche partielle)
- * ✅ Emprunter avec vérifications
- * ✅ Rendre avec vérifications
- * ✅ Lister les livres disponibles
- * ✅ Statistiques complètes
- * ✅ Supprimer un livre
- * ✅ Afficher le catalogue complet
+ 
+ *  Ajouter des livres avec validation
+ *  Rechercher par titre (recherche partielle)
+ *  Rechercher par auteur (recherche partielle)
+ *  Emprunter avec vérifications
+ *  Rendre avec vérifications
+ *  Lister les livres disponibles
+ *  Statistiques complètes
+ *  Supprimer un livre
+ *  Afficher le catalogue complet
  * 
  * AMÉLIORATIONS POSSIBLES :
- * =========================
+ 
  * - Ajouter une date d'emprunt et limite de retour
  * - Gérer plusieurs exemplaires d'un même livre
  * - Système de réservation

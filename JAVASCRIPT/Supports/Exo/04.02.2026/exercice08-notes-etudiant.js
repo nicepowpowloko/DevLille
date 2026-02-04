@@ -50,9 +50,9 @@ const etudiant = {
     
     // Méthode pour afficher le bulletin
     afficherBulletin() {
-        console.log("\n" + "=".repeat(60));
+        console.log("\n" + "".repeat(60));
         console.log(` BULLETIN DE ${this.prenom.toUpperCase()} ${this.nom.toUpperCase()}`);
-        console.log("=".repeat(60));
+        console.log("".repeat(60));
         
         if (this.notes.length === 0) {
             console.log("Aucune note enregistrée");
@@ -68,7 +68,7 @@ const etudiant = {
             console.log(`Note maximale : ${noteMax}/20`);
         }
         
-        console.log("=".repeat(60) + "\n");
+        console.log("".repeat(60) + "\n");
     },
     
     // Méthode pour supprimer une note

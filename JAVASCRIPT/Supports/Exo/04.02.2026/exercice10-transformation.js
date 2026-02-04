@@ -1,11 +1,4 @@
-/*
- * ============================================
- * EXERCICE 10 : Parcourir et transformer des objets
- * ============================================
- * Niveau : Intermédiaire
- * Real Conseil - Formation DWWM
- * ============================================
- */
+
 
 // Objet produit de départ
 const produit = {
@@ -15,13 +8,11 @@ const produit = {
     stock: 15
 };
 
-console.log("=== OBJET PRODUIT INITIAL ===");
+console.log(" OBJET PRODUIT INITIAL ");
 console.log(produit);
 
-// ========================================
-// 1. AFFICHER TOUTES LES CLÉS
-// ========================================
-console.log("\n=== 1. CLÉS DE L'OBJET ===");
+
+console.log("\n  1. CLÉS DE L'OBJET ");
 const cles = Object.keys(produit);
 console.log("Méthode 1 - Object.keys() :");
 console.log(cles);  // ["nom", "prix", "tva", "stock"]
@@ -33,10 +24,8 @@ for (let cle in produit) {
 }
 console.log(clesBoucle);
 
-// ========================================
-// 2. AFFICHER TOUTES LES VALEURS
-// ========================================
-console.log("\n=== 2. VALEURS DE L'OBJET ===");
+
+console.log("\n 2. VALEURS DE L'OBJET");
 const valeurs = Object.values(produit);
 console.log("Méthode 1 - Object.values() :");
 console.log(valeurs);  // ["Ordinateur portable", 899, 0.2, 15]
@@ -48,10 +37,8 @@ for (let cle in produit) {
 }
 console.log(valeursBoucle);
 
-// ========================================
-// 3. AFFICHER TOUTES LES PAIRES CLÉ-VALEUR
-// ========================================
-console.log("\n=== 3. PAIRES CLÉ-VALEUR ===");
+
+console.log("\n 3. PAIRES CLÉ-VALEUR ");
 
 console.log("Méthode 1 - Object.entries() :");
 const paires = Object.entries(produit);
@@ -73,10 +60,8 @@ for (let cle in produit) {
     console.log(`${cle} = ${produit[cle]}`);
 }
 
-// ========================================
-// 4. CALCULER LE PRIX TTC
-// ========================================
-console.log("\n=== 4. CALCUL DU PRIX TTC ===");
+
+console.log("\n 4. CALCUL DU PRIX TTC ");
 
 // Version 1 : Fonction simple
 function calculerPrixTTC(produit) {
@@ -108,10 +93,9 @@ console.log(`Prix HT : ${calculDetaille.prixHT.toFixed(2)}€`);
 console.log(`Montant TVA (${(calculDetaille.tauxTVA * 100)}%) : ${calculDetaille.montantTVA.toFixed(2)}€`);
 console.log(`Prix TTC : ${calculDetaille.prixTTC.toFixed(2)}€`);
 
-// ========================================
-// 5. CRÉER UN OBJET AVEC CLÉS EN MAJUSCULES
-// ========================================
-console.log("\n=== 5. TRANSFORMATION DES CLÉS ===");
+
+
+console.log("\n  5. TRANSFORMATION DES CLÉS ");
 
 // Version 1 : Boucle for...in
 function clesMajuscules(obj) {
@@ -149,10 +133,8 @@ function clesMajusculesFromEntries(obj) {
 console.log("\nMéthode 3 - Object.entries() + fromEntries :");
 console.log(clesMajusculesFromEntries(produit));
 
-// ========================================
-// FONCTIONS BONUS : AUTRES TRANSFORMATIONS
-// ========================================
-console.log("\n=== TRANSFORMATIONS BONUS ===");
+
+console.log("\n TRANSFORMATIONS BONUS ");
 
 // Fonction pour doubler toutes les valeurs numériques
 function doublerValeursNumeriques(obj) {
@@ -225,48 +207,48 @@ console.log("Copie :", copieProduit.prix);
 
 /*
  * EXPLICATIONS :
- * ==============
+ 
  * 
  * MÉTHODES OBJECT :
- * =================
+ 
  * - Object.keys(obj) : retourne un tableau des clés
  * - Object.values(obj) : retourne un tableau des valeurs
  * - Object.entries(obj) : retourne un tableau de paires [clé, valeur]
  * - Object.fromEntries(arr) : crée un objet depuis un tableau de paires
  * 
  * BOUCLES :
- * =========
+
  * - for...in : parcourt les clés d'un objet
  * - for...of : parcourt les valeurs d'un itérable (tableau, Map, Set)
  * - forEach : méthode des tableaux pour parcourir chaque élément
  * 
  * TRANSFORMATIONS :
- * =================
+
  * - map() : transforme chaque élément d'un tableau
  * - reduce() : réduit un tableau à une seule valeur
  * - filter() : filtre les éléments d'un tableau
  * 
  * DESTRUCTURATION :
- * =================
+ 
  * const [cle, valeur] = ["nom", "Ordinateur"]
  * Permet d'extraire directement les valeurs d'un tableau
  * 
  * SPREAD OPERATOR (...) :
- * =======================
+
  * { ...objet } crée une copie superficielle de l'objet
  * 
  * MÉTHODES DE CHAÎNES :
- * =====================
+ 
  * - toUpperCase() : convertit en majuscules
  * - toLowerCase() : convertit en minuscules
  * 
  * TYPEOF :
- * ========
+
  * typeof valeur retourne le type de la valeur
  * Types possibles : "string", "number", "boolean", "object", "function", "undefined"
  * 
  * AMÉLIORATIONS POSSIBLES :
- * =========================
+ 
  * - Gérer les objets imbriqués
  * - Valider les données avant transformation
  * - Gérer les cas d'erreur

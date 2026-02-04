@@ -26,7 +26,7 @@ const voiture = {
     // Méthode pour faire le plein
     faireLePlein() {
         this.reservoir = 50;
-        console.log("⛽ Plein effectué ! Réservoir : 50 L");
+        console.log(" Plein effectué ! Réservoir : 50 L");
     },
     
     // Méthode pour afficher toutes les informations
