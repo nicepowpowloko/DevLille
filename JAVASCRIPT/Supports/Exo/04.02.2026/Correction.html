@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solutions Exercices JavaScript - Objets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .exercises {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .exercise-card {
+            background: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .exercise-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .exercise-card h3 {
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+
+        .exercise-card p {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .badge.debutant {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.intermediaire {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.avance {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .console-output {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .console-output.active {
+            display: block;
+        }
+
+        .button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        .button:hover {
+            background: #5568d3;
+        }
+
+        .button-clear {
+            background: #dc3545;
+            margin-left: 10px;
+        }
+
+        .button-clear:hover {
+            background: #c82333;
+        }
+
+        .controls {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Solutions des Exercices JavaScript</h1>
+            <p>Les Objets en JavaScript - Formation DWWM</p>
+        </header>
+
+        <div class="content">
+        
+
+            <div class="controls">
+                <button class="button" onclick="clearConsoleOutput()"> Effacer la console</button>
+                <button class="button" onclick="location.reload()"> Recharger la page</button>
+            </div>
+
+            <div id="console-output" class="console-output">
+                <strong>CONSOLE JavaScript</strong>
+                <hr style="margin: 10px 0; border-color: #555;">
+            </div>
+
+            <!-- Niveau Débutant -->
+            <div class="section">
+                <h2>Niveau Débutant</h2>
+                <div class="exercises">
+                    <div class="exercise-card" onclick="runExercise('exercice01-livre.js')">
+                        <span class="badge debutant">Débutant</span>
+                        <h3>Exercice 1 : Livre</h3>
+                        <p>Créer un objet "livre" avec ses propriétés et les afficher.</p>
+                    </div>
+
+                    <div class="exercise-card" onclick="runExercise('exercice02-etudiant.js')">
+                        <span class="badge debutant">Débutant</span>
+                        <h3>Exercice 2 : Étudiant</h3>
+                        <p>Objet "étudiant" avec une méthode sePresenter().</p>
+                    </div>
+
+                    <div class="exercise-card" onclick="runExercise('exercice03-produit.js')">
+                        <span class="badge debutant">Débutant</span>
+                        <h3>Exercice 3 : Produit</h3>
+                        <p>Modifier un objet en ajoutant et modifiant des propriétés.</p>
+                    </div>
+
+                    <div class="exercise-card" onclick="runExercise('exercice04-compte-bancaire.js')">
+                        <span class="badge debutant">Débutant</span>
+                        <h3>Exercice 4 : Compte bancaire</h3>
+                        <p>Gérer un compte avec dépôts et retraits.</p>
+                    </div>
+
+                    <div class="exercise-card" onclick="runExercise('exercice05-calculatrice.js')">
+                        <span class="badge debutant">Débutant</span>
+                        <h3>Exercice 5 : Calculatrice</h3>
+                        <p>Objet avec méthodes pour opérations mathématiques.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Niveau Intermédiaire -->
+            <div class="section">
+                <h2> Niveau Intermédiaire</h2>
+                <div class="exercises">
+                    <div class="exercise-card" onclick="runExercise('exercice06-voiture.js')">
+                        <span class="badge intermediaire">Intermédiaire</span>
+                        <h3>Exercice 6 : Voiture</h3>
+                        <p>Gestion d'une voiture avec kilométrage et carburant.</p>
+                    </div>
+
+                    <div class="exercise-card" onclick="runExercise('exercice07-contacts.js')">
+                        <span class="badge intermediaire">Intermédiaire</span>
+                        <h3>Exercice 7 : Contacts</h3>
+                        <p>Gérer une liste de contacts avec recherche.</p>
+                    </div>
+
+                    <div class="exercise-card" onclick="runExercise('exercice08-notes-etudiant.js')">
+                        <span class="badge intermediaire">Intermédiaire</span>
+                        <h3>Exercice 8 : Notes</h3>
+                        <p>Système de gestion des notes avec moyennes et mentions.</p>
+                    </div>
+
+                    <div class="exercise-card" onclick="runExercise('exercice09-panier.js')">
+                        <span class="badge intermediaire">Intermédiaire</span>
+                        <h3>Exercice 9 : Panier</h3>
+                        <p>Panier d'achat e-commerce complet.</p>
+                    </div>
+
+                    <div class="exercise-card" onclick="runExercise('exercice10-transformation.js')">
+                        <span class="badge intermediaire">Intermédiaire</span>
+                        <h3>Exercice 10 : Transformations</h3>
+                        <p>Parcourir et transformer des objets.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Niveau Avancé -->
+            <div class="section">
+                <h2> Niveau Avancé</h2>
+                <div class="exercises">
+                    <div class="exercise-card" onclick="runExercise('exercice11-bibliotheque.js')">
+                        <span class="badge avance">Avancé</span>
+                        <h3>Exercice 11 : Bibliothèque</h3>
+                        <p>Système complet de gestion de bibliothèque.</p>
+                    </div>
+
+                    <div class="exercise-card" onclick="runExercise('exercice12-ecole.js')">
+                        <span class="badge avance">Avancé</span>
+                        <h3>Exercice 12 : École</h3>
+                        <p>Gestion d'école (à venir)</p>
+                    </div>
+
+                    <div class="exercise-card" onclick="runExercise('exercice13-banque.js')">
+                        <span class="badge avance">Avancé</span>
+                        <h3>Exercice 13 : Banque</h3>
+                        <p>Application bancaire (à venir)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Solutions des Exercices JavaScript - Les Objets</strong></p>
+            <p>Real Conseil | Formateur : Thomas</p>
+            <p>Année 2025 | Formation DWWM</p>
+        </footer>
+    </div>
+
+    <script>
+        // Capturer les console.log pour les afficher dans la page
+        const originalLog = console.log;
+        const consoleOutput = document.getElementById('console-output');
+
+        function clearConsoleOutput() {
+            consoleOutput.innerHTML = '<strong>CONSOLE JavaScript</strong><hr style="margin: 10px 0; border-color: #555;">';
+            consoleOutput.classList.remove('active');
+        }
+
+        // Surcharger console.log
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            
+            consoleOutput.classList.add('active');
+            const message = args.map(arg => {
+                if (typeof arg === 'object') {
+                    return JSON.stringify(arg, null, 2);
+                }
+                return String(arg);
+            }).join(' ');
+            
+            const line = document.createElement('div');
+            line.style.marginBottom = '5px';
+            line.textContent = message;
+            consoleOutput.appendChild(line);
+            
+            // Scroll vers le bas
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        };
+
+        // Fonction pour charger et exécuter un exercice
+        async function runExercise(filename) {
+            clearConsoleOutput();
+            console.log(`\n${''.repeat(70)}`);
+            console.log(`EXÉCUTION : ${filename}`);
+            console.log(''.repeat(70) + '\n');
+            
+            try {
+                const response = await fetch(filename);
+                const code = await response.text();
+                
+                // Exécuter le code
+                eval(code);
+                
+                console.log(`\n${''.repeat(70)}`);
+                console.log(' ');
+                console.log(''.repeat(70));
+            } catch (error) {
+                console.log(`\nERREUR : ${error.message}`);
+                originalLog.error('Détails de l\'erreur:', error);
+            }
+        }
+
+      
+    </script>
+</body>
+</html>
