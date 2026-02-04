@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercices - Les Objets en JavaScript - DWWM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #2C3F77 0%, #A0866B 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2C3F77 0%, #A0866B 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: #2C3F77;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: block;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background: #A0866B;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 50px;
+            scroll-margin-top: 60px;
+        }
+
+        h2 {
+            color: #2C3F77;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #A0866B;
+        }
+
+        h3 {
+            color: #2C3F77;
+            font-size: 1.5em;
+            margin: 25px 0 15px;
+        }
+
+        h4 {
+            color: #2C3F77;
+            font-size: 1.2em;
+            margin: 20px 0 10px;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 5px solid #2C3F77;;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .exercise {
+            background: #f4f4f2;
+            border: 2px solid #2C3F77;;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .exercise h3 {
+            color: #2C3F77;
+            margin-top: 0;
+        }
+
+        .exercise-number {
+            display: inline-block;
+            background: #A0866B;
+            color: rgb(18, 18, 18);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .difficulty {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .difficulty.easy {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .difficulty.medium {
+            background: #fff3cd;
+            color: #A0866B;
+        }
+
+        .difficulty.hard {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .example {
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .result-box {
+            background: #e9ecef;
+            border: 1px solid #adb5bd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .tips {
+            background: #d1ecf1;
+            border-left: 5px solid #0c5460;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        @media screen and (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Exercices JavaScript : Les Objets</h1>
+            <p>Titre Professionnel Développeur Web et Web Mobile</p>
+            <p>Real Conseil - Thomas</p>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#rappels">Rappels</a></li>
+                <li><a href="#debutant">Débutant</a></li>
+                <li><a href="#intermediaire">Intermédiaire</a></li>
+                <li><a href="#avance">Avancé</a></li>
+                <li><a href="#projets">Projets</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <!-- RAPPELS THÉORIQUES -->
+            <section id="rappels">
+                <h2> Rappels Théoriques</h2>
+
+                <h3>Qu'est-ce qu'un objet en JavaScript ?</h3>
+                <p>Un <strong>objet</strong> est une structure de données qui permet de stocker plusieurs valeurs sous forme de paires <strong>clé-valeur</strong>. C'est l'un des types de données les plus importants en JavaScript.</p>
+
+                <div class="info-box">
+                    <h4>Analogie</h4>
+                    <p>Imaginez un objet comme une <strong>fiche d'identité</strong> :</p>
+                    <ul>
+                        <li><strong>Nom</strong> : Dupont</li>
+                        <li><strong>Prénom</strong> : Marie</li>
+                        <li><strong>Âge</strong> : 25</li>
+                        <li><strong>Ville</strong> : Lille</li>
+                    </ul>
+                    <p>Chaque information (nom, prénom, etc.) est une <strong>propriété</strong> de l'objet "personne".</p>
+                </div>
+
+                <h3>Syntaxe de base</h3>
+                <div class="code-block"><code>// Création d'un objet littéral
+const personne = {
+    nom: "Dupont",
+    prenom: "Marie",
+    age: 25,
+    ville: "Lille"
+};
+
+// Accès aux propriétés
+console.log(personne.nom);        // "Dupont" (notation pointée)
+console.log(personne["prenom"]);  // "Marie" (notation entre crochets)</code></div>
+
+                <h3>Méthodes d'un objet</h3>
+                <p>Un objet peut contenir des <strong>fonctions</strong> appelées <strong>méthodes</strong>.</p>
+                <div class="code-block"><code>const personne = {
+    nom: "Dupont",
+    prenom: "Marie",
+    age: 25,
+    
+    // Méthode : fonction dans un objet
+    sePresenter: function() {
+        return `Bonjour, je m'appelle ${this.prenom} ${this.nom}`;
+    },
+    
+    // Syntaxe moderne (ES6)
+    vieillir() {
+        this.age++;
+    }
+};
+
+console.log(personne.sePresenter()); // "Bonjour, je m'appelle Marie Dupont"
+personne.vieillir();
+console.log(personne.age); // 26</code></div>
+
+                <h3>Le mot-clé "this"</h3>
+                <div class="warning-box">
+                    <h4> Important !</h4>
+                    <p>Dans une méthode d'objet, <strong>this</strong> fait référence à l'objet lui-même.</p>
+                </div>
+
+                <h3>Manipulation des objets</h3>
+                <div class="code-block"><code>const voiture = {
+    marque: "Peugeot",
+    modele: "308"
+};
+
+// Ajouter une propriété
+voiture.annee = 2023;
+voiture["couleur"] = "rouge";
+
+// Modifier une propriété
+voiture.marque = "Renault";
+
+// Supprimer une propriété
+delete voiture.modele;
+
+// Vérifier l'existence d'une propriété
+console.log("marque" in voiture); // true
+console.log(voiture.hasOwnProperty("annee")); // true</code></div>
+
+                <h3>Méthodes utiles pour les objets</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Méthode</th>
+                            <th>Description</th>
+                            <th>Exemple</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Object.keys()</strong></td>
+                            <td>Retourne un tableau des clés</td>
+                            <td>Object.keys(personne) → ["nom", "prenom", "age"]</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Object.values()</strong></td>
+                            <td>Retourne un tableau des valeurs</td>
+                            <td>Object.values(personne) → ["Dupont", "Marie", 25]</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Object.entries()</strong></td>
+                            <td>Retourne un tableau de paires [clé, valeur]</td>
+                            <td>Object.entries(personne) → [["nom", "Dupont"], ...]</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Object.assign()</strong></td>
+                            <td>Copie les propriétés d'un objet vers un autre</td>
+                            <td>Object.assign({}, personne)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Parcourir un objet</h3>
+                <div class="code-block"><code>const personne = {
+    nom: "Dupont",
+    prenom: "Marie",
+    age: 25
+};
+
+// Boucle for...in
+for (let propriete in personne) {
+    console.log(`${propriete}: ${personne[propriete]}`);
+}
+// Affiche :
+// nom: Dupont
+// prenom: Marie
+// age: 25
+
+// Avec Object.keys()
+Object.keys(personne).forEach(cle => {
+    console.log(`${cle}: ${personne[cle]}`);
+});
+
+// Avec Object.entries()
+Object.entries(personne).forEach(([cle, valeur]) => {
+    console.log(`${cle}: ${valeur}`);
+});</code></div>
+            </section>
+
+            <!-- EXERCICES DÉBUTANT -->
+            <section id="debutant">
+                <h2>Exercices Niveau Débutant</h2>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 1</div>
+                    <span class="difficulty easy">Facile</span>
+                    <h3>Créer un objet "livre"</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un objet <code>livre</code> avec les propriétés suivantes :
+                            <ul>
+                                <li><strong>titre</strong> : "Le Petit Prince"</li>
+                                <li><strong>auteur</strong> : "Antoine de Saint-Exupéry"</li>
+                                <li><strong>annee</strong> : 1943</li>
+                                <li><strong>pages</strong> : 96</li>
+                            </ul>
+                        </li>
+                        <li>Affichez le titre du livre dans la console</li>
+                        <li>Affichez l'auteur du livre dans la console</li>
+                        <li>Affichez toutes les propriétés de l'objet</li>
+                    </ol>
+
+                    <div class="tips">
+                        <h4>Conseils</h4>
+                        <ul>
+                            <li>Utilisez la syntaxe des objets littéraux : <code>{ clé: valeur }</code></li>
+                            <li>Pour afficher, utilisez <code>console.log()</code></li>
+                        </ul>
+                    </div>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const livre = {
+    titre: "Le Petit Prince",
+    auteur: "Antoine de Saint-Exupéry",
+    annee: 1943,
+    pages: 96
+};
+
+console.log(livre.titre);   // "Le Petit Prince"
+console.log(livre.auteur);  // "Antoine de Saint-Exupéry"
+console.log(livre);         // Affiche tout l'objet</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 2</div>
+                    <span class="difficulty easy">Facile</span>
+                    <h3>Créer un objet "étudiant" avec méthode</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un objet <code>etudiant</code> avec :
+                            <ul>
+                                <li><strong>nom</strong> : votre choix</li>
+                                <li><strong>prenom</strong> : votre choix</li>
+                                <li><strong>age</strong> : votre choix</li>
+                                <li><strong>formation</strong> : "DWWM"</li>
+                            </ul>
+                        </li>
+                        <li>Ajoutez une méthode <code>sePresenter()</code> qui retourne une phrase du type : "Je m'appelle [prénom] [nom], j'ai [âge] ans et je suis en formation [formation]"</li>
+                        <li>Appelez cette méthode et affichez le résultat</li>
+                    </ol>
+
+                    <div class="tips">
+                        <h4>Conseils</h4>
+                        <ul>
+                            <li>Utilisez le mot-clé <code>this</code> pour accéder aux propriétés de l'objet</li>
+                            <li>Utilisez les template literals (backticks) pour construire la phrase</li>
+                        </ul>
+                    </div>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const etudiant = {
+    nom: "Martin",
+    prenom: "Lucas",
+    age: 22,
+    formation: "DWWM",
+    
+    sePresenter() {
+        return `Je m'appelle ${this.prenom} ${this.nom}, j'ai ${this.age} ans et je suis en formation ${this.formation}`;
+    }
+};
+
+console.log(etudiant.sePresenter());
+// "Je m'appelle Lucas Martin, j'ai 22 ans et je suis en formation DWWM"</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 3</div>
+                    <span class="difficulty easy">Facile</span>
+                    <h3>Modifier un objet "produit"</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un objet <code>produit</code> avec :
+                            <ul>
+                                <li><strong>nom</strong> : "Ordinateur portable"</li>
+                                <li><strong>prix</strong> : 899</li>
+                                <li><strong>enStock</strong> : true</li>
+                            </ul>
+                        </li>
+                        <li>Ajoutez une propriété <code>marque</code> avec la valeur "Dell"</li>
+                        <li>Modifiez le prix à 799</li>
+                        <li>Ajoutez une propriété <code>quantite</code> avec la valeur 5</li>
+                        <li>Affichez l'objet complet</li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const produit = {
+    nom: "Ordinateur portable",
+    prix: 899,
+    enStock: true
+};
+
+// Ajouter une propriété
+produit.marque = "Dell";
+
+// Modifier une propriété
+produit.prix = 799;
+
+// Ajouter une autre propriété
+produit.quantite = 5;
+
+console.log(produit);
+/*
+{
+    nom: "Ordinateur portable",
+    prix: 799,
+    enStock: true,
+    marque: "Dell",
+    quantite: 5
+}
+*/</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 4</div>
+                    <span class="difficulty easy">Facile</span>
+                    <h3>Compte bancaire simple</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un objet <code>compteBancaire</code> avec :
+                            <ul>
+                                <li><strong>titulaire</strong> : un nom</li>
+                                <li><strong>solde</strong> : 1000</li>
+                            </ul>
+                        </li>
+                        <li>Ajoutez une méthode <code>deposer(montant)</code> qui ajoute le montant au solde</li>
+                        <li>Ajoutez une méthode <code>retirer(montant)</code> qui retire le montant du solde</li>
+                        <li>Ajoutez une méthode <code>afficherSolde()</code> qui affiche le solde actuel</li>
+                        <li>Testez vos méthodes :
+                            <ul>
+                                <li>Déposez 500€</li>
+                                <li>Retirez 300€</li>
+                                <li>Affichez le solde final</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const compteBancaire = {
+    titulaire: "Marie Dubois",
+    solde: 1000,
+    
+    deposer(montant) {
+        this.solde += montant;
+        console.log(`Dépôt de ${montant}€. Nouveau solde : ${this.solde}€`);
+    },
+    
+    retirer(montant) {
+        this.solde -= montant;
+        console.log(`Retrait de ${montant}€. Nouveau solde : ${this.solde}€`);
+    },
+    
+    afficherSolde() {
+        console.log(`Solde actuel : ${this.solde}€`);
+    }
+};
+
+compteBancaire.deposer(500);    // Dépôt de 500€. Nouveau solde : 1500€
+compteBancaire.retirer(300);    // Retrait de 300€. Nouveau solde : 1200€
+compteBancaire.afficherSolde(); // Solde actuel : 1200€</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 5</div>
+                    <span class="difficulty easy">Facile</span>
+                    <h3>Calculatrice d'objets</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un objet <code>calculatrice</code> avec les méthodes suivantes :
+                            <ul>
+                                <li><code>additionner(a, b)</code> : retourne a + b</li>
+                                <li><code>soustraire(a, b)</code> : retourne a - b</li>
+                                <li><code>multiplier(a, b)</code> : retourne a * b</li>
+                                <li><code>diviser(a, b)</code> : retourne a / b</li>
+                            </ul>
+                        </li>
+                        <li>Testez chaque méthode avec des valeurs de votre choix</li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const calculatrice = {
+    additionner(a, b) {
+        return a + b;
+    },
+    
+    soustraire(a, b) {
+        return a - b;
+    },
+    
+    multiplier(a, b) {
+        return a * b;
+    },
+    
+    diviser(a, b) {
+        return a / b;
+    }
+};
+
+console.log(calculatrice.additionner(10, 5));  // 15
+console.log(calculatrice.soustraire(10, 5));   // 5
+console.log(calculatrice.multiplier(10, 5));   // 50
+console.log(calculatrice.diviser(10, 5));      // 2</code></div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- EXERCICES INTERMÉDIAIRE -->
+            <section id="intermediaire">
+                <h2>Exercices Niveau Intermédiaire</h2>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 6</div>
+                    <span class="difficulty medium">Moyen</span>
+                    <h3>Gestion d'une voiture</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un objet <code>voiture</code> avec :
+                            <ul>
+                                <li><strong>marque</strong> : "Peugeot"</li>
+                                <li><strong>modele</strong> : "308"</li>
+                                <li><strong>annee</strong> : 2022</li>
+                                <li><strong>kilometrage</strong> : 15000</li>
+                                <li><strong>reservoir</strong> : 50 (litres)</li>
+                            </ul>
+                        </li>
+                        <li>Ajoutez une méthode <code>rouler(km)</code> qui :
+                            <ul>
+                                <li>Ajoute les km au kilométrage</li>
+                                <li>Retire du carburant (1 litre pour 15 km)</li>
+                                <li>Affiche un message avec les nouvelles valeurs</li>
+                            </ul>
+                        </li>
+                        <li>Ajoutez une méthode <code>faireLePlein()</code> qui remet le réservoir à 50 litres</li>
+                        <li>Ajoutez une méthode <code>afficherInfos()</code> qui affiche toutes les infos de la voiture</li>
+                        <li>Testez :
+                            <ul>
+                                <li>Roulez 300 km</li>
+                                <li>Affichez les infos</li>
+                                <li>Faites le plein</li>
+                                <li>Roulez 450 km</li>
+                                <li>Affichez les infos</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const voiture = {
+    marque: "Peugeot",
+    modele: "308",
+    annee: 2022,
+    kilometrage: 15000,
+    reservoir: 50,
+    
+    rouler(km) {
+        this.kilometrage += km;
+        const carburantConsomme = km / 15;
+        this.reservoir -= carburantConsomme;
+        console.log(`Vous avez roulé ${km} km. Kilométrage : ${this.kilometrage} km, Carburant restant : ${this.reservoir.toFixed(2)} L`);
+    },
+    
+    faireLePlein() {
+        this.reservoir = 50;
+        console.log("Plein effectué ! Réservoir : 50 L");
+    },
+    
+    afficherInfos() {
+        console.log(`${this.marque} ${this.modele} (${this.annee})`);
+        console.log(`Kilométrage : ${this.kilometrage} km`);
+        console.log(`Carburant : ${this.reservoir.toFixed(2)} L`);
+    }
+};
+
+voiture.rouler(300);
+voiture.afficherInfos();
+voiture.faireLePlein();
+voiture.rouler(450);
+voiture.afficherInfos();</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 7</div>
+                    <span class="difficulty medium">Moyen</span>
+                    <h3>Tableau d'objets - Liste de contacts</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un tableau <code>contacts</code> contenant 4 objets avec les propriétés :
+                            <ul>
+                                <li>nom</li>
+                                <li>prenom</li>
+                                <li>telephone</li>
+                                <li>email</li>
+                            </ul>
+                        </li>
+                        <li>Créez une fonction <code>afficherContacts()</code> qui parcourt et affiche tous les contacts</li>
+                        <li>Créez une fonction <code>rechercherContact(nom)</code> qui recherche et affiche un contact par son nom</li>
+                        <li>Créez une fonction <code>ajouterContact(contact)</code> qui ajoute un nouveau contact au tableau</li>
+                        <li>Testez toutes vos fonctions</li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const contacts = [
+    {
+        nom: "Dupont",
+        prenom: "Marie",
+        telephone: "0601020304",
+        email: "marie.dupont@email.fr"
+    },
+    {
+        nom: "Martin",
+        prenom: "Lucas",
+        telephone: "0605060708",
+        email: "lucas.martin@email.fr"
+    },
+    {
+        nom: "Bernard",
+        prenom: "Sophie",
+        telephone: "0609101112",
+        email: "sophie.bernard@email.fr"
+    },
+    {
+        nom: "Petit",
+        prenom: "Thomas",
+        telephone: "0613141516",
+        email: "thomas.petit@email.fr"
+    }
+];
+
+function afficherContacts() {
+    console.log("=== LISTE DES CONTACTS ===");
+    contacts.forEach((contact, index) => {
+        console.log(`\n${index + 1}. ${contact.prenom} ${contact.nom}`);
+        console.log(`   Tél : ${contact.telephone}`);
+        console.log(`   Email : ${contact.email}`);
+    });
+}
+
+function rechercherContact(nom) {
+    const contact = contacts.find(c => c.nom.toLowerCase() === nom.toLowerCase());
+    
+    if (contact) {
+        console.log("Contact trouvé :");
+        console.log(`${contact.prenom} ${contact.nom}`);
+        console.log(`Tél : ${contact.telephone}`);
+        console.log(`Email : ${contact.email}`);
+    } else {
+        console.log("Contact non trouvé");
+    }
+}
+
+function ajouterContact(contact) {
+    contacts.push(contact);
+    console.log(`Contact ${contact.prenom} ${contact.nom} ajouté avec succès !`);
+}
+
+// Tests
+afficherContacts();
+rechercherContact("Martin");
+ajouterContact({
+    nom: "Durand",
+    prenom: "Julie",
+    telephone: "0617181920",
+    email: "julie.durand@email.fr"
+});
+afficherContacts();</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 8</div>
+                    <span class="difficulty medium">Moyen</span>
+                    <h3>Système de notes d'étudiants</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un objet <code>etudiant</code> avec :
+                            <ul>
+                                <li><strong>nom</strong> et <strong>prenom</strong></li>
+                                <li><strong>notes</strong> : un tableau vide</li>
+                            </ul>
+                        </li>
+                        <li>Ajoutez une méthode <code>ajouterNote(note)</code> qui ajoute une note au tableau (vérifier que la note est entre 0 et 20)</li>
+                        <li>Ajoutez une méthode <code>calculerMoyenne()</code> qui retourne la moyenne des notes</li>
+                        <li>Ajoutez une méthode <code>obtenirMention()</code> qui retourne :
+                            <ul>
+                                <li>"Très bien" si moyenne >= 16</li>
+                                <li>"Bien" si moyenne >= 14</li>
+                                <li>"Assez bien" si moyenne >= 12</li>
+                                <li>"Passable" si moyenne >= 10</li>
+                                <li>"Insuffisant" si moyenne < 10</li>
+                            </ul>
+                        </li>
+                        <li>Testez avec plusieurs notes</li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const etudiant = {
+    nom: "Dupont",
+    prenom: "Alexandre",
+    notes: [],
+    
+    ajouterNote(note) {
+        if (note >= 0 && note <= 20) {
+            this.notes.push(note);
+            console.log(`Note ${note}/20 ajoutée`);
+        } else {
+            console.log("Erreur : La note doit être entre 0 et 20");
+        }
+    },
+    
+    calculerMoyenne() {
+        if (this.notes.length === 0) {
+            return 0;
+        }
+        const somme = this.notes.reduce((total, note) => total + note, 0);
+        return somme / this.notes.length;
+    },
+    
+    obtenirMention() {
+        const moyenne = this.calculerMoyenne();
+        
+        if (moyenne >= 16) return "Très bien";
+        if (moyenne >= 14) return "Bien";
+        if (moyenne >= 12) return "Assez bien";
+        if (moyenne >= 10) return "Passable";
+        return "Insuffisant";
+    },
+    
+    afficherBulletin() {
+        console.log(`\n=== BULLETIN DE ${this.prenom.toUpperCase()} ${this.nom.toUpperCase()} ===`);
+        console.log(`Notes : ${this.notes.join(", ")}`);
+        console.log(`Moyenne : ${this.calculerMoyenne().toFixed(2)}/20`);
+        console.log(`Mention : ${this.obtenirMention()}`);
+    }
+};
+
+// Tests
+etudiant.ajouterNote(15);
+etudiant.ajouterNote(12);
+etudiant.ajouterNote(18);
+etudiant.ajouterNote(14);
+etudiant.ajouterNote(25);  // Erreur
+etudiant.afficherBulletin();</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 9</div>
+                    <span class="difficulty medium">Moyen</span>
+                    <h3>Panier d'achat</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un objet <code>panier</code> avec :
+                            <ul>
+                                <li><strong>articles</strong> : tableau vide d'objets (chaque article a : nom, prix, quantite)</li>
+                            </ul>
+                        </li>
+                        <li>Méthodes à créer :
+                            <ul>
+                                <li><code>ajouterArticle(nom, prix, quantite)</code></li>
+                                <li><code>retirerArticle(nom)</code></li>
+                                <li><code>calculerTotal()</code> : retourne le prix total du panier</li>
+                                <li><code>afficherPanier()</code> : affiche tous les articles avec leur sous-total</li>
+                                <li><code>viderPanier()</code> : vide le panier</li>
+                            </ul>
+                        </li>
+                        <li>Testez en ajoutant plusieurs articles et en affichant le panier</li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const panier = {
+    articles: [],
+    
+    ajouterArticle(nom, prix, quantite = 1) {
+        // Vérifier si l'article existe déjà
+        const articleExistant = this.articles.find(a => a.nom === nom);
+        
+        if (articleExistant) {
+            articleExistant.quantite += quantite;
+            console.log(`${quantite} ${nom} ajouté(s). Quantité totale : ${articleExistant.quantite}`);
+        } else {
+            this.articles.push({ nom, prix, quantite });
+            console.log(`${quantite} ${nom} ajouté(s) au panier`);
+        }
+    },
+    
+    retirerArticle(nom) {
+        const index = this.articles.findIndex(a => a.nom === nom);
+        
+        if (index !== -1) {
+            const article = this.articles.splice(index, 1)[0];
+            console.log(`${article.nom} retiré du panier`);
+        } else {
+            console.log("Article non trouvé dans le panier");
+        }
+    },
+    
+    calculerTotal() {
+        return this.articles.reduce((total, article) => {
+            return total + (article.prix * article.quantite);
+        }, 0);
+    },
+    
+    afficherPanier() {
+        console.log("\n========== PANIER ==========");
+        
+        if (this.articles.length === 0) {
+            console.log("Le panier est vide");
+            return;
+        }
+        
+        this.articles.forEach(article => {
+            const sousTotal = article.prix * article.quantite;
+            console.log(`${article.nom} - ${article.prix}€ x ${article.quantite} = ${sousTotal}€`);
+        });
+        
+        console.log("----------------------------");
+        console.log(`TOTAL : ${this.calculerTotal().toFixed(2)}€`);
+        console.log("============================\n");
+    },
+    
+    viderPanier() {
+        this.articles = [];
+        console.log("Panier vidé");
+    }
+};
+
+// Tests
+panier.ajouterArticle("Pommes", 2.50, 3);
+panier.ajouterArticle("Pain", 1.20, 2);
+panier.ajouterArticle("Lait", 0.95, 1);
+panier.ajouterArticle("Pommes", 2.50, 2);  // Ajoute aux pommes existantes
+panier.afficherPanier();
+panier.retirerArticle("Pain");
+panier.afficherPanier();</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 10</div>
+                    <span class="difficulty medium">Moyen</span>
+                    <h3>Parcourir et transformer des objets</h3>
+                    
+                    <h4>Consignes</h4>
+                    <p>Soit un objet représentant un produit :</p>
+                    <div class="code-block"><code>const produit = {
+    nom: "Ordinateur portable",
+    prix: 899,
+    tva: 0.20,
+    stock: 15
+};</code></div>
+                    
+                    <ol>
+                        <li>Affichez toutes les clés de l'objet</li>
+                        <li>Affichez toutes les valeurs de l'objet</li>
+                        <li>Affichez toutes les paires clé-valeur</li>
+                        <li>Créez une fonction qui calcule le prix TTC (prix * (1 + tva))</li>
+                        <li>Créez une fonction qui retourne un nouvel objet avec toutes les clés en majuscules</li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const produit = {
+    nom: "Ordinateur portable",
+    prix: 899,
+    tva: 0.20,
+    stock: 15
+};
+
+// 1. Afficher les clés
+console.log("Clés :", Object.keys(produit));
+// ["nom", "prix", "tva", "stock"]
+
+// 2. Afficher les valeurs
+console.log("Valeurs :", Object.values(produit));
+// ["Ordinateur portable", 899, 0.2, 15]
+
+// 3. Afficher les paires clé-valeur
+console.log("Paires :");
+Object.entries(produit).forEach(([cle, valeur]) => {
+    console.log(`${cle}: ${valeur}`);
+});
+
+// 4. Calculer le prix TTC
+function calculerPrixTTC(produit) {
+    return produit.prix * (1 + produit.tva);
+}
+
+console.log(`Prix TTC : ${calculerPrixTTC(produit)}€`);
+// Prix TTC : 1078.8€
+
+// 5. Créer un objet avec clés en majuscules
+function clesMajuscules(obj) {
+    const nouvelObjet = {};
+    
+    for (let cle in obj) {
+        nouvelObjet[cle.toUpperCase()] = obj[cle];
+    }
+    
+    return nouvelObjet;
+}
+
+console.log(clesMajuscules(produit));
+// { NOM: "Ordinateur portable", PRIX: 899, TVA: 0.2, STOCK: 15 }</code></div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- EXERCICES AVANCÉ -->
+            <section id="avance">
+                <h2>Exercices Niveau Avancé</h2>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 11</div>
+                    <span class="difficulty hard">Difficile</span>
+                    <h3>Système de bibliothèque</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un objet <code>bibliotheque</code> contenant :
+                            <ul>
+                                <li><strong>nom</strong> : nom de la bibliothèque</li>
+                                <li><strong>livres</strong> : tableau d'objets livre (titre, auteur, annee, disponible)</li>
+                            </ul>
+                        </li>
+                        <li>Méthodes à implémenter :
+                            <ul>
+                                <li><code>ajouterLivre(livre)</code></li>
+                                <li><code>rechercherParTitre(titre)</code></li>
+                                <li><code>rechercherParAuteur(auteur)</code></li>
+                                <li><code>emprunter(titre)</code> : change disponible à false</li>
+                                <li><code>rendre(titre)</code> : change disponible à true</li>
+                                <li><code>livresDisponibles()</code> : retourne les livres disponibles</li>
+                                <li><code>afficherStatistiques()</code> : total de livres, disponibles, empruntés</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const bibliotheque = {
+    nom: "Bibliothèque Municipale de Lille",
+    livres: [
+        { titre: "1984", auteur: "George Orwell", annee: 1949, disponible: true },
+        { titre: "Le Petit Prince", auteur: "Antoine de Saint-Exupéry", annee: 1943, disponible: true },
+        { titre: "Harry Potter", auteur: "J.K. Rowling", annee: 1997, disponible: false }
+    ],
+    
+    ajouterLivre(livre) {
+        livre.disponible = livre.disponible !== undefined ? livre.disponible : true;
+        this.livres.push(livre);
+        console.log(`"${livre.titre}" ajouté à la bibliothèque`);
+    },
+    
+    rechercherParTitre(titre) {
+        const livre = this.livres.find(l => 
+            l.titre.toLowerCase().includes(titre.toLowerCase())
+        );
+        
+        if (livre) {
+            console.log(`\nLivre trouvé :`);
+            console.log(`Titre : ${livre.titre}`);
+            console.log(`Auteur : ${livre.auteur}`);
+            console.log(`Année : ${livre.annee}`);
+            console.log(`Statut : ${livre.disponible ? "Disponible" : "Emprunté"}`);
+            return livre;
+        } else {
+            console.log(" Livre non trouvé");
+            return null;
+        }
+    },
+    
+    rechercherParAuteur(auteur) {
+        const livresTrouves = this.livres.filter(l => 
+            l.auteur.toLowerCase().includes(auteur.toLowerCase())
+        );
+        
+        if (livresTrouves.length > 0) {
+            console.log(`\n ${livresTrouves.length} livre(s) trouvé(s) de ${auteur} :`);
+            livresTrouves.forEach(livre => {
+                console.log(`- ${livre.titre} (${livre.annee}) - ${livre.disponible ? "Disponible" : "Emprunté"}`);
+            });
+            return livresTrouves;
+        } else {
+            console.log(` Aucun livre trouvé pour cet auteur`);
+            return [];
+        }
+    },
+    
+    emprunter(titre) {
+        const livre = this.livres.find(l => l.titre.toLowerCase() === titre.toLowerCase());
+        
+        if (!livre) {
+            console.log(" Livre non trouvé");
+            return false;
+        }
+        
+        if (!livre.disponible) {
+            console.log(` "${livre.titre}" est déjà emprunté`);
+            return false;
+        }
+        
+        livre.disponible = false;
+        console.log(`"${livre.titre}" emprunté avec succès`);
+        return true;
+    },
+    
+    rendre(titre) {
+        const livre = this.livres.find(l => l.titre.toLowerCase() === titre.toLowerCase());
+        
+        if (!livre) {
+            console.log(" Livre non trouvé");
+            return false;
+        }
+        
+        if (livre.disponible) {
+            console.log(` "${livre.titre}" n'était pas emprunté`);
+            return false;
+        }
+        
+        livre.disponible = true;
+        console.log(` "${livre.titre}" rendu avec succès`);
+        return true;
+    },
+    
+    livresDisponibles() {
+        const disponibles = this.livres.filter(l => l.disponible);
+        
+        console.log(`\n Livres disponibles (${disponibles.length}) :`);
+        disponibles.forEach(livre => {
+            console.log(`- ${livre.titre} par ${livre.auteur}`);
+        });
+        
+        return disponibles;
+    },
+    
+    afficherStatistiques() {
+        const total = this.livres.length;
+        const disponibles = this.livres.filter(l => l.disponible).length;
+        const empruntes = total - disponibles;
+        
+        console.log(`\n === STATISTIQUES ${this.nom.toUpperCase()} ===`);
+        console.log(`Total de livres : ${total}`);
+        console.log(`Livres disponibles : ${disponibles}`);
+        console.log(`Livres empruntés : ${empruntes}`);
+        console.log(`Taux d'emprunt : ${((empruntes / total) * 100).toFixed(1)}%`);
+    }
+};
+
+// Tests
+bibliotheque.ajouterLivre({ titre: "Les Misérables", auteur: "Victor Hugo", annee: 1862 });
+bibliotheque.rechercherParTitre("1984");
+bibliotheque.emprunter("1984");
+bibliotheque.rendre("Harry Potter");
+bibliotheque.livresDisponibles();
+bibliotheque.afficherStatistiques();</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 12</div>
+                    <span class="difficulty hard">Difficile</span>
+                    <h3>Gestion d'une école</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un objet <code>ecole</code> avec :
+                            <ul>
+                                <li><strong>nom</strong> : nom de l'école</li>
+                                <li><strong>classes</strong> : tableau d'objets classe</li>
+                            </ul>
+                        </li>
+                        <li>Chaque classe contient :
+                            <ul>
+                                <li><strong>niveau</strong> : ex: "DWWM"</li>
+                                <li><strong>eleves</strong> : tableau d'objets élève (nom, prenom, notes)</li>
+                            </ul>
+                        </li>
+                        <li>Méthodes à créer :
+                            <ul>
+                                <li><code>ajouterClasse(classe)</code></li>
+                                <li><code>ajouterEleve(niveau, eleve)</code></li>
+                                <li><code>calculerMoyenneEleve(nom, prenom)</code></li>
+                                <li><code>calculerMoyenneClasse(niveau)</code></li>
+                                <li><code>meilleurEleve()</code> : retourne l'élève avec la meilleure moyenne</li>
+                                <li><code>afficherStatistiquesEcole()</code></li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <div class="tips">
+                        <h4> Conseils</h4>
+                        <p>Cet exercice combine plusieurs concepts : objets imbriqués, tableaux d'objets, méthodes complexes, calculs statistiques.</p>
+                    </div>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution
+const ecole = {
+    nom: "Real Conseil Formation",
+    classes: [
+        {
+            niveau: "DWWM",
+            eleves: [
+                { nom: "Dupont", prenom: "Marie", notes: [15, 14, 16, 13] },
+                { nom: "Martin", prenom: "Lucas", notes: [12, 11, 13, 12] },
+                { nom: "Bernard", prenom: "Sophie", notes: [18, 17, 19, 18] }
+            ]
+        }
+    ],
+    
+    ajouterClasse(classe) {
+        classe.eleves = classe.eleves || [];
+        this.classes.push(classe);
+        console.log(` Classe ${classe.niveau} ajoutée`);
+    },
+    
+    ajouterEleve(niveau, eleve) {
+        const classe = this.classes.find(c => c.niveau === niveau);
+        
+        if (!classe) {
+            console.log(` Classe ${niveau} non trouvée`);
+            return false;
+        }
+        
+        eleve.notes = eleve.notes || [];
+        classe.eleves.push(eleve);
+        console.log(` ${eleve.prenom} ${eleve.nom} ajouté(e) à la classe ${niveau}`);
+        return true;
+    },
+    
+    calculerMoyenneEleve(nom, prenom) {
+        let eleveT trouve = null;
+        let classTrouvee = null;
+        
+        for (let classe of this.classes) {
+            eleve = classe.eleves.find(e => 
+                e.nom.toLowerCase() === nom.toLowerCase() && 
+                e.prenom.toLowerCase() === prenom.toLowerCase()
+            );
+            
+            if (eleve) {
+                classTrouvee = classe;
+                break;
+            }
+        }
+        
+        if (!eleve) {
+            console.log(" Élève non trouvé");
+            return null;
+        }
+        
+        if (eleve.notes.length === 0) {
+            console.log(" Aucune note pour cet élève");
+            return 0;
+        }
+        
+        const somme = eleve.notes.reduce((total, note) => total + note, 0);
+        const moyenne = somme / eleve.notes.length;
+        
+        console.log(` Moyenne de ${eleve.prenom} ${eleve.nom} : ${moyenne.toFixed(2)}/20`);
+        return moyenne;
+    },
+    
+    calculerMoyenneClasse(niveau) {
+        const classe = this.classes.find(c => c.niveau === niveau);
+        
+        if (!classe) {
+            console.log(` Classe ${niveau} non trouvée`);
+            return null;
+        }
+        
+        if (classe.eleves.length === 0) {
+            console.log(" Aucun élève dans cette classe");
+            return 0;
+        }
+        
+        let totalMoyennes = 0;
+        let nbEleves = 0;
+        
+        classe.eleves.forEach(eleve => {
+            if (eleve.notes.length > 0) {
+                const somme = eleve.notes.reduce((total, note) => total + note, 0);
+                totalMoyennes += somme / eleve.notes.length;
+                nbEleves++;
+            }
+        });
+        
+        const moyenneClasse = nbEleves > 0 ? totalMoyennes / nbEleves : 0;
+        console.log(` Moyenne de la classe ${niveau} : ${moyenneClasse.toFixed(2)}/20`);
+        return moyenneClasse;
+    },
+    
+    meilleurEleve() {
+        let meilleur = null;
+        let meilleureMoyenne = 0;
+        
+        this.classes.forEach(classe => {
+            classe.eleves.forEach(eleve => {
+                if (eleve.notes.length > 0) {
+                    const somme = eleve.notes.reduce((total, note) => total + note, 0);
+                    const moyenne = somme / eleve.notes.length;
+                    
+                    if (moyenne > meilleureMoyenne) {
+                        meilleureMoyenne = moyenne;
+                        meilleur = { ...eleve, classe: classe.niveau, moyenne };
+                    }
+                }
+            });
+        });
+        
+        if (meilleur) {
+            console.log(`\n Meilleur élève de l'école :`);
+            console.log(`${meilleur.prenom} ${meilleur.nom} (${meilleur.classe})`);
+            console.log(`Moyenne : ${meilleur.moyenne.toFixed(2)}/20`);
+        }
+        
+        return meilleur;
+    },
+    
+    afficherStatistiquesEcole() {
+        console.log(`\n === STATISTIQUES ${this.nom.toUpperCase()} ===`);
+        console.log(`Nombre de classes : ${this.classes.length}`);
+        
+        let totalEleves = 0;
+        this.classes.forEach(classe => {
+            totalEleves += classe.eleves.length;
+            console.log(`\nClasse ${classe.niveau} : ${classe.eleves.length} élève(s)`);
+            classe.eleves.forEach(eleve => {
+                const somme = eleve.notes.reduce((total, note) => total + note, 0);
+                const moyenne = eleve.notes.length > 0 ? somme / eleve.notes.length : 0;
+                console.log(`  - ${eleve.prenom} ${eleve.nom} : ${moyenne.toFixed(2)}/20`);
+            });
+        });
+        
+        console.log(`\nTotal élèves : ${totalEleves}`);
+    }
+};
+
+// Tests
+ecole.ajouterEleve("DWWM", { nom: "Petit", prenom: "Thomas", notes: [16, 15, 17, 16] });
+ecole.calculerMoyenneEleve("Bernard", "Sophie");
+ecole.calculerMoyenneClasse("DWWM");
+ecole.meilleurEleve();
+ecole.afficherStatistiquesEcole();</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Exercice 13</div>
+                    <span class="difficulty hard">Difficile</span>
+                    <h3>Application bancaire complète</h3>
+                    
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez un objet <code>banque</code> qui gère plusieurs comptes</li>
+                        <li>Chaque compte a : numéro, titulaire, solde, historique des transactions</li>
+                        <li>Implémentez :
+                            <ul>
+                                <li><code>creerCompte(titulaire, soldeInitial)</code></li>
+                                <li><code>deposer(numeroCompte, montant)</code></li>
+                                <li><code>retirer(numeroCompte, montant)</code></li>
+                                <li><code>virer(compteSource, compteDestination, montant)</code></li>
+                                <li><code>afficherHistorique(numeroCompte)</code></li>
+                                <li><code>calculerInterets(numeroCompte, taux)</code></li>
+                            </ul>
+                        </li>
+                        <li>Chaque transaction doit être enregistrée dans l'historique avec date, type, montant</li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>// Solution complète dans un fichier séparé pour la clarté
+const banque = {
+    nom: "Banque Populaire",
+    comptes: [],
+    prochainNumero: 1001,
+    
+    creerCompte(titulaire, soldeInitial = 0) {
+        const nouveauCompte = {
+            numero: this.prochainNumero++,
+            titulaire,
+            solde: soldeInitial,
+            historique: []
+        };
+        
+        if (soldeInitial > 0) {
+            nouveauCompte.historique.push({
+                date: new Date().toLocaleString('fr-FR'),
+                type: "Ouverture",
+                montant: soldeInitial,
+                soldeApres: soldeInitial
+            });
+        }
+        
+        this.comptes.push(nouveauCompte);
+        console.log(` Compte ${nouveauCompte.numero} créé pour ${titulaire}`);
+        console.log(`   Solde initial : ${soldeInitial}€`);
+        return nouveauCompte.numero;
+    },
+    
+    trouverCompte(numero) {
+        return this.comptes.find(c => c.numero === numero);
+    },
+    
+    deposer(numeroCompte, montant) {
+        const compte = this.trouverCompte(numeroCompte);
+        
+        if (!compte) {
+            console.log(" Compte non trouvé");
+            return false;
+        }
+        
+        if (montant <= 0) {
+            console.log(" Le montant doit être positif");
+            return false;
+        }
+        
+        compte.solde += montant;
+        compte.historique.push({
+            date: new Date().toLocaleString('fr-FR'),
+            type: "Dépôt",
+            montant: montant,
+            soldeApres: compte.solde
+        });
+        
+        console.log(` Dépôt de ${montant}€ effectué`);
+        console.log(`   Nouveau solde : ${compte.solde}€`);
+        return true;
+    },
+    
+    retirer(numeroCompte, montant) {
+        const compte = this.trouverCompte(numeroCompte);
+        
+        if (!compte) {
+            console.log(" Compte non trouvé");
+            return false;
+        }
+        
+        if (montant <= 0) {
+            console.log(" Le montant doit être positif");
+            return false;
+        }
+        
+        if (compte.solde < montant) {
+            console.log(" Solde insuffisant");
+            return false;
+        }
+        
+        compte.solde -= montant;
+        compte.historique.push({
+            date: new Date().toLocaleString('fr-FR'),
+            type: "Retrait",
+            montant: -montant,
+            soldeApres: compte.solde
+        });
+        
+        console.log(` Retrait de ${montant}€ effectué`);
+        console.log(`   Nouveau solde : ${compte.solde}€`);
+        return true;
+    },
+    
+    virer(compteSource, compteDestination, montant) {
+        const source = this.trouverCompte(compteSource);
+        const destination = this.trouverCompte(compteDestination);
+        
+        if (!source || !destination) {
+            console.log(" Un des comptes n'existe pas");
+            return false;
+        }
+        
+        if (source.solde < montant) {
+            console.log(" Solde insuffisant sur le compte source");
+            return false;
+        }
+        
+        source.solde -= montant;
+        destination.solde += montant;
+        
+        const date = new Date().toLocaleString('fr-FR');
+        
+        source.historique.push({
+            date,
+            type: `Virement vers ${destination.numero}`,
+            montant: -montant,
+            soldeApres: source.solde
+        });
+        
+        destination.historique.push({
+            date,
+            type: `Virement depuis ${source.numero}`,
+            montant: montant,
+            soldeApres: destination.solde
+        });
+        
+        console.log(` Virement de ${montant}€ effectué`);
+        console.log(`   De : Compte ${source.numero} → ${source.solde}€`);
+        console.log(`   Vers : Compte ${destination.numero} → ${destination.solde}€`);
+        return true;
+    },
+    
+    afficherHistorique(numeroCompte) {
+        const compte = this.trouverCompte(numeroCompte);
+        
+        if (!compte) {
+            console.log(" Compte non trouvé");
+            return;
+        }
+        
+        console.log(`\n === HISTORIQUE COMPTE ${compte.numero} - ${compte.titulaire} ===`);
+        console.log(`Solde actuel : ${compte.solde}€\n`);
+        
+        if (compte.historique.length === 0) {
+            console.log("Aucune transaction");
+            return;
+        }
+        
+        compte.historique.forEach((transaction, index) => {
+            console.log(`${index + 1}. ${transaction.date}`);
+            console.log(`   ${transaction.type} : ${transaction.montant}€`);
+            console.log(`   Solde après : ${transaction.soldeApres}€`);
+            console.log("");
+        });
+    },
+    
+    calculerInterets(numeroCompte, taux) {
+        const compte = this.trouverCompte(numeroCompte);
+        
+        if (!compte) {
+            console.log(" Compte non trouvé");
+            return false;
+        }
+        
+        const interets = compte.solde * (taux / 100);
+        compte.solde += interets;
+        
+        compte.historique.push({
+            date: new Date().toLocaleString('fr-FR'),
+            type: `Intérêts (${taux}%)`,
+            montant: interets,
+            soldeApres: compte.solde
+        });
+        
+        console.log(`Intérêts calculés : ${interets.toFixed(2)}€`);
+        console.log(`   Nouveau solde : ${compte.solde.toFixed(2)}€`);
+        return true;
+    }
+};
+
+// Tests
+const compte1 = banque.creerCompte("Marie Dupont", 1000);
+const compte2 = banque.creerCompte("Lucas Martin", 500);
+banque.deposer(compte1, 500);
+banque.retirer(compte1, 200);
+banque.virer(compte1, compte2, 300);
+banque.calculerInterets(compte1, 2);
+banque.afficherHistorique(compte1);</code></div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- PROJETS FINAUX -->
+            <section id="projets">
+                <h2> Projets Finaux</h2>
+
+                <div class="exercise">
+                    <div class="exercise-number">Projet 1</div>
+                    <span class="difficulty hard">Expert</span>
+                    <h3>Système de gestion de restaurant</h3>
+                    
+                    <h4>Objectif</h4>
+                    <p>Créer un système complet de gestion de restaurant avec menu, commandes, tables, et facturation.</p>
+                    
+                    <h4>Fonctionnalités requises</h4>
+                    <ol>
+                        <li><strong>Gestion du menu</strong> :
+                            <ul>
+                                <li>Ajouter/supprimer des plats</li>
+                                <li>Catégories : Entrée, Plat, Dessert, Boisson</li>
+                                <li>Prix, description, disponibilité</li>
+                            </ul>
+                        </li>
+                        <li><strong>Gestion des tables</strong> :
+                            <ul>
+                                <li>Numéro, capacité, statut (libre/occupée)</li>
+                                <li>Réserver/libérer une table</li>
+                            </ul>
+                        </li>
+                        <li><strong>Gestion des commandes</strong> :
+                            <ul>
+                                <li>Créer une commande pour une table</li>
+                                <li>Ajouter/retirer des plats</li>
+                                <li>Calculer le total</li>
+                                <li>Statut : en préparation, servie, payée</li>
+                            </ul>
+                        </li>
+                        <li><strong>Facturation</strong> :
+                            <ul>
+                                <li>Générer une facture</li>
+                                <li>Appliquer une remise</li>
+                                <li>Calculer le pourboire</li>
+                            </ul>
+                        </li>
+                        <li><strong>Statistiques</strong> :
+                            <ul>
+                                <li>Plat le plus commandé</li>
+                                <li>Chiffre d'affaires total</li>
+                                <li>Nombre de commandes par jour</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <div class="success-box">
+                        <h4> Critères d'évaluation</h4>
+                        <ul>
+                            <li>Code bien structuré avec objets et méthodes</li>
+                            <li>Toutes les fonctionnalités implémentées</li>
+                            <li>Gestion des erreurs (vérifications)</li>
+                            <li>Messages clairs pour l'utilisateur</li>
+                            <li>Code commenté</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Projet 2</div>
+                    <span class="difficulty hard">Expert</span>
+                    <h3>Système de réservation de voyages</h3>
+                    
+                    <h4>Objectif</h4>
+                    <p>Créer une application de réservation de voyages (vols, hôtels, locations de voiture).</p>
+                    
+                    <h4>Fonctionnalités requises</h4>
+                    <ol>
+                        <li><strong>Gestion des vols</strong> :
+                            <ul>
+                                <li>Numéro, destination, date, prix, places disponibles</li>
+                                <li>Rechercher des vols</li>
+                                <li>Réserver un vol</li>
+                            </ul>
+                        </li>
+                        <li><strong>Gestion des hôtels</strong> :
+                            <ul>
+                                <li>Nom, ville, étoiles, prix par nuit</li>
+                                <li>Types de chambre</li>
+                                <li>Disponibilité</li>
+                            </ul>
+                        </li>
+                        <li><strong>Gestion des clients</strong> :
+                            <ul>
+                                <li>Profil client</li>
+                                <li>Historique de réservations</li>
+                                <li>Programme de fidélité (points)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Réservations</strong> :
+                            <ul>
+                                <li>Combiner vol + hôtel</li>
+                                <li>Calculer le prix total</li>
+                                <li>Appliquer des réductions (fidélité)</li>
+                                <li>Confirmer/annuler une réservation</li>
+                            </ul>
+                        </li>
+                        <li><strong>Statistiques</strong> :
+                            <ul>
+                                <li>Destinations les plus populaires</li>
+                                <li>Revenu total</li>
+                                <li>Taux d'occupation des vols</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-number">Projet 3</div>
+                    <span class="difficulty hard">Expert</span>
+                    <h3>Plateforme e-learning</h3>
+                    
+                    <h4>Objectif</h4>
+                    <p>Créer une plateforme de formation en ligne avec cours, étudiants, quiz, et certificats.</p>
+                    
+                    <h4>Fonctionnalités requises</h4>
+                    <ol>
+                        <li><strong>Gestion des cours</strong> :
+                            <ul>
+                                <li>Titre, description, durée, niveau</li>
+                                <li>Modules et leçons</li>
+                                <li>Quiz d'évaluation</li>
+                            </ul>
+                        </li>
+                        <li><strong>Gestion des étudiants</strong> :
+                            <ul>
+                                <li>Inscription aux cours</li>
+                                <li>Progression (% complété)</li>
+                                <li>Notes aux quiz</li>
+                            </ul>
+                        </li>
+                        <li><strong>Système de quiz</strong> :
+                            <ul>
+                                <li>Questions à choix multiples</li>
+                                <li>Correction automatique</li>
+                                <li>Score minimum pour réussir</li>
+                            </ul>
+                        </li>
+                        <li><strong>Certificats</strong> :
+                            <ul>
+                                <li>Délivrance automatique si cours réussi</li>
+                                <li>Visualisation des certificats obtenus</li>
+                            </ul>
+                        </li>
+                        <li><strong>Statistiques</strong> :
+                            <ul>
+                                <li>Taux de réussite par cours</li>
+                                <li>Étudiants les plus actifs</li>
+                                <li>Cours les plus populaires</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="success-box">
+                    <h4>Conseils pour les projets</h4>
+                    <ul>
+                        <li><strong>Planifiez</strong> avant de coder : dessinez la structure des objets</li>
+                        <li><strong>Commencez simple</strong> : implémentez les fonctionnalités de base d'abord</li>
+                        <li><strong>Testez régulièrement</strong> : après chaque méthode, testez-la</li>
+                        <li><strong>Commentez votre code</strong> : expliquez la logique complexe</li>
+                        <li><strong>Gérez les erreurs</strong> : vérifiez les données avant de les utiliser</li>
+                        <li><strong>Soyez créatif</strong> : ajoutez vos propres fonctionnalités</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+           <p>2026 Formation DWWM développeur web web mobile Lille</p>
+        <p>&copy; Thomas exercices Objet</p>
+        <img src="../../IMG/Real.jpg" width="50px" alt="">
+            <img src="../../IMG/Region.jpg" width="50px" alt="">
+            <img src="../../IMG/U.E.jpg" width="70px" alt="">
+        </footer>
+    </div>
+</body>
+</html>
