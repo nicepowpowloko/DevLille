@@ -3,87 +3,448 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive - Supports de cours</title>
+    <link rel="icon" href="../favicon-32x32.png" type="image/png">
+    <title>Responsive - Supports de cours - Formation DWWM</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Icônes technologiques flottantes */
+        .floating-icons {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .tech-icon {
+            position: absolute;
+            opacity: 0.15;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .tech-icon:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+            animation-duration: 25s;
+        }
+
+        .tech-icon:nth-child(2) {
+            top: 20%;
+            right: 8%;
+            animation-delay: 3s;
+            animation-duration: 20s;
+        }
+
+        .tech-icon:nth-child(3) {
+            top: 60%;
+            left: 10%;
+            animation-delay: 5s;
+            animation-duration: 30s;
+        }
+
+        .tech-icon:nth-child(4) {
+            top: 70%;
+            right: 15%;
+            animation-delay: 2s;
+            animation-duration: 22s;
+        }
+
+        .tech-icon:nth-child(5) {
+            top: 40%;
+            left: 15%;
+            animation-delay: 7s;
+            animation-duration: 28s;
+        }
+
+        .tech-icon:nth-child(6) {
+            top: 50%;
+            right: 5%;
+            animation-delay: 4s;
+            animation-duration: 26s;
+        }
+
+        .tech-icon:nth-child(7) {
+            top: 85%;
+            left: 20%;
+            animation-delay: 6s;
+            animation-duration: 24s;
+        }
+
+        .tech-icon:nth-child(8) {
+            top: 30%;
+            right: 20%;
+            animation-delay: 1s;
+            animation-duration: 27s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(0) rotate(0deg);
+            }
+            75% {
+                transform: translateY(20px) rotate(-5deg);
+            }
+        }
+
+        .tech-icon svg {
+            width: 80px;
+            height: 80px;
+            fill: white;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+        }
+
+        /* Container principal */
+        .container {
+            position: relative;
+            z-index: 1;
             max-width: 1200px;
-            margin: 30px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            margin: 0 auto;
+            padding: 50px 20px;
         }
-        h1 {
-            color: #333;
+
+        /* Logo avec animation pulse */
+        .logo-container {
             text-align: center;
-            background: linear-gradient(135deg, #2C3F77 0%, #A0866B 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
+            margin-bottom: 20px;
         }
-        .dossier {
+
+        .logo-container img {
+            width: 120px;
             background: white;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            animation: logoPulse 3s ease-in-out infinite;
         }
-        h2 {
+
+        @keyframes logoPulse {
+            0%, 100% {
+                box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            }
+            50% {
+                box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6),
+                            0 0 40px rgba(118, 75, 162, 0.4),
+                            0 0 60px rgba(240, 147, 251, 0.3);
+            }
+        }
+
+        /* Titre avec dégradé animé + effet 3D au hover */
+        h1 {
+            color: white;
+            text-align: center;
+            padding-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+            
+            /* Dégradé animé */
+            background: linear-gradient(90deg, 
+                #ffffff 0%, 
+                #a8b5ff 25%, 
+                #2C3F77 50%, 
+            #ffd4ff 75%, 
+            #A0866B 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 10s ease infinite;
+            
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% center;
+            }
+            50% {
+                background-position: 100% center;
+            }
+            100% {
+                background-position: 0% center;
+            }
+        }
+
+        /* Effet 3D au hover sur le titre */
+        h1:hover {
+            transform: translateY(-5px);
+            text-shadow: 
+                0 10px 20px rgba(0,0,0,0.3),
+                0 15px 30px rgba(102, 126, 234, 0.4),
+                0 20px 40px rgba(118, 75, 162, 0.3);
+        }
+
+        h3 {
             color: #A0866B;
+            margin-top: 0;
             border-left: 4px solid #A0866B;
             padding-left: 10px;
-            margin-top: 0;
+            font-size: 1.3em;
+            margin-bottom: 15px;
         }
+
+        /* Sections/Cartes avec effet glow */
+        .dossier {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+        }
+
+        .dossier:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3),
+                        0 0 40px rgba(102, 126, 234, 0.5),
+                        0 0 60px rgba(118, 75, 162, 0.3),
+                        inset 0 0 20px rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        /* Grid pour les fichiers */
         .fichiers {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 10px;
         }
+
+        /* Liens */
         a {
             color: #2C3F77;
             text-decoration: none;
+            font-size: 16px;
             display: block;
             padding: 12px;
-            background-color: #f8f9fa;
+            margin: 8px 0;
             border-left: 3px solid #2C3F77;
+            padding-left: 15px;
+            transition: all 0.3s ease;
             border-radius: 5px;
-            transition: all 0.2s;
         }
+
         a:hover {
-            background-color: #e9ecef;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent);
+            border-left-color: #667eea;
             padding-left: 20px;
         }
-        .retour {
-            text-align: center;
-            margin: 30px 0;
-        }
-        .retour a {
-            background-color: #28a745;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 5px;
-            display: inline-block;
+
+        /* Bouton */
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white !important;
             border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: inline-block;
+            text-align: center;
+            border-left: none !important;
         }
-        .retour a:hover {
-            background-color: #218838;
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            padding-left: 30px !important;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            color: #666;
+        }
+
+        footer p {
+            margin: 10px 0;
+        }
+
+        footer a {
+            display: inline;
+            border: none;
+            padding: 0;
+            color: #667eea;
+        }
+
+        footer a:hover {
+            background: none;
+            text-decoration: underline;
+            padding-left: 0;
+        }
+
+        footer img {
+            max-width: 100px;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .tech-icon svg {
+                width: 60px;
+                height: 60px;
+            }
+
+            .container {
+                padding: 30px 15px;
+            }
+
+            .fichiers {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Responsive - Supports de cours</h1>
+    <!-- Icônes flottantes -->
+    <div class="floating-icons">
+        <!-- HTML5 -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 5L15 70L40 78L65 70L70 5H10ZM57 22H28L29 32H56L53 58L40 62L27 58L26 48H34L35 52L40 54L45 52L46 44H26L23 16H57V22Z"/>
+            </svg>
+        </div>
 
-    <!-- DOSSIERS -->
-    <div class="dossier">
-        <h2> Dossiers</h2>
-        <div class="fichiers">
-            <a href="./formation-responsive-web-design.html">Support</a>
+        <!-- CSS3 -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 5L15 70L40 78L65 70L70 5H10ZM57 22H32L33 32H56L53 58L40 62L27 58L26 48H34L35 52L40 54L45 52L46 44H26L23 16H57V22Z"/>
+                <circle cx="25" cy="35" r="3"/>
+                <circle cx="35" cy="35" r="3"/>
+                <circle cx="45" cy="35" r="3"/>
+            </svg>
+        </div>
+
+        <!-- JavaScript -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <rect x="5" y="5" width="70" height="70" rx="5"/>
+                <text x="40" y="60" font-size="50" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-weight="bold">JS</text>
+            </svg>
+        </div>
+
+        <!-- React -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3"/>
+                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3" transform="rotate(60 40 40)"/>
+                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3" transform="rotate(120 40 40)"/>
+                <circle cx="40" cy="40" r="5"/>
+            </svg>
+        </div>
+
+        <!-- Git -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M75 35L45 5L40 10L35 5L5 35L10 40L5 45L35 75L40 70L45 75L75 45L70 40L75 35Z"/>
+                <circle cx="25" cy="40" r="6"/>
+                <circle cx="55" cy="40" r="6"/>
+                <line x1="31" y1="40" x2="49" y2="40" stroke="white" stroke-width="4"/>
+            </svg>
+        </div>
+
+        <!-- Node.js -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M40 5L70 22.5V57.5L40 75L10 57.5V22.5L40 5Z"/>
+                <text x="40" y="50" font-size="20" text-anchor="middle" fill="white" font-family="monospace">NODE</text>
+            </svg>
+        </div>
+
+        <!-- Database -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="40" cy="20" rx="30" ry="10"/>
+                <path d="M10 20V60C10 65.5 23.4 70 40 70C56.6 70 70 65.5 70 60V20"/>
+                <ellipse cx="40" cy="40" rx="30" ry="10" fill="none" stroke="white" stroke-width="2"/>
+            </svg>
+        </div>
+
+        <!-- Code brackets -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M25 15L10 40L25 65" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
+                <path d="M55 15L70 40L55 65" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
+                <line x1="45" y1="20" x2="35" y2="60" stroke="white" stroke-width="5" stroke-linecap="round"/>
+            </svg>
         </div>
     </div>
 
-   
+    <!-- Contenu principal -->
+    <div class="container">
+        <!-- Logo Real Conseil -->
+        <div class="logo-container">
+            <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
+        </div>
 
-    <div class="retour">
-        <a href="../index.html">Retour à l'accueil</a>
+        <h1>Responsive - Supports de cours</h1>
+
+        <!-- DOSSIERS -->
+        <div class="dossier">
+            <h3>Support de formation</h3>
+            <div class="fichiers">
+                <a href="./formation-responsive-web-design.html">Formation Responsive Web Design</a>
+            </div>
+        </div>
+
+        <!-- Bouton retour -->
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="../index.html" class="btn">← Retour à l'accueil</a>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p><strong>Formation Real Conseil - DWWM 2025-2026</strong></p>
+            <p>&copy; DARRAS Thomas</p>
+            <a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a>
+            <p style="font-size: 14px; margin-top: 15px;">
+                Les supports sont mis à jour régulièrement via GitHub
+            </p>
+            <div style="text-align: center; margin-top: 20px;">
+                <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
+                <p style="font-size: 12px; color: #999;">
+                    <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo GitHub</a>
+                </p>
+            </div>
+        </footer>
     </div>
 </body>
 </html>
