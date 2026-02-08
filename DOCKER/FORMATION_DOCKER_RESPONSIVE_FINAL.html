@@ -1,0 +1,2728 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formation Docker</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+header { background: linear-gradient(135deg, #0DB7ED 0%, #1E3A8A 100%); color: white; padding: 2rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.header-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem; text-align: center; }
+.docker-icon { font-size: 3rem; margin-bottom: 1rem; }
+h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.subtitle { font-size: 1.1rem; opacity: 0.9; }
+nav { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+.nav-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; gap: 0.5rem; overflow-x: auto; flex-wrap: wrap; }
+.nav-btn { background: none; border: none; padding: 0.8rem 1rem; cursor: pointer; font-size: 0.85rem; color: #333; transition: all 0.3s; white-space: nowrap; border-bottom: 3px solid transparent; }
+.nav-btn:hover { background: #f0f0f0; color: #0DB7ED; }
+.nav-btn.active { color: #0DB7ED; border-bottom-color: #0DB7ED; font-weight: bold; }
+.container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
+.module { background: white; border-radius: 12px; padding: 3rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; }
+.module.active { display: block; animation: fadeIn 0.5s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.module h2 { color: #0DB7ED; font-size: 2rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 3px solid #0DB7ED; }
+.module h3 { color: #1E3A8A; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; }
+.module h4 { color: #0DB7ED; font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+.module p { margin: 1rem 0; }
+.info-box { background: #E0F2FE; border-left: 4px solid #0DB7ED; padding: 1.5rem; margin: 1.5rem 0; border-radius: 8px; }
+.info-box.warning { background: #FEF3C7; border-left-color: #F59E0B; }
+.info-box.success { background: #D1FAE5; border-left-color: #10B981; }
+.info-box.danger { background: #FEE2E2; border-left-color: #EF4444; }
+.info-box .title { font-weight: bold; font-size: 1.1rem; margin-bottom: 0.5rem; }
+.code-block { background: #1E293B; color: #E2E8F0; padding: 1.5rem; border-radius: 8px; overflow-x: auto; margin: 1.5rem 0; font-family: 'Courier New', monospace; font-size: 0.95rem; line-height: 1.6; position: relative; }
+.code-comment { color: #94A3B8; }
+.module ul { margin: 1rem 0 1rem 2rem; }
+.module ol { margin: 1rem 0 1rem 2rem; }
+.module li { margin: 0.5rem 0; }
+table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #E5E7EB; }
+th { background: #0DB7ED; color: white; font-weight: bold; }
+tr:hover { background: #F9FAFB; }
+.comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0; }
+.comparison-item { background: #F9FAFB; padding: 1.5rem; border-radius: 8px; border: 2px solid #E5E7EB; }
+.comparison-item h4 { margin-top: 0; }
+.exercise { background: #FEF3C7; border: 2px solid #F59E0B; padding: 2rem; margin: 2rem 0; border-radius: 8px; }
+.exercise h4 { color: #F59E0B; margin-top: 0; }
+.nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #E5E7EB; }
+.btn { background: #0DB7ED; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: all 0.3s; }
+.btn:hover { background: #0891B2; transform: translateY(-2px); }
+.btn:disabled { background: #9CA3AF; cursor: not-allowed; transform: none; }
+.progress-container { background: #E5E7EB; height: 8px; border-radius: 4px; margin: 1rem 0; overflow: hidden; }
+.progress-bar { background: linear-gradient(90deg, #0DB7ED, #10B981); height: 100%; transition: width 0.3s; }
+footer { background: #1E293B; color: white; text-align: center; padding: 2rem; margin-top: 4rem; }
+.schema { background: #F9FAFB; border: 2px dashed #0DB7ED; padding: 2rem; margin: 2rem 0; border-radius: 8px; text-align: center; }
+.schema-item { display: inline-block; background: #0DB7ED; color: white; padding: 1rem 2rem; margin: 0.5rem; border-radius: 8px; font-weight: bold; }
+.schema-arrow { display: inline-block; font-size: 2rem; color: #0DB7ED; margin: 0 1rem; }
+.highlight { background: #FEF3C7; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: bold; }
+/* MEDIA QUERIES RESPONSIVE - GARDE LE DESIGN ORIGINAL */
+@media (max-width: 768px) {
+    /* Header - reste identique visuellement */
+    .header-content { padding: 0 1rem; }
+    h1 { font-size: 2rem; }
+    .docker-icon { font-size: 2.5rem; }
+    .subtitle { font-size: 1rem; }
+    
+    /* Navigation - scroll horizontal au lieu de wrap */
+    .nav-content { 
+        padding: 0 1rem; 
+        flex-wrap: nowrap; 
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .nav-btn { 
+        font-size: 0.75rem; 
+        padding: 0.7rem 0.9rem; 
+        flex-shrink: 0; 
+    }
+    
+    /* Container - padding réduit */
+    .container { padding: 0 1rem; margin: 1.5rem auto; }
+    
+    /* Modules - padding réduit */
+    .module { padding: 1.5rem; }
+    .module h2 { font-size: 1.6rem; }
+    .module h3 { font-size: 1.3rem; }
+    .module h4 { font-size: 1.1rem; }
+    
+    /* Comparaisons - passage en colonne */
+    .comparison { grid-template-columns: 1fr; gap: 1rem; }
+    
+    /* Boutons de navigation - empilés verticalement */
+    .nav-buttons { 
+        flex-direction: column; 
+        gap: 1rem; 
+    }
+    .btn { 
+        width: 100%; 
+        padding: 0.8rem 1rem;
+    }
+    
+    /* Info boxes */
+    .info-box { padding: 1rem; }
+    
+    /* Code blocks - scroll horizontal + wrap pour lisibilité */
+    .code-block { 
+        padding: 1rem; 
+        font-size: 0.75rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Tableaux - scroll horizontal */
+    table { 
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        font-size: 0.85rem;
+    }
+    th, td { padding: 0.6rem; min-width: 120px; }
+    
+    /* Schémas - items en bloc */
+    .schema { padding: 1rem; }
+    .schema-item { 
+        display: block; 
+        margin: 0.5rem auto;
+        max-width: 90%;
+    }
+    .schema-arrow { 
+        display: block; 
+        transform: rotate(90deg);
+        margin: 0.3rem auto;
+    }
+    
+    /* Exercices */
+    .exercise { padding: 1rem; }
+    
+    /* Footer */
+    footer { padding: 1.5rem 1rem; font-size: 0.9rem; }
+}
+
+/* Très petits écrans (< 480px) */
+@media (max-width: 480px) {
+    h1 { font-size: 1.6rem; }
+    .docker-icon { font-size: 2rem; }
+    .module { padding: 1rem; }
+    .module h2 { font-size: 1.4rem; }
+    .module h3 { font-size: 1.2rem; }
+    .code-block { font-size: 0.7rem; padding: 0.8rem; }
+}
+
+/* Tablettes (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container { padding: 0 1.5rem; }
+    .module { padding: 2.5rem; }
+}
+</style>
+</head>
+<body>
+<header>
+<div class="header-content">
+<div class="docker-icon">🐋</div>
+<h1>Formation Docker</h1>
+<img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="" srcset="">
+</div>
+</header>
+<nav><div class="nav-content" id="navContent"></div></nav>
+<div class="container">
+<div class="progress-container"><div class="progress-bar" id="progressBar" style="width: 0%"></div></div>
+<div id="moduleContainer"></div>
+</div>
+<footer>
+<p>2026 Formation DWWM développeur web web mobile Lille</p>
+        <p>&copy; Thomas cours de DOCKER</p>
+        <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/Region.jpg" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/U.E.jpg" width="70px" alt="">
+</footer>
+<script>
+const modulesData = [
+{
+    id: 1,
+    title: "Module 1 : Introduction à Docker",
+    content: `
+        <h3>Qu'est-ce que Docker ?</h3>
+        
+        <div class="info-box">
+            <div class="title">Définition complète</div>
+            <p><strong>Docker est une plateforme de conteneurisation</strong> qui permet de créer, déployer et exécuter des applications dans des environnements isolés appelés <span class="highlight">conteneurs</span>.</p>
+            <p>Un conteneur est comme une boîte qui contient TOUT ce dont votre application a besoin pour fonctionner :</p>
+            <ul>
+                <li>Le système d'exploitation (une version légère de Linux)</li>
+                <li>L'environnement d'exécution (Node.js, Python, PHP, Java...)</li>
+                <li>Toutes les bibliothèques et dépendances</li>
+                <li>Votre code source</li>
+                <li>Les fichiers de configuration</li>
+            </ul>
+        </div>
+
+        <h3>Analogie : La Pizzeria (pour bien comprendre)</h3>
+        
+        <p>Imaginez que vous voulez manger une pizza. Il y a deux façons de faire :</p>
+        
+        <div class="comparison">
+            <div class="comparison-item">
+                <h4>Méthode Traditionnelle (Sans Docker)</h4>
+                <p><strong>Vous devez tout faire vous-même :</strong></p>
+                <ol>
+                    <li>Acheter un four (installer un serveur)</li>
+                    <li>Acheter tous les ingrédients séparément (installer Node.js, npm, dépendances...)</li>
+                    <li>Trouver la recette exacte (configuration)</li>
+                    <li>Apprendre à cuisiner (apprendre l'environnement)</li>
+                    <li>Espérer que le four de votre ami est pareil que le vôtre</li>
+                </ol>
+                <p><strong>Problèmes :</strong></p>
+                <ul>
+                    <li>Prend beaucoup de temps</li>
+                    <li>Coûte cher en ressources</li>
+                    <li>Différent sur chaque machine</li>
+                    <li>"Ça marche sur ma machine !" </li>
+                </ul>
+            </div>
+            <div class="comparison-item">
+                <h4>Avec Docker (La livraison de pizza)</h4>
+                <p><strong>Docker livre tout dans une boîte :</strong></p>
+                <ol>
+                    <li>Pizza déjà préparée (application prête)</li>
+                    <li>Tous les ingrédients inclus (dépendances)</li>
+                    <li>Instructions simples (juste réchauffer)</li>
+                    <li>Fonctionne dans n'importe quel four (Windows, Mac, Linux)</li>
+                    <li>Même qualité partout, à chaque fois</li>
+                </ol>
+                <p><strong>Avantages :</strong></p>
+                <ul>
+                    <li>Rapide à déployer (quelques secondes)</li>
+                    <li>Portable (fonctionne partout)</li>
+                    <li>Reproductible (même résultat toujours)</li>
+                    <li>"Ça marche partout !"</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Pourquoi Docker a été créé ?</h3>
+        
+        <div class="info-box warning">
+            <div class="title">Le problème classique en développement</div>
+            <p><strong>La phrase que tout développeur a entendue :</strong></p>
+            <p style="font-size: 1.3rem; text-align: center; margin: 1rem 0; color: #F59E0B; font-weight: bold;">"Ça marche sur ma machine !"</p>
+            
+            <p><strong>Scénario réel :</strong></p>
+            <ol>
+                <li>Vous développez une application sur votre ordinateur → <strong>Ça fonctionne parfaitement</strong></li>
+                <li>Vous envoyez le code à un collègue → <strong>Ça ne marche pas chez lui</strong></li>
+                <li>Vous déployez en production → <strong>Ça plante mystérieusement</strong></li>
+            </ol>
+            
+            <p><strong>Pourquoi ? Les différences d'environnement :</strong></p>
+            <ul>
+                <li><strong>Versions différentes</strong> : Vous avez Node.js 18, le serveur a Node.js 14</li>
+                <li><strong>Dépendances manquantes</strong> : Une bibliothèque n'est pas installée sur le serveur</li>
+                <li><strong>Systèmes différents</strong> : Vous êtes sur Mac, le serveur est sur Linux</li>
+                <li><strong>Configurations différentes</strong> : Variables d'environnement absentes</li>
+            </ul>
+            
+            <p><strong>Résultat :</strong> Vous passez des heures/jours à débugger des problèmes d'environnement au lieu de coder !</p>
+        </div>
+
+        <div class="info-box success">
+            <div class="title">La solution Docker - Comment ça règle le problème</div>
+            <p>Docker résout ce problème en <strong>emballant TOUT dans un conteneur</strong> :</p>
+            
+            <div class="code-block">
+<span class="code-comment"># Votre conteneur Docker contient :</span>
+
+CONTENEUR "mon-application"
+├── Alpine Linux 3.18 (5 MB)
+├── Node.js 18.15.0 (exactement cette version)
+├── npm 9.5.0
+├── Toutes les dépendances de package.json
+│   ├── express@4.18.2
+│   ├── mongoose@7.0.3
+│   └── ... (toutes les autres)
+├── Votre code source complet
+├── Variables d'environnement
+└── Configuration serveur
+
+<span class="code-comment"># Ce conteneur fonctionne IDENTIQUEMENT sur :</span>
+Votre Mac de développement
+Le PC Windows de votre collègue
+Le serveur Linux de production
+Le Raspberry Pi de votre oncle
+            </div>
+            
+            <p><strong>Résultat magique :</strong> Si ça marche sur votre machine, ça marchera PARTOUT !</p>
+        </div>
+
+        <h3> Docker vs Machine Virtuelle (VM) - La différence essentielle</h3>
+        
+        <p>Beaucoup de gens confondent Docker avec les machines virtuelles. Voici les différences :</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Critère</th>
+                    <th style="width: 40%;">Docker (Conteneur)</th>
+                    <th style="width: 40%;">Machine Virtuelle (VM)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Taille</strong></td>
+                    <td><strong>Très léger</strong><br>5-500 MB en général<br>Exemple : Alpine Linux = 5 MB</td>
+                    <td><strong>Très lourd</strong><br>2-20 GB en général<br>Exemple : Ubuntu VM = 4 GB</td>
+                </tr>
+                <tr>
+                    <td><strong>Démarrage</strong></td>
+                    <td><strong>Ultra-rapide</strong><br>1-3 secondes<br>Instantané !</td>
+                    <td><strong>Lent</strong><br>30 secondes - 2 minutes<br>Doit booter l'OS complet</td>
+                </tr>
+                <tr>
+                    <td><strong>Performances</strong></td>
+                    <td><strong>Excellentes</strong><br>Quasi-natives<br>Pas de couche de virtualisation</td>
+                    <td><strong>Bonnes</strong><br>Ralentissement 10-30%<br>Overhead de l'hyperviseur</td>
+                </tr>
+                <tr>
+                    <td><strong>Système d'exploitation</strong></td>
+                    <td><strong>Partagé</strong><br>Utilise le noyau de l'hôte<br>Pas d'OS complet</td>
+                    <td><strong>Complet</strong><br>Chaque VM a son propre OS<br>Kernel indépendant</td>
+                </tr>
+                <tr>
+                    <td><strong>Isolation</strong></td>
+                    <td><strong>Niveau processus</strong><br>Conteneurs partagent le noyau<br>Sécurité par namespaces</td>
+                    <td><strong>Niveau machine</strong><br>Isolation totale<br>Hyperviseur sépare tout</td>
+                </tr>
+                <tr>
+                    <td><strong>Portabilité</strong></td>
+                    <td><strong>Excellente</strong><br>Fonctionne partout<br>Même conteneur dev → prod</td>
+                    <td><strong>Moyenne</strong><br>Fichiers volumineux<br>Dépend de l'hyperviseur</td>
+                </tr>
+                <tr>
+                    <td><strong>Ressources</strong></td>
+                    <td><strong>Très légères</strong><br>50-200 MB RAM par conteneur<br>Peut lancer 100+ conteneurs</td>
+                    <td><strong>Élevées</strong><br>1-4 GB RAM par VM<br>5-10 VMs max sur un PC</td>
+                </tr>
+                <tr>
+                    <td><strong>Cas d'usage</strong></td>
+                    <td><strong>Microservices</strong><br>Applications web<br>CI/CD, DevOps</td>
+                    <td><strong>OS différents</strong><br>Windows sur Mac<br>Tests navigateurs</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Les avantages de Docker pour les développeurs web</h3>
+        
+        <div class="info-box">
+            <div class="title">Pour le développement</div>
+            <ul>
+                <li><strong>Environnement cohérent :</strong> Toute l'équipe travaille dans exactement le même environnement. Fini les "ça ne marche pas chez moi".</li>
+                <li><strong>Installation ultra-rapide :</strong> Un nouveau développeur peut être opérationnel en 10 minutes au lieu de plusieurs heures/jours.</li>
+                <li><strong>Isolation parfaite :</strong> Chaque projet dans son conteneur. Pas de conflits entre versions (Node 14 pour projet A, Node 18 pour projet B).</li>
+                <li><strong>Test facile :</strong> Tester votre app avec différentes versions de Node.js, PHP, Python sans rien installer.</li>
+                <li><strong>Reproductibilité :</strong> Le bug se reproduit exactement pareil chez tous les développeurs.</li>
+            </ul>
+        </div>
+
+        <div class="info-box success">
+            <div class="title">Pour la production et le DevOps</div>
+            <ul>
+                <li><strong>Déploiement simple :</strong> Le MÊME conteneur du développement à la production. Zéro surprise.</li>
+                <li><strong>Scalabilité :</strong> Besoin de plus de puissance ? Dupliquez le conteneur en quelques secondes.</li>
+                <li><strong>Rollback rapide :</strong> Un bug en prod ? Retour à la version précédente en 10 secondes.</li>
+                <li><strong>CI/CD :</strong> Intégration parfaite avec GitHub Actions, GitLab CI, Jenkins...</li>
+                <li><strong>Microservices :</strong> Idéal pour les architectures modernes (chaque service dans son conteneur).</li>
+            </ul>
+        </div>
+
+        <h3>Cas d'usage concrets en développement web</h3>
+
+        <h4>Stack MERN complète en UNE commande</h4>
+        
+        <p>Vous voulez développer une application avec MongoDB, Express, React et Node.js ?</p>
+
+        <div class="code-block">
+<span class="code-comment"># Fichier docker-compose.yml</span>
+version: '3.8'
+services:
+  frontend:
+    image: node:18
+    ports:
+      - "3000:3000"
+    <span class="code-comment"># React tourne sur le port 3000</span>
+  
+  backend:
+    image: node:18
+    ports:
+      - "5000:5000"
+    <span class="code-comment"># Express API sur le port 5000</span>
+  
+  database:
+    image: mongo:6
+    <span class="code-comment"># MongoDB prête à l'emploi</span>
+
+<span class="code-comment"># Une seule commande et TOUT démarre :</span>
+docker-compose up
+
+<span class="code-comment"># Résultat : Environnement complet en 2 minutes !</span>
+        </div>
+
+        <h4>Tester différentes versions sans rien installer</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Tester votre app avec PHP 7.4</span>
+docker run php:7.4 php mon-script.php
+
+<span class="code-comment"># Tester avec PHP 8.2</span>
+docker run php:8.2 php mon-script.php
+
+<span class="code-comment"># Pas besoin d'installer/désinstaller PHP !</span>
+<span class="code-comment"># Chaque version reste isolée dans son conteneur</span>
+        </div>
+
+        <h4>WordPress propre en 5 minutes</h4>
+
+        <div class="code-block">
+<span class="code-comment"># WordPress + MySQL + phpMyAdmin</span>
+docker-compose up
+
+<span class="code-comment"># → WordPress accessible sur http://localhost:8080</span>
+<span class="code-comment"># Fini l'installation MAMP/XAMPP/WAMP !</span>
+        </div>
+
+        <div class="exercise">
+            <h4>Exercice de réflexion</h4>
+            <p><strong>Situation :</strong> Vous devez travailler sur 3 projets simultanément :</p>
+            <ul>
+                <li><strong>Projet A :</strong> E-commerce avec Node.js 14 + MySQL 5.7 + Redis</li>
+                <li><strong>Projet B :</strong> Blog WordPress avec PHP 7.4 + MySQL 8.0</li>
+                <li><strong>Projet C :</strong> API REST avec Python 3.9 + PostgreSQL 14 + MongoDB</li>
+            </ul>
+            
+            <p><strong>Questions :</strong></p>
+            <ol>
+                <li>Sans Docker : Quels problèmes allez-vous rencontrer ?</li>
+                <li>Avec Docker : Comment Docker simplifie-t-il cette situation ?</li>
+                <li>Un collègue rejoint le projet B. Combien de temps pour le mettre en route (avec vs sans Docker) ?</li>
+            </ol>
+            
+            <div style="margin-top: 15px; padding: 15px; background: #F3F4F6; border-left: 4px solid #0DB7ED; border-radius: 4px;">
+                <p><strong>Réponses :</strong></p>
+                <p><strong>Sans Docker :</strong></p>
+                <ul>
+                    <li>Conflits de versions (Node 14 vs Python 3.9, MySQL 5.7 vs 8.0)</li>
+                    <li>Installations multiples et complexes</li>
+                    <li>Configurations différentes sur chaque projet</li>
+                    <li>2-4 heures pour qu'un nouveau dev soit opérationnel</li>
+                </ul>
+                <p><strong>Avec Docker :</strong></p>
+                <ul>
+                    <li>Chaque projet isolé dans ses conteneurs</li>
+                    <li>Pas de conflits de versions</li>
+                    <li><code>docker-compose up</code> et c'est prêt</li>
+                    <li>5 minutes pour qu'un nouveau dev démarre</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Points clés à retenir</h3>
+        
+        <div class="info-box">
+            <div class="title">Ce que vous devez retenir de ce module</div>
+            <ul>
+                <li><strong>Docker = plateforme de conteneurisation</strong>, PAS de virtualisation</li>
+                <li><strong>Conteneur = boîte magique</strong> avec tout le nécessaire pour faire tourner une app</li>
+                <li><strong>Plus léger et rapide qu'une VM</strong> : Mo vs Go, secondes vs minutes</li>
+                <li><strong>Résout "ça marche sur ma machine"</strong> : environnement identique partout</li>
+                <li><strong>Essentiel pour le développement moderne</strong> : DevOps, CI/CD, microservices</li>
+                <li><strong>Portable</strong> : fonctionne sur Windows, Mac, Linux, Cloud</li>
+                <li><strong>Gain de temps énorme</strong> : pour vous et toute l'équipe</li>
+            </ul>
+        </div>
+
+        <div class="info-box success">
+            <div class="title">Prochaine étape</div>
+            <p>Maintenant que vous comprenez <strong>POURQUOI</strong> utiliser Docker, passons au module suivant pour comprendre <strong>COMMENT</strong> ça fonctionne en détail avec les 3 concepts fondamentaux : <strong>Image, Conteneur et Registry</strong> !</p>
+        </div>
+    `
+},
+{
+    id: 2,
+    title: "Module 2 : Image, Conteneur et Registry - Les 3 Piliers",
+    content: `
+        <h3>Les 3 concepts fondamentaux de Docker</h3>
+        
+        <p>Pour maîtriser Docker, vous DEVEZ absolument comprendre ces 3 concepts. Ils sont la base de TOUT ce que vous ferez avec Docker :</p>
+        
+        <div class="schema">
+            <div class="schema-item" style="background: #10B981;">1. IMAGE<br><span style="font-size: 0.8rem;">(Le modèle / Template)</span></div>
+            <div class="schema-arrow">→</div>
+            <div class="schema-item" style="background: #0DB7ED;">2. CONTENEUR<br><span style="font-size: 0.8rem;">(L'instance vivante)</span></div>
+            <div class="schema-arrow">→</div>
+            <div class="schema-item" style="background: #F59E0B;">3. REGISTRY<br><span style="font-size: 0.8rem;">(Le magasin)</span></div>
+        </div>
+
+        <h3>. L'IMAGE Docker - Le Template (Modèle)</h3>
+
+        <div class="info-box">
+            <div class="title"> Définition claire et précise</div>
+            <p>Une <strong>IMAGE Docker</strong> est un fichier <strong>en lecture seule</strong> (immuable) qui contient TOUT ce qu'il faut pour faire tourner une application :</p>
+            <ul>
+                <li><strong>Un système d'exploitation de base</strong> (généralement une version ultra-légère de Linux comme Alpine, Debian Slim, Ubuntu...)</li>
+                <li><strong>Un environnement d'exécution</strong> (Node.js, Python, PHP, Java, Ruby, Go...)</li>
+                <li><strong>Toutes les bibliothèques et dépendances</strong> nécessaires (npm packages, pip packages, composer...)</li>
+                <li><strong>Votre code d'application</strong> (tous vos fichiers .js, .py, .php...)</li>
+                <li><strong>Les fichiers de configuration</strong> (nginx.conf, .env, etc.)</li>
+                <li><strong>Les métadonnées</strong> (ports exposés, variables d'environnement, commande de démarrage...)</li>
+            </ul>
+            <p><strong>IMPORTANT :</strong> L'image est <span class="highlight">INACTIVE</span>. Elle ne fait rien toute seule. C'est juste un fichier sur votre disque dur, comme un fichier ZIP ou ISO.</p>
+        </div>
+
+        <h4>Analogie #1 : L'image = La recette de gâteau</h4>
+        
+        <p>Pour bien comprendre, imaginez une recette de gâteau au chocolat :</p>
+        
+        <div class="comparison">
+            <div class="comparison-item">
+                <h4>Recette de Gâteau au Chocolat</h4>
+                <p><strong>La recette écrite sur papier contient :</strong></p>
+                <ul>
+                    <li><strong>Liste des ingrédients</strong>
+                        <ul>
+                            <li>200g de farine</li>
+                            <li>150g de sucre</li>
+                            <li>100g de chocolat noir</li>
+                            <li>3 œufs</li>
+                            <li>100ml de lait</li>
+                        </ul>
+                    </li>
+                    <li><strong>Les quantités exactes</strong></li>
+                    <li><strong>Les étapes précises à suivre</strong> (ordre des opérations)</li>
+                    <li><strong>Température du four</strong> (180°C)</li>
+                    <li><strong>Temps de cuisson</strong> (30 minutes)</li>
+                </ul>
+                <p><strong>Question :</strong> La recette fait-elle quelque chose toute seule ?</p>
+                <p><strong>Non !</strong> C'est juste des instructions sur papier. Elle ne produit pas de gâteau toute seule.</p>
+            </div>
+            <div class="comparison-item">
+                <h4>Image Docker "mon-app-node"</h4>
+                <p><strong>L'image stockée sur disque contient :</strong></p>
+                <ul>
+                    <li><strong>Ingrédients techniques</strong>
+                        <ul>
+                            <li>Alpine Linux 3.18 (5 MB)</li>
+                            <li>Node.js version 18.15.0</li>
+                            <li>npm 9.5.0</li>
+                            <li>Express 4.18.2</li>
+                            <li>Toutes vos dépendances npm</li>
+                        </ul>
+                    </li>
+                    <li><strong>Configuration précise</strong></li>
+                    <li><strong>Instructions d'exécution</strong> (Dockerfile)</li>
+                    <li><strong>Port à exposer</strong> (3000)</li>
+                    <li><strong>Commande de démarrage</strong> (node server.js)</li>
+                </ul>
+                <p><strong>Question :</strong> L'image fait-elle tourner l'app toute seule ?</p>
+                <p><strong>Non !</strong> C'est juste un fichier sur disque. Il faut la "lancer" pour créer un conteneur.</p>
+            </div>
+        </div>
+
+        <h4>Analogie #2 : L'image = Le programme d'installation</h4>
+        
+        <p>Une autre analogie qui marche bien :</p>
+        
+        <div class="comparison">
+            <div class="comparison-item">
+                <h4>Le fichier d'installation d'un jeu vidéo</h4>
+                <ul>
+                    <li>Vous avez le fichier <code>jeu.exe</code> ou <code>jeu.dmg</code></li>
+                    <li>Il contient tout : moteur de jeu, graphismes, sons, niveaux</li>
+                    <li>Tant que vous ne le lancez pas, rien ne se passe</li>
+                    <li>Vous pouvez l'installer 10 fois sur 10 PC différents</li>
+                </ul>
+                <p><strong>= L'IMAGE Docker</strong></p>
+            </div>
+            <div class="comparison-item">
+                <h4>Le jeu en cours d'exécution</h4>
+                <ul>
+                    <li>Le jeu tourne, vous jouez</li>
+                    <li>Il utilise CPU, RAM, GPU</li>
+                    <li>Vous voyez l'interface, entendez le son</li>
+                    <li>C'est une "instance" du jeu</li>
+                </ul>
+                <p><strong>= Le CONTENEUR Docker</strong></p>
+            </div>
+        </div>
+
+        <h4>Structure en COUCHES (Layers) - Concept TRÈS important !</h4>
+        
+        <p>Une image Docker n'est PAS un gros fichier monolithique. C'est un <strong>empilement de couches</strong>, comme un millefeuille ou un sandwich :</p>
+
+        <div class="code-block">
+┌─────────────────────────────────────────────────┐
+│   Couche 4 : Votre code JavaScript           │ ← 500 KB
+│     (server.js, routes/, controllers/)          │   (Change SOUVENT)
+├─────────────────────────────────────────────────┤
+│   Couche 3 : node_modules                     │ ← 50 MB
+│     (npm install - toutes les dépendances)      │   (Change PARFOIS)
+├─────────────────────────────────────────────────┤
+│   Couche 2 : Node.js v18 runtime              │ ← 100 MB
+│     (Binaire Node.js + npm)                     │   (Change RAREMENT)
+├─────────────────────────────────────────────────┤
+│   Couche 1 : Alpine Linux (OS de base)        │ ← 5 MB
+│     (Système minimal)                           │   (Change JAMAIS)
+└─────────────────────────────────────────────────┘
+
+<span class="code-comment">Caractéristiques importantes :</span>
+- Chaque couche est IMMUABLE (ne change jamais)
+- Les couches du bas sont PARTAGÉES entre plusieurs images
+- Seules les couches modifiées sont reconstruites
+        </div>
+
+        <div class="info-box success">
+            <div class="title">Pourquoi des couches ? Les avantages ÉNORMES !</div>
+            
+            <p><strong>Builds beaucoup plus rapides</strong></p>
+            <p>Si vous modifiez juste votre code (couche 4), Docker ne reconstruit PAS :</p>
+            <ul>
+                <li>Alpine Linux (déjà en cache)</li>
+                <li>Node.js (déjà en cache)</li>
+                <li>node_modules (déjà en cache)</li>
+                <li>Seulement votre code !</li>
+            </ul>
+            <p><strong>Résultat :</strong> Build en 2 secondes au lieu de 5 minutes !</p>
+            
+            <p><strong>Économie d'espace disque MASSIVE</strong></p>
+            <p>Vous avez 10 projets Node.js différents ?</p>
+            <ul>
+                <li>Les couches Alpine Linux et Node.js sont partagées</li>
+                <li>Vous ne les stockez qu'UNE SEULE fois !</li>
+                <li>Au lieu de 10 x 105 MB = 1 GB, vous avez 105 MB + (10 x vos codes)</li>
+            </ul>
+            
+            <p><strong>Téléchargements optimisés</strong></p>
+            <p>Quand vous téléchargez une image :</p>
+            <ul>
+                <li>Docker vérifie quelles couches vous avez déjà</li>
+                <li>Il télécharge SEULEMENT les couches manquantes</li>
+                <li>Gain de temps et de bande passante énorme</li>
+            </ul>
+        </div>
+
+        <h4>Commandes pratiques pour gérer les images</h4>
+
+        <div class="code-block">
+<span class="code-comment"># 1. Télécharger une image depuis Docker Hub</span>
+docker pull node:18-alpine
+
+<span class="code-comment"># Résultat : Docker télécharge les couches</span>
+18-alpine: Pulling from library/node
+96526aa774ef: Pull complete  <span class="code-comment">← Couche 1 (Alpine Linux)</span>
+f0e3bef4e7bd: Pull complete  <span class="code-comment">← Couche 2 (Node.js)</span>
+5e2fe6aac1a2: Pull complete  <span class="code-comment">← Couche 3 (npm)</span>
+96d15bb22e7f: Pull complete  <span class="code-comment">← Couche 4 (config)</span>
+Digest: sha256:abc123...
+Status: Downloaded newer image for node:18-alpine
+
+<span class="code-comment"># 2. Voir toutes vos images locales</span>
+docker images
+
+<span class="code-comment"># Résultat :</span>
+REPOSITORY    TAG         IMAGE ID       CREATED       SIZE
+node          18-alpine   abc123def456   2 days ago    176MB
+nginx         alpine      789ghi012jkl   1 week ago    23.5MB
+postgres      15          345mno678pqr   2 weeks ago   379MB
+mon-app       latest      012jkl345mno   5 mins ago    200MB
+
+<span class="code-comment"># 3. Voir l'historique des couches d'une image</span>
+docker history node:18-alpine
+
+<span class="code-comment"># Résultat : toutes les couches avec leur taille</span>
+IMAGE          CREATED BY                                      SIZE
+abc123def456   CMD ["node"]                                    0B
+def456ghi789   EXPOSE 3000                                     0B
+ghi789jkl012   COPY . /app                                     15kB
+jkl012mno345   RUN npm install                                 45MB
+mno345pqr678   WORKDIR /app                                    0B
+pqr678stu901   RUN apk add nodejs npm                          100MB
+stu901vwx234   ADD alpine-minirootfs.tar.gz                    5.6MB
+
+<span class="code-comment"># 4. Supprimer une image</span>
+docker rmi node:18-alpine
+
+<span class="code-comment"># 5. Supprimer TOUTES les images inutilisées</span>
+docker image prune
+        </div>
+
+        <h3>2. Le CONTENEUR - L'Instance Vivante</h3>
+
+        <div class="info-box">
+            <div class="title">Définition claire et précise</div>
+            <p>Un <strong>CONTENEUR</strong> est une <strong>instance en cours d'exécution</strong> d'une image Docker.</p>
+            <p>C'est l'image qui "prend vie" et devient une <strong>application qui tourne réellement</strong> sur votre machine, avec :</p>
+            <ul>
+                <li>Des processus en cours d'exécution</li>
+                <li>De la mémoire RAM allouée</li>
+                <li>Un système de fichiers modifiable (en couche au-dessus de l'image)</li>
+                <li>Une interface réseau virtuelle</li>
+                <li>Des ports mappés vers l'hôte</li>
+            </ul>
+            <p><strong>Analogie :</strong> Si l'image est le programme d'installation, le conteneur est le programme lancé et actif en mémoire.</p>
+        </div>
+
+        <h4>Retour à l'analogie de la recette</h4>
+
+        <div class="comparison">
+            <div class="comparison-item">
+                <h4>De la RECETTE au GÂTEAU</h4>
+                <p><strong>Le processus :</strong></p>
+                <p style="text-align: center; font-size: 1.3rem; color: #0DB7ED; font-weight: bold; margin: 1rem 0;">
+                    RECETTE → (vous cuisinez) → GÂTEAU
+                </p>
+                <ul>
+                    <li>Une recette peut faire <strong>plusieurs gâteaux</strong></li>
+                    <li>Chaque gâteau est <strong>unique</strong> (même si même recette)</li>
+                    <li>Vous pouvez faire <strong>10 gâteaux en même temps</strong></li>
+                    <li>Si vous mangez un gâteau, <strong>la recette reste intacte</strong></li>
+                    <li>Vous pouvez <strong>personnaliser</strong> chaque gâteau (glaçage différent)</li>
+                    <li>Chaque gâteau prend de la place dans votre frigo</li>
+                </ul>
+            </div>
+            <div class="comparison-item">
+                <h4>De l'IMAGE au CONTENEUR</h4>
+                <p><strong>Le processus :</strong></p>
+                <p style="text-align: center; font-size: 1.3rem; color: #0DB7ED; font-weight: bold; margin: 1rem 0;">
+                    IMAGE → (docker run) → CONTENEUR
+                </p>
+                <ul>
+                    <li>Une image peut créer <strong>plusieurs conteneurs</strong></li>
+                    <li>Chaque conteneur est <strong>indépendant</strong></li>
+                    <li>Vous pouvez lancer <strong>100 conteneurs en même temps</strong></li>
+                    <li>Si vous supprimez un conteneur, <strong>l'image reste intacte</strong></li>
+                    <li>Vous pouvez <strong>personnaliser</strong> chaque conteneur (variables ENV)</li>
+                    <li>Chaque conteneur consomme de la RAM</li>
+                </ul>
+            </div>
+        </div>
+
+        <h4>Cycle de vie d'un conteneur - États possibles</h4>
+
+        <p>Un conteneur passe par plusieurs états durant sa vie :</p>
+
+        <div class="schema">
+            <div style="margin: 20px 0;">
+                <div class="schema-item" style="background: #6B7280; font-size: 0.9rem;">
+                    <strong>CREATED</strong><br>
+                    <span style="font-size: 0.75rem;">Créé mais pas encore démarré</span>
+                </div>
+                <div class="schema-arrow">→ start</div>
+                <div class="schema-item" style="background: #10B981; font-size: 0.9rem;">
+                    <strong>RUNNING</strong><br>
+                    <span style="font-size: 0.75rem;">Actif, processus en cours</span>
+                </div>
+                <div class="schema-arrow">→ pause</div>
+                <div class="schema-item" style="background: #F59E0B; font-size: 0.9rem;">
+                    <strong>PAUSED</strong><br>
+                    <span style="font-size: 0.75rem;">En pause, peut reprendre</span>
+                </div>
+                <div class="schema-arrow">→ stop</div>
+                <div class="schema-item" style="background: #EF4444; font-size: 0.9rem;">
+                    <strong>STOPPED</strong><br>
+                    <span style="font-size: 0.75rem;">Arrêté, peut redémarrer</span>
+                </div>
+            </div>
+        </div>
+
+        <h4>Commandes pratiques pour gérer les conteneurs</h4>
+
+        <div class="code-block">
+<span class="code-comment"># 1. Créer et démarrer un conteneur (état = RUNNING)</span>
+docker run -d --name mon-nginx nginx:alpine
+
+<span class="code-comment"># Options expliquées :</span>
+<span class="code-comment"># -d = détaché (tourne en arrière-plan)</span>
+<span class="code-comment"># --name = donner un nom au conteneur</span>
+<span class="code-comment"># nginx:alpine = l'image à utiliser</span>
+
+<span class="code-comment"># 2. Voir les conteneurs ACTIFS (RUNNING)</span>
+docker ps
+
+<span class="code-comment"># Résultat :</span>
+CONTAINER ID   IMAGE          STATUS         PORTS     NAMES
+abc123def456   nginx:alpine   Up 2 minutes   80/tcp    mon-nginx
+
+<span class="code-comment"># 3. Voir TOUS les conteneurs (actifs + arrêtés)</span>
+docker ps -a
+
+<span class="code-comment"># 4. Mettre en pause (état = PAUSED)</span>
+docker pause mon-nginx
+<span class="code-comment"># Le conteneur est figé, mais toujours en mémoire</span>
+
+<span class="code-comment"># 5. Reprendre (état = RUNNING)</span>
+docker unpause mon-nginx
+
+<span class="code-comment"># 6. Arrêter proprement (état = STOPPED)</span>
+docker stop mon-nginx
+<span class="code-comment"># Envoie SIGTERM (arrêt propre), attend 10s, puis SIGKILL si nécessaire</span>
+
+<span class="code-comment"># 7. Redémarrer un conteneur arrêté</span>
+docker start mon-nginx
+
+<span class="code-comment"># 8. Supprimer un conteneur (doit être arrêté d'abord)</span>
+docker rm mon-nginx
+
+<span class="code-comment"># 9. Forcer la suppression (même si actif)</span>
+docker rm -f mon-nginx
+
+<span class="code-comment"># IMPORTANT : Supprimer le conteneur NE supprime PAS l'image !</span>
+<span class="code-comment"># L'image nginx:alpine existe toujours sur votre disque</span>
+        </div>
+
+        <h4>IMAGE vs CONTENEUR - Tableau comparatif COMPLET</h4>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Critère</th>
+                    <th style="width: 40%;">IMAGE</th>
+                    <th style="width: 40%;">CONTENEUR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Nature</strong></td>
+                    <td>Fichier statique (template / modèle / blueprint)</td>
+                    <td>Instance vivante (processus en cours d'exécution)</td>
+                </tr>
+                <tr>
+                    <td><strong>État</strong></td>
+                    <td>Inactive (dort sur le disque dur)</td>
+                    <td>Active (tourne en mémoire RAM)</td>
+                </tr>
+                <tr>
+                    <td><strong>Modification</strong></td>
+                    <td>Lecture seule (immuable, ne change jamais)</td>
+                    <td>Modifiable (système de fichiers temporaire en couche)</td>
+                </tr>
+                <tr>
+                    <td><strong>Quantité</strong></td>
+                    <td>1 image unique avec un ID spécifique</td>
+                    <td>N conteneurs possibles (1, 10, 100, 1000...)</td>
+                </tr>
+                <tr>
+                    <td><strong>Stockage</strong></td>
+                    <td>Sur disque dur (dans /var/lib/docker/)</td>
+                    <td>En mémoire RAM + disque pour logs/volumes</td>
+                </tr>
+                <tr>
+                    <td><strong>Suppression</strong></td>
+                    <td>Supprime le template (peut recréer des conteneurs ensuite)</td>
+                    <td>Supprime l'instance (l'image reste intacte)</td>
+                </tr>
+                <tr>
+                    <td><strong>Taille</strong></td>
+                    <td>Taille fixe (ex: node:18-alpine = 176 MB)</td>
+                    <td>Taille variable (image + données créées)</td>
+                </tr>
+                <tr>
+                    <td><strong>Commandes</strong></td>
+                    <td><code>docker images</code><br><code>docker pull</code><br><code>docker build</code><br><code>docker rmi</code></td>
+                    <td><code>docker ps</code><br><code>docker run</code><br><code>docker stop</code><br><code>docker rm</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Analogie 1</strong></td>
+                    <td>Recette de gâteau écrite</td>
+                    <td>Gâteau cuit et prêt à manger</td>
+                </tr>
+                <tr>
+                    <td><strong>Analogie 2</strong></td>
+                    <td>Fichier d'installation (.exe, .dmg)</td>
+                    <td>Programme en cours d'exécution</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>Exemple concret : 3 conteneurs depuis 1 image</h4>
+
+        <p>Pour bien comprendre la relation 1 image → N conteneurs :</p>
+
+        <div class="code-block">
+<span class="code-comment"># Créons 3 serveurs Nginx DIFFÉRENTS depuis la MÊME image</span>
+
+<span class="code-comment"># Conteneur 1 : serveur web sur le port 8080</span>
+docker run -d -p 8080:80 --name nginx1 nginx:alpine
+
+<span class="code-comment"># Conteneur 2 : serveur web sur le port 8081</span>
+docker run -d -p 8081:80 --name nginx2 nginx:alpine
+
+<span class="code-comment"># Conteneur 3 : serveur web sur le port 8082</span>
+docker run -d -p 8082:80 --name nginx3 nginx:alpine
+
+<span class="code-comment"># Vérification : 3 conteneurs ACTIFS</span>
+docker ps
+
+<span class="code-comment"># Résultat :</span>
+CONTAINER ID   IMAGE          PORTS                  NAMES
+abc123         nginx:alpine   0.0.0.0:8080->80/tcp   nginx1
+def456         nginx:alpine   0.0.0.0:8081->80/tcp   nginx2
+ghi789         nginx:alpine   0.0.0.0:8082->80/tcp   nginx3
+
+<span class="code-comment"># On a maintenant 3 serveurs web indépendants !</span>
+<span class="code-comment"># Accessibles sur :</span>
+<span class="code-comment"># http://localhost:8080</span>
+<span class="code-comment"># http://localhost:8081</span>
+<span class="code-comment"># http://localhost:8082</span>
+
+<span class="code-comment"># Mais combien d'images sur le disque ?</span>
+docker images | grep nginx
+
+<span class="code-comment"># Résultat :</span>
+nginx    alpine    23.5MB  <span class="code-comment">← UNE SEULE image pour 3 conteneurs !</span>
+
+<span class="code-comment"># Économie d'espace : 23.5 MB au lieu de 3 x 23.5 = 70.5 MB</span>
+        </div>
+
+        <h3> 3. Le REGISTRY - Le Magasin d'Images</h3>
+
+        <div class="info-box">
+            <div class="title"> Définition claire et précise</div>
+            <p>Un <strong>REGISTRY</strong> (registre en français) est un <strong>dépôt centralisé qui stocke et distribue des images Docker</strong>.</p>
+            <p>C'est exactement comme :</p>
+            <ul>
+                <li><strong>GitHub / GitLab</strong> pour le code source</li>
+                <li><strong>App Store / Google Play</strong> pour les applications mobiles</li>
+                <li><strong>npm</strong> (npmjs.com) pour les packages JavaScript</li>
+                <li><strong>PyPI</strong> (pypi.org) pour les packages Python</li>
+                <li><strong>Packagist</strong> pour les packages PHP Composer</li>
+            </ul>
+        </div>
+
+        <h4>Docker Hub - Le registry officiel et principal</h4>
+
+        <p><strong>Docker Hub</strong> (<a href="https://hub.docker.com" target="_blank">hub.docker.com</a>) est le registre public officiel de Docker, hébergé et maintenu par Docker Inc.</p>
+
+        <div class="info-box success">
+            <div class="title">Ce que vous trouvez sur Docker Hub</div>
+            <ul>
+                <li><strong>Images officielles</strong> (vérifiées par Docker Inc.)
+                    <ul>
+                        <li><strong>Langages :</strong> node, python, php, java, ruby, golang, rust</li>
+                        <li><strong>Bases de données :</strong> postgres, mysql, mongodb, redis, elasticsearch</li>
+                        <li><strong>Serveurs web :</strong> nginx, apache, httpd</li>
+                        <li><strong>OS :</strong> ubuntu, debian, alpine, centos</li>
+                    </ul>
+                </li>
+                <li><strong>Images communautaires</strong> (créées par d'autres développeurs du monde entier)</li>
+                <li><strong>Images d'entreprises</strong> (Microsoft, Google, Amazon, Oracle...)</li>
+                <li><strong>Vos images privées</strong> (compte gratuit ou payant)</li>
+            </ul>
+            <p style="font-weight: bold; color: #0DB7ED; margin-top: 10px; font-size: 1.1rem;"> Plus de <span class="highlight">100 millions d'images</span> disponibles ! </p>
+        </div>
+
+        <h4>Workflow avec le Registry - Comment ça marche</h4>
+
+        <div class="schema">
+            <p><strong>PULL : Télécharger une image depuis Docker Hub</strong></p>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin: 20px 0;">
+                <div class="schema-item" style="background: #0DB7ED; width: 200px;">
+                    Docker Hub<br>
+                    <span style="font-size: 0.8rem;">(hub.docker.com)</span>
+                </div>
+                <div class="schema-arrow" style="font-size: 1.5rem;">→ pull →</div>
+                <div class="schema-item" style="background: #10B981; width: 200px;">
+                    Votre machine<br>
+                    <span style="font-size: 0.8rem;">(images locales)</span>
+                </div>
+            </div>
+            <div class="code-block">
+docker pull nginx:alpine
+<span class="code-comment"># Télécharge l'image nginx version alpine depuis Docker Hub</span>
+            </div>
+        </div>
+
+        <div class="schema">
+            <p><strong>PUSH : Publier votre image sur Docker Hub</strong></p>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin: 20px 0;">
+                <div class="schema-item" style="background: #10B981; width: 200px;">
+                    Votre machine<br>
+                    <span style="font-size: 0.8rem;">(votre image créée)</span>
+                </div>
+                <div class="schema-arrow" style="font-size: 1.5rem;">→ push →</div>
+                <div class="schema-item" style="background: #0DB7ED; width: 200px;">
+                    Docker Hub<br>
+                    <span style="font-size: 0.8rem;">(partagée publiquement)</span>
+                </div>
+            </div>
+            <div class="code-block">
+docker push votreusername/mon-app:v1.0
+<span class="code-comment"># Publie votre image sur Docker Hub pour que d'autres puissent l'utiliser</span>
+            </div>
+        </div>
+
+        <h4>Commandes pour interagir avec Docker Hub</h4>
+
+        <div class="code-block">
+<span class="code-comment"># 1. Se connecter à Docker Hub (nécessite un compte gratuit)</span>
+docker login
+<span class="code-comment"># Entrez votre username et mot de passe Docker Hub</span>
+
+<span class="code-comment"># 2. Rechercher des images sur Docker Hub</span>
+docker search mongodb
+
+<span class="code-comment"># Résultat : liste des images avec :</span>
+<span class="code-comment"># - NAME (nom de l'image)</span>
+<span class="code-comment"># - STARS (popularité)</span>
+<span class="code-comment"># - OFFICIAL (image officielle ?)</span>
+<span class="code-comment"># - AUTOMATED (build automatique ?)</span>
+
+<span class="code-comment"># 3. Télécharger (pull) une image</span>
+docker pull nginx:latest
+docker pull postgres:15
+docker pull node:18-alpine
+
+<span class="code-comment"># 4. Taguer votre image avant publication</span>
+docker tag mon-app:latest votreusername/mon-app:v1.0
+
+<span class="code-comment"># 5. Publier (push) votre image</span>
+docker push votreusername/mon-app:v1.0
+
+<span class="code-comment"># 6. Se déconnecter</span>
+docker logout
+        </div>
+
+        <div class="exercise">
+            <h4>Exercice pratique - Manipuler les 3 concepts</h4>
+            <p><strong>Objectif :</strong> Comprendre la relation Image → Conteneur → Registry</p>
+            
+            <div class="code-block">
+<span class="code-comment"># Étape 1 : REGISTRY - Télécharger depuis Docker Hub</span>
+docker pull node:18-alpine
+
+<span class="code-comment"># Étape 2 : IMAGE - Vérifier que l'image est présente localement</span>
+docker images
+<span class="code-comment"># → Vous devez voir node:18-alpine dans la liste</span>
+
+<span class="code-comment"># Étape 3 : CONTENEUR - Créer un conteneur depuis l'image</span>
+docker run -it --name test-node node:18-alpine node --version
+<span class="code-comment"># → Affiche : v18.x.x puis le conteneur s'arrête</span>
+
+<span class="code-comment"># Étape 4 : Lister TOUS les conteneurs (actifs + arrêtés)</span>
+docker ps -a
+<span class="code-comment"># → Vous voyez test-node avec STATUS = Exited</span>
+
+<span class="code-comment"># Étape 5 : Supprimer le conteneur</span>
+docker rm test-node
+
+<span class="code-comment"># Étape 6 : Vérifier que l'IMAGE existe toujours</span>
+docker images
+<span class="code-comment"># → node:18-alpine est toujours là !</span>
+
+<span class="code-comment"># Étape 7 : Créer 3 conteneurs SIMULTANÉS depuis la MÊME image</span>
+docker run -d --name node1 node:18-alpine sleep 3600
+docker run -d --name node2 node:18-alpine sleep 3600
+docker run -d --name node3 node:18-alpine sleep 3600
+
+<span class="code-comment"># Étape 8 : Vérifier : 3 conteneurs actifs, 1 seule image</span>
+docker ps
+<span class="code-comment"># → 3 conteneurs RUNNING</span>
+
+docker images | grep node
+<span class="code-comment"># → 1 seule image node:18-alpine</span>
+
+<span class="code-comment"># Nettoyage</span>
+docker rm -f node1 node2 node3
+            </div>
+            
+            <p><strong>Questions de compréhension :</strong></p>
+            <ol>
+                <li>Combien d'images node:18-alpine avez-vous sur votre disque ?</li>
+                <li>Si vous supprimez node1, node2 et node3, l'image disparaît-elle ?</li>
+                <li>Pouvez-vous créer 100 conteneurs depuis 1 seule image ?</li>
+                <li>Que se passe-t-il si vous faites <code>docker rmi node:18-alpine</code> alors que des conteneurs tournent encore ?</li>
+            </ol>
+            
+            <div style="margin-top: 15px; padding: 15px; background: #F3F4F6; border-left: 4px solid #10B981; border-radius: 4px;">
+                <p><strong>Réponses :</strong></p>
+                <ol>
+                    <li><strong>Une seule image</strong> (partagée par tous les conteneurs)</li>
+                    <li><strong>Non !</strong> L'image reste intacte sur le disque</li>
+                    <li><strong>Oui !</strong> (limité uniquement par vos ressources CPU/RAM)</li>
+                    <li>Docker refuse et affiche une erreur : "image is being used by running container". Il faut d'abord arrêter et supprimer tous les conteneurs, ou forcer avec <code>docker rmi -f</code></li>
+                </ol>
+            </div>
+        </div>
+
+        <h3>Points clés à retenir</h3>
+        
+        <div class="info-box">
+            <div class="title">Ce que vous devez absolument retenir</div>
+            <ul>
+                <li><strong>IMAGE</strong> = Template inactif, fichier sur disque (recette, programme d'installation)</li>
+                <li><strong>CONTENEUR</strong> = Instance active qui tourne (gâteau, programme en cours)</li>
+                <li><strong>REGISTRY</strong> = Magasin d'images (Docker Hub, ECR, GCR...)</li>
+                <li><strong>Relation : 1 image → N conteneurs</strong> (relation un vers plusieurs)</li>
+                <li><strong>Images = couches empilées</strong> (optimisation espace et vitesse)</li>
+                <li><strong>Docker Hub = GitHub des images</strong> (100+ millions d'images gratuites)</li>
+                <li><strong>pull</strong> = télécharger depuis registry, <strong>push</strong> = publier vers registry</li>
+                <li><strong>Supprimer un conteneur ≠ supprimer l'image</strong> (très important !)</li>
+                <li><strong>Une image est immuable</strong>, un conteneur peut être modifié</li>
+            </ul>
+        </div>
+
+        <div class="info-box success">
+            <div class="title">Prochaine étape</div>
+            <p>Maintenant que vous maîtrisez parfaitement les 3 concepts fondamentaux (Image, Conteneur, Registry), vous êtes prêt à passer au module suivant : <strong>Les Commandes Docker Essentielles</strong> pour manipuler images et conteneurs au quotidien !</p>
+        </div>
+    `
+},
+{
+    id: 2,
+    title: "Module 2 : Les 3 Concepts Fondamentaux - Image, Conteneur, Registry",
+    content: `
+        <h3>Les 3 piliers de Docker à maîtriser absolument</h3>
+        
+        <p>Pour comprendre Docker, vous devez maîtriser 3 concepts fondamentaux. Ces 3 concepts sont la BASE de TOUT dans Docker. Sans les comprendre, vous serez perdus.</p>
+        
+        <div class="schema">
+            <div class="schema-item" style="background: #10B981;">1. IMAGE<br><small>(Le modèle/template)</small></div>
+            <div class="schema-arrow">→</div>
+            <div class="schema-item" style="background: #0DB7ED;">2. CONTENEUR<br><small>(L'instance qui tourne)</small></div>
+            <div class="schema-arrow">→</div>
+            <div class="schema-item" style="background: #F59E0B;">3. REGISTRY<br><small>(Le magasin d'images)</small></div>
+        </div>
+
+        <h3>CONCEPT 1 : L'IMAGE Docker - Le Template/Modèle</h3>
+
+        <div class="info-box">
+            <div class="title">Définition ultra-claire</div>
+            <p>Une <strong>IMAGE Docker</strong> est un fichier <span class="highlight">en lecture seule</span> (= immuable, on ne peut pas le modifier) qui contient TOUT ce qu'il faut pour faire tourner une application :</p>
+            <ul>
+                <li><strong>Un système d'exploitation de base</strong> (généralement une version ultra-légère de Linux comme Alpine)</li>
+                <li><strong>Un environnement d'exécution</strong> (Node.js, Python, PHP, Java, Ruby...)</li>
+                <li><strong>Toutes les bibliothèques et dépendances</strong> nécessaires</li>
+                <li><strong>Votre code d'application</strong> complet</li>
+                <li><strong>Tous les fichiers de configuration</strong></li>
+            </ul>
+            <p><strong>TRÈS IMPORTANT :</strong> L'image est <span class="highlight">INACTIVE</span>. Elle ne fait rien toute seule. C'est juste un "plan" ou une "recette" qui attend d'être utilisée.</p>
+        </div>
+
+        <h4>Analogie #1 : L'image = La recette de gâteau</h4>
+        
+        <p>Pour bien comprendre, imaginez une recette de gâteau au chocolat :</p>
+        
+        <div class="comparison">
+            <div class="comparison-item">
+                <h4>Recette de Gâteau au Chocolat</h4>
+                <p><strong>La recette écrite contient :</strong></p>
+                <ul>
+                    <li><strong>Liste des ingrédients précis</strong>
+                        <ul>
+                            <li>200g de farine</li>
+                            <li>150g de sucre</li>
+                            <li>100g de chocolat</li>
+                            <li>3 œufs</li>
+                            <li>100ml de lait</li>
+                        </ul>
+                    </li>
+                    <li><strong>Les quantités exactes</strong></li>
+                    <li><strong>Les étapes à suivre dans l'ordre</strong></li>
+                    <li><strong>Température du four</strong> : 180°C</li>
+                    <li><strong>Temps de cuisson</strong> : 30 minutes</li>
+                </ul>
+                <p style="margin-top: 1rem; padding: 1rem; background: #FEE2E2; border-radius: 8px;">
+                    <strong>Question :</strong> Est-ce que la recette fait quelque chose toute seule ?<br>
+                    <strong>Non !</strong> C'est juste des instructions sur papier. Ça ne produit pas de gâteau magiquement.
+                </p>
+            </div>
+            <div class="comparison-item">
+                <h4>Image Docker "mon-app-node"</h4>
+                <p><strong>L'image Docker contient :</strong></p>
+                <ul>
+                    <li><strong>Ingrédients techniques précis</strong>
+                        <ul>
+                            <li>Alpine Linux 3.18 (5 MB)</li>
+                            <li>Node.js version 18.15.0</li>
+                            <li>npm version 9.5.0</li>
+                            <li>express@4.18.2</li>
+                            <li>Votre fichier server.js</li>
+                        </ul>
+                    </li>
+                    <li><strong>Configuration précise</strong></li>
+                    <li><strong>Instructions d'exécution</strong></li>
+                    <li><strong>Variables d'environnement</strong></li>
+                    <li><strong>Port à exposer</strong> : 3000</li>
+                </ul>
+                <p style="margin-top: 1rem; padding: 1rem; background: #FEE2E2; border-radius: 8px;">
+                    <strong>Question :</strong> Est-ce que l'image fait tourner l'application toute seule ?<br>
+                    <strong>Non !</strong> C'est juste un fichier sur votre disque dur. Il ne se passe rien.
+                </p>
+            </div>
+        </div>
+
+        <h4>Analogie #2 : L'image = Le programme d'installation</h4>
+        
+        <p>Pensez à quand vous téléchargez un jeu vidéo ou un logiciel :</p>
+        
+        <div class="info-box">
+            <ul>
+                <li><strong>Le fichier setup.exe ou .dmg</strong> que vous téléchargez = <span class="highlight">IMAGE Docker</span></li>
+                <li><strong>Le jeu/logiciel qui tourne</strong> après installation = <span class="highlight">CONTENEUR Docker</span></li>
+            </ul>
+            <p style="margin-top: 1rem;">Vous pouvez avoir le fichier d'installation sur votre ordinateur (l'image), mais tant que vous ne l'exécutez pas, il ne se passe rien !</p>
+        </div>
+
+        <h4>Structure en COUCHES (Layers) - Concept crucial !</h4>
+        
+        <p>Voici un concept TRÈS important : une image Docker n'est PAS un gros fichier monolithique. C'est un <strong>empilement de couches</strong>, comme un sandwich, un millefeuille, ou des Lego empilés !</p>
+
+        <div class="code-block">
+┌─────────────────────────────────────────────────────────────┐
+│  COUCHE 4 : Votre code JavaScript (server.js, routes/)   │
+│     Taille : 500 KB                                          │
+│     Change : SOUVENT (à chaque modification de code)         │
+└─────────────────────────────────────────────────────────────┘
+                            ↑
+┌─────────────────────────────────────────────────────────────┐
+│  COUCHE 3 : node_modules (toutes vos dépendances npm)    │
+│     Taille : 50 MB                                           │
+│     Change : PARFOIS (quand vous ajoutez une dépendance)     │
+└─────────────────────────────────────────────────────────────┘
+                            ↑
+┌─────────────────────────────────────────────────────────────┐
+│  COUCHE 2 : Node.js v18 runtime complet                  │
+│     Taille : 100 MB                                          │
+│     Change : RAREMENT (upgrade de Node.js)                   │
+└─────────────────────────────────────────────────────────────┘
+                            ↑
+┌─────────────────────────────────────────────────────────────┐
+│  COUCHE 1 : Alpine Linux (OS de base minimal)            │
+│     Taille : 5 MB                                            │
+│     Change : JAMAIS (ou presque)                             │
+└─────────────────────────────────────────────────────────────┘
+
+<span class="code-comment">Total de l'image : 5 + 100 + 50 + 0.5 = 155.5 MB</span>
+
+<span class="code-comment">IMPORTANT : Chaque couche est IMMUABLE (= ne change jamais)</span>
+<span class="code-comment">Les couches du bas sont PARTAGÉES entre plusieurs images</span>
+        </div>
+
+        <div class="info-box success">
+            <div class="title">Pourquoi des couches ? Les avantages ÉNORMES !</div>
+            
+            <p><strong>Builds ultra-rapides grâce au cache :</strong></p>
+            <p>Imaginez que vous modifiez juste votre code (couche 4). Docker va :</p>
+            <ul>
+                <li><strong>Réutiliser</strong> Alpine Linux (couche 1) - déjà en cache</li>
+                <li><strong>Réutiliser</strong> Node.js (couche 2) - déjà en cache</li>
+                <li><strong>Réutiliser</strong> node_modules (couche 3) - déjà en cache</li>
+                <li><strong>Reconstruire SEULEMENT</strong> votre code (couche 4) - 2 secondes !</li>
+            </ul>
+            <p><strong>Résultat :</strong> Build en 2 secondes au lieu de 5 minutes !</p>
+
+            <p><strong>Économie d'espace disque incroyable :</strong></p>
+            <p>Vous avez 10 projets Node.js différents ? Les couches Alpine Linux et Node.js sont <strong>partagées entre toutes les images</strong>.</p>
+            <div class="code-block">
+<span class="code-comment">Sans partage de couches :</span>
+Projet A : 155 MB
+Projet B : 155 MB
+Projet C : 155 MB
+Total : 465 MB
+
+<span class="code-comment">Avec partage de couches Docker :</span>
+Alpine Linux (partagé) : 5 MB
+Node.js (partagé) : 100 MB
+Projet A (node_modules + code) : 50 MB
+Projet B (node_modules + code) : 52 MB
+Projet C (node_modules + code) : 48 MB
+Total : 255 MB → Économie de 210 MB ! 
+            </div>
+
+            <p><strong> Téléchargements optimisés :</strong></p>
+            <p>Quand vous téléchargez une nouvelle image, Docker ne télécharge QUE les couches que vous n'avez pas déjà.</p>
+        </div>
+
+        <h4>Commandes pour manipuler les images</h4>
+
+        <div class="code-block">
+<span class="code-comment"># 1. Télécharger une image depuis Docker Hub</span>
+docker pull node:18-alpine
+
+<span class="code-comment"># Résultat : Docker télécharge les couches une par une</span>
+18-alpine: Pulling from library/node
+96526aa774ef: Pull complete  <span class="code-comment">← Couche 1 (Alpine Linux)</span>
+f0e3bef4e7bd: Pull complete  <span class="code-comment">← Couche 2 (Node.js)</span>
+5e2fe6aac1a2: Pull complete  <span class="code-comment">← Couche 3 (npm)</span>
+96d15bb22e7f: Pull complete  <span class="code-comment">← Couche 4 (configuration)</span>
+Status: Downloaded newer image for node:18-alpine
+
+<span class="code-comment"># 2. Voir toutes vos images locales</span>
+docker images
+
+<span class="code-comment"># Résultat :</span>
+REPOSITORY    TAG         IMAGE ID       CREATED        SIZE
+node          18-alpine   abc123def456   2 days ago     176MB
+nginx         alpine      789ghi012jkl   1 week ago     23.5MB
+postgres      15          345mno678pqr   2 weeks ago    379MB
+
+<span class="code-comment"># 3. Inspecter les couches d'une image</span>
+docker history node:18-alpine
+
+<span class="code-comment"># Résultat : historique de TOUTES les couches</span>
+IMAGE          CREATED BY                                      SIZE
+abc123def456   CMD ["node"]                                    0B
+def456ghi789   EXPOSE 3000                                     0B
+ghi789jkl012   COPY . /app                                     500KB
+jkl012mno345   RUN npm install                                 50MB
+mno345pqr678   WORKDIR /app                                    0B
+pqr678stu901   RUN apk add nodejs                              100MB
+stu901vwx234   ADD alpine-linux.tar                            5MB
+
+<span class="code-comment"># 4. Supprimer une image</span>
+docker rmi node:18-alpine
+
+<span class="code-comment"># 5. Rechercher des images sur Docker Hub</span>
+docker search mongodb
+        </div>
+
+        <h3> CONCEPT 2 : Le CONTENEUR - L'Instance Vivante</h3>
+
+        <div class="info-box">
+            <div class="title"> Définition ultra-claire</div>
+            <p>Un <strong>CONTENEUR</strong> est une <span class="highlight">instance EN COURS D'EXÉCUTION</span> d'une image Docker.</p>
+            <p>C'est l'image qui <strong>"prend vie"</strong> et devient une <strong>application qui tourne réellement</strong> sur votre machine, avec :</p>
+            <ul>
+                <li><strong>Son propre système de fichiers</strong> (isolé des autres)</li>
+                <li><strong>Sa propre interface réseau</strong> (avec son IP)</li>
+                <li><strong>Ses propres processus en cours</strong> (visibles avec <code>docker top</code>)</li>
+                <li><strong>Ses propres variables d'environnement</strong></li>
+            </ul>
+            <p><strong>Analogie :</strong> Si l'image est le programme d'installation, le conteneur est le programme LANCÉ et ACTIF.</p>
+        </div>
+
+        <h4>Retour à l'analogie de la recette</h4>
+
+        <div class="comparison">
+            <div class="comparison-item">
+                <h4>De la RECETTE au GÂTEAU</h4>
+                <p><strong>Le processus complet :</strong></p>
+                <p style="text-align: center; font-size: 1.3rem; color: #0DB7ED; font-weight: bold; margin: 1rem 0;">
+                    RECETTE → (vous cuisinez) → GÂTEAU
+                </p>
+                <p><strong>Observations importantes :</strong></p>
+                <ul>
+                    <li><strong>Une recette</strong> peut faire <strong>plusieurs gâteaux</strong> (10, 100...)</li>
+                    <li><strong>Chaque gâteau est unique</strong> (même si même recette)</li>
+                    <li>Vous pouvez faire <strong>10 gâteaux simultanément</strong> avec la même recette</li>
+                    <li>Si vous <strong>mangez un gâteau</strong>, la recette <strong>reste intacte</strong></li>
+                    <li>Vous pouvez <strong>personnaliser</strong> chaque gâteau (glaçage différent, déco différente)</li>
+                </ul>
+            </div>
+            <div class="comparison-item">
+                <h4>De l'IMAGE au CONTENEUR</h4>
+                <p><strong>Le processus complet :</strong></p>
+                <p style="text-align: center; font-size: 1.3rem; color: #0DB7ED; font-weight: bold; margin: 1rem 0;">
+                    IMAGE → (docker run) → CONTENEUR
+                </p>
+                <p><strong>Observations importantes :</strong></p>
+                <ul>
+                    <li><strong>Une image</strong> peut créer <strong>plusieurs conteneurs</strong> (10, 100...)</li>
+                    <li><strong>Chaque conteneur est indépendant</strong> et isolé</li>
+                    <li>Vous pouvez lancer <strong>100 conteneurs simultanément</strong> depuis la même image</li>
+                    <li>Si vous <strong>supprimez un conteneur</strong>, l'image <strong>reste intacte</strong></li>
+                    <li>Vous pouvez <strong>personnaliser</strong> chaque conteneur (variables ENV différentes, ports différents)</li>
+                </ul>
+            </div>
+        </div>
+
+        <h4>Cycle de vie d'un conteneur - États possibles</h4>
+
+        <p>Un conteneur peut passer par plusieurs états durant sa vie :</p>
+
+        <div class="schema">
+            <div class="schema-item" style="background: #6B7280; font-size: 0.9rem;">
+                <strong>CREATED</strong><br>
+                <small>Créé mais pas encore démarré</small>
+            </div>
+            <div class="schema-arrow">→ start</div>
+            <div class="schema-item" style="background: #10B981; font-size: 0.9rem;">
+                <strong>RUNNING</strong><br>
+                <small>Actif et en cours d'exécution</small>
+            </div>
+            <div class="schema-arrow">→ pause</div>
+            <div class="schema-item" style="background: #F59E0B; font-size: 0.9rem;">
+                <strong>PAUSED</strong><br>
+                <small>En pause (peut reprendre)</small>
+            </div>
+            <div class="schema-arrow">→ stop</div>
+            <div class="schema-item" style="background: #EF4444; font-size: 0.9rem;">
+                <strong>STOPPED</strong><br>
+                <small>Arrêté (peut redémarrer)</small>
+            </div>
+        </div>
+
+        <div class="code-block">
+<span class="code-comment"># 1. Créer ET démarrer un conteneur (État : RUNNING)</span>
+docker run -d --name mon-nginx nginx:alpine
+
+<span class="code-comment"># Explications des options :</span>
+<span class="code-comment"># -d = mode détaché (background, ne bloque pas le terminal)</span>
+<span class="code-comment"># --name = donner un nom facile à retenir au conteneur</span>
+<span class="code-comment"># nginx:alpine = l'image à utiliser</span>
+
+<span class="code-comment"># 2. Voir les conteneurs ACTIFS (RUNNING)</span>
+docker ps
+
+<span class="code-comment"># Résultat :</span>
+CONTAINER ID   IMAGE          STATUS              PORTS     NAMES
+abc123def456   nginx:alpine   Up 2 minutes        80/tcp    mon-nginx
+
+<span class="code-comment"># 3. Mettre en PAUSE (État : PAUSED)</span>
+docker pause mon-nginx
+<span class="code-comment"># Le conteneur est figé en mémoire, mais n'utilise plus le CPU</span>
+
+<span class="code-comment"># 4. Reprendre (État : RUNNING à nouveau)</span>
+docker unpause mon-nginx
+
+<span class="code-comment"># 5. Arrêter proprement (État : STOPPED)</span>
+docker stop mon-nginx
+<span class="code-comment"># Le conteneur s'arrête proprement (signal SIGTERM puis SIGKILL si nécessaire)</span>
+
+<span class="code-comment"># 6. Voir TOUS les conteneurs (actifs ET arrêtés)</span>
+docker ps -a
+
+<span class="code-comment"># Résultat :</span>
+CONTAINER ID   IMAGE          STATUS                      NAMES
+abc123def456   nginx:alpine   Exited (0) 5 seconds ago    mon-nginx
+
+<span class="code-comment"># 7. Redémarrer un conteneur arrêté (État : RUNNING)</span>
+docker start mon-nginx
+
+<span class="code-comment"># 8. Supprimer un conteneur (N'EXISTE PLUS)</span>
+docker rm mon-nginx
+<span class="code-comment"># Le conteneur DOIT être arrêté d'abord !</span>
+<span class="code-comment"># OU forcez avec : docker rm -f mon-nginx</span>
+
+<span class="code-comment"># IMPORTANT : L'image nginx:alpine existe TOUJOURS !</span>
+<span class="code-comment"># On peut recréer un conteneur quand on veut :</span>
+docker run -d --name nouveau-nginx nginx:alpine
+        </div>
+
+        <h4>IMAGE vs CONTENEUR - Tableau comparatif COMPLET</h4>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Critère</th>
+                    <th style="width: 40%;">IMAGE</th>
+                    <th style="width: 40%;">CONTENEUR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Nature</strong></td>
+                    <td>Fichier statique (template, modèle, plan)</td>
+                    <td>Instance vivante (processus en cours d'exécution)</td>
+                </tr>
+                <tr>
+                    <td><strong>État</strong></td>
+                    <td>Inactive (dort sur le disque dur)</td>
+                    <td>Active (tourne en mémoire RAM)</td>
+                </tr>
+                <tr>
+                    <td><strong>Modification</strong></td>
+                    <td>Lecture seule (immuable, ne peut PAS être modifiée)</td>
+                    <td>Modifiable (peut créer/modifier des fichiers temporairement)</td>
+                </tr>
+                <tr>
+                    <td><strong>Quantité</strong></td>
+                    <td>1 image unique avec un nom:tag</td>
+                    <td>N conteneurs possibles (1, 10, 100, 1000...)</td>
+                </tr>
+                <tr>
+                    <td><strong>Stockage</strong></td>
+                    <td>Sur disque dur persistant</td>
+                    <td>En mémoire RAM + disque temporaire</td>
+                </tr>
+                <tr>
+                    <td><strong>Suppression</strong></td>
+                    <td>Supprime le template (tous les conteneurs basés dessus doivent être arrêtés)</td>
+                    <td>Supprime l'instance (l'image reste intacte)</td>
+                </tr>
+                <tr>
+                    <td><strong>Taille</strong></td>
+                    <td>Taille fixe définie (ex: 176 MB)</td>
+                    <td>Taille variable (image + données créées pendant l'exécution)</td>
+                </tr>
+                <tr>
+                    <td><strong>Commandes principales</strong></td>
+                    <td><code>docker images</code><br><code>docker pull</code><br><code>docker build</code><br><code>docker rmi</code></td>
+                    <td><code>docker ps</code><br><code>docker run</code><br><code>docker stop</code><br><code>docker rm</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Analogie cuisine</strong></td>
+                    <td>Recette de gâteau écrite</td>
+                    <td>Gâteau cuit et prêt à manger</td>
+                </tr>
+                <tr>
+                    <td><strong>Analogie informatique</strong></td>
+                    <td>Fichier d'installation (.exe, .dmg)</td>
+                    <td>Programme lancé et actif dans le Gestionnaire de tâches</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>Exemple pratique : 3 conteneurs depuis 1 seule image</h4>
+
+        <p>Pour bien comprendre la relation 1 image → N conteneurs, voici un exemple concret :</p>
+
+        <div class="code-block">
+<span class="code-comment"># On va créer 3 serveurs web Nginx DIFFÉRENTS depuis la MÊME image</span>
+
+<span class="code-comment"># Conteneur 1 : serveur web sur le port 8080</span>
+docker run -d -p 8080:80 --name nginx-site-1 nginx:alpine
+
+<span class="code-comment"># Conteneur 2 : serveur web sur le port 8081</span>
+docker run -d -p 8081:80 --name nginx-site-2 nginx:alpine
+
+<span class="code-comment"># Conteneur 3 : serveur web sur le port 8082</span>
+docker run -d -p 8082:80 --name nginx-site-3 nginx:alpine
+
+<span class="code-comment"># Vérifier : on a bien 3 conteneurs ACTIFS</span>
+docker ps
+
+<span class="code-comment"># Résultat :</span>
+CONTAINER ID   IMAGE          PORTS                  NAMES
+abc123         nginx:alpine   0.0.0.0:8080->80/tcp   nginx-site-1
+def456         nginx:alpine   0.0.0.0:8081->80/tcp   nginx-site-2
+ghi789         nginx:alpine   0.0.0.0:8082->80/tcp   nginx-site-3
+
+<span class="code-comment"># On a maintenant 3 serveurs web INDÉPENDANTS qui tournent ! </span>
+<span class="code-comment"># Accessible sur :</span>
+<span class="code-comment"># → http://localhost:8080 (site 1)</span>
+<span class="code-comment"># → http://localhost:8081 (site 2)</span>
+<span class="code-comment"># → http://localhost:8082 (site 3)</span>
+
+<span class="code-comment"># Mais combien d'images sur le disque ?</span>
+docker images | grep nginx
+
+<span class="code-comment"># Résultat :</span>
+REPOSITORY    TAG       SIZE
+nginx         alpine    23.5MB  <span class="code-comment">← Une seule image partagée !</span>
+
+<span class="code-comment"># CONCLUSION : 3 conteneurs actifs, 1 seule image stockée !</span>
+        </div>
+
+        <h3>CONCEPT 3 : Le REGISTRY - Le Magasin d'Images</h3>
+
+        <div class="info-box">
+            <div class="title">Définition ultra-claire</div>
+            <p>Un <strong>REGISTRY</strong> (registre en français, ou "dépôt") est un <span class="highlight">serveur centralisé qui stocke et distribue des images Docker</span>.</p>
+            <p>C'est exactement comme :</p>
+            <ul>
+                <li><strong>GitHub</strong> pour le code source</li>
+                <li><strong>App Store / Play Store</strong> pour les applications mobiles</li>
+                <li><strong>npm</strong> pour les packages JavaScript</li>
+                <li><strong>PyPI</strong> pour les packages Python</li>
+                <li><strong>RubyGems</strong> pour les packages Ruby</li>
+            </ul>
+        </div>
+
+        <h4>Docker Hub - Le registry principal et officiel</h4>
+
+        <p><strong>Docker Hub</strong> (<a href="https://hub.docker.com" target="_blank">hub.docker.com</a>) est le registre PUBLIC officiel de Docker, maintenu par Docker Inc.</p>
+
+        <div class="info-box success">
+            <div class="title">Ce que vous trouvez sur Docker Hub</div>
+            
+            <p><strong>Images officielles  (vérifiées par Docker Inc.)</strong></p>
+            <ul>
+                <li><strong>Langages :</strong> node, python, php, java, ruby, golang, rust...</li>
+                <li><strong>Bases de données :</strong> postgres, mysql, mongodb, redis, elasticsearch...</li>
+                <li><strong>Serveurs web :</strong> nginx, apache, httpd, caddy...</li>
+                <li><strong>Systèmes :</strong> ubuntu, alpine, debian, centos...</li>
+            </ul>
+            
+            <p><strong>Images communautaires </strong></p>
+            <p>Créées et maintenues par d'autres développeurs du monde entier</p>
+            
+            <p><strong>Images d'entreprises </strong></p>
+            <p>Microsoft, Google, Amazon, GitLab, etc. publient leurs images officielles</p>
+            
+            <p><strong>Vos images privées </strong></p>
+            <p>Vous pouvez publier vos propres images (publiques gratuitement, ou privées avec compte payant)</p>
+            
+            <p style="font-weight: bold; color: #0DB7ED; margin-top: 15px; font-size: 1.2rem; text-align: center;">
+                Plus de 100 millions d'images disponibles ! 
+            </p>
+        </div>
+
+        <h4>Workflow avec le Registry - PULL et PUSH</h4>
+
+        <div class="schema" style="margin: 2rem 0;">
+            <p><strong> PULL : Télécharger une image depuis le Hub vers votre machine</strong></p>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin: 20px 0;">
+                <div class="schema-item" style="background: #0DB7ED; width: 250px;">
+                    Docker Hub<br>
+                    <small style="font-size: 0.8rem; font-weight: normal;">(hub.docker.com)</small><br>
+                    <small style="font-size: 0.75rem; font-weight: normal;">Serveur distant</small>
+                </div>
+                <div class="schema-arrow" style="font-size: 2rem;">→ pull →</div>
+                <div class="schema-item" style="background: #10B981; width: 250px;">
+                    Votre machine<br>
+                    <small style="font-size: 0.8rem; font-weight: normal;">(images locales)</small><br>
+                    <small style="font-size: 0.75rem; font-weight: normal;">Disque dur local</small>
+                </div>
+            </div>
+            <div class="code-block">
+docker pull nginx:alpine
+<span class="code-comment"># Télécharge l'image depuis Docker Hub vers votre PC</span>
+            </div>
+        </div>
+
+        <div class="schema" style="margin: 2rem 0;">
+            <p><strong>PUSH : Publier votre image depuis votre machine vers le Hub</strong></p>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin: 20px 0;">
+                <div class="schema-item" style="background: #10B981; width: 250px;">
+                    Votre machine<br>
+                    <small style="font-size: 0.8rem; font-weight: normal;">(votre image créée)</small><br>
+                    <small style="font-size: 0.75rem; font-weight: normal;">Image buildée localement</small>
+                </div>
+                <div class="schema-arrow" style="font-size: 2rem;">→ push →</div>
+                <div class="schema-item" style="background: #0DB7ED; width: 250px;">
+                    Docker Hub<br>
+                    <small style="font-size: 0.8rem; font-weight: normal;">(hub.docker.com)</small><br>
+                    <small style="font-size: 0.75rem; font-weight: normal;">Partagée publiquement</small>
+                </div>
+            </div>
+            <div class="code-block">
+docker push votreusername/mon-app:v1.0
+<span class="code-comment"># Publie votre image sur Docker Hub pour que d'autres puissent l'utiliser</span>
+            </div>
+        </div>
+
+        <h4>Commandes pour interagir avec Docker Hub</h4>
+
+        <div class="code-block">
+<span class="code-comment"># 1. Se connecter à Docker Hub (nécessaire pour push)</span>
+docker login
+<span class="code-comment"># Vous devrez entrer votre username et mot de passe</span>
+
+<span class="code-comment"># 2. Rechercher des images sur Docker Hub</span>
+docker search mongodb
+
+<span class="code-comment"># Résultat : liste des images avec leurs infos</span>
+NAME                 DESCRIPTION            STARS   OFFICIAL
+mongo                Official MongoDB       9821    [OK]
+mongodb/mongodb      MongoDB Image          102
+bitnami/mongodb      Bitnami MongoDB        45
+
+<span class="code-comment"># 3. Télécharger (pull) des images</span>
+docker pull nginx:latest
+docker pull postgres:15
+docker pull node:18-alpine
+
+<span class="code-comment"># 4. Taguer votre image avant de la publier</span>
+docker tag mon-app:latest votreusername/mon-app:v1.0
+
+<span class="code-comment"># 5. Publier (push) votre image sur Docker Hub</span>
+docker push votreusername/mon-app:v1.0
+
+<span class="code-comment"># 6. Se déconnecter</span>
+docker logout
+        </div>
+
+        <div class="exercise">
+            <h4>Exercice pratique complet</h4>
+            <p><strong>Pratiquez la manipulation des 3 concepts :</strong></p>
+            <div class="code-block">
+<span class="code-comment"># 1. REGISTRY : Télécharger une image depuis Docker Hub</span>
+docker pull node:18-alpine
+
+<span class="code-comment"># 2. IMAGE : Vérifier que l'image est présente localement</span>
+docker images
+<span class="code-comment"># → Vous devez voir node:18-alpine dans la liste</span>
+
+<span class="code-comment"># 3. CONTENEUR : Créer un conteneur depuis l'image</span>
+docker run -it --name test-node node:18-alpine node --version
+<span class="code-comment"># → Affiche : v18.x.x</span>
+
+<span class="code-comment"># 4. Lister les conteneurs (actifs + arrêtés)</span>
+docker ps -a
+<span class="code-comment"># → Vous voyez test-node avec STATUS = Exited</span>
+
+<span class="code-comment"># 5. Supprimer le conteneur</span>
+docker rm test-node
+
+<span class="code-comment"># 6. L'image existe toujours !</span>
+docker images
+<span class="code-comment"># → node:18-alpine est toujours là</span>
+
+<span class="code-comment"># 7. Créer 3 conteneurs depuis la MÊME image</span>
+docker run -d --name node1 node:18-alpine sleep 3600
+docker run -d --name node2 node:18-alpine sleep 3600
+docker run -d --name node3 node:18-alpine sleep 3600
+
+<span class="code-comment"># 8. Vérifier : 3 conteneurs RUNNING, 1 seule image !</span>
+docker ps
+<span class="code-comment"># → 3 conteneurs actifs depuis 1 image partagée !</span>
+
+<span class="code-comment"># 9. Nettoyage</span>
+docker rm -f node1 node2 node3
+            </div>
+            
+            <div style="margin-top: 15px; padding: 15px; background: #F3F4F6; border-left: 4px solid #10B981; border-radius: 4px;">
+                <p><strong>Questions de compréhension :</strong></p>
+                <ol>
+                    <li>Combien d'images node:18-alpine avez-vous sur votre disque après l'exercice ?</li>
+                    <li>Si vous supprimez node1, node2 et node3, l'image disparaît-elle ?</li>
+                    <li>Pouvez-vous créer 100 conteneurs depuis 1 image ?</li>
+                </ol>
+                
+                <p style="margin-top: 10px;"><strong>Réponses :</strong></p>
+                <ol>
+                    <li><strong>Une seule image</strong> (partagée par tous les conteneurs)</li>
+                    <li><strong>Non !</strong> L'image reste intacte. Seuls les conteneurs sont supprimés.</li>
+                    <li><strong>Oui !</strong> (limité uniquement par vos ressources CPU/RAM disponibles)</li>
+                </ol>
+            </div>
+        </div>
+
+        <h3>Points clés à retenir absolument</h3>
+        
+        <div class="info-box">
+            <div class="title">Résumé du module 2</div>
+            <ul>
+                <li><strong>IMAGE</strong> = Template inactif (recette, programme d'installation, fichier sur disque)</li>
+                <li><strong>CONTENEUR</strong> = Instance active (gâteau, programme en cours, processus en mémoire)</li>
+                <li><strong>REGISTRY</strong> = Magasin d'images (Docker Hub = GitHub des images)</li>
+                <li><strong>Relation 1 vers N :</strong> 1 image → plusieurs conteneurs possibles</li>
+                <li><strong>Images en couches</strong> : optimisation espace disque et vitesse de build</li>
+                <li><strong>Docker Hub</strong> : 100+ millions d'images gratuites prêtes à l'emploi</li>
+                <li><strong>pull</strong> = télécharger depuis le Hub, <strong>push</strong> = publier sur le Hub</li>
+                <li><strong>Supprimer un conteneur ≠ supprimer l'image</strong> (indépendants)</li>
+            </ul>
+        </div>
+
+        <div class="info-box success">
+            <div class="title">Prochaine étape</div>
+            <p>Maintenant que vous maîtrisez les 3 concepts fondamentaux (Image, Conteneur, Registry), passons au <strong>Module 3 : Installation et Configuration de Docker</strong> sur votre machine !</p>
+        </div>
+    `
+},
+{
+    id: 3,
+    title: "Module 3 : Les Commandes Docker Essentielles",
+    content: `
+        <h3>Maîtriser la CLI Docker</h3>
+        
+        <p>Docker se contrôle principalement via la <strong>ligne de commande (CLI = Command Line Interface)</strong>. Dans ce module, vous allez apprendre TOUTES les commandes essentielles pour manipuler images et conteneurs au quotidien.</p>
+
+        <div class="info-box">
+            <div class="title">Ce que vous allez apprendre</div>
+            <ul>
+                <li>Gérer les images (pull, build, push, rmi...)</li>
+                <li>Gérer les conteneurs (run, ps, stop, start, rm...)</li>
+                <li>Inspecter et débugger (logs, inspect, exec...)</li>
+                <li>Nettoyer et optimiser (prune, system df...)</li>
+            </ul>
+        </div>
+
+        <h3>PARTIE 1 : Gestion des Images</h3>
+
+        <h4>Rechercher des images sur Docker Hub</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Rechercher une image sur Docker Hub</span>
+docker search nginx
+
+<span class="code-comment"># Résultat : liste avec colonnes</span>
+NAME                DESCRIPTION                     STARS   OFFICIAL
+nginx               Official NGINX image            19821   [OK]
+bitnami/nginx       Bitnami nginx Docker Image      180     
+jwilder/nginx       Automated nginx proxy           2104    
+
+<span class="code-comment"># Options utiles :</span>
+docker search --filter "is-official=true" nginx
+docker search --limit 5 mongodb
+        </div>
+
+        <h4>Télécharger (Pull) des images</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Télécharger la dernière version (tag = latest par défaut)</span>
+docker pull nginx
+<span class="code-comment"># Équivalent à : docker pull nginx:latest</span>
+
+<span class="code-comment"># Télécharger une version spécifique</span>
+docker pull nginx:1.25
+docker pull node:18-alpine
+docker pull postgres:15.2
+
+<span class="code-comment"># Télécharger depuis un registry privé</span>
+docker pull monregistry.com/mon-app:v1.0
+
+<span class="code-comment"># Télécharger TOUTES les tags d'une image (attention, lourd !)</span>
+docker pull --all-tags nginx
+        </div>
+
+        <div class="info-box">
+            <div class="title">Comprendre les tags d'images</div>
+            <p>Format : <code>nom-image:tag</code></p>
+            <ul>
+                <li><code>nginx</code> = <code>nginx:latest</code> (dernière version)</li>
+                <li><code>node:18</code> = Node.js version 18 (dernière patch 18.x.x)</li>
+                <li><code>node:18.15.0</code> = Version exacte (recommandé en production)</li>
+                <li><code>node:18-alpine</code> = Node 18 sur Alpine Linux (plus légère)</li>
+                <li><code>postgres:15-alpine</code> = PostgreSQL 15 sur Alpine</li>
+            </ul>
+        </div>
+
+        <h4>Lister les images locales</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Voir toutes les images téléchargées sur votre machine</span>
+docker images
+
+<span class="code-comment"># OU la commande équivalente :</span>
+docker image ls
+
+<span class="code-comment"># Résultat : tableau avec toutes vos images</span>
+REPOSITORY    TAG         IMAGE ID       CREATED        SIZE
+nginx         latest      abc123def456   2 days ago     187MB
+node          18-alpine   789ghi012jkl   1 week ago     176MB
+postgres      15          345mno678pqr   2 weeks ago    379MB
+mon-app       latest      012jkl345mno   5 mins ago     200MB
+
+<span class="code-comment"># Voir uniquement les IDs des images</span>
+docker images -q
+
+<span class="code-comment"># Résultat : juste les IDs</span>
+abc123def456
+789ghi012jkl
+345mno678pqr
+
+<span class="code-comment"># Filtrer les images par nom</span>
+docker images nginx
+
+<span class="code-comment"># Voir les images "dangling" (sans tag, orphelines)</span>
+docker images -f "dangling=true"
+        </div>
+
+        <h4>Supprimer des images</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Supprimer une image par son nom</span>
+docker rmi nginx
+
+<span class="code-comment"># Supprimer par ID</span>
+docker rmi abc123def456
+
+<span class="code-comment"># Supprimer plusieurs images en une fois</span>
+docker rmi nginx node postgres
+
+<span class="code-comment"># Forcer la suppression (même si conteneur actif existe)</span>
+docker rmi -f nginx
+<span class="code-comment"># Attention : forcer n'est pas recommandé !</span>
+
+<span class="code-comment"># Supprimer toutes les images inutilisées (dangling)</span>
+docker image prune
+
+<span class="code-comment"># Supprimer TOUTES les images non utilisées par un conteneur</span>
+docker image prune -a
+<span class="code-comment"># ATTENTION : supprime beaucoup d'images !</span>
+
+<span class="code-comment"># Supprimer toutes les images (DANGER !)</span>
+docker rmi $(docker images -q)
+        </div>
+
+        <div class="info-box warning">
+            <div class="title">Erreur courante</div>
+            <p>Si vous essayez de supprimer une image utilisée par un conteneur :</p>
+            <div class="code-block">
+docker rmi nginx:alpine
+Error: image is being used by running container abc123
+            </div>
+            <p><strong>Solution :</strong> Arrêtez et supprimez d'abord le conteneur, puis l'image.</p>
+        </div>
+
+        <h4> Inspecter une image</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Voir les détails complets d'une image (format JSON)</span>
+docker image inspect nginx
+
+<span class="code-comment"># Voir l'historique des couches (layers)</span>
+docker history nginx
+
+<span class="code-comment"># Résultat : toutes les couches avec leur taille</span>
+IMAGE          CREATED BY                                      SIZE
+abc123def456   CMD ["nginx"]                                   0B
+def456ghi789   EXPOSE 80 443                                   0B
+ghi789jkl012   COPY nginx.conf /etc/nginx/                     2KB
+jkl012mno345   RUN apt-get install nginx                       150MB
+mno345pqr678   FROM debian:slim                                50MB
+        </div>
+
+        <h3>PARTIE 2 : Gestion des Conteneurs</h3>
+
+        <h4>Créer et lancer un conteneur (docker run)</h4>
+
+        <p>La commande <code>docker run</code> est LA commande la plus importante. Elle crée ET démarre un conteneur.</p>
+
+        <div class="code-block">
+<span class="code-comment"># Syntaxe de base</span>
+docker run [OPTIONS] IMAGE [COMMANDE]
+
+<span class="code-comment"># Exemple simple : lancer nginx</span>
+docker run nginx
+<span class="code-comment"># Bloque le terminal ! Ctrl+C pour arrêter</span>
+
+<span class="code-comment"># Mode détaché (background)</span>
+docker run -d nginx
+<span class="code-comment"># Retourne un ID : abc123def456...</span>
+
+<span class="code-comment"># Avec un nom personnalisé</span>
+docker run -d --name mon-serveur nginx
+<span class="code-comment"># Plus facile à identifier qu'un ID</span>
+
+<span class="code-comment"># Mapper les ports (host:container)</span>
+docker run -d -p 8080:80 nginx
+<span class="code-comment"># Accessible sur http://localhost:8080</span>
+
+<span class="code-comment"># Mapper plusieurs ports</span>
+docker run -d -p 8080:80 -p 8443:443 nginx
+
+<span class="code-comment"># Mode interactif avec terminal</span>
+docker run -it ubuntu bash
+<span class="code-comment"># Vous entrez dans le conteneur Ubuntu</span>
+
+<span class="code-comment"># Variables d'environnement</span>
+docker run -d -e "NODE_ENV=production" -e "PORT=3000" node
+
+<span class="code-comment"># Monter un volume (dossier partagé)</span>
+docker run -d -v /mon/dossier:/app nginx
+
+<span class="code-comment"># Supprimer automatiquement après arrêt</span>
+docker run --rm nginx
+<span class="code-comment"># Utile pour tests temporaires</span>
+
+<span class="code-comment"># Limiter les ressources</span>
+docker run -d --memory="512m" --cpus="1.0" nginx
+        </div>
+
+        <div class="info-box success">
+            <div class="title">Options docker run les plus utilisées</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Description</th>
+                        <th>Exemple</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>-d</code></td>
+                        <td>Détaché (background)</td>
+                        <td><code>docker run -d nginx</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>-p</code></td>
+                        <td>Mapper un port</td>
+                        <td><code>docker run -p 8080:80 nginx</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>--name</code></td>
+                        <td>Nom du conteneur</td>
+                        <td><code>docker run --name web nginx</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>-it</code></td>
+                        <td>Interactif + terminal</td>
+                        <td><code>docker run -it ubuntu bash</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>-v</code></td>
+                        <td>Monter un volume</td>
+                        <td><code>docker run -v /data:/app node</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>-e</code></td>
+                        <td>Variable d'environnement</td>
+                        <td><code>docker run -e "PORT=3000" node</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>--rm</code></td>
+                        <td>Supprimer après arrêt</td>
+                        <td><code>docker run --rm nginx</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>--network</code></td>
+                        <td>Réseau Docker</td>
+                        <td><code>docker run --network mon-reseau nginx</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h4>Lister les conteneurs</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Voir les conteneurs ACTIFS (RUNNING)</span>
+docker ps
+
+<span class="code-comment"># Résultat : tableau des conteneurs en cours</span>
+CONTAINER ID   IMAGE    COMMAND   CREATED      STATUS       PORTS                NAMES
+abc123def456   nginx    "nginx"   2 min ago    Up 2 min     0.0.0.0:8080->80/tcp mon-serveur
+
+<span class="code-comment"># Voir TOUS les conteneurs (actifs + arrêtés)</span>
+docker ps -a
+
+<span class="code-comment"># Résultat : inclut les conteneurs STOPPED</span>
+CONTAINER ID   IMAGE    STATUS                      NAMES
+abc123def456   nginx    Up 2 minutes                mon-serveur
+def456ghi789   node     Exited (0) 10 minutes ago   mon-app
+
+<span class="code-comment"># Voir uniquement les IDs</span>
+docker ps -q
+
+<span class="code-comment"># Voir les derniers conteneurs créés</span>
+docker ps -n 5
+
+<span class="code-comment"># Format personnalisé</span>
+docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"
+        </div>
+
+        <h4>Contrôler les conteneurs (start, stop, restart...)</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Arrêter un conteneur proprement</span>
+docker stop mon-serveur
+<span class="code-comment"># Envoie SIGTERM, attend 10s, puis SIGKILL si nécessaire</span>
+
+<span class="code-comment"># Arrêter immédiatement (kill)</span>
+docker kill mon-serveur
+<span class="code-comment"># Envoie SIGKILL directement (brutal)</span>
+
+<span class="code-comment"># Arrêter plusieurs conteneurs</span>
+docker stop conteneur1 conteneur2 conteneur3
+
+<span class="code-comment"># Arrêter TOUS les conteneurs actifs</span>
+docker stop $(docker ps -q)
+
+<span class="code-comment"># Redémarrer un conteneur arrêté</span>
+docker start mon-serveur
+
+<span class="code-comment"># Redémarrer (stop + start)</span>
+docker restart mon-serveur
+
+<span class="code-comment"># Mettre en pause (freeze)</span>
+docker pause mon-serveur
+<span class="code-comment"># Le conteneur est figé mais reste en mémoire</span>
+
+<span class="code-comment"># Reprendre</span>
+docker unpause mon-serveur
+
+<span class="code-comment"># Renommer un conteneur</span>
+docker rename ancien-nom nouveau-nom
+        </div>
+
+        <h4>Supprimer des conteneurs</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Supprimer un conteneur ARRÊTÉ</span>
+docker rm mon-serveur
+
+<span class="code-comment"># Forcer la suppression (même si actif)</span>
+docker rm -f mon-serveur
+
+<span class="code-comment"># Supprimer plusieurs conteneurs</span>
+docker rm conteneur1 conteneur2 conteneur3
+
+<span class="code-comment"># Supprimer tous les conteneurs ARRÊTÉS</span>
+docker container prune
+
+<span class="code-comment"># Supprimer TOUS les conteneurs (⚠️ DANGER !)</span>
+docker rm -f $(docker ps -aq)
+        </div>
+
+        <h3>PARTIE 3 : Inspection et Debugging</h3>
+
+        <h4>Voir les logs d'un conteneur</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Voir les logs</span>
+docker logs mon-serveur
+
+<span class="code-comment"># Suivre les logs en temps réel (comme tail -f)</span>
+docker logs -f mon-serveur
+<span class="code-comment"># Ctrl+C pour arrêter</span>
+
+<span class="code-comment"># Voir les 100 dernières lignes</span>
+docker logs --tail 100 mon-serveur
+
+<span class="code-comment"># Logs depuis une date spécifique</span>
+docker logs --since 2024-01-01T00:00:00 mon-serveur
+
+<span class="code-comment"># Logs des 5 dernières minutes</span>
+docker logs --since 5m mon-serveur
+
+<span class="code-comment"># Avec timestamps</span>
+docker logs -t mon-serveur
+        </div>
+
+        <h4>Statistiques en temps réel</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Voir CPU, RAM, réseau, disque en temps réel</span>
+docker stats mon-serveur
+
+<span class="code-comment"># Résultat : tableau mis à jour en direct</span>
+CONTAINER     CPU %    MEM USAGE / LIMIT     MEM %    NET I/O        BLOCK I/O
+mon-serveur   0.50%    25.4MiB / 512MiB      4.96%    1.2kB / 648B   0B / 0B
+
+<span class="code-comment"># Stats de TOUS les conteneurs</span>
+docker stats
+
+<span class="code-comment"># Sans streaming (juste un snapshot)</span>
+docker stats --no-stream mon-serveur
+        </div>
+
+        <h4>Exécuter des commandes dans un conteneur actif</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Exécuter une commande simple</span>
+docker exec mon-serveur ls /app
+
+<span class="code-comment"># Ouvrir un shell interactif (très utile !)</span>
+docker exec -it mon-serveur bash
+<span class="code-comment"># Vous entrez dans le conteneur comme si vous faisiez SSH</span>
+
+<span class="code-comment"># Si bash n'existe pas, utilisez sh</span>
+docker exec -it mon-serveur sh
+
+<span class="code-comment"># Exemples pratiques</span>
+docker exec mon-serveur cat /etc/nginx/nginx.conf
+docker exec mon-serveur node --version
+docker exec mon-serveur npm list
+
+<span class="code-comment"># Exécuter en tant qu'utilisateur spécifique</span>
+docker exec -u root mon-serveur whoami
+        </div>
+
+        <h4>Inspecter un conteneur</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Voir tous les détails d'un conteneur (JSON)</span>
+docker inspect mon-serveur
+
+<span class="code-comment"># Filtrer pour voir seulement l'IP</span>
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mon-serveur
+
+<span class="code-comment"># Voir les changements dans le système de fichiers</span>
+docker diff mon-serveur
+
+<span class="code-comment"># Résultat : A = ajouté, C = modifié, D = supprimé</span>
+A /app/logs
+C /app/config.json
+D /tmp/cache
+
+<span class="code-comment"># Voir les processus dans un conteneur</span>
+docker top mon-serveur
+
+<span class="code-comment"># Voir les ports mappés</span>
+docker port mon-serveur
+        </div>
+
+        <h4>Copier des fichiers</h4>
+
+        <div class="code-block">
+<span class="code-comment"># Copier du conteneur vers l'hôte</span>
+docker cp mon-serveur:/app/data.json ./data.json
+
+<span class="code-comment"># Copier de l'hôte vers le conteneur</span>
+docker cp ./config.json mon-serveur:/app/config.json
+
+<span class="code-comment"># Copier un dossier entier</span>
+docker cp mon-serveur:/app/logs ./logs-backup/
+        </div>
+
+        <h3>PARTIE 4 : Nettoyage et Maintenance</h3>
+
+        <div class="code-block">
+<span class="code-comment"># Supprimer tous les conteneurs arrêtés</span>
+docker container prune
+
+<span class="code-comment"># Supprimer toutes les images inutilisées</span>
+docker image prune
+
+<span class="code-comment"># Supprimer tous les volumes non utilisés</span>
+docker volume prune
+
+<span class="code-comment"># Supprimer tous les réseaux non utilisés</span>
+docker network prune
+
+<span class="code-comment"># GRAND NETTOYAGE : conteneurs, images, volumes, réseaux</span>
+docker system prune
+
+<span class="code-comment"># Nettoyage COMPLET (+ images inutilisées)</span>
+docker system prune -a
+
+<span class="code-comment"># Voir l'espace disque utilisé par Docker</span>
+docker system df
+
+<span class="code-comment"># Résultat détaillé</span>
+TYPE            TOTAL    ACTIVE   SIZE      RECLAIMABLE
+Images          15       5        2.5GB     1.8GB (72%)
+Containers      10       2        150MB     100MB (66%)
+Local Volumes   5        1        500MB     400MB (80%)
+        </div>
+
+        <div class="info-box warning">
+            <div class="title">Attention avec les commandes de nettoyage</div>
+            <ul>
+                <li><code>docker system prune -a</code> supprime TOUTES les images non utilisées par un conteneur actif</li>
+                <li><code>docker rm -f $(docker ps -aq)</code> supprime TOUS les conteneurs (actifs et arrêtés)</li>
+                <li><strong>Vérifiez toujours avec <code>docker ps -a</code> avant de supprimer !</strong></li>
+            </ul>
+        </div>
+
+        <h3>Cheat Sheet - Commandes Essentielles</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Action</th>
+                    <th style="width: 70%;">Commande</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Lancer un conteneur</strong></td>
+                    <td><code>docker run -d -p 8080:80 --name web nginx</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Voir conteneurs actifs</strong></td>
+                    <td><code>docker ps</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Voir tous les conteneurs</strong></td>
+                    <td><code>docker ps -a</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Arrêter un conteneur</strong></td>
+                    <td><code>docker stop web</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Redémarrer</strong></td>
+                    <td><code>docker start web</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Supprimer</strong></td>
+                    <td><code>docker rm web</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Voir les logs</strong></td>
+                    <td><code>docker logs -f web</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Entrer dans le conteneur</strong></td>
+                    <td><code>docker exec -it web bash</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Télécharger une image</strong></td>
+                    <td><code>docker pull nginx:alpine</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Voir les images</strong></td>
+                    <td><code>docker images</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Supprimer une image</strong></td>
+                    <td><code>docker rmi nginx</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Nettoyage général</strong></td>
+                    <td><code>docker system prune</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Stats en temps réel</strong></td>
+                    <td><code>docker stats</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="exercise">
+            <h4>Exercice pratique complet</h4>
+            <p><strong>Pratiquez TOUTES les commandes essentielles :</strong></p>
+            <div class="code-block">
+<span class="code-comment"># 1. Télécharger l'image nginx</span>
+docker pull nginx:alpine
+
+<span class="code-comment"># 2. Vérifier qu'elle est là</span>
+docker images
+
+<span class="code-comment"># 3. Lancer un serveur nginx</span>
+docker run -d -p 8080:80 --name test-nginx nginx:alpine
+
+<span class="code-comment"># 4. Vérifier qu'il tourne</span>
+docker ps
+
+<span class="code-comment"># 5. Ouvrir http://localhost:8080 dans le navigateur</span>
+<span class="code-comment"># → Vous devez voir la page Nginx</span>
+
+<span class="code-comment"># 6. Voir les logs</span>
+docker logs test-nginx
+
+<span class="code-comment"># 7. Entrer dans le conteneur</span>
+docker exec -it test-nginx sh
+
+<span class="code-comment"># 8. Dans le conteneur, explorer</span>
+ls /usr/share/nginx/html
+cat /etc/nginx/nginx.conf
+exit
+
+<span class="code-comment"># 9. Voir les stats en temps réel</span>
+docker stats test-nginx
+<span class="code-comment"># (Ctrl+C pour arrêter)</span>
+
+<span class="code-comment"># 10. Arrêter le conteneur</span>
+docker stop test-nginx
+
+<span class="code-comment"># 11. Vérifier qu'il est arrêté</span>
+docker ps -a
+
+<span class="code-comment"># 12. Redémarrer</span>
+docker start test-nginx
+
+<span class="code-comment"># 13. Supprimer (doit être arrêté d'abord)</span>
+docker stop test-nginx
+docker rm test-nginx
+
+<span class="code-comment"># 14. Nettoyer les images</span>
+docker image prune
+
+<span class="code-comment"># 15. Vérifier l'espace disque</span>
+docker system df
+            </div>
+        </div>
+
+        <h3>Points clés à retenir</h3>
+        
+        <div class="info-box">
+            <div class="title">Résumé des commandes essentielles</div>
+            <ul>
+                <li><code>docker run</code> = créer + démarrer un conteneur (la commande la plus importante)</li>
+                <li><code>docker ps</code> = voir les conteneurs actifs (-a pour voir tous)</li>
+                <li><code>docker logs -f</code> = suivre les logs en temps réel (essentiel pour débugger)</li>
+                <li><code>docker exec -it [nom] bash</code> = entrer dans un conteneur actif</li>
+                <li><code>docker stop/start/restart</code> = contrôler le cycle de vie</li>
+                <li><code>docker system prune</code> = nettoyer régulièrement</li>
+                <li>Utilisez <code>--name</code> pour nommer vos conteneurs (plus facile à gérer)</li>
+                <li><code>-d</code> pour détaché, <code>-p</code> pour les ports, <code>-v</code> pour les volumes</li>
+            </ul>
+        </div>
+
+        <div class="info-box success">
+            <div class="title">Prochaine étape</div>
+            <p>Maintenant que vous maîtrisez les commandes Docker, passons au <strong>Module 4 : Le Dockerfile</strong> pour apprendre à créer vos propres images personnalisées !</p>
+        </div>
+    `
+},
+{
+    id: 4,
+    title: "Module 4 : Le Dockerfile - Créer vos Images",
+    content: `
+        <h3>Qu'est-ce qu'un Dockerfile ?</h3>
+        
+        <div class="info-box">
+            <div class="title">Définition</div>
+            <p>Un <strong>Dockerfile</strong> est un fichier texte qui contient une série d'<strong>instructions</strong> pour construire automatiquement une image Docker.</p>
+            <p>C'est comme une <strong>recette de cuisine détaillée</strong> qui explique étape par étape comment préparer votre image.</p>
+        </div>
+
+        <h3>Exemple complet commenté (Node.js)</h3>
+
+        <div class="code-block">
+<span class="code-comment"># 1. Image de base (fondation)</span>
+FROM node:18-alpine
+
+<span class="code-comment"># 2. Métadonnées (optionnel mais recommandé)</span>
+LABEL maintainer="thomas@realconseil.fr"
+LABEL description="Mon app Node.js"
+
+<span class="code-comment"># 3. Définir le répertoire de travail</span>
+WORKDIR /app
+
+<span class="code-comment"># 4. Copier package.json d'abord (optimisation cache)</span>
+COPY package*.json ./
+
+<span class="code-comment"># 5. Installer les dépendances</span>
+RUN npm install --production
+
+<span class="code-comment"># 6. Copier le reste du code</span>
+COPY . .
+
+<span class="code-comment"># 7. Exposer le port</span>
+EXPOSE 3000
+
+<span class="code-comment"># 8. Commande au lancement</span>
+CMD ["node", "server.js"]
+        </div>
+
+        <h3>Instructions Dockerfile</h3>
+
+        <h4>FROM - Image de base</h4>
+        <div class="code-block">
+FROM node:18-alpine
+FROM python:3.11-slim
+FROM nginx:alpine
+        </div>
+
+        <h4>WORKDIR - Répertoire</h4>
+        <div class="code-block">
+WORKDIR /app
+<span class="code-comment"># Crée le dossier si inexistant</span>
+        </div>
+
+        <h4>COPY - Copier fichiers</h4>
+        <div class="code-block">
+COPY package.json .
+COPY . .
+COPY src/ /app/src/
+        </div>
+
+        <h4>RUN - Exécuter commande</h4>
+        <div class="code-block">
+RUN npm install
+RUN apt-get update && apt-get install -y curl
+        </div>
+
+        <h4>CMD - Démarrage</h4>
+        <div class="code-block">
+CMD ["node", "server.js"]
+CMD ["npm", "start"]
+        </div>
+
+        <h4>EXPOSE - Port</h4>
+        <div class="code-block">
+EXPOSE 3000
+EXPOSE 80 443
+        </div>
+
+        <h3>Construire l'image</h3>
+
+        <div class="code-block">
+<span class="code-comment"># Build basique</span>
+docker build -t mon-app .
+
+<span class="code-comment"># Build avec tag</span>
+docker build -t mon-app:v1.0 .
+
+<span class="code-comment"># Build sans cache</span>
+docker build --no-cache -t mon-app .
+        </div>
+
+        <div class="exercise">
+            <h4>Exercice</h4>
+            <p>Créez un Dockerfile pour une app Node.js simple</p>
+        </div>
+    `
+},
+{
+    id: 5,
+    title: "Module 5 : Docker Compose - Multi-conteneurs",
+    content: `
+        <h3>Docker Compose</h3>
+        
+        <div class="info-box">
+            <div class="title">Qu'est-ce que Docker Compose ?</div>
+            <p>Docker Compose permet d'<strong>orchestrer plusieurs conteneurs</strong> avec un seul fichier YAML.</p>
+        </div>
+
+        <h3>Exemple : Stack MERN</h3>
+
+        <div class="code-block">
+version: '3.8'
+
+services:
+  frontend:
+    image: node:18
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    command: npm start
+
+  backend:
+    image: node:18
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=mongo
+      - DB_PORT=27017
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
+        </div>
+
+        <h3>Commandes</h3>
+
+        <div class="code-block">
+<span class="code-comment"># Lancer tous les services</span>
+docker-compose up -d
+
+<span class="code-comment"># Voir les services actifs</span>
+docker-compose ps
+
+<span class="code-comment"># Voir les logs</span>
+docker-compose logs -f
+
+<span class="code-comment"># Arrêter tout</span>
+docker-compose down
+
+<span class="code-comment"># Tout supprimer (+ volumes)</span>
+docker-compose down -v
+        </div>
+    `
+},
+{
+    id: 6,
+    title: "Module 6 : Installation de Docker",
+    content: `
+        <h3>Installation</h3>
+        
+        <h4>Windows</h4>
+        <div class="code-block">
+wsl --install
+<span class="code-comment"># Puis Docker Desktop</span>
+        </div>
+
+        <h4>Mac</h4>
+        <p>Télécharger Docker Desktop</p>
+
+        <h4>Linux</h4>
+        <div class="code-block">
+sudo apt install docker-ce
+sudo usermod -aG docker $USER
+        </div>
+
+        <h3>Test</h3>
+        <div class="code-block">
+docker --version
+docker run hello-world
+        </div>
+    `
+},
+{
+    id: 7,
+    title: "Module 7 : Volumes Docker",
+    content: `
+        <h3>Volumes</h3>
+        
+        <div class="code-block">
+<span class="code-comment"># Créer un volume</span>
+docker volume create mes-donnees
+
+<span class="code-comment"># Utiliser</span>
+docker run -v mes-donnees:/data postgres
+
+<span class="code-comment"># Lister</span>
+docker volume ls
+
+<span class="code-comment"># Supprimer</span>
+docker volume rm mes-donnees
+        </div>
+    `
+},
+{
+    id: 8,
+    title: "Module 8 : Réseaux Docker",
+    content: `
+        <h3>Réseaux</h3>
+        
+        <div class="code-block">
+<span class="code-comment"># Créer réseau</span>
+docker network create mon-reseau
+
+<span class="code-comment"># Utiliser</span>
+docker run --network mon-reseau --name db postgres
+docker run --network mon-reseau --name app node
+
+<span class="code-comment"># app peut joindre db par son nom</span>
+        </div>
+    `
+},
+{
+    id: 9,
+    title: "Module 9 : Bonnes Pratiques",
+    content: `
+        <h3>Bonnes pratiques</h3>
+        
+        <h4>.dockerignore</h4>
+        <div class="code-block">
+node_modules
+.git
+*.log
+.env
+        </div>
+
+        <h4>Images légères</h4>
+        <p>Utilisez Alpine : <code>node:18-alpine</code></p>
+
+        <h4>Multi-stage</h4>
+        <div class="code-block">
+FROM node:18 AS builder
+WORKDIR /app
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+        </div>
+    `
+},
+{
+    id: 10,
+    title: "Module 10 : Ressources",
+    content: `
+        <h3>Ressources</h3>
+        
+        <ul>
+            <li><strong>Docker Docs</strong> - docs.docker.com</li>
+            <li><strong>Docker Hub</strong> - hub.docker.com</li>
+            <li><strong>Play with Docker</strong> - labs.play-with-docker.com</li>
+        </ul>
+
+        <h3>Certification</h3>
+        <p><strong>Docker Certified Associate (DCA)</strong></p>
+
+        <div class="info-box success">
+            <div class="title">Félicitations !</div>
+            <p>Vous avez terminé la formation Docker complète !</p>
+        </div>
+    `
+}
+];
+
+// CODE JAVASCRIPT DE NAVIGATION
+let currentModuleIndex = 0;
+
+function generateNavigation() {
+    const navContent = document.getElementById('navContent');
+    navContent.innerHTML = '';
+    
+    modulesData.forEach((module, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'nav-btn' + (index === 0 ? ' active' : '');
+        btn.textContent = module.id + '. ' + module.title;
+        btn.onclick = () => showModule(index);
+        navContent.appendChild(btn);
+    });
+}
+
+function showModule(index) {
+    currentModuleIndex = index;
+    
+    document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+    });
+    
+    const moduleContainer = document.getElementById('moduleContainer');
+    let moduleElement = document.querySelector('[data-module-id="' + modulesData[index].id + '"]');
+    
+    if (!moduleElement) {
+        moduleElement = document.createElement('div');
+        moduleElement.className = 'module';
+        moduleElement.setAttribute('data-module-id', modulesData[index].id);
+        
+        const prevDisabled = index === 0 ? 'disabled' : '';
+        const nextDisabled = index === modulesData.length - 1 ? 'disabled' : '';
+        
+        moduleElement.innerHTML = '<h2>' + modulesData[index].id + '. ' + modulesData[index].title + '</h2>' +
+            modulesData[index].content +
+            '<div class="nav-buttons">' +
+            '<button class="btn" onclick="previousModule()" ' + prevDisabled + '>← Module précédent</button>' +
+            '<button class="btn" onclick="nextModule()" ' + nextDisabled + '>Module suivant →</button>' +
+            '</div>';
+        
+        moduleContainer.appendChild(moduleElement);
+    }
+    
+    moduleElement.classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextModule() {
+    if (currentModuleIndex < modulesData.length - 1) {
+        showModule(currentModuleIndex + 1);
+    }
+}
+
+function previousModule() {
+    if (currentModuleIndex > 0) {
+        showModule(currentModuleIndex - 1);
+    }
+}
+
+function updateProgress() {
+    const progress = ((currentModuleIndex + 1) / modulesData.length) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Formation Docker chargée - ' + modulesData.length + ' modules');
+    generateNavigation();
+    showModule(0);
+});
+</script>
+</body>
+</html>

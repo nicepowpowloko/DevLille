@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Constructeurs d'Objets en JavaScript - DWWM</title>
+    <style>
+
+ :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        header {
+           background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        nav {
+           background: var(--conseil);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: block;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background: var(--real);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 50px;
+            scroll-margin-top: 60px;
+        }
+
+        h2 {
+            color: var(--conseil);
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--real);
+        }
+
+        h3 {
+            color: var(--real);
+            font-size: 1.5em;
+            margin: 25px 0 15px;
+        }
+
+        h4 {
+            color: var(--conseil);
+            font-size: 1.2em;
+            margin: 20px 0 10px;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 5px solid var(--conseil);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .code-block code {
+            display: block;
+        }
+
+        .example {
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison > div {
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .comparison h4 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        .visual-diagram {
+            background: #f0f0f0;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .box-diagram {
+            display: inline-block;
+            background: white;
+            border: 3px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 10px;
+            min-width: 200px;
+        }
+
+        .arrow {
+            display: inline-block;
+            font-size: 2em;
+            color: #764ba2;
+            margin: 0 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .highlight {
+            background: #fff9e6;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #ff9900;
+        }
+
+        .keyword {
+            color: #c678dd;
+            font-weight: bold;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        @media screen and (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Les Constructeurs d'Objets en JavaScript</h1>
+            <img src="../../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="">
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#fonction-constructeur">Fonction Constructeur</a></li>
+                <li><a href="#prototype">Prototype</a></li>
+                <li><a href="#classes">Classes ES6</a></li>
+                <li><a href="#heritage">Héritage</a></li>
+                <li><a href="#comparaisons">Comparaisons</a></li>
+                <li><a href="#exercices">Exercices</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <!-- INTRODUCTION -->
+            <section id="introduction">
+                <h2>Introduction aux Constructeurs</h2>
+
+                <h3>Pourquoi utiliser des constructeurs ?</h3>
+                <p>Imaginons que vous devez créer plusieurs objets similaires, par exemple des voitures :</p>
+
+                <div class="code-block"><code>//  SANS constructeur : beaucoup de répétition !
+const voiture1 = {
+    marque: "Peugeot",
+    modele: "308",
+    annee: 2022,
+    demarrer: function() {
+        console.log("Vroum vroum");
+    }
+};
+
+const voiture2 = {
+    marque: "Renault",
+    modele: "Clio",
+    annee: 2021,
+    demarrer: function() {
+        console.log("Vroum vroum");
+    }
+};
+
+const voiture3 = {
+    marque: "Citroën",
+    modele: "C3",
+    annee: 2023,
+    demarrer: function() {
+        console.log("Vroum vroum");
+    }
+};
+
+// Répétitif, fastidieux, et source d'erreurs !</code></div>
+
+                <div class="success-box">
+                    <h4>AVEC un constructeur : simple et efficace !</h4>
+                    <div class="code-block"><code>// Créer un "moule" pour fabriquer des voitures
+function Voiture(marque, modele, annee) {
+    this.marque = marque;
+    this.modele = modele;
+    this.annee = annee;
+    this.demarrer = function() {
+        console.log("Vroum vroum");
+    };
+}
+
+// Créer des instances facilement
+const voiture1 = new Voiture("Peugeot", "308", 2022);
+const voiture2 = new Voiture("Renault", "Clio", 2021);
+const voiture3 = new Voiture("Citroën", "C3", 2023);
+
+// Beaucoup plus simple et maintenable !</code></div>
+                </div>
+
+                <h3>Qu'est-ce qu'un constructeur ?</h3>
+                <div class="info-box">
+                    <p>Un <strong>constructeur</strong> est une fonction spéciale qui sert de <strong>"moule" ou "blueprint"</strong> pour créer plusieurs objets avec la même structure.</p>
+                    
+                    <h4>Analogie de l'usine</h4>
+                    <p>Imaginez une usine de voitures :</p>
+                    <ul>
+                        <li>Le <strong>constructeur</strong> = les plans de fabrication</li>
+                        <li>L'<strong>instance</strong> = une voiture produite</li>
+                        <li>Le mot-clé <strong>new</strong> = le processus de fabrication</li>
+                    </ul>
+                </div>
+
+                <h3>Les différentes façons de créer des objets</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Méthode</th>
+                            <th>Syntaxe</th>
+                            <th>Utilisation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Objet littéral</strong></td>
+                            <td>const obj = { }</td>
+                            <td>Objet unique, simple</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fonction constructeur</strong></td>
+                            <td>function Obj() { }</td>
+                            <td>Créer plusieurs objets similaires</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Classes ES6</strong></td>
+                            <td>class Obj { }</td>
+                            <td>Syntaxe moderne (recommandée)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Object.create()</strong></td>
+                            <td>Object.create(proto)</td>
+                            <td>Héritage prototypal avancé</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- FONCTION CONSTRUCTEUR -->
+            <section id="fonction-constructeur">
+                <h2> Les Fonctions Constructeurs</h2>
+
+                <h3>Syntaxe de base</h3>
+                <div class="code-block"><code>// Convention : nom en PascalCase (première lettre en majuscule)
+function Personne(nom, prenom, age) {
+    // "this" fait référence au nouvel objet en cours de création
+    this.nom = nom;
+    this.prenom = prenom;
+    this.age = age;
+    
+    // Méthode
+    this.sePresenter = function() {
+        return `Bonjour, je suis ${this.prenom} ${this.nom}, j'ai ${this.age} ans`;
+    };
+}
+
+// Créer des instances avec le mot-clé "new"
+const personne1 = new Personne("Dupont", "Marie", 25);
+const personne2 = new Personne("Martin", "Lucas", 30);
+
+console.log(personne1.sePresenter());
+// "Bonjour, je suis Marie Dupont, j'ai 25 ans"
+
+console.log(personne2.sePresenter());
+// "Bonjour, je suis Lucas Martin, j'ai 30 ans"</code></div>
+
+                <h3>Que se passe-t-il avec le mot-clé "new" ?</h3>
+                <div class="info-box">
+                    <h4>Les 4 étapes de "new"</h4>
+                    <p>Quand vous écrivez <code>new Personne("Dupont", "Marie", 25)</code>, JavaScript fait automatiquement 4 choses :</p>
+                    <ol>
+                        <li><strong>Création</strong> : Crée un nouvel objet vide <code>{}</code></li>
+                        <li><strong>Liaison</strong> : Lie cet objet au prototype du constructeur</li>
+                        <li><strong>Exécution</strong> : Exécute la fonction constructeur avec <code>this</code> pointant vers le nouvel objet</li>
+                        <li><strong>Retour</strong> : Retourne automatiquement le nouvel objet</li>
+                    </ol>
+                </div>
+
+                <div class="visual-diagram">
+                    <h4>Visualisation du processus "new"</h4>
+                    <div class="box-diagram">
+                        <strong>1. new Personne()</strong><br>
+                        Création d'un objet vide
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="box-diagram">
+                        <strong>2. Liaison prototype</strong><br>
+                        obj.__proto__ = Personne.prototype
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="box-diagram">
+                        <strong>3. Exécution</strong><br>
+                        this.nom = "Dupont"<br>
+                        this.prenom = "Marie"
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="box-diagram">
+                        <strong>4. Retour</strong><br>
+                        return obj
+                    </div>
+                </div>
+
+                <h3>Exemple détaillé : Compte bancaire</h3>
+                <div class="example">
+                    <h4>Constructeur de compte bancaire</h4>
+                    <div class="code-block"><code>// Fonction constructeur pour créer des comptes bancaires
+function CompteBancaire(titulaire, soldeInitial) {
+    // Propriétés d'instance
+    this.titulaire = titulaire;
+    this.solde = soldeInitial || 0;  // Valeur par défaut : 0
+    this.numeroCompte = Math.floor(Math.random() * 1000000);
+    
+    // Méthode : déposer de l'argent
+    this.deposer = function(montant) {
+        if (montant > 0) {
+            this.solde += montant;
+            console.log(`Dépôt de ${montant}€. Nouveau solde : ${this.solde}€`);
+        } else {
+            console.log(" Le montant doit être positif");
+        }
+    };
+    
+    // Méthode : retirer de l'argent
+    this.retirer = function(montant) {
+        if (montant > 0 && montant <= this.solde) {
+            this.solde -= montant;
+            console.log(` Retrait de ${montant}€. Nouveau solde : ${this.solde}€`);
+        } else if (montant > this.solde) {
+            console.log(" Solde insuffisant");
+        } else {
+            console.log(" Le montant doit être positif");
+        }
+    };
+    
+    // Méthode : afficher les informations
+    this.afficher = function() {
+        console.log(`\n Compte n°${this.numeroCompte}`);
+        console.log(`   Titulaire : ${this.titulaire}`);
+        console.log(`   Solde : ${this.solde}€`);
+    };
+}
+
+// Création de comptes
+const compteMarie = new CompteBancaire("Marie Dupont", 1000);
+const compteLucas = new CompteBancaire("Lucas Martin", 500);
+
+// Utilisation
+compteMarie.deposer(500);     // Dépôt de 500€. Nouveau solde : 1500€
+compteMarie.retirer(300);     // Retrait de 300€. Nouveau solde : 1200€
+compteMarie.afficher();       // Affiche les infos
+
+compteLucas.deposer(200);     // Dépôt de 200€. Nouveau solde : 700€
+compteLucas.afficher();       // Affiche les infos</code></div>
+                </div>
+
+                <h3>Vérifier le type d'un objet</h3>
+                <div class="code-block"><code>const compte = new CompteBancaire("Marie", 1000);
+
+// Vérifier si un objet est une instance d'un constructeur
+console.log(compte instanceof CompteBancaire);  // true
+console.log(compte instanceof Object);          // true (tous les objets héritent d'Object)
+
+// Vérifier le constructeur
+console.log(compte.constructor === CompteBancaire);  // true
+
+// Vérifier le type
+console.log(typeof compte);  // "object"</code></div>
+
+                <h3>Propriétés statiques vs propriétés d'instance</h3>
+                <div class="comparison">
+                    <div>
+                        <h4>Propriétés d'instance</h4>
+                        <p>Propres à chaque objet créé</p>
+                        <div class="code-block"><code>function Voiture(marque) {
+    // Propriété d'instance
+    this.marque = marque;
+}
+
+const v1 = new Voiture("Peugeot");
+const v2 = new Voiture("Renault");
+
+console.log(v1.marque);  // "Peugeot"
+console.log(v2.marque);  // "Renault"
+// Chaque instance a sa propre valeur</code></div>
+                    </div>
+                    <div>
+                        <h4>Propriétés statiques</h4>
+                        <p>Appartiennent au constructeur lui-même</p>
+                        <div class="code-block"><code>function Voiture(marque) {
+    this.marque = marque;
+}
+
+// Propriété statique
+Voiture.nombreVoitures = 0;
+
+const v1 = new Voiture("Peugeot");
+Voiture.nombreVoitures++;
+
+const v2 = new Voiture("Renault");
+Voiture.nombreVoitures++;
+
+console.log(Voiture.nombreVoitures);
+// 2 (partagée par tous)</code></div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4> Erreur courante : Oublier "new"</h4>
+                    <div class="code-block"><code>function Personne(nom) {
+    this.nom = nom;
+}
+
+//  SANS new : "this" pointe vers window (ou undefined en mode strict)
+const personne1 = Personne("Marie");
+console.log(personne1);  // undefined
+console.log(window.nom); // "Marie" (pollution globale !)
+
+//  AVEC new : fonctionne correctement
+const personne2 = new Personne("Lucas");
+console.log(personne2);  // { nom: "Lucas" }
+console.log(personne2.nom);  // "Lucas"</code></div>
+                </div>
+            </section>
+
+            <!-- PROTOTYPE -->
+            <section id="prototype">
+                <h2> Le Prototype en JavaScript</h2>
+
+                <h3>Qu'est-ce que le prototype ?</h3>
+                <div class="info-box">
+                    <p>Le <strong>prototype</strong> est un objet partagé par toutes les instances créées par un constructeur. C'est comme une "bibliothèque commune" de méthodes et propriétés.</p>
+                    
+                    <h4> Analogie</h4>
+                    <p>Imaginez un immeuble :</p>
+                    <ul>
+                        <li>Chaque appartement (instance) a ses propres meubles (propriétés)</li>
+                        <li>Mais tous partagent la même salle de gym au sous-sol (prototype)</li>
+                    </ul>
+                </div>
+
+                <h3>Problème avec les méthodes dans le constructeur</h3>
+                <div class="danger-box">
+                    <h4> Inefficace : méthodes dans le constructeur</h4>
+                    <div class="code-block"><code>function Personne(nom, prenom) {
+    this.nom = nom;
+    this.prenom = prenom;
+    
+    //  PROBLÈME : cette fonction est recréée pour CHAQUE instance
+    this.sePresenter = function() {
+        return `Je suis ${this.prenom} ${this.nom}`;
+    };
+}
+
+const p1 = new Personne("Dupont", "Marie");
+const p2 = new Personne("Martin", "Lucas");
+
+// Chaque instance a sa PROPRE copie de la méthode
+console.log(p1.sePresenter === p2.sePresenter);  // false
+//  Gaspillage de mémoire si vous créez 1000 personnes !</code></div>
+                </div>
+
+                <div class="success-box">
+                    <h4> Efficace : méthodes dans le prototype</h4>
+                    <div class="code-block"><code>function Personne(nom, prenom) {
+    this.nom = nom;
+    this.prenom = prenom;
+}
+
+//  Ajouter la méthode au prototype (partagée par toutes les instances)
+Personne.prototype.sePresenter = function() {
+    return `Je suis ${this.prenom} ${this.nom}`;
+};
+
+const p1 = new Personne("Dupont", "Marie");
+const p2 = new Personne("Martin", "Lucas");
+
+// Les deux instances partagent la MÊME méthode
+console.log(p1.sePresenter === p2.sePresenter);  // true
+//  Économie de mémoire même avec 1000 personnes !</code></div>
+                </div>
+
+                <h3>La chaîne de prototypes</h3>
+                <div class="visual-diagram">
+                    <h4>Comment JavaScript recherche une propriété</h4>
+                    <div class="box-diagram">
+                        <strong>1. personne1</strong><br>
+                        { nom: "Dupont", prenom: "Marie" }
+                    </div>
+                    <span class="arrow">↓ si propriété non trouvée</span>
+                    <div class="box-diagram">
+                        <strong>2. Personne.prototype</strong><br>
+                        { sePresenter: function() {...} }
+                    </div>
+                    <span class="arrow">↓ si propriété non trouvée</span>
+                    <div class="box-diagram">
+                        <strong>3. Object.prototype</strong><br>
+                        { toString: function() {...}, ... }
+                    </div>
+                    <span class="arrow">↓ si propriété non trouvée</span>
+                    <div class="box-diagram">
+                        <strong>4. null</strong><br>
+                        undefined
+                    </div>
+                </div>
+
+                <h3>Exemple complet avec prototype</h3>
+                <div class="example">
+                    <h4>Constructeur de produits avec prototype</h4>
+                    <div class="code-block"><code>// Constructeur
+function Produit(nom, prix, quantite) {
+    // Propriétés d'instance (propres à chaque objet)
+    this.nom = nom;
+    this.prix = prix;
+    this.quantite = quantite || 0;
+}
+
+// Méthodes dans le prototype (partagées par tous)
+Produit.prototype.calculerTotal = function() {
+    return this.prix * this.quantite;
+};
+
+Produit.prototype.ajouterStock = function(quantite) {
+    this.quantite += quantite;
+    console.log(`${quantite} ${this.nom}(s) ajouté(s). Stock : ${this.quantite}`);
+};
+
+Produit.prototype.retirerStock = function(quantite) {
+    if (quantite <= this.quantite) {
+        this.quantite -= quantite;
+        console.log(` ${quantite} ${this.nom}(s) retiré(s). Stock : ${this.quantite}`);
+        return true;
+    } else {
+        console.log(` Stock insuffisant. Stock actuel : ${this.quantite}`);
+        return false;
+    }
+};
+
+Produit.prototype.afficher = function() {
+    console.log(`\n ${this.nom}`);
+    console.log(`   Prix : ${this.prix}€`);
+    console.log(`   Stock : ${this.quantite}`);
+    console.log(`   Valeur totale : ${this.calculerTotal()}€`);
+};
+
+// Propriété statique (compteur de produits)
+Produit.nombreProduits = 0;
+
+// Modifier le constructeur pour compter les produits
+const OriginalProduit = Produit;
+Produit = function(nom, prix, quantite) {
+    OriginalProduit.call(this, nom, prix, quantite);
+    Produit.nombreProduits++;
+};
+Produit.prototype = OriginalProduit.prototype;
+
+// Utilisation
+const ordinateur = new Produit("Ordinateur", 899, 10);
+const souris = new Produit("Souris", 25, 50);
+
+ordinateur.afficher();
+ordinateur.ajouterStock(5);
+ordinateur.retirerStock(3);
+ordinateur.afficher();
+
+console.log(`\nNombre total de produits créés : ${Produit.nombreProduits}`);</code></div>
+                </div>
+
+                <h3>Ajouter/Modifier le prototype dynamiquement</h3>
+                <div class="code-block"><code>function Animal(nom) {
+    this.nom = nom;
+}
+
+// Créer une instance
+const chat = new Animal("Minou");
+
+// Ajouter une méthode au prototype APRÈS la création
+Animal.prototype.parler = function() {
+    console.log(`${this.nom} fait un bruit`);
+};
+
+// L'instance existante hérite automatiquement de la nouvelle méthode !
+chat.parler();  // "Minou fait un bruit"
+
+// Créer une nouvelle instance
+const chien = new Animal("Rex");
+chien.parler();  // "Rex fait un bruit"</code></div>
+
+                <h3>Vérifier les propriétés</h3>
+                <div class="code-block"><code>function Personne(nom) {
+    this.nom = nom;
+}
+
+Personne.prototype.espece = "Humain";
+
+const marie = new Personne("Marie");
+
+// Vérifier si une propriété existe (dans l'objet OU le prototype)
+console.log("nom" in marie);      // true (dans l'objet)
+console.log("espece" in marie);   // true (dans le prototype)
+
+// Vérifier si une propriété est directement dans l'objet
+console.log(marie.hasOwnProperty("nom"));     // true
+console.log(marie.hasOwnProperty("espece"));  // false (dans le prototype)
+
+// Lister les propriétés propres à l'objet
+console.log(Object.keys(marie));  // ["nom"]
+
+// Lister TOUTES les propriétés (y compris le prototype)
+for (let prop in marie) {
+    console.log(prop);  // "nom", "espece"
+}</code></div>
+
+                <div class="warning-box">
+                    <h4> Attention : Remplacer le prototype</h4>
+                    <div class="code-block"><code>function Animal(nom) {
+    this.nom = nom;
+}
+
+Animal.prototype.parler = function() {
+    console.log("Bruit générique");
+};
+
+const chat = new Animal("Minou");
+
+//  Remplacer COMPLÈTEMENT le prototype
+Animal.prototype = {
+    manger: function() {
+        console.log("Miam");
+    }
+};
+
+// L'ancienne instance garde l'ancien prototype
+chat.parler();  // Fonctionne : "Bruit générique"
+chat.manger();  //  Erreur : chat.manger is not a function
+
+// Seules les NOUVELLES instances auront le nouveau prototype
+const chien = new Animal("Rex");
+chien.manger();  // Fonctionne : "Miam"
+chien.parler();  //  Erreur : chien.parler is not a function</code></div>
+                </div>
+            </section>
+
+            <!-- CLASSES ES6 -->
+            <section id="classes">
+                <h2>🎓 Les Classes ES6 (Syntaxe Moderne)</h2>
+
+                <h3>Introduction aux classes</h3>
+                <p>Les <strong>classes ES6</strong> (introduites en 2015) sont une syntaxe plus claire et moderne pour créer des constructeurs d'objets. Sous le capot, elles fonctionnent exactement comme les fonctions constructeurs avec prototypes.</p>
+
+                <div class="info-box">
+                    <h4> À savoir</h4>
+                    <p>Les classes JavaScript ne sont que du <strong>"sucre syntaxique"</strong> (syntactic sugar) sur les fonctions constructeurs. Elles rendent le code plus lisible mais ne changent pas le fonctionnement interne.</p>
+                </div>
+
+                <h3>Syntaxe de base</h3>
+                <div class="code-block"><code>// Définir une classe
+class Personne {
+    // Le constructeur est appelé automatiquement avec "new"
+    constructor(nom, prenom, age) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.age = age;
+    }
+    
+    // Méthode (automatiquement ajoutée au prototype)
+    sePresenter() {
+        return `Bonjour, je suis ${this.prenom} ${this.nom}, j'ai ${this.age} ans`;
+    }
+    
+    // Autre méthode
+    vieillir() {
+        this.age++;
+        console.log(`Anniversaire ! J'ai maintenant ${this.age} ans`);
+    }
+}
+
+// Créer des instances (identique aux fonctions constructeurs)
+const marie = new Personne("Dupont", "Marie", 25);
+const lucas = new Personne("Martin", "Lucas", 30);
+
+console.log(marie.sePresenter());  // "Bonjour, je suis Marie Dupont, j'ai 25 ans"
+marie.vieillir();  // "Anniversaire ! J'ai maintenant 26 ans"</code></div>
+
+                <h3>Comparaison : Fonction constructeur vs Classe</h3>
+                <div class="comparison">
+                    <div>
+                        <h4>Fonction Constructeur (ancienne syntaxe)</h4>
+                        <div class="code-block"><code>function Voiture(marque, modele) {
+    this.marque = marque;
+    this.modele = modele;
+}
+
+Voiture.prototype.demarrer = function() {
+    console.log("Vroum !");
+};
+
+Voiture.prototype.info = function() {
+    return `${this.marque} ${this.modele}`;
+};
+
+const voiture = new Voiture("Peugeot", "308");</code></div>
+                    </div>
+                    <div>
+                        <h4>Classe ES6 (syntaxe moderne)</h4>
+                        <div class="code-block"><code>class Voiture {
+    constructor(marque, modele) {
+        this.marque = marque;
+        this.modele = modele;
+    }
+    
+    demarrer() {
+        console.log("Vroum !");
+    }
+    
+    info() {
+        return `${this.marque} ${this.modele}`;
+    }
+}
+
+const voiture = new Voiture("Peugeot", "308");</code></div>
+                    </div>
+                </div>
+
+                <h3>Getters et Setters</h3>
+                <p>Les classes permettent de définir facilement des getters et setters pour contrôler l'accès aux propriétés.</p>
+
+                <div class="code-block"><code>class CompteBancaire {
+    constructor(titulaire, soldeInitial) {
+        this.titulaire = titulaire;
+        this._solde = soldeInitial;  // Convention : _ pour propriété privée
+    }
+    
+    // Getter : permet de lire une valeur comme une propriété
+    get solde() {
+        return this._solde;
+    }
+    
+    // Setter : permet de modifier une valeur avec validation
+    set solde(montant) {
+        if (montant < 0) {
+            console.log(" Le solde ne peut pas être négatif");
+            return;
+        }
+        this._solde = montant;
+    }
+    
+    // Getter calculé
+    get soldeFormate() {
+        return `${this._solde.toFixed(2)} €`;
+    }
+}
+
+const compte = new CompteBancaire("Marie", 1000);
+
+// Utiliser le getter (pas de parenthèses)
+console.log(compte.solde);         // 1000
+console.log(compte.soldeFormate);  // "1000.00 €"
+
+// Utiliser le setter
+compte.solde = 1500;   // OK
+console.log(compte.solde);  // 1500
+
+compte.solde = -500;   //  Le solde ne peut pas être négatif
+console.log(compte.solde);  // 1500 (inchangé)</code></div>
+
+                <h3>Méthodes statiques</h3>
+                <p>Les méthodes statiques appartiennent à la classe elle-même, pas aux instances.</p>
+
+                <div class="code-block"><code>class Calculatrice {
+    // Méthode statique (appelée sur la classe, pas sur une instance)
+    static additionner(a, b) {
+        return a + b;
+    }
+    
+    static soustraire(a, b) {
+        return a - b;
+    }
+    
+    static multiplier(a, b) {
+        return a * b;
+    }
+    
+    static diviser(a, b) {
+        if (b === 0) {
+            return "Erreur : division par zéro";
+        }
+        return a / b;
+    }
+}
+
+// Appeler les méthodes statiques directement sur la classe
+console.log(Calculatrice.additionner(5, 3));   // 8
+console.log(Calculatrice.multiplier(4, 7));    // 28
+
+//  On ne peut PAS appeler sur une instance
+const calc = new Calculatrice();
+// calc.additionner(5, 3);  //  Erreur : calc.additionner is not a function</code></div>
+
+                <h3>Propriétés statiques</h3>
+                <div class="code-block"><code>class Voiture {
+    // Propriété statique (ES2022)
+    static nombreVoitures = 0;
+    
+    constructor(marque, modele) {
+        this.marque = marque;
+        this.modele = modele;
+        Voiture.nombreVoitures++;  // Incrémenter à chaque création
+    }
+    
+    static afficherTotal() {
+        console.log(`Total de voitures créées : ${Voiture.nombreVoitures}`);
+    }
+}
+
+const v1 = new Voiture("Peugeot", "308");
+const v2 = new Voiture("Renault", "Clio");
+const v3 = new Voiture("Citroën", "C3");
+
+Voiture.afficherTotal();  // "Total de voitures créées : 3"</code></div>
+
+                <h3>Champs privés (ES2022)</h3>
+                <p>JavaScript supporte maintenant de vraies propriétés privées avec le préfixe <code>#</code>.</p>
+
+                <div class="code-block"><code>class CompteBancaire {
+    // Champs privés (préfixe #)
+    #solde;
+    #pin;
+    
+    constructor(titulaire, soldeInitial, pin) {
+        this.titulaire = titulaire;  // Public
+        this.#solde = soldeInitial;  // Privé
+        this.#pin = pin;             // Privé
+    }
+    
+    // Méthode publique pour accéder au solde
+    consulterSolde(pinSaisi) {
+        if (pinSaisi === this.#pin) {
+            return this.#solde;
+        } else {
+            return " Code PIN incorrect";
+        }
+    }
+    
+    // Méthode privée
+    #verifierPin(pin) {
+        return pin === this.#pin;
+    }
+    
+    retirer(montant, pin) {
+        if (!this.#verifierPin(pin)) {
+            return " Code PIN incorrect";
+        }
+        
+        if (montant <= this.#solde) {
+            this.#solde -= montant;
+            return ` Retrait de ${montant}€ effectué`;
+        } else {
+            return " Solde insuffisant";
+        }
+    }
+}
+
+const compte = new CompteBancaire("Marie", 1000, "1234");
+
+console.log(compte.titulaire);           // "Marie" (public)
+// console.log(compte.#solde);           //  Erreur : champ privé
+console.log(compte.consulterSolde("1234"));  // 1000 (avec bon PIN)
+console.log(compte.consulterSolde("0000"));  // " Code PIN incorrect"</code></div>
+
+                <h3>Exemple complet : Classe Produit</h3>
+                <div class="example">
+                    <div class="code-block"><code>class Produit {
+    // Propriété statique
+    static nombreProduits = 0;
+    static tva = 0.20;
+    
+    // Champ privé
+    #prixHT;
+    
+    constructor(nom, prixHT, stock = 0) {
+        this.nom = nom;
+        this.#prixHT = prixHT;
+        this.stock = stock;
+        this.id = ++Produit.nombreProduits;
+    }
+    
+    // Getter pour le prix HT
+    get prixHT() {
+        return this.#prixHT;
+    }
+    
+    // Setter avec validation
+    set prixHT(prix) {
+        if (prix < 0) {
+            console.log(" Le prix ne peut pas être négatif");
+            return;
+        }
+        this.#prixHT = prix;
+    }
+    
+    // Getter calculé : prix TTC
+    get prixTTC() {
+        return this.#prixHT * (1 + Produit.tva);
+    }
+    
+    // Getter calculé : valeur du stock
+    get valeurStock() {
+        return this.#prixHT * this.stock;
+    }
+    
+    // Méthode d'instance
+    ajouterStock(quantite) {
+        this.stock += quantite;
+        console.log(` ${quantite} ${this.nom}(s) ajouté(s). Stock : ${this.stock}`);
+    }
+    
+    retirerStock(quantite) {
+        if (quantite <= this.stock) {
+            this.stock -= quantite;
+            console.log(` ${quantite} ${this.nom}(s) retiré(s). Stock : ${this.stock}`);
+            return true;
+        } else {
+            console.log(` Stock insuffisant`);
+            return false;
+        }
+    }
+    
+    afficher() {
+        console.log(`\n ${this.nom} (ID: ${this.id})`);
+        console.log(`   Prix HT : ${this.prixHT.toFixed(2)}€`);
+        console.log(`   Prix TTC : ${this.prixTTC.toFixed(2)}€`);
+        console.log(`   Stock : ${this.stock}`);
+        console.log(`   Valeur stock : ${this.valeurStock.toFixed(2)}€`);
+    }
+    
+    // Méthode statique
+    static afficherStatistiques() {
+        console.log(`\n Nombre total de produits : ${Produit.nombreProduits}`);
+        console.log(`   TVA en vigueur : ${(Produit.tva * 100).toFixed(0)}%`);
+    }
+}
+
+// Utilisation
+const ordinateur = new Produit("Ordinateur", 800, 10);
+const souris = new Produit("Souris", 20, 50);
+const clavier = new Produit("Clavier", 45, 30);
+
+ordinateur.afficher();
+ordinateur.ajouterStock(5);
+ordinateur.prixHT = 750;  // Utilise le setter
+ordinateur.afficher();
+
+Produit.afficherStatistiques();</code></div>
+                </div>
+            </section>
+
+            <!-- HÉRITAGE -->
+            <section id="heritage">
+                <h2> L'Héritage en JavaScript</h2>
+
+                <h3>Qu'est-ce que l'héritage ?</h3>
+                <div class="info-box">
+                    <p>L'<strong>héritage</strong> permet de créer une classe "enfant" qui hérite des propriétés et méthodes d'une classe "parent".</p>
+                    
+                    <h4> Analogie de l'arbre généalogique</h4>
+                    <ul>
+                        <li><strong>Classe parent</strong> : Animal (peut manger, dormir)</li>
+                        <li><strong>Classe enfant</strong> : Chien (hérite de manger/dormir + peut aboyer)</li>
+                    </ul>
+                </div>
+
+                <h3>Héritage avec les classes (extends et super)</h3>
+                <div class="code-block"><code>// Classe parent (ou superclasse)
+class Animal {
+    constructor(nom, age) {
+        this.nom = nom;
+        this.age = age;
+    }
+    
+    manger() {
+        console.log(`${this.nom} mange`);
+    }
+    
+    dormir() {
+        console.log(`${this.nom} dort`);
+    }
+    
+    sePresenter() {
+        console.log(`Je suis ${this.nom}, j'ai ${this.age} ans`);
+    }
+}
+
+// Classe enfant (ou sous-classe) hérite de Animal
+class Chien extends Animal {
+    constructor(nom, age, race) {
+        // super() appelle le constructeur du parent
+        super(nom, age);  // OBLIGATOIRE avant d'utiliser "this"
+        
+        // Propriété spécifique aux chiens
+        this.race = race;
+    }
+    
+    // Méthode spécifique aux chiens
+    aboyer() {
+        console.log(`${this.nom} aboie : Woof woof !`);
+    }
+    
+    // Surcharge (override) : remplacer une méthode du parent
+    sePresenter() {
+        // Appeler la méthode du parent avec super
+        super.sePresenter();
+        console.log(`Je suis un chien de race ${this.race}`);
+    }
+}
+
+// Utilisation
+const rex = new Chien("Rex", 5, "Berger Allemand");
+
+// Méthodes héritées du parent
+rex.manger();       // "Rex mange"
+rex.dormir();       // "Rex dort"
+
+// Méthode propre au chien
+rex.aboyer();       // "Rex aboie : Woof woof !"
+
+// Méthode surchargée
+rex.sePresenter();
+// "Je suis Rex, j'ai 5 ans"
+// "Je suis un chien de race Berger Allemand"</code></div>
+
+                <h3>Hiérarchie à plusieurs niveaux</h3>
+                <div class="code-block"><code>// Niveau 1 : Classe de base
+class Vehicule {
+    constructor(marque, annee) {
+        this.marque = marque;
+        this.annee = annee;
+    }
+    
+    demarrer() {
+        console.log(`Le véhicule ${this.marque} démarre`);
+    }
+}
+
+// Niveau 2 : Hérite de Vehicule
+class Voiture extends Vehicule {
+    constructor(marque, annee, portes) {
+        super(marque, annee);
+        this.portes = portes;
+    }
+    
+    klaxonner() {
+        console.log("Beep beep !");
+    }
+}
+
+// Niveau 3 : Hérite de Voiture
+class VoitureElectrique extends Voiture {
+    constructor(marque, annee, portes, autonomie) {
+        super(marque, annee, portes);
+        this.autonomie = autonomie;
+    }
+    
+    recharger() {
+        console.log(`Recharge de la ${this.marque}. Autonomie : ${this.autonomie} km`);
+    }
+    
+    // Surcharge
+    demarrer() {
+        console.log(`La ${this.marque} électrique démarre silencieusement`);
+    }
+}
+
+const tesla = new VoitureElectrique("Tesla Model 3", 2023, 4, 500);
+
+// Méthodes héritées de tous les niveaux
+tesla.demarrer();     // Méthode surchargée
+tesla.klaxonner();    // De Voiture
+tesla.recharger();    // Propre à VoitureElectrique</code></div>
+
+                <h3>Exemple complet : Système de personnel d'entreprise</h3>
+                <div class="example">
+                    <div class="code-block"><code>// Classe de base : Employe
+class Employe {
+    static nombreEmployes = 0;
+    
+    constructor(nom, prenom, salaire) {
+        this.id = ++Employe.nombreEmployes;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.salaire = salaire;
+    }
+    
+    get nomComplet() {
+        return `${this.prenom} ${this.nom}`;
+    }
+    
+    afficherInfos() {
+        console.log(`\n ${this.nomComplet} (ID: ${this.id})`);
+        console.log(`   Salaire : ${this.salaire}€/mois`);
+    }
+    
+    calculerSalaireAnnuel() {
+        return this.salaire * 12;
+    }
+}
+
+// Classe enfant : Developpeur
+class Developpeur extends Employe {
+    constructor(nom, prenom, salaire, langage) {
+        super(nom, prenom, salaire);
+        this.langage = langage;
+        this.projets = [];
+    }
+    
+    ajouterProjet(projet) {
+        this.projets.push(projet);
+        console.log(` Projet "${projet}" assigné à ${this.nomComplet}`);
+    }
+    
+    afficherInfos() {
+        super.afficherInfos();
+        console.log(`   Langage principal : ${this.langage}`);
+        console.log(`   Projets : ${this.projets.length}`);
+    }
+}
+
+// Classe enfant : Manager
+class Manager extends Employe {
+    constructor(nom, prenom, salaire, departement) {
+        super(nom, prenom, salaire);
+        this.departement = departement;
+        this.equipe = [];
+    }
+    
+    ajouterMembre(employe) {
+        this.equipe.push(employe);
+        console.log(` ${employe.nomComplet} ajouté à l'équipe de ${this.nomComplet}`);
+    }
+    
+    afficherInfos() {
+        super.afficherInfos();
+        console.log(`   Département : ${this.departement}`);
+        console.log(`   Taille de l'équipe : ${this.equipe.length}`);
+    }
+    
+    afficherEquipe() {
+        console.log(`\n Équipe de ${this.nomComplet} :`);
+        this.equipe.forEach(membre => {
+            console.log(`   - ${membre.nomComplet}`);
+        });
+    }
+    
+    // Surcharge avec prime de management
+    calculerSalaireAnnuel() {
+        const salaireBase = super.calculerSalaireAnnuel();
+        const prime = salaireBase * 0.15;  // 15% de prime
+        return salaireBase + prime;
+    }
+}
+
+// Utilisation
+const dev1 = new Developpeur("Dupont", "Marie", 3000, "JavaScript");
+const dev2 = new Developpeur("Martin", "Lucas", 3200, "Python");
+const dev3 = new Developpeur("Bernard", "Sophie", 2800, "PHP");
+
+const manager = new Manager("Petit", "Thomas", 4500, "Développement Web");
+
+// Assigner des projets aux développeurs
+dev1.ajouterProjet("Refonte site e-commerce");
+dev1.ajouterProjet("API REST");
+dev2.ajouterProjet("Dashboard Analytics");
+
+// Constituer l'équipe du manager
+manager.ajouterMembre(dev1);
+manager.ajouterMembre(dev2);
+manager.ajouterMembre(dev3);
+
+// Afficher les informations
+dev1.afficherInfos();
+manager.afficherInfos();
+manager.afficherEquipe();
+
+console.log(`\nSalaire annuel de ${dev1.nomComplet} : ${dev1.calculerSalaireAnnuel()}€`);
+console.log(`Salaire annuel de ${manager.nomComplet} : ${manager.calculerSalaireAnnuel()}€ (avec prime)`);
+
+console.log(`\n Total employés dans l'entreprise : ${Employe.nombreEmployes}`);</code></div>
+                </div>
+
+                <h3>Vérifier l'héritage</h3>
+                <div class="code-block"><code>class Animal {}
+class Chien extends Animal {}
+
+const rex = new Chien();
+
+// instanceof vérifie toute la chaîne d'héritage
+console.log(rex instanceof Chien);    // true
+console.log(rex instanceof Animal);   // true
+console.log(rex instanceof Object);   // true (tout hérite d'Object)
+
+// Vérifier le prototype
+console.log(Object.getPrototypeOf(rex) === Chien.prototype);  // true
+console.log(Chien.prototype instanceof Animal);  // true</code></div>
+
+                <div class="warning-box">
+                    <h4> Règles importantes pour l'héritage</h4>
+                    <ol>
+                        <li>Dans le constructeur d'une classe enfant, <code>super()</code> DOIT être appelé AVANT d'utiliser <code>this</code></li>
+                        <li>Une classe ne peut hériter que d'UNE seule classe parent (pas d'héritage multiple)</li>
+                        <li>Utilisez <code>super.methode()</code> pour appeler une méthode du parent</li>
+                        <li>Les méthodes statiques sont aussi héritées</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- COMPARAISONS -->
+            <section id="comparaisons">
+                <h2> Comparaisons et Bonnes Pratiques</h2>
+
+                <h3>Objet littéral vs Constructeur vs Classe</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Critère</th>
+                            <th>Objet littéral</th>
+                            <th>Fonction Constructeur</th>
+                            <th>Classe ES6</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Syntaxe</strong></td>
+                            <td>const obj = {}</td>
+                            <td>function Obj() {}</td>
+                            <td>class Obj {}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Usage</strong></td>
+                            <td>Objet unique</td>
+                            <td>Plusieurs instances</td>
+                            <td>Plusieurs instances</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Héritage</strong></td>
+                            <td>Difficile</td>
+                            <td>Prototype</td>
+                            <td>extends/super</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Lisibilité</strong></td>
+                            <td>Très simple</td>
+                            <td>Moyenne</td>
+                            <td>Excellente</td>
+                        </tr>
+                        <tr>
+                            <td><strong>this</strong></td>
+                            <td>Simple</td>
+                            <td>Complexe</td>
+                            <td>Simple</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Compatibilité</strong></td>
+                            <td>Tous navigateurs</td>
+                            <td>Tous navigateurs</td>
+                            <td>ES6+ (2015)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Quand utiliser chaque approche ?</h3>
+                <div class="success-box">
+                    <h4> Utilisez un objet littéral quand :</h4>
+                    <ul>
+                        <li>Vous avez besoin d'UN SEUL objet</li>
+                        <li>L'objet est simple et ne nécessite pas de méthodes complexes</li>
+                        <li>Exemple : configuration, constantes</li>
+                    </ul>
+                    <div class="code-block"><code>const config = {
+    apiUrl: "https://api.example.com",
+    timeout: 5000,
+    retries: 3
+};</code></div>
+                </div>
+
+                <div class="success-box">
+                    <h4> Utilisez une classe quand :</h4>
+                    <ul>
+                        <li>Vous devez créer PLUSIEURS objets similaires</li>
+                        <li>Vous voulez de l'héritage</li>
+                        <li>Vous développez en JavaScript moderne (ES6+)</li>
+                        <li>Exemple : utilisateurs, produits, animaux</li>
+                    </ul>
+                    <div class="code-block"><code>class Utilisateur {
+    constructor(nom, email) {
+        this.nom = nom;
+        this.email = email;
+    }
+    
+    envoyerEmail() {
+        // ...
+    }
+}</code></div>
+                </div>
+
+                <h3>Bonnes pratiques</h3>
+                <div class="info-box">
+                    <h4> Conventions de nommage</h4>
+                    <ul>
+                        <li><strong>Classes/Constructeurs</strong> : PascalCase (première lettre majuscule) → <code>Personne</code>, <code>CompteBancaire</code></li>
+                        <li><strong>Instances</strong> : camelCase → <code>personne</code>, <code>monCompte</code></li>
+                        <li><strong>Méthodes</strong> : camelCase → <code>sePresenter()</code>, <code>calculerTotal()</code></li>
+                        <li><strong>Propriétés privées</strong> : préfixe _ ou # → <code>_solde</code>, <code>#pin</code></li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <h4> Recommandations générales</h4>
+                    <ol>
+                        <li><strong>Privilégiez les classes ES6</strong> pour les nouveaux projets (syntaxe plus claire)</li>
+                        <li><strong>Mettez les méthodes dans le prototype</strong> (ou utilisez les classes qui le font automatiquement)</li>
+                        <li><strong>Utilisez des getters/setters</strong> pour contrôler l'accès aux propriétés sensibles</li>
+                        <li><strong>Documentez vos classes</strong> avec des commentaires JSDoc</li>
+                        <li><strong>Validez les données</strong> dans le constructeur</li>
+                        <li><strong>Ne pas abuser de l'héritage</strong> : préférez la composition quand c'est possible</li>
+                    </ol>
+                </div>
+
+                <h3>Composition vs Héritage</h3>
+                <p>La <strong>composition</strong> (avoir des objets à l'intérieur d'autres objets) est souvent préférable à l'héritage profond.</p>
+
+                <div class="comparison">
+                    <div>
+                        <h4> Héritage profond (éviter)</h4>
+                        <div class="code-block"><code>class Animal {}
+class Mammifere extends Animal {}
+class Carnivore extends Mammifere {}
+class Felin extends Carnivore {}
+class Chat extends Felin {}
+
+// Hiérarchie trop profonde,
+// difficile à maintenir</code></div>
+                    </div>
+                    <div>
+                        <h4> Composition (préférer)</h4>
+                        <div class="code-block"><code>class Animal {
+    constructor() {
+        this.comportement = new Comportement();
+        this.alimentation = new Alimentation();
+    }
+}
+
+class Comportement {
+    courir() {}
+    sauter() {}
+}
+
+class Alimentation {
+    manger(nourriture) {}
+}
+
+// Plus flexible et maintenable</code></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EXERCICES -->
+            <section id="exercices">
+                <h2>🎓 Exercices Pratiques</h2>
+
+                <div class="exercise">
+                    <h3>Exercice 1 : Créer une classe Rectangle</h3>
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez une classe <code>Rectangle</code> avec un constructeur qui prend <code>largeur</code> et <code>hauteur</code></li>
+                        <li>Ajoutez un getter <code>aire</code> qui retourne l'aire du rectangle</li>
+                        <li>Ajoutez un getter <code>perimetre</code> qui retourne le périmètre</li>
+                        <li>Ajoutez une méthode <code>estCarre()</code> qui retourne true si c'est un carré</li>
+                        <li>Testez avec plusieurs rectangles</li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>class Rectangle {
+    constructor(largeur, hauteur) {
+        this.largeur = largeur;
+        this.hauteur = hauteur;
+    }
+    
+    get aire() {
+        return this.largeur * this.hauteur;
+    }
+    
+    get perimetre() {
+        return 2 * (this.largeur + this.hauteur);
+    }
+    
+    estCarre() {
+        return this.largeur === this.hauteur;
+    }
+    
+    afficher() {
+        console.log(`Rectangle ${this.largeur}x${this.hauteur}`);
+        console.log(`Aire : ${this.aire}`);
+        console.log(`Périmètre : ${this.perimetre}`);
+        console.log(`Carré : ${this.estCarre() ? "Oui" : "Non"}`);
+    }
+}
+
+const rect1 = new Rectangle(5, 10);
+const rect2 = new Rectangle(7, 7);
+
+rect1.afficher();
+rect2.afficher();</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <h3>Exercice 2 : Système de jeux vidéo</h3>
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez une classe <code>JeuVideo</code> avec : titre, plateforme, prix, genre, enStock</li>
+                        <li>Créez une classe <code>Magasin</code> qui gère un inventaire de jeux</li>
+                        <li>Ajoutez des méthodes :
+                            <ul>
+                                <li><code>ajouterJeu(jeu)</code> : ajoute un jeu au catalogue</li>
+                                <li><code>vendre(titre)</code> : vend un jeu (met enStock à false)</li>
+                                <li><code>reapprovisionner(titre)</code> : remet un jeu en stock</li>
+                                <li><code>rechercherParGenre(genre)</code> : trouve tous les jeux d'un genre</li>
+                                <li><code>jeuxDisponibles()</code> : retourne les jeux en stock</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>class JeuVideo {
+    constructor(titre, plateforme, prix, genre) {
+        this.titre = titre;
+        this.plateforme = plateforme;
+        this.prix = prix;
+        this.genre = genre;
+        this.enStock = true;
+    }
+    
+    afficher() {
+        console.log(` ${this.titre} (${this.plateforme}) - ${this.prix}€`);
+        console.log(`   Genre: ${this.genre} | Stock: ${this.enStock ? "" : ""}`);
+    }
+}
+
+class Magasin {
+    constructor(nom) {
+        this.nom = nom;
+        this.jeux = [];
+        this.ventes = 0;
+    }
+    
+    ajouterJeu(jeu) {
+        this.jeux.push(jeu);
+        console.log(` "${jeu.titre}" ajouté au catalogue`);
+    }
+    
+    vendre(titre) {
+        const jeu = this.jeux.find(j => j.titre.toLowerCase() === titre.toLowerCase());
+        
+        if (!jeu) {
+            console.log(" Jeu non trouvé");
+            return false;
+        }
+        
+        if (!jeu.enStock) {
+            console.log(" Jeu en rupture de stock");
+            return false;
+        }
+        
+        jeu.enStock = false;
+        this.ventes += jeu.prix;
+        console.log(` "${titre}" vendu pour ${jeu.prix}€`);
+        return true;
+    }
+    
+    reapprovisionner(titre) {
+        const jeu = this.jeux.find(j => j.titre.toLowerCase() === titre.toLowerCase());
+        
+        if (!jeu) {
+            console.log(" Jeu non trouvé");
+            return false;
+        }
+        
+        jeu.enStock = true;
+        console.log(` "${titre}" remis en stock`);
+        return true;
+    }
+    
+    rechercherParGenre(genre) {
+        const jeuxTrouves = this.jeux.filter(j => 
+            j.genre.toLowerCase() === genre.toLowerCase()
+        );
+        
+        if (jeuxTrouves.length > 0) {
+            console.log(`\n ${jeuxTrouves.length} jeu(x) ${genre} trouvé(s) :`);
+            jeuxTrouves.forEach(jeu => jeu.afficher());
+        } else {
+            console.log(` Aucun jeu ${genre} trouvé`);
+        }
+        
+        return jeuxTrouves;
+    }
+    
+    jeuxDisponibles() {
+        return this.jeux.filter(j => j.enStock);
+    }
+    
+    afficherStatistiques() {
+        const disponibles = this.jeuxDisponibles().length;
+        console.log(`\n  ${this.nom.toUpperCase()} `);
+        console.log(`Total jeux : ${this.jeux.length}`);
+        console.log(`En stock : ${disponibles}`);
+        console.log(`Vendus : ${this.jeux.length - disponibles}`);
+        console.log(`Chiffre d'affaires : ${this.ventes}€`);
+    }
+}
+
+// Test
+const gameStore = new Magasin("Game Zone");
+
+gameStore.ajouterJeu(new JeuVideo("The Last of Us", "PS5", 69.99, "Action"));
+gameStore.ajouterJeu(new JeuVideo("Mario Kart", "Switch", 59.99, "Course"));
+gameStore.ajouterJeu(new JeuVideo("Zelda", "Switch", 69.99, "Aventure"));
+gameStore.ajouterJeu(new JeuVideo("God of War", "PS5", 79.99, "Action"));
+
+gameStore.vendre("The Last of Us");
+gameStore.vendre("Mario Kart");
+
+gameStore.rechercherParGenre("Action");
+console.log(`\nJeux disponibles : ${gameStore.jeuxDisponibles().length}`);
+
+gameStore.afficherStatistiques();</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <h3>Exercice 3 : Héritage - Animaux</h3>
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez une classe <code>Animal</code> avec : nom, age, méthode manger() et dormir()</li>
+                        <li>Créez une classe <code>Chien</code> qui hérite d'Animal avec : race, méthode aboyer()</li>
+                        <li>Créez une classe <code>Chat</code> qui hérite d'Animal avec : couleur, méthode miauler()</li>
+                        <li>Surchargez la méthode <code>sePresenter()</code> pour chaque type</li>
+                        <li>Testez toutes les méthodes</li>
+                    </ol>
+
+                    <details>
+                        <summary><strong>Voir la solution</strong></summary>
+                        <div class="code-block"><code>class Animal {
+    constructor(nom, age) {
+        this.nom = nom;
+        this.age = age;
+    }
+    
+    manger() {
+        console.log(`${this.nom} mange`);
+    }
+    
+    dormir() {
+        console.log(`${this.nom} dort`);
+    }
+    
+    sePresenter() {
+        console.log(`Je suis ${this.nom}, j'ai ${this.age} ans`);
+    }
+}
+
+class Chien extends Animal {
+    constructor(nom, age, race) {
+        super(nom, age);
+        this.race = race;
+    }
+    
+    aboyer() {
+        console.log(`${this.nom} aboie : Woof woof !`);
+    }
+    
+    sePresenter() {
+        super.sePresenter();
+        console.log(`Je suis un chien de race ${this.race}`);
+    }
+}
+
+class Chat extends Animal {
+    constructor(nom, age, couleur) {
+        super(nom, age);
+        this.couleur = couleur;
+    }
+    
+    miauler() {
+        console.log(`${this.nom} miaule : Miaou !`);
+    }
+    
+    sePresenter() {
+        super.sePresenter();
+        console.log(`Je suis un chat ${this.couleur}`);
+    }
+}
+
+const rex = new Chien("Rex", 5, "Berger Allemand");
+const minou = new Chat("Minou", 3, "tigré");
+
+rex.sePresenter();
+rex.aboyer();
+rex.manger();
+
+minou.sePresenter();
+minou.miauler();
+minou.dormir();</code></div>
+                    </details>
+                </div>
+
+                <div class="exercise">
+                    <h3>Projet Final : Système de gestion d'école</h3>
+                    <h4>Consignes</h4>
+                    <ol>
+                        <li>Créez une classe <code>Personne</code> de base avec : nom, prenom, dateNaissance</li>
+                        <li>Créez une classe <code>Eleve</code> qui hérite de Personne avec : classe, notes (tableau)</li>
+                        <li>Créez une classe <code>Professeur</code> qui hérite de Personne avec : matiere, salaire</li>
+                        <li>Créez une classe <code>Ecole</code> qui gère les élèves et professeurs</li>
+                        <li>Implémentez toutes les méthodes nécessaires (ajouter, supprimer, rechercher, statistiques)</li>
+                    </ol>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+             <p>2026 Formation DWWM développeur web web mobile Lille</p>
+        <p>&copy; Thomas cours de JavaScript</p>
+        <img src="../Supports/IMG/Real.jpg" width="50px" alt="">
+            <img src="../Supports/IMG/Region.jpg" width="50px" alt="">
+            <img src="../Supports/IMG/U.E.jpg" width="70px" alt="">
+        </footer>
+    </div>
+</body>
+</html>

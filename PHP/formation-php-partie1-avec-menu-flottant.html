@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formation PHP - DWWM</title>
+    <style>
+
+
+  :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        header {
+           background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            color: var(--conseil);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        nav {
+            background: var(--conseil);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            display: block;
+            border-radius: 5px;
+            transition: background 0.3s;
+            font-size: 0.9em;
+        }
+
+        nav a:hover {
+            background-color: var(--real);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 50px;
+            scroll-margin-top: 60px;
+        }
+
+        h2 {
+            color: var(--conseil);
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--real);
+        }
+
+        h3 {
+            color: var(--conseil);
+            font-size: 1.5em;
+            margin: 25px 0 15px;
+        }
+
+        h4 {
+            color: var(--conseil);
+            font-size: 1.2em;
+            margin: 20px 0 10px;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 5px solid var(--real);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .code-block code {
+            display: block;
+        }
+
+        .example {
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        /* MENU FLOTTANT EN BAS */
+        .floating-nav {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .floating-nav-toggle {
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-nav-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .floating-nav-menu {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            padding: 15px;
+            min-width: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .floating-nav-menu.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .floating-nav-menu h3 {
+            color: var(--conseil);
+            font-size: 1em;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--real);
+        }
+
+        .floating-nav-menu a {
+            display: block;
+            color: #333;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            
+        }
+
+        .floating-nav-menu a:hover {
+           background-color: var(--real);
+            color: #fcfdff;
+            padding-left: 15px;
+        }
+
+        @media screen and (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .floating-nav {
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .floating-nav-toggle {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+
+            .floating-nav-menu {
+                right: 0;
+                min-width: 200px;
+                max-width: calc(100vw - 40px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐘 Formation PHP </h1>
+            <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="" srcset="">
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#module1">1. Introduction</a></li>
+                <li><a href="#module2">2. Syntaxe</a></li>
+                <li><a href="#module3">3. Variables</a></li>
+                <li><a href="#module4">4. Conditions</a></li>
+                <li><a href="#module5">5. Boucles</a></li>
+                <li><a href="#module6">6. Fonctions</a></li>
+                <li><a href="#module7">7. Tableaux</a></li>
+                <li><a href="#module8">8. Superglobales</a></li>
+                <li><a href="#module9">9. GET & POST</a></li>
+             
+            </ul>
+        </nav>
+
+        <div class="content">
+            <!-- MODULE 1 : INTRODUCTION -->
+            <section id="module1">
+                <h2>Module 1 : Introduction à PHP</h2>
+
+                <h3>Qu'est-ce que PHP ?</h3>
+                <div class="info-box">
+                    <p><strong>PHP</strong> (Hypertext Preprocessor) est un langage de programmation <strong>côté serveur</strong> utilisé pour créer des sites web dynamiques.</p>
+                    <ul>
+                        <li>Créé en 1994 par Rasmus Lerdorf</li>
+                        <li>Utilisé par 77% des sites web (WordPress, Facebook, Wikipedia...)</li>
+                        <li>Gratuit et open-source</li>
+                        <li>Facile à apprendre et puissant</li>
+                    </ul>
+                </div>
+
+                <h3>Client vs Serveur</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Côté Client (Frontend)</th>
+                            <th>Côté Serveur (Backend)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>HTML, CSS, JavaScript</td>
+                            <td>PHP, Python, Node.js</td>
+                        </tr>
+                        <tr>
+                            <td>S'exécute dans le navigateur</td>
+                            <td>S'exécute sur le serveur</td>
+                        </tr>
+                        <tr>
+                            <td>Visible par l'utilisateur</td>
+                            <td>Invisible, code caché</td>
+                        </tr>
+                        <tr>
+                            <td>Interface visuelle</td>
+                            <td>Traitement des données</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Installation de l'environnement</h3>
+                <h4>Windows : WAMP / XAMPP</h4>
+                <ol>
+                    <li>Télécharger WAMP : <a href="https://www.wampserver.com/" target="_blank">wampserver.com</a></li>
+                    <li>Installer WAMP</li>
+                    <li>Lancer WAMP (icône verte = serveur actif)</li>
+                    <li>Créer vos fichiers PHP dans : <code>C:\wamp64\www\</code></li>
+                    <li>Accéder via : <code>http://localhost/</code></li>
+                </ol>
+
+                <h4>Mac : MAMP</h4>
+                <ol>
+                    <li>Télécharger MAMP : <a href="https://www.mamp.info/" target="_blank">mamp.info</a></li>
+                    <li>Installer et lancer MAMP</li>
+                    <li>Créer vos fichiers dans : <code>/Applications/MAMP/htdocs/</code></li>
+                </ol>
+
+                <h3>Votre premier fichier PHP</h3>
+                <div class="code-block"><code>&lt;?php
+// Ceci est un commentaire
+echo "Bonjour le monde !";
+?&gt;</code></div>
+
+                <div class="info-box">
+                    <h4>Règles importantes :</h4>
+                    <ul>
+                        <li>Les fichiers PHP ont l'extension <code>.php</code></li>
+                        <li>Le code PHP commence par <code>&lt;?php</code> et se termine par <code>?&gt;</code></li>
+                        <li>Chaque instruction se termine par un <code>;</code></li>
+                        <li>PHP est sensible à la casse pour les variables</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- MODULE 2 : SYNTAXE DE BASE -->
+            <section id="module2">
+                <h2>Module 2 : Syntaxe de base</h2>
+
+                <h3>Balises PHP</h3>
+                <div class="code-block"><code>&lt;?php
+// Balise standard (recommandée)
+echo "Hello";
+?&gt;
+
+&lt;?php
+// Balise courte (à éviter)
+echo "Hello";
+?&gt;
+
+&lt;?php
+// Une seule balise pour tout le fichier (le plus courant)
+echo "Hello";
+// Pas de ?&gt; à la fin si le fichier ne contient que du PHP
+</code></div>
+
+                <h3>Afficher du contenu</h3>
+                <div class="code-block"><code>&lt;?php
+// echo - affiche du texte
+echo "Bonjour";
+echo "Bonjour", " ", "le", " ", "monde"; // Plusieurs valeurs
+
+// print - similaire à echo
+print "Hello";
+
+// var_dump() - affiche le type et la valeur (utile pour déboguer)
+var_dump("Hello");
+var_dump(42);
+
+// print_r() - affiche les tableaux de façon lisible
+print_r(array(1, 2, 3));
+?&gt;</code></div>
+
+                <h3>Commentaires</h3>
+                <div class="code-block"><code>&lt;?php
+// Commentaire sur une ligne
+
+# Aussi un commentaire sur une ligne
+
+/*
+   Commentaire
+   sur plusieurs
+   lignes
+*/
+
+/**
+ * Commentaire de documentation
+ * @param string $nom
+ * @return string
+ */
+?&gt;</code></div>
+
+                <h3>Mélanger HTML et PHP</h3>
+                <div class="code-block"><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Ma page PHP&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;&lt;?php echo "Titre dynamique"; ?&gt;&lt;/h1&gt;
+    
+    &lt;?php
+    $prenom = "Thomas";
+    echo "&lt;p&gt;Bonjour $prenom&lt;/p&gt;";
+    ?&gt;
+    
+    &lt;p&gt;Nous sommes le &lt;?php echo date("d/m/Y"); ?&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></div>
+            </section>
+
+            <!-- MODULE 3 : VARIABLES -->
+            <section id="module3">
+                <h2>Module 3 : Les Variables</h2>
+
+                <h3>Déclaration et utilisation</h3>
+                <div class="code-block"><code>&lt;?php
+// Une variable commence TOUJOURS par $
+$nom = "Thomas";
+$age = 30;
+$estMajeur = true;
+$prix = 19.99;
+
+// Afficher une variable
+echo $nom;              // Thomas
+echo "Je m'appelle $nom";   // Je m'appelle Thomas
+echo 'Je m\'appelle $nom';  // Je m'appelle $nom (pas d'interpolation avec '')
+
+// Concaténation avec .
+echo "Je m'appelle " . $nom . " et j'ai " . $age . " ans";
+?&gt;</code></div>
+
+                <h3>Types de données</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Exemple</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>String</strong></td>
+                            <td>Chaîne de caractères</td>
+                            <td><code>$nom = "Marie";</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Integer</strong></td>
+                            <td>Nombre entier</td>
+                            <td><code>$age = 25;</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Float</strong></td>
+                            <td>Nombre décimal</td>
+                            <td><code>$prix = 19.99;</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Boolean</strong></td>
+                            <td>Vrai ou Faux</td>
+                            <td><code>$actif = true;</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Array</strong></td>
+                            <td>Tableau</td>
+                            <td><code>$fruits = array("pomme", "banane");</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>NULL</strong></td>
+                            <td>Aucune valeur</td>
+                            <td><code>$vide = null;</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Vérifier le type d'une variable</h3>
+                <div class="code-block"><code>&lt;?php
+$age = 25;
+
+// var_dump() affiche le type ET la valeur
+var_dump($age);  // int(25)
+
+// gettype() retourne le type
+echo gettype($age);  // integer
+
+// is_*() vérifie le type
+if (is_int($age)) {
+    echo "C'est un entier";
+}
+
+if (is_string($nom)) {
+    echo "C'est une chaîne";
+}
+
+if (is_bool($actif)) {
+    echo "C'est un booléen";
+}
+?&gt;</code></div>
+
+                <h3>Conversion de types (Casting)</h3>
+                <div class="code-block"><code>&lt;?php
+$nombre = "42";  // C'est une chaîne
+
+// Convertir en entier
+$entier = (int)$nombre;
+$entier = intval($nombre);
+
+// Convertir en float
+$decimal = (float)"19.99";
+$decimal = floatval("19.99");
+
+// Convertir en string
+$texte = (string)42;
+$texte = strval(42);
+
+// Convertir en booléen
+$bool = (bool)1;  // true
+$bool = (bool)0;  // false
+?&gt;</code></div>
+
+                <h3>Constantes</h3>
+                <div class="code-block"><code>&lt;?php
+// Constante avec define()
+define("SITE_NAME", "Mon Site Web");
+define("VERSION", "1.0");
+
+echo SITE_NAME;  // Mon Site Web
+
+// Constante avec const (depuis PHP 5.3)
+const DB_HOST = "localhost";
+const DB_USER = "root";
+
+echo DB_HOST;  // localhost
+
+// Constantes prédéfinies PHP
+echo PHP_VERSION;      // Version de PHP
+echo PHP_OS;           // Système d'exploitation
+echo __FILE__;         // Nom du fichier actuel
+echo __DIR__;          // Répertoire du fichier actuel
+echo __LINE__;         // Numéro de ligne actuelle
+?&gt;</code></div>
+
+                <h3>Opérateurs</h3>
+                <h4>Arithmétiques</h4>
+                <div class="code-block"><code>&lt;?php
+$a = 10;
+$b = 3;
+
+echo $a + $b;  // 13 (Addition)
+echo $a - $b;  // 7  (Soustraction)
+echo $a * $b;  // 30 (Multiplication)
+echo $a / $b;  // 3.333... (Division)
+echo $a % $b;  // 1  (Modulo - reste de la division)
+echo $a ** $b; // 1000 (Puissance)
+
+// Incrémentation / Décrémentation
+$count = 0;
+$count++;  // $count = 1
+$count--;  // $count = 0
+?&gt;</code></div>
+
+                <h4>Comparaison</h4>
+                <div class="code-block"><code>&lt;?php
+$a = 5;
+$b = "5";
+
+// Égalité (valeur)
+var_dump($a == $b);   // true
+
+// Identité (valeur ET type)
+var_dump($a === $b);  // false
+
+// Différent
+var_dump($a != $b);   // false
+var_dump($a !== $b);  // true
+
+// Comparaisons
+var_dump($a > 3);     // true
+var_dump($a < 10);    // true
+var_dump($a >= 5);    // true
+var_dump($a <= 5);    // true
+?&gt;</code></div>
+
+                <h4>Logiques</h4>
+                <div class="code-block"><code>&lt;?php
+$age = 25;
+$majeur = true;
+
+// ET logique
+if ($age >= 18 && $majeur) {
+    echo "Accès autorisé";
+}
+
+// OU logique
+if ($age < 18 || !$majeur) {
+    echo "Accès refusé";
+}
+
+// NON logique
+if (!$majeur) {
+    echo "Pas majeur";
+}
+?&gt;</code></div>
+            </section>
+
+            <!-- MODULE 4 : CONDITIONS -->
+            <section id="module4">
+                <h2>Module 4 : Les Structures Conditionnelles</h2>
+
+                <h3>if / else</h3>
+                <div class="code-block"><code>&lt;?php
+$age = 20;
+
+// if simple
+if ($age >= 18) {
+    echo "Vous êtes majeur";
+}
+
+// if / else
+if ($age >= 18) {
+    echo "Majeur";
+} else {
+    echo "Mineur";
+}
+
+// if / elseif / else
+if ($age < 12) {
+    echo "Enfant";
+} elseif ($age < 18) {
+    echo "Adolescent";
+} elseif ($age < 60) {
+    echo "Adulte";
+} else {
+    echo "Senior";
+}
+?&gt;</code></div>
+
+                <h3>Opérateur ternaire</h3>
+                <div class="code-block"><code>&lt;?php
+$age = 20;
+
+// Syntaxe : condition ? si_vrai : si_faux
+$statut = ($age >= 18) ? "Majeur" : "Mineur";
+echo $statut;  // Majeur
+
+// Équivalent à :
+if ($age >= 18) {
+    $statut = "Majeur";
+} else {
+    $statut = "Mineur";
+}
+?&gt;</code></div>
+
+                <h3>switch</h3>
+                <div class="code-block"><code>&lt;?php
+$jour = "lundi";
+
+switch ($jour) {
+    case "lundi":
+        echo "Début de semaine";
+        break;
+    
+    case "mardi":
+    case "mercredi":
+    case "jeudi":
+        echo "Milieu de semaine";
+        break;
+    
+    case "vendredi":
+        echo "Bientôt le weekend !";
+        break;
+    
+    case "samedi":
+    case "dimanche":
+        echo "Weekend !";
+        break;
+    
+    default:
+        echo "Jour non reconnu";
+}
+?&gt;</code></div>
+
+                <h3>match (PHP 8+)</h3>
+                <div class="code-block"><code>&lt;?php
+$statut = 200;
+
+$message = match($statut) {
+    200 => "OK",
+    404 => "Non trouvé",
+    500 => "Erreur serveur",
+    default => "Statut inconnu"
+};
+
+echo $message;  // OK
+?&gt;</code></div>
+
+                <div class="success-box">
+                    <h4>Bonnes pratiques :</h4>
+                    <ul>
+                        <li>Utilisez <code>===</code> (triple égal) au lieu de <code>==</code></li>
+                        <li>Simplifiez avec l'opérateur ternaire pour les cas simples</li>
+                        <li>Préférez <code>match</code> à <code>switch</code> si PHP 8+</li>
+                        <li>N'oubliez pas le <code>break</code> dans les <code>switch</code></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- MODULE 5 : BOUCLES -->
+            <section id="module5">
+                <h2>Module 5 : Les Boucles</h2>
+
+                <h3>while</h3>
+                <div class="code-block"><code>&lt;?php
+// Tant que la condition est vraie, la boucle continue
+$i = 1;
+while ($i <= 5) {
+    echo "Tour $i&lt;br&gt;";
+    $i++;
+}
+
+// Résultat :
+// Tour 1
+// Tour 2
+// Tour 3
+// Tour 4
+// Tour 5
+?&gt;</code></div>
+
+                <h3>do...while</h3>
+                <div class="code-block"><code>&lt;?php
+// Exécute AU MOINS une fois, puis vérifie la condition
+$i = 1;
+do {
+    echo "Tour $i&lt;br&gt;";
+    $i++;
+} while ($i <= 5);
+?&gt;</code></div>
+
+                <h3>for</h3>
+                <div class="code-block"><code>&lt;?php
+// for (initialisation; condition; incrémentation)
+for ($i = 1; $i <= 5; $i++) {
+    echo "Tour $i&lt;br&gt;";
+}
+
+// Compter à rebours
+for ($i = 10; $i >= 1; $i--) {
+    echo "$i... ";
+}
+echo "Décollage !";
+
+// Boucle de 2 en 2
+for ($i = 0; $i <= 10; $i += 2) {
+    echo "$i ";  // 0 2 4 6 8 10
+}
+?&gt;</code></div>
+
+                <h3>foreach (pour les tableaux)</h3>
+                <div class="code-block"><code>&lt;?php
+$fruits = array("Pomme", "Banane", "Orange");
+
+// Parcourir les valeurs
+foreach ($fruits as $fruit) {
+    echo "$fruit&lt;br&gt;";
+}
+
+// Parcourir les clés ET les valeurs
+$ages = array("Marie" =&gt; 25, "Lucas" =&gt; 30, "Sophie" =&gt; 28);
+foreach ($ages as $prenom =&gt; $age) {
+    echo "$prenom a $age ans&lt;br&gt;";
+}
+?&gt;</code></div>
+
+                <h3>break et continue</h3>
+                <div class="code-block"><code>&lt;?php
+// break - sort de la boucle
+for ($i = 1; $i <= 10; $i++) {
+    if ($i === 5) {
+        break;  // Sort à i=5
+    }
+    echo "$i ";  // 1 2 3 4
+}
+
+// continue - passe à l'itération suivante
+for ($i = 1; $i <= 10; $i++) {
+    if ($i % 2 === 0) {
+        continue;  // Saute les nombres pairs
+    }
+    echo "$i ";  // 1 3 5 7 9
+}
+?&gt;</code></div>
+
+                <div class="example">
+                    <h4>Exemple pratique : Table de multiplication</h4>
+                    <div class="code-block"><code>&lt;?php
+echo "&lt;table border='1'&gt;";
+for ($i = 1; $i <= 10; $i++) {
+    echo "&lt;tr&gt;";
+    for ($j = 1; $j <= 10; $j++) {
+        echo "&lt;td&gt;" . ($i * $j) . "&lt;/td&gt;";
+    }
+    echo "&lt;/tr&gt;";
+}
+echo "&lt;/table&gt;";
+?&gt;</code></div>
+                </div>
+            </section>
+
+            <!-- MODULE 6 : FONCTIONS -->
+            <section id="module6">
+                <h2>Module 6 : Les Fonctions</h2>
+
+                <h3>Créer une fonction</h3>
+                <div class="code-block"><code>&lt;?php
+// Fonction simple
+function direBonjour() {
+    echo "Bonjour !";
+}
+
+// Appeler la fonction
+direBonjour();  // Bonjour !
+
+// Fonction avec paramètres
+function saluer($prenom) {
+    echo "Bonjour $prenom !";
+}
+
+saluer("Thomas");  // Bonjour Thomas !
+
+// Fonction avec valeur de retour
+function additionner($a, $b) {
+    return $a + $b;
+}
+
+$resultat = additionner(5, 3);
+echo $resultat;  // 8
+?&gt;</code></div>
+
+                <h3>Paramètres par défaut</h3>
+                <div class="code-block"><code>&lt;?php
+function saluer($prenom, $formule = "Bonjour") {
+    return "$formule $prenom !";
+}
+
+echo saluer("Marie");              // Bonjour Marie !
+echo saluer("Lucas", "Salut");     // Salut Lucas !
+?&gt;</code></div>
+
+                <h3>Typage des paramètres (PHP 7+)</h3>
+                <div class="code-block"><code>&lt;?php
+// Typage strict
+declare(strict_types=1);
+
+function additionner(int $a, int $b): int {
+    return $a + $b;
+}
+
+echo additionner(5, 3);      // 8
+// echo additionner(5.5, 3);  // Erreur si strict_types=1
+
+function obtenirNom(string $prenom, string $nom): string {
+    return "$prenom $nom";
+}
+
+function estMajeur(int $age): bool {
+    return $age >= 18;
+}
+?&gt;</code></div>
+
+                <h3>Fonctions variables</h3>
+                <div class="code-block"><code>&lt;?php
+function crier($texte) {
+    return strtoupper($texte);
+}
+
+$maFonction = "crier";
+echo $maFonction("bonjour");  // BONJOUR
+?&gt;</code></div>
+
+                <h3>Fonctions anonymes (lambda)</h3>
+                <div class="code-block"><code>&lt;?php
+// Fonction anonyme
+$dire = function($message) {
+    echo $message;
+};
+
+$dire("Hello");  // Hello
+
+// Fonction fléchée (PHP 7.4+)
+$multiplier = fn($x, $y) =&gt; $x * $y;
+echo $multiplier(5, 3);  // 15
+?&gt;</code></div>
+
+                <h3>Fonctions utiles intégrées</h3>
+                <h4>Manipulation de chaînes</h4>
+                <div class="code-block"><code>&lt;?php
+$texte = "Bonjour le monde";
+
+// Longueur
+echo strlen($texte);  // 16
+
+// Majuscules / Minuscules
+echo strtoupper($texte);  // BONJOUR LE MONDE
+echo strtolower($texte);  // bonjour le monde
+echo ucfirst($texte);     // Bonjour le monde
+echo ucwords($texte);     // Bonjour Le Monde
+
+// Remplacer
+echo str_replace("monde", "PHP", $texte);  // Bonjour le PHP
+
+// Découper
+$mots = explode(" ", $texte);  // ["Bonjour", "le", "monde"]
+
+// Joindre
+$phrase = implode(" - ", $mots);  // Bonjour - le - monde
+
+// Extraire une partie
+echo substr($texte, 0, 7);  // Bonjour
+
+// Position d'un caractère
+echo strpos($texte, "le");  // 8
+?&gt;</code></div>
+
+                <h4>Manipulation de nombres</h4>
+                <div class="code-block"><code>&lt;?php
+// Arrondir
+echo round(3.7);       // 4
+echo ceil(3.1);        // 4 (arrondi supérieur)
+echo floor(3.9);       // 3 (arrondi inférieur)
+
+// Valeur absolue
+echo abs(-10);         // 10
+
+// Maximum / Minimum
+echo max(5, 10, 3);    // 10
+echo min(5, 10, 3);    // 3
+
+// Nombre aléatoire
+echo rand(1, 100);     // Nombre entre 1 et 100
+
+// Puissance / Racine
+echo pow(2, 3);        // 8 (2^3)
+echo sqrt(16);         // 4
+?&gt;</code></div>
+
+                <h4>Fonctions de date</h4>
+                <div class="code-block"><code>&lt;?php
+// Date actuelle
+echo date("d/m/Y");           // 04/02/2026
+echo date("H:i:s");           // 15:30:45
+echo date("d/m/Y H:i:s");     // 04/02/2026 15:30:45
+
+// Timestamp
+echo time();                  // 1738681845 (secondes depuis 1970)
+
+// Créer une date
+$date = mktime(15, 30, 0, 2, 4, 2026);
+echo date("d/m/Y", $date);
+
+// Formater une date
+$dateObj = new DateTime("2026-02-04");
+echo $dateObj->format("d/m/Y");  // 04/02/2026
+?&gt;</code></div>
+            </section>
+
+            <!-- MODULE 7 : TABLEAUX -->
+            <section id="module7">
+                <h2>Module 7 : Les Tableaux (Arrays)</h2>
+
+                <h3>Tableaux indexés</h3>
+                <div class="code-block"><code>&lt;?php
+// Créer un tableau
+$fruits = array("Pomme", "Banane", "Orange");
+
+// Syntaxe courte (PHP 5.4+)
+$fruits = ["Pomme", "Banane", "Orange"];
+
+// Accéder aux éléments (index commence à 0)
+echo $fruits[0];  // Pomme
+echo $fruits[1];  // Banane
+
+// Modifier un élément
+$fruits[1] = "Fraise";
+
+// Ajouter un élément
+$fruits[] = "Kiwi";           // Ajoute à la fin
+array_push($fruits, "Mangue"); // Ajoute à la fin
+
+// Nombre d'éléments
+echo count($fruits);  // 5
+
+// Parcourir le tableau
+for ($i = 0; $i < count($fruits); $i++) {
+    echo $fruits[$i] . "&lt;br&gt;";
+}
+
+foreach ($fruits as $fruit) {
+    echo "$fruit&lt;br&gt;";
+}
+?&gt;</code></div>
+
+                <h3>Tableaux associatifs</h3>
+                <div class="code-block"><code>&lt;?php
+// Tableau avec clés personnalisées
+$personne = array(
+    "prenom" =&gt; "Marie",
+    "nom" =&gt; "Dupont",
+    "age" =&gt; 25,
+    "ville" =&gt; "Lille"
+);
+
+// Syntaxe courte
+$personne = [
+    "prenom" =&gt; "Marie",
+    "nom" =&gt; "Dupont",
+    "age" =&gt; 25,
+    "ville" =&gt; "Lille"
+];
+
+// Accéder aux éléments
+echo $personne["prenom"];  // Marie
+echo $personne["age"];     // 25
+
+// Ajouter une clé
+$personne["email"] = "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b2dfd3c0dbd7f2d7cad3dfc2ded79cd1dddf">[email&#160;protected]</a>";
+
+// Parcourir
+foreach ($personne as $cle =&gt; $valeur) {
+    echo "$cle : $valeur&lt;br&gt;";
+}
+?&gt;</code></div>
+
+                <h3>Tableaux multidimensionnels</h3>
+                <div class="code-block"><code>&lt;?php
+$etudiants = [
+    [
+        "nom" =&gt; "Dupont",
+        "prenom" =&gt; "Marie",
+        "notes" =&gt; [15, 12, 18]
+    ],
+    [
+        "nom" =&gt; "Martin",
+        "prenom" =&gt; "Lucas",
+        "notes" =&gt; [14, 16, 13]
+    ]
+];
+
+// Accéder aux éléments
+echo $etudiants[0]["prenom"];  // Marie
+echo $etudiants[0]["notes"][0]; // 15
+
+// Parcourir
+foreach ($etudiants as $etudiant) {
+    echo $etudiant["prenom"] . " " . $etudiant["nom"] . "&lt;br&gt;";
+    
+    foreach ($etudiant["notes"] as $note) {
+        echo "Note : $note&lt;br&gt;";
+    }
+}
+?&gt;</code></div>
+
+                <h3>Fonctions de tableaux essentielles</h3>
+                <div class="code-block"><code>&lt;?php
+$nombres = [5, 2, 8, 1, 9];
+
+// Trier
+sort($nombres);        // Tri croissant : [1, 2, 5, 8, 9]
+rsort($nombres);       // Tri décroissant : [9, 8, 5, 2, 1]
+
+// Tableaux associatifs
+$ages = ["Marie" =&gt; 25, "Lucas" =&gt; 30, "Sophie" =&gt; 28];
+asort($ages);          // Tri par valeur
+ksort($ages);          // Tri par clé
+
+// Rechercher
+$fruits = ["Pomme", "Banane", "Orange"];
+if (in_array("Banane", $fruits)) {
+    echo "Banane trouvée !";
+}
+
+$position = array_search("Orange", $fruits);  // 2
+
+// Ajouter / Retirer
+array_push($fruits, "Kiwi");      // Ajoute à la fin
+array_pop($fruits);               // Retire le dernier
+array_unshift($fruits, "Fraise"); // Ajoute au début
+array_shift($fruits);             // Retire le premier
+
+// Fusionner
+$tableau1 = [1, 2, 3];
+$tableau2 = [4, 5, 6];
+$fusion = array_merge($tableau1, $tableau2);  // [1, 2, 3, 4, 5, 6]
+
+// Découper
+$portion = array_slice($fruits, 1, 2);  // Extrait 2 éléments à partir de l'index 1
+
+// Supprimer une clé
+unset($ages["Marie"]);
+
+// Obtenir les clés / valeurs
+$cles = array_keys($ages);
+$valeurs = array_values($ages);
+
+// Vérifier si une clé existe
+if (array_key_exists("Lucas", $ages)) {
+    echo "Lucas existe";
+}
+
+// Compter les occurrences
+$lettres = ['a', 'b', 'a', 'c', 'a'];
+$comptage = array_count_values($lettres);  // ['a' =&gt; 3, 'b' =&gt; 1, 'c' =&gt; 1]
+?&gt;</code></div>
+
+                <div class="success-box">
+                    <h4>Fonctions les plus utilisées :</h4>
+                    <ul>
+                        <li><code>count()</code> - Nombre d'éléments</li>
+                        <li><code>in_array()</code> - Vérifier si existe</li>
+                        <li><code>array_push()</code> - Ajouter à la fin</li>
+                        <li><code>sort() / asort() / ksort()</code> - Trier</li>
+                        <li><code>array_merge()</code> - Fusionner</li>
+                        <li><code>array_keys() / array_values()</code> - Obtenir clés/valeurs</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- MODULE 8 : SUPERGLOBALES -->
+            <section id="module8">
+                <h2>Module 8 : Les Superglobales</h2>
+
+                <div class="info-box">
+                    <p>Les <strong>superglobales</strong> sont des variables PHP automatiquement disponibles partout dans le script.</p>
+                </div>
+
+                <h3>$_SERVER</h3>
+                <p>Contient des informations sur le serveur et l'environnement</p>
+                <div class="code-block"><code>&lt;?php
+// Informations sur la requête
+echo $_SERVER['PHP_SELF'];         // Nom du fichier actuel
+echo $_SERVER['SERVER_NAME'];      // Nom du serveur
+echo $_SERVER['HTTP_HOST'];        // En-tête Host
+echo $_SERVER['HTTP_USER_AGENT'];  // Navigateur de l'utilisateur
+echo $_SERVER['SCRIPT_NAME'];      // Chemin du script
+
+// Méthode HTTP
+echo $_SERVER['REQUEST_METHOD'];   // GET, POST, etc.
+
+// Adresse IP
+echo $_SERVER['REMOTE_ADDR'];      // IP du client
+echo $_SERVER['SERVER_ADDR'];      // IP du serveur
+
+// URL
+echo $_SERVER['REQUEST_URI'];      // URI demandée
+?&gt;</code></div>
+
+                <h3>$GLOBALS</h3>
+                <p>Accès aux variables globales</p>
+                <div class="code-block"><code>&lt;?php
+$x = 10;
+
+function test() {
+    // Accéder à $x depuis la fonction
+    echo $GLOBALS['x'];  // 10
+}
+
+test();
+?&gt;</code></div>
+
+                <h3>Les autres superglobales</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Superglobale</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>$_GET</code></td>
+                            <td>Données envoyées via URL (méthode GET)</td>
+                        </tr>
+                        <tr>
+                            <td><code>$_POST</code></td>
+                            <td>Données envoyées via formulaire (méthode POST)</td>
+                        </tr>
+                        <tr>
+                            <td><code>$_REQUEST</code></td>
+                            <td>Combine $_GET, $_POST et $_COOKIE</td>
+                        </tr>
+                        <tr>
+                            <td><code>$_SESSION</code></td>
+                            <td>Variables de session</td>
+                        </tr>
+                        <tr>
+                            <td><code>$_COOKIE</code></td>
+                            <td>Cookies du navigateur</td>
+                        </tr>
+                        <tr>
+                            <td><code>$_FILES</code></td>
+                            <td>Fichiers uploadés</td>
+                        </tr>
+                        <tr>
+                            <td><code>$_ENV</code></td>
+                            <td>Variables d'environnement</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="warning-box">
+                    <h4>Sécurité importante :</h4>
+                    <p>Ne faites JAMAIS confiance aux données des superglobales ! Elles viennent de l'utilisateur et peuvent contenir du code malveillant. Toujours valider et nettoyer les données.</p>
+                </div>
+            </section>
+
+            <!-- MODULE 9 : GET & POST - PARTIE LA PLUS IMPORTANTE -->
+            <section id="module9">
+                <h2>Module 9 : Méthodes GET et POST</h2>
+
+                <div class="info-box">
+                    <p>Les méthodes <strong>GET</strong> et <strong>POST</strong> permettent d'envoyer des données d'un formulaire HTML vers PHP.</p>
+                </div>
+
+                <h3>Méthode GET</h3>
+                <p>Les données sont envoyées dans l'URL</p>
+
+                <h4>Formulaire GET</h4>
+                <div class="code-block"><code>&lt;!-- formulaire.html --&gt;
+&lt;form action="traitement.php" method="GET"&gt;
+    &lt;label&gt;Prénom :&lt;/label&gt;
+    &lt;input type="text" name="prenom"&gt;
+    
+    &lt;label&gt;Âge :&lt;/label&gt;
+    &lt;input type="number" name="age"&gt;
+    
+    &lt;button type="submit"&gt;Envoyer&lt;/button&gt;
+&lt;/form&gt;</code></div>
+
+                <h4>Récupération en PHP</h4>
+                <div class="code-block"><code>&lt;?php
+// traitement.php
+
+// Vérifier si les données existent
+if (isset($_GET['prenom']) && isset($_GET['age'])) {
+    $prenom = $_GET['prenom'];
+    $age = $_GET['age'];
+    
+    echo "Bonjour $prenom, vous avez $age ans";
+}
+
+// URL résultante : traitement.php?prenom=Marie&age=25
+?&gt;</code></div>
+
+                <h4>Avantages et inconvénients de GET</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Avantages</th>
+                            <th>Inconvénients</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>• Possibilité de mettre en favoris</td>
+                            <td>• Données visibles dans l'URL</td>
+                        </tr>
+                        <tr>
+                            <td>• Peut être partagé facilement</td>
+                            <td>• Limité à ~2000 caractères</td>
+                        </tr>
+                        <tr>
+                            <td>• Bon pour les recherches</td>
+                            <td>• Non sécurisé pour mots de passe</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Méthode POST</h3>
+                <p>Les données sont envoyées de manière cachée</p>
+
+                <h4>Formulaire POST</h4>
+                <div class="code-block"><code>&lt;!-- formulaire-post.html --&gt;
+&lt;form action="traitement-post.php" method="POST"&gt;
+    &lt;label&gt;Email :&lt;/label&gt;
+    &lt;input type="email" name="email" required&gt;
+    
+    &lt;label&gt;Mot de passe :&lt;/label&gt;
+    &lt;input type="password" name="password" required&gt;
+    
+    &lt;label&gt;Message :&lt;/label&gt;
+    &lt;textarea name="message"&gt;&lt;/textarea&gt;
+    
+    &lt;button type="submit"&gt;Envoyer&lt;/button&gt;
+&lt;/form&gt;</code></div>
+
+                <h4>Récupération en PHP</h4>
+                <div class="code-block"><code>&lt;?php
+// traitement-post.php
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Récupérer les données
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $message = $_POST['message'];
+    
+    echo "Email : $email&lt;br&gt;";
+    echo "Message : $message";
+    
+    // Les données ne sont PAS visibles dans l'URL
+}
+?&gt;</code></div>
+
+                <h4>Avantages et inconvénients de POST</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Avantages</th>
+                            <th>Inconvénients</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>• Données cachées (plus sécurisé)</td>
+                            <td>• Ne peut pas être mis en favoris</td>
+                        </tr>
+                        <tr>
+                            <td>• Pas de limite de taille</td>
+                            <td>• Ne peut pas être partagé</td>
+                        </tr>
+                        <tr>
+                            <td>• Parfait pour les formulaires</td>
+                            <td>• Rafraîchir = renvoyer les données</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Validation des données</h3>
+                <div class="code-block"><code>&lt;?php
+// Vérifier si le formulaire a été soumis
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Vérifier si les champs existent
+    if (isset($_POST['prenom']) && isset($_POST['email'])) {
+        
+        $prenom = $_POST['prenom'];
+        $email = $_POST['email'];
+        
+        // Vérifier que les champs ne sont pas vides
+        if (empty($prenom)) {
+            echo "Erreur : Le prénom est obligatoire";
+        } elseif (empty($email)) {
+            echo "Erreur : L'email est obligatoire";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo "Erreur : Email invalide";
+        } else {
+            echo "Données valides !";
+            // Traiter les données...
+        }
+    }
+}
+?&gt;</code></div>
+
+                <h3>Nettoyer les données (Sécurité)</h3>
+                <div class="code-block"><code>&lt;?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Supprimer les espaces
+    $prenom = trim($_POST['prenom']);
+    
+    // Supprimer les balises HTML
+    $prenom = strip_tags($prenom);
+    
+    // Convertir les caractères spéciaux en HTML
+    $prenom = htmlspecialchars($prenom, ENT_QUOTES, 'UTF-8');
+    
+    // Ou tout en un avec filter_input()
+    $prenom = filter_input(INPUT_POST, 'prenom', FILTER_SANITIZE_STRING);
+    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+    
+    // Valider l'email
+    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "Email valide : $email";
+    }
+}
+?&gt;</code></div>
+
+                <div class="example">
+                    <h4>Exemple complet : Formulaire de contact</h4>
+                    <div class="code-block"><code>&lt;!-- contact.php --&gt;
+&lt;?php
+$erreurs = [];
+$succes = false;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Récupération et nettoyage
+    $nom = trim(htmlspecialchars($_POST['nom']));
+    $email = trim(htmlspecialchars($_POST['email']));
+    $message = trim(htmlspecialchars($_POST['message']));
+    
+    // Validation
+    if (empty($nom)) {
+        $erreurs[] = "Le nom est obligatoire";
+    }
+    
+    if (empty($email)) {
+        $erreurs[] = "L'email est obligatoire";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $erreurs[] = "L'email est invalide";
+    }
+    
+    if (empty($message)) {
+        $erreurs[] = "Le message est obligatoire";
+    } elseif (strlen($message) < 10) {
+        $erreurs[] = "Le message doit contenir au moins 10 caractères";
+    }
+    
+    // Si pas d'erreurs
+    if (empty($erreurs)) {
+        // Traiter le formulaire (envoyer email, enregistrer en BDD, etc.)
+        $succes = true;
+    }
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Formulaire de contact&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Contactez-nous&lt;/h1&gt;
+    
+    &lt;?php if ($succes): ?&gt;
+        &lt;div style="color: green; background: #d4edda; padding: 15px; margin: 10px 0;"&gt;
+            Message envoyé avec succès !
+        &lt;/div&gt;
+    &lt;?php endif; ?&gt;
+    
+    &lt;?php if (!empty($erreurs)): ?&gt;
+        &lt;div style="color: red; background: #f8d7da; padding: 15px; margin: 10px 0;"&gt;
+            &lt;ul&gt;
+                &lt;?php foreach ($erreurs as $erreur): ?&gt;
+                    &lt;li&gt;&lt;?php echo $erreur; ?&gt;&lt;/li&gt;
+                &lt;?php endforeach; ?&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;?php endif; ?&gt;
+    
+    &lt;form method="POST" action=""&gt;
+        &lt;div&gt;
+            &lt;label&gt;Nom :&lt;/label&gt;
+            &lt;input type="text" name="nom" value="&lt;?php echo isset($nom) ? $nom : ''; ?&gt;"&gt;
+        &lt;/div&gt;
+        
+        &lt;div&gt;
+            &lt;label&gt;Email :&lt;/label&gt;
+            &lt;input type="email" name="email" value="&lt;?php echo isset($email) ? $email : ''; ?&gt;"&gt;
+        &lt;/div&gt;
+        
+        &lt;div&gt;
+            &lt;label&gt;Message :&lt;/label&gt;
+            &lt;textarea name="message"&gt;&lt;?php echo isset($message) ? $message : ''; ?&gt;&lt;/textarea&gt;
+        &lt;/div&gt;
+        
+        &lt;button type="submit"&gt;Envoyer&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></div>
+                </div>
+
+                <div class="success-box">
+                    <h4>Récapitulatif GET vs POST :</h4>
+                    <table style="margin-top: 15px;">
+                        <thead>
+                            <tr>
+                                <th>Critère</th>
+                                <th>GET</th>
+                                <th>POST</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Visibilité</strong></td>
+                                <td>Données dans l'URL</td>
+                                <td>Données cachées</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sécurité</strong></td>
+                                <td>Moins sécurisé</td>
+                                <td>Plus sécurisé</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Taille</strong></td>
+                                <td>~2000 caractères max</td>
+                                <td>Illimité</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mise en cache</strong></td>
+                                <td>Oui</td>
+                                <td>Non</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Usage typique</strong></td>
+                                <td>Recherche, filtres</td>
+                                <td>Formulaires, login</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- À CONTINUER... -->
+            <div class="info-box" style="margin: 40px 0;">
+                <h3>Suite du support en cours de création...</h3>
+                <p>Les modules suivants seront ajoutés :</p>
+                <ul>
+                    <li>Module 10 : Sessions</li>
+                    <li>Module 11 : Cookies</li>
+                    <li>Module 12 : Upload de fichiers</li>
+                    <li>Module 13 : Introduction MySQL</li>
+                    <li>Module 14 : PDO (connexion BDD)</li>
+                    <li>Module 15 : CRUD complet</li>
+                    <li>Module 16 : Sécurité</li>
+                    <li>Module 17 : POO (Programmation Orientée Objet)</li>
+                    <li>Module 18 : Projets pratiques</li>
+                </ul>
+                <p><strong>Fichier trop volumineux pour être créé en une seule fois. Je vais créer la suite dans un fichier séparé !</strong></p>
+            </div>
+        </div>
+
+        <footer>
+          <p>2026 Formation DWWM développeur web web mobile Lille</p>
+        <p>&copy; Thomas cours de PHP</p>
+        <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/Region.jpg" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/U.E.jpg" width="70px" alt="">
+        </footer>
+    </div>
+
+    <!-- MENU FLOTTANT EN BAS -->
+    <div class="floating-nav">
+        <button class="floating-nav-toggle" onclick="toggleFloatingMenu()" title="Navigation rapide">
+            &#9776; 
+        </button>
+        <div class="floating-nav-menu" id="floatingMenu">
+            <h3>Navigation</h3>
+            <a href="#module1" onclick="closeFloatingMenu()">1. Introduction</a>
+            <a href="#module2" onclick="closeFloatingMenu()">2. Syntaxe</a>
+            <a href="#module3" onclick="closeFloatingMenu()">3. Variables</a>
+            <a href="#module4" onclick="closeFloatingMenu()">4. Conditions</a>
+            <a href="#module5" onclick="closeFloatingMenu()">5. Boucles</a>
+            <a href="#module6" onclick="closeFloatingMenu()">6. Fonctions</a>
+            <a href="#module7" onclick="closeFloatingMenu()">7. Tableaux</a>
+            <a href="#module8" onclick="closeFloatingMenu()">8. Superglobales</a>
+            <a href="#module9" onclick="closeFloatingMenu()">9. GET & POST</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleFloatingMenu() {
+            const menu = document.getElementById('floatingMenu');
+            menu.classList.toggle('active');
+        }
+
+        function closeFloatingMenu() {
+            const menu = document.getElementById('floatingMenu');
+            menu.classList.remove('active');
+        }
+
+        // Fermer le menu si on clique à l'extérieur
+        document.addEventListener('click', function(event) {
+            const nav = document.querySelector('.floating-nav');
+            const menu = document.getElementById('floatingMenu');
+            if (!nav.contains(event.target) && menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

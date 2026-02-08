@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formation PHP - Partie 2</title>
+    <style>
+
+:root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        nav {
+            background: var(--conseil);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            display: block;
+            border-radius: 5px;
+            transition: background 0.3s;
+            font-size: 0.9em;
+        }
+
+        nav a:hover {
+            background: var(--real);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 50px;
+            scroll-margin-top: 60px;
+        }
+
+        h2 {
+            color: var(--conseil);
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--real);
+        }
+
+        h3 {
+            color: var(--conseil);
+            font-size: 1.5em;
+            margin: 25px 0 15px;
+        }
+
+        h4 {
+            color: var(--conseil);
+            font-size: 1.2em;
+            margin: 20px 0 10px;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 5px solid var(--conseil);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .code-block code {
+            display: block;
+        }
+
+        .example {
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        /* MENU FLOTTANT EN BAS */
+        .floating-nav {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .floating-nav-toggle {
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-nav-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .floating-nav-menu {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            padding: 15px;
+            min-width: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .floating-nav-menu.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .floating-nav-menu h3 {
+            color: var(--conseil);
+            font-size: 1em;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--real);
+        }
+
+        .floating-nav-menu a {
+            display: block;
+            color: #333;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .floating-nav-menu a:hover {
+            background-color: var(--real);
+            color: white;
+            padding-left: 15px;
+        }
+
+        @media screen and (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .floating-nav {
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .floating-nav-toggle {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+
+            .floating-nav-menu {
+                right: 0;
+                min-width: 200px;
+                max-width: calc(100vw - 40px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐘 Formation PHP Partie 2</h1>
+             <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="" srcset="">
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#module10">10. Sessions</a></li>
+                <li><a href="#module11">11. Cookies</a></li>
+                <li><a href="#module12">12. Fichiers</a></li>
+                <li><a href="#module13">13. MySQL</a></li>
+                <li><a href="#module14">14. PDO</a></li>
+                <li><a href="#module15">15. CRUD</a></li>
+                <li><a href="#module16">16. Sécurité</a></li>
+                <li><a href="#module17">17. POO</a></li>
+                <li><a href="#module18">18. Projets</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <!-- MODULE 10 : SESSIONS -->
+            <section id="module10">
+                <h2>Module 10 : Les Sessions</h2>
+
+                <div class="info-box">
+                    <p>Une <strong>session</strong> permet de stocker des informations sur le serveur pour un utilisateur spécifique pendant sa visite. Parfait pour gérer les connexions utilisateurs !</p>
+                </div>
+
+                <h3>Démarrer une session</h3>
+                <div class="code-block"><code>&lt;?php
+// TOUJOURS démarrer la session en PREMIER
+// AVANT tout code HTML ou echo
+session_start();
+
+// Maintenant on peut utiliser $_SESSION
+?&gt;</code></div>
+
+                <div class="warning-box">
+                    <h4> IMPORTANT :</h4>
+                    <p><code>session_start()</code> doit être appelé <strong>avant tout affichage HTML</strong>, sinon vous aurez une erreur "headers already sent".</p>
+                </div>
+
+                <h3>Stocker des données en session</h3>
+                <div class="code-block"><code>&lt;?php
+session_start();
+
+// Stocker une variable
+$_SESSION['prenom'] = "Marie";
+$_SESSION['user_id'] = 42;
+$_SESSION['connecte'] = true;
+
+// Stocker un tableau
+$_SESSION['panier'] = array(
+    'produit1' => 'Ordinateur',
+    'produit2' => 'Souris'
+);
+
+echo "Session créée !";
+?&gt;</code></div>
+
+                <h3>Lire des données de session</h3>
+                <div class="code-block"><code>&lt;?php
+session_start();
+
+// Vérifier si une variable existe
+if (isset($_SESSION['prenom'])) {
+    echo "Bonjour " . $_SESSION['prenom'];
+} else {
+    echo "Vous n'êtes pas connecté";
+}
+
+// Afficher toutes les variables de session
+echo "&lt;pre&gt;";
+print_r($_SESSION);
+echo "&lt;/pre&gt;";
+?&gt;</code></div>
+
+                <h3>Supprimer des données de session</h3>
+                <div class="code-block"><code>&lt;?php
+session_start();
+
+// Supprimer une variable spécifique
+unset($_SESSION['prenom']);
+
+// Supprimer TOUTES les variables
+session_unset();
+
+// Détruire complètement la session
+session_destroy();
+?&gt;</code></div>
+
+                <div class="example">
+                    <h4>Exemple complet : Système de connexion</h4>
+                    
+                    <h5>1. Page de connexion (login.php)</h5>
+                    <div class="code-block"><code>&lt;?php
+session_start();
+
+$erreur = "";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    
+    // Vérification simple (à remplacer par BDD)
+    if ($email === "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="355854475c5075504d54584559501b565a58">[email&#160;protected]</a>" && $password === "123456") {
+        // Connexion réussie
+        $_SESSION['user_id'] = 1;
+        $_SESSION['prenom'] = "Marie";
+        $_SESSION['email'] = $email;
+        $_SESSION['connecte'] = true;
+        
+        // Redirection vers page protégée
+        header("Location: dashboard.php");
+        exit();
+    } else {
+        $erreur = "Email ou mot de passe incorrect";
+    }
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Connexion&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Connexion&lt;/h1&gt;
+    
+    &lt;?php if ($erreur): ?&gt;
+        &lt;div style="color: red;"&gt;&lt;?php echo $erreur; ?&gt;&lt;/div&gt;
+    &lt;?php endif; ?&gt;
+    
+    &lt;form method="POST"&gt;
+        &lt;input type="email" name="email" placeholder="Email" required&gt;
+        &lt;input type="password" name="password" placeholder="Mot de passe" required&gt;
+        &lt;button type="submit"&gt;Se connecter&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></div>
+
+                    <h5>2. Page protégée (dashboard.php)</h5>
+                    <div class="code-block"><code>&lt;?php
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: login.php");
+    exit();
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Dashboard&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Bienvenue &lt;?php echo $_SESSION['prenom']; ?&gt; !&lt;/h1&gt;
+    &lt;p&gt;Vous êtes connecté avec : &lt;?php echo $_SESSION['email']; ?&gt;&lt;/p&gt;
+    
+    &lt;a href="logout.php"&gt;Se déconnecter&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></div>
+
+                    <h5>3. Page de déconnexion (logout.php)</h5>
+                    <div class="code-block"><code>&lt;?php
+session_start();
+
+// Détruire toutes les variables de session
+session_unset();
+
+// Détruire la session
+session_destroy();
+
+// Rediriger vers la page de connexion
+header("Location: login.php");
+exit();
+?&gt;</code></div>
+                </div>
+
+                <h3>Durée de vie d'une session</h3>
+                <div class="code-block"><code>&lt;?php
+// Définir la durée de vie du cookie de session (en secondes)
+// 3600 = 1 heure
+session_set_cookie_params(3600);
+session_start();
+
+// Définir une expiration personnalisée
+$_SESSION['expire'] = time() + 1800; // 30 minutes
+
+// Vérifier l'expiration
+if (isset($_SESSION['expire']) && time() > $_SESSION['expire']) {
+    session_destroy();
+    header("Location: login.php");
+    exit();
+}
+?&gt;</code></div>
+
+                <div class="success-box">
+                    <h4> Résumé des sessions :</h4>
+                    <ul>
+                        <li><code>session_start()</code> - Démarre la session (TOUJOURS en premier)</li>
+                        <li><code>$_SESSION['cle'] = valeur</code> - Stocker une donnée</li>
+                        <li><code>isset($_SESSION['cle'])</code> - Vérifier si existe</li>
+                        <li><code>unset($_SESSION['cle'])</code> - Supprimer une variable</li>
+                        <li><code>session_destroy()</code> - Détruire la session complète</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- MODULE 11 : COOKIES -->
+            <section id="module11">
+                <h2>Module 11 : Les Cookies</h2>
+
+                <div class="info-box">
+                    <p>Un <strong>cookie</strong> est un petit fichier texte stocké sur l'ordinateur de l'utilisateur. Parfait pour "se souvenir" de l'utilisateur entre plusieurs visites.</p>
+                </div>
+
+                <h3>Créer un cookie</h3>
+                <div class="code-block"><code>&lt;?php
+// setcookie(nom, valeur, expiration, chemin, domaine, secure, httponly)
+
+// Cookie simple (expire dans 30 jours)
+setcookie("prenom", "Marie", time() + (30 * 24 * 3600));
+
+// Cookie avec chemin
+setcookie("user_id", "42", time() + 86400, "/");
+
+// Cookie sécurisé
+setcookie("token", "abc123", time() + 3600, "/", "", true, true);
+?&gt;</code></div>
+
+                <div class="warning-box">
+                    <h4> IMPORTANT :</h4>
+                    <p><code>setcookie()</code> doit être appelé <strong>avant tout affichage HTML</strong>, comme pour les sessions.</p>
+                </div>
+
+                <h3>Lire un cookie</h3>
+                <div class="code-block"><code>&lt;?php
+// Vérifier si le cookie existe
+if (isset($_COOKIE['prenom'])) {
+    echo "Bonjour " . $_COOKIE['prenom'];
+} else {
+    echo "Cookie non trouvé";
+}
+
+// Afficher tous les cookies
+echo "&lt;pre&gt;";
+print_r($_COOKIE);
+echo "&lt;/pre&gt;";
+?&gt;</code></div>
+
+                <h3>Supprimer un cookie</h3>
+                <div class="code-block"><code>&lt;?php
+// Mettre une date d'expiration dans le passé
+setcookie("prenom", "", time() - 3600);
+
+// Ou
+setcookie("prenom", "", 1);
+?&gt;</code></div>
+
+                <h3>Différences Sessions vs Cookies</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Critère</th>
+                            <th>Sessions</th>
+                            <th>Cookies</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Stockage</strong></td>
+                            <td>Sur le serveur</td>
+                            <td>Sur l'ordinateur client</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sécurité</strong></td>
+                            <td>Plus sécurisé</td>
+                            <td>Moins sécurisé</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Taille</strong></td>
+                            <td>Illimitée</td>
+                            <td>~4 Ko maximum</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Durée</strong></td>
+                            <td>Jusqu'à fermeture navigateur</td>
+                            <td>Définie par le développeur</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Usage</strong></td>
+                            <td>Authentification, panier</td>
+                            <td>"Se souvenir de moi", préférences</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="example">
+                    <h4>Exemple : "Se souvenir de moi"</h4>
+                    <div class="code-block"><code>&lt;?php
+// Page de connexion avec "Se souvenir de moi"
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $remember = isset($_POST['remember']);
+    
+    // Vérification (simplifiée)
+    if ($email === "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4a9a5b6ada184a1bca5a9b4a8a1eaa7aba9">[email&#160;protected]</a>" && $password === "123456") {
+        
+        session_start();
+        $_SESSION['user_id'] = 1;
+        $_SESSION['connecte'] = true;
+        
+        // Si "Se souvenir de moi" est coché
+        if ($remember) {
+            // Cookie pour 30 jours
+            setcookie("remember_email", $email, time() + (30 * 24 * 3600), "/");
+            setcookie("remember_token", "token_securise", time() + (30 * 24 * 3600), "/");
+        }
+        
+        header("Location: dashboard.php");
+        exit();
+    }
+}
+
+// Vérifier si l'utilisateur a un cookie "remember"
+if (isset($_COOKIE['remember_email']) && isset($_COOKIE['remember_token'])) {
+    // Connecter automatiquement l'utilisateur
+    session_start();
+    $_SESSION['user_id'] = 1;
+    $_SESSION['connecte'] = true;
+    header("Location: dashboard.php");
+    exit();
+}
+?&gt;
+
+&lt;form method="POST"&gt;
+    &lt;input type="email" name="email" placeholder="Email"&gt;
+    &lt;input type="password" name="password" placeholder="Mot de passe"&gt;
+    
+    &lt;label&gt;
+        &lt;input type="checkbox" name="remember"&gt;
+        Se souvenir de moi
+    &lt;/label&gt;
+    
+    &lt;button type="submit"&gt;Connexion&lt;/button&gt;
+&lt;/form&gt;</code></div>
+                </div>
+            </section>
+
+            <!-- MODULE 12 : UPLOAD DE FICHIERS -->
+            <section id="module12">
+                <h2>Module 12 : Upload de Fichiers</h2>
+
+                <h3>Formulaire d'upload</h3>
+                <div class="code-block"><code>&lt;!-- IMPORTANT : ajouter enctype="multipart/form-data" --&gt;
+&lt;form action="upload.php" method="POST" enctype="multipart/form-data"&gt;
+    &lt;label&gt;Choisir un fichier :&lt;/label&gt;
+    &lt;input type="file" name="fichier"&gt;
+    
+    &lt;button type="submit"&gt;Envoyer&lt;/button&gt;
+&lt;/form&gt;</code></div>
+
+                <h3>Traitement de l'upload</h3>
+                <div class="code-block"><code>&lt;?php
+// upload.php
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Vérifier si un fichier a été uploadé
+    if (isset($_FILES['fichier']) && $_FILES['fichier']['error'] === 0) {
+        
+        // Informations sur le fichier
+        $nom_fichier = $_FILES['fichier']['name'];
+        $type_fichier = $_FILES['fichier']['type'];
+        $taille_fichier = $_FILES['fichier']['size'];
+        $tmp_name = $_FILES['fichier']['tmp_name'];
+        
+        // Dossier de destination
+        $dossier_uploads = "uploads/";
+        
+        // Créer le dossier s'il n'existe pas
+        if (!file_exists($dossier_uploads)) {
+            mkdir($dossier_uploads, 0777, true);
+        }
+        
+        // Chemin complet de destination
+        $chemin_destination = $dossier_uploads . $nom_fichier;
+        
+        // Déplacer le fichier uploadé
+        if (move_uploaded_file($tmp_name, $chemin_destination)) {
+            echo " Fichier uploadé avec succès !";
+        } else {
+            echo " Erreur lors de l'upload";
+        }
+    } else {
+        echo " Aucun fichier ou erreur d'upload";
+    }
+}
+?&gt;</code></div>
+
+                <h3>Sécuriser l'upload</h3>
+                <div class="code-block"><code>&lt;?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fichier'])) {
+    
+    $fichier = $_FILES['fichier'];
+    
+    // 1. Vérifier les erreurs
+    if ($fichier['error'] !== UPLOAD_ERR_OK) {
+        die("Erreur lors de l'upload");
+    }
+    
+    // 2. Vérifier la taille (max 5 Mo)
+    $taille_max = 5 * 1024 * 1024; // 5 Mo en octets
+    if ($fichier['size'] > $taille_max) {
+        die("Le fichier est trop volumineux (max 5 Mo)");
+    }
+    
+    // 3. Vérifier le type de fichier
+    $extensions_autorisees = ['jpg', 'jpeg', 'png', 'gif', 'pdf'];
+    $extension = pathinfo($fichier['name'], PATHINFO_EXTENSION);
+    
+    if (!in_array(strtolower($extension), $extensions_autorisees)) {
+        die("Extension non autorisée");
+    }
+    
+    // 4. Renommer le fichier pour éviter les conflits
+    $nouveau_nom = uniqid() . '_' . time() . '.' . $extension;
+    
+    // 5. Déplacer le fichier
+    $destination = "uploads/" . $nouveau_nom;
+    
+    if (move_uploaded_file($fichier['tmp_name'], $destination)) {
+        echo " Fichier uploadé : " . $nouveau_nom;
+    } else {
+        echo " Erreur lors du déplacement";
+    }
+}
+?&gt;</code></div>
+
+                <div class="warning-box">
+                    <h4>Sécurité importante :</h4>
+                    <ul>
+                        <li>Toujours vérifier l'extension du fichier</li>
+                        <li>Limiter la taille des fichiers</li>
+                        <li>Renommer les fichiers uploadés</li>
+                        <li>Ne jamais faire confiance au nom original</li>
+                        <li>Stocker les uploads hors du dossier public si possible</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- MODULE 13 : INTRODUCTION MYSQL -->
+            <section id="module13">
+                <h2>Module 13 : Introduction à MySQL</h2>
+
+                <div class="info-box">
+                    <p><strong>MySQL</strong> est un système de gestion de bases de données relationnelles. Il permet de stocker et gérer des données de manière structurée.</p>
+                </div>
+
+                <h3>Concepts de base</h3>
+                <h4>Structure hiérarchique</h4>
+                <ol>
+                    <li><strong>Serveur MySQL</strong> : Le logiciel qui gère les bases de données</li>
+                    <li><strong>Base de données</strong> : Contient plusieurs tables</li>
+                    <li><strong>Table</strong> : Contient des colonnes et des lignes</li>
+                    <li><strong>Colonne</strong> : Un champ (ex: nom, email)</li>
+                    <li><strong>Ligne</strong> : Un enregistrement de données</li>
+                </ol>
+
+                <h3>Types de données courants</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Exemple</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>INT</strong></td>
+                            <td>Nombre entier</td>
+                            <td>42</td>
+                        </tr>
+                        <tr>
+                            <td><strong>VARCHAR(n)</strong></td>
+                            <td>Chaîne variable (max n caractères)</td>
+                            <td>VARCHAR(255)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TEXT</strong></td>
+                            <td>Texte long</td>
+                            <td>Article de blog</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DATE</strong></td>
+                            <td>Date (YYYY-MM-DD)</td>
+                            <td>2026-02-04</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DATETIME</strong></td>
+                            <td>Date et heure</td>
+                            <td>2026-02-04 15:30:00</td>
+                        </tr>
+                        <tr>
+                            <td><strong>BOOLEAN</strong></td>
+                            <td>Vrai/Faux (0 ou 1)</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FLOAT / DECIMAL</strong></td>
+                            <td>Nombre décimal</td>
+                            <td>19.99</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Requêtes SQL de base</h3>
+                
+                <h4>Créer une base de données</h4>
+                <div class="code-block"><code>-- Créer une base de données
+CREATE DATABASE ma_base;
+
+-- Utiliser une base de données
+USE ma_base;</code></div>
+
+                <h4>Créer une table</h4>
+                <div class="code-block"><code>-- Créer une table "utilisateurs"
+CREATE TABLE utilisateurs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    mot_de_passe VARCHAR(255) NOT NULL,
+    date_inscription DATETIME DEFAULT CURRENT_TIMESTAMP
+);</code></div>
+
+                <h4>INSERT - Ajouter des données</h4>
+                <div class="code-block"><code>-- Insérer un utilisateur
+INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe)
+VALUES ('Dupont', 'Marie', '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c7aaa6b5aea287a2bfa6aab7aba2e9a4a8aa">[email&#160;protected]</a>', 'motdepasse123');
+
+-- Insérer plusieurs utilisateurs
+INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe)
+VALUES 
+    ('Martin', 'Lucas', '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7d11081e1c0e3d18051c100d1118531e1210">[email&#160;protected]</a>', 'pass123'),
+    ('Bernard', 'Sophie', '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d4e524d5554587d58455c504d5158135e5250">[email&#160;protected]</a>', 'pass456');</code></div>
+
+                <h4>SELECT - Lire des données</h4>
+                <div class="code-block"><code>-- Sélectionner tous les utilisateurs
+SELECT * FROM utilisateurs;
+
+-- Sélectionner des colonnes spécifiques
+SELECT nom, prenom, email FROM utilisateurs;
+
+-- Avec une condition WHERE
+SELECT * FROM utilisateurs WHERE nom = 'Dupont';
+
+-- Avec plusieurs conditions
+SELECT * FROM utilisateurs 
+WHERE nom = 'Dupont' AND prenom = 'Marie';
+
+-- Avec LIKE (recherche partielle)
+SELECT * FROM utilisateurs WHERE email LIKE '%@example.com';
+
+-- Trier les résultats
+SELECT * FROM utilisateurs ORDER BY nom ASC;
+SELECT * FROM utilisateurs ORDER BY date_inscription DESC;
+
+-- Limiter le nombre de résultats
+SELECT * FROM utilisateurs LIMIT 10;
+
+-- Compter les résultats
+SELECT COUNT(*) FROM utilisateurs;</code></div>
+
+                <h4>UPDATE - Modifier des données</h4>
+                <div class="code-block"><code>-- Modifier un utilisateur
+UPDATE utilisateurs 
+SET email = '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1c717d6e75793278696c7372685c79647d716c7079327f7371">[email&#160;protected]</a>' 
+WHERE id = 1;
+
+-- Modifier plusieurs colonnes
+UPDATE utilisateurs 
+SET nom = 'Martin', prenom = 'Luc' 
+WHERE id = 2;
+
+-- Sans WHERE, tous les enregistrements sont modifiés !
+UPDATE utilisateurs SET nom = 'Test';  -- DANGER !</code></div>
+
+                <h4>DELETE - Supprimer des données</h4>
+                <div class="code-block"><code>-- Supprimer un utilisateur
+DELETE FROM utilisateurs WHERE id = 3;
+
+-- Sans WHERE, TOUS les enregistrements sont supprimés !
+DELETE FROM utilisateurs;  -- DANGER !</code></div>
+
+                <div class="danger-box">
+                    <h4>ATTENTION :</h4>
+                    <p>Toujours utiliser <code>WHERE</code> avec <code>UPDATE</code> et <code>DELETE</code>, sinon vous modifierez/supprimerez TOUTES les lignes !</p>
+                </div>
+            </section>
+
+            <!-- MODULE 14 : PDO (La partie la plus importante !) -->
+            <section id="module14">
+                <h2> Module 14 : PDO - PHP Data Objects</h2>
+
+                <div class="info-box">
+                    <p><strong>PDO</strong> est la méthode moderne et sécurisée pour se connecter à une base de données MySQL en PHP. C'est celle que vous devez utiliser !</p>
+                </div>
+
+                <h3>Connexion à la base de données</h3>
+                <div class="code-block"><code>&lt;?php
+// config.php - Fichier de configuration
+
+$host = 'localhost';
+$dbname = 'ma_base';
+$username = 'root';
+$password = '';  // Vide par défaut sur WAMP/XAMPP
+
+try {
+    // Créer la connexion PDO
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    
+    // Configurer PDO pour afficher les erreurs
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Mode de récupération par défaut : tableau associatif
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    
+    echo "Connexion réussie !";
+    
+} catch (PDOException $e) {
+    die("Erreur de connexion : " . $e->getMessage());
+}
+?&gt;</code></div>
+
+                <div class="success-box">
+                    <h4> Bonnes pratiques :</h4>
+                    <ul>
+                        <li>Créer un fichier <code>config.php</code> séparé pour la connexion</li>
+                        <li>Ne jamais afficher les erreurs en production</li>
+                        <li>Utiliser toujours <code>charset=utf8</code> pour les accents</li>
+                    </ul>
+                </div>
+
+                <h3>Requêtes préparées (ESSENTIEL pour la sécurité !)</h3>
+                
+                <h4>SELECT avec requête préparée</h4>
+                <div class="code-block"><code>&lt;?php
+require 'config.php';
+
+// Rechercher un utilisateur par email
+$email = "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a0cdc1d2c9c5e0c5d8c1cdd0ccc58ec3cfcd">[email&#160;protected]</a>";
+
+// Préparer la requête
+$stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE email = :email");
+
+// Exécuter avec les paramètres
+$stmt->execute(['email' => $email]);
+
+// Récupérer le résultat
+$utilisateur = $stmt->fetch();
+
+if ($utilisateur) {
+    echo "Bonjour " . $utilisateur['prenom'];
+} else {
+    echo "Utilisateur non trouvé";
+}
+?&gt;</code></div>
+
+                <h4>INSERT avec requête préparée</h4>
+                <div class="code-block"><code>&lt;?php
+require 'config.php';
+
+$nom = "Dupont";
+$prenom = "Marie";
+$email = "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d8b5b9aab1bd98bda0b9b5a8b4bdf6bbb7b5">[email&#160;protected]</a>";
+$password = password_hash("motdepasse123", PASSWORD_DEFAULT);
+
+// Préparer la requête d'insertion
+$stmt = $pdo->prepare("
+    INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe)
+    VALUES (:nom, :prenom, :email, :password)
+");
+
+// Exécuter
+$resultat = $stmt->execute([
+    'nom' => $nom,
+    'prenom' => $prenom,
+    'email' => $email,
+    'password' => $password
+]);
+
+if ($resultat) {
+    echo "Utilisateur créé avec l'ID : " . $pdo->lastInsertId();
+}
+?&gt;</code></div>
+
+                <h4>UPDATE avec requête préparée</h4>
+                <div class="code-block"><code>&lt;?php
+require 'config.php';
+
+$id = 1;
+$nouveau_email = "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6805091a010d460c1d1807061c280d10090518040d460b0705">[email&#160;protected]</a>";
+
+$stmt = $pdo->prepare("
+    UPDATE utilisateurs 
+    SET email = :email 
+    WHERE id = :id
+");
+
+$resultat = $stmt->execute([
+    'email' => $nouveau_email,
+    'id' => $id
+]);
+
+if ($resultat) {
+    echo "Utilisateur modifié";
+    echo "Lignes affectées : " . $stmt->rowCount();
+}
+?&gt;</code></div>
+
+                <h4>DELETE avec requête préparée</h4>
+                <div class="code-block"><code>&lt;?php
+require 'config.php';
+
+$id = 3;
+
+$stmt = $pdo->prepare("DELETE FROM utilisateurs WHERE id = :id");
+$resultat = $stmt->execute(['id' => $id]);
+
+if ($resultat) {
+    echo "Utilisateur supprimé";
+}
+?&gt;</code></div>
+
+                <h3>Récupérer plusieurs résultats</h3>
+                <div class="code-block"><code>&lt;?php
+require 'config.php';
+
+// Récupérer tous les utilisateurs
+$stmt = $pdo->query("SELECT * FROM utilisateurs");
+$utilisateurs = $stmt->fetchAll();
+
+foreach ($utilisateurs as $user) {
+    echo $user['prenom'] . " " . $user['nom'] . "&lt;br&gt;";
+}
+
+// Avec une condition
+$stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE nom = :nom");
+$stmt->execute(['nom' => 'Dupont']);
+$resultats = $stmt->fetchAll();
+?&gt;</code></div>
+
+                <div class="warning-box">
+                    <h4>INJECTIONS SQL - DANGER !</h4>
+                    <p><strong>N'utilisez JAMAIS cette méthode :</strong></p>
+                    <div class="code-block"><code>&lt;?php
+// DANGEREUX - Injection SQL possible !
+$email = $_GET['email'];
+$query = "SELECT * FROM utilisateurs WHERE email = '$email'";
+$result = $pdo->query($query);
+
+// Un attaquant pourrait envoyer :
+// ?email=' OR '1'='1
+// Et récupérer TOUS les utilisateurs !
+?&gt;</code></div>
+                    <p><strong>Toujours utiliser les requêtes préparées :</strong></p>
+                    <div class="code-block"><code>&lt;?php
+// SÉCURISÉ
+$email = $_GET['email'];
+$stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE email = :email");
+$stmt->execute(['email' => $email]);
+$user = $stmt->fetch();
+?&gt;</code></div>
+                </div>
+            </section>
+
+            <!-- MODULE 15 : CRUD COMPLET - LE PLUS IMPORTANT -->
+            <section id="module15">
+                <h2> Module 15 : CRUD Complet</h2>
+
+                <div class="info-box">
+                    <p><strong>CRUD</strong> = Create, Read, Update, Delete. Les 4 opérations de base sur une base de données.</p>
+                </div>
+
+                <div class="example">
+                    <h4> Projet complet : Gestion d'utilisateurs</h4>
+                    
+                    <h5>1. Structure de la BDD</h5>
+                    <div class="code-block"><code>CREATE TABLE utilisateurs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    telephone VARCHAR(20),
+    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
+);</code></div>
+
+                    <h5>2. Fichier de configuration (config.php)</h5>
+                    <div class="code-block"><code>&lt;?php
+$host = 'localhost';
+$dbname = 'ma_base';
+$username = 'root';
+$password = '';
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erreur : " . $e->getMessage());
+}
+?&gt;</code></div>
+
+                    <h5>3. CREATE - Ajouter un utilisateur (ajouter.php)</h5>
+                    <div class="code-block"><code>&lt;?php
+require 'config.php';
+
+$erreurs = [];
+$succes = false;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nom = trim($_POST['nom']);
+    $prenom = trim($_POST['prenom']);
+    $email = trim($_POST['email']);
+    $telephone = trim($_POST['telephone']);
+    
+    // Validation
+    if (empty($nom)) {
+        $erreurs[] = "Le nom est obligatoire";
+    }
+    
+    if (empty($prenom)) {
+        $erreurs[] = "Le prénom est obligatoire";
+    }
+    
+    if (empty($email)) {
+        $erreurs[] = "L'email est obligatoire";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $erreurs[] = "L'email est invalide";
+    }
+    
+    // Si pas d'erreurs
+    if (empty($erreurs)) {
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO utilisateurs (nom, prenom, email, telephone)
+                VALUES (:nom, :prenom, :email, :telephone)
+            ");
+            
+            $resultat = $stmt->execute([
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'email' => $email,
+                'telephone' => $telephone
+            ]);
+            
+            if ($resultat) {
+                $succes = true;
+                // Réinitialiser le formulaire
+                $nom = $prenom = $email = $telephone = '';
+            }
+        } catch (PDOException $e) {
+            if ($e->getCode() == 23000) {
+                $erreurs[] = "Cet email existe déjà";
+            } else {
+                $erreurs[] = "Erreur : " . $e->getMessage();
+            }
+        }
+    }
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Ajouter un utilisateur&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Ajouter un utilisateur&lt;/h1&gt;
+    
+    &lt;?php if ($succes): ?&gt;
+        &lt;div style="color: green; background: #d4edda; padding: 15px; margin: 10px 0;"&gt;
+             Utilisateur ajouté avec succès !
+        &lt;/div&gt;
+    &lt;?php endif; ?&gt;
+    
+    &lt;?php if (!empty($erreurs)): ?&gt;
+        &lt;div style="color: red; background: #f8d7da; padding: 15px; margin: 10px 0;"&gt;
+            &lt;ul&gt;
+                &lt;?php foreach ($erreurs as $erreur): ?&gt;
+                    &lt;li&gt;&lt;?php echo $erreur; ?&gt;&lt;/li&gt;
+                &lt;?php endforeach; ?&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;?php endif; ?&gt;
+    
+    &lt;form method="POST"&gt;
+        &lt;div&gt;
+            &lt;label&gt;Nom :&lt;/label&gt;
+            &lt;input type="text" name="nom" value="&lt;?php echo isset($nom) ? htmlspecialchars($nom) : ''; ?&gt;"&gt;
+        &lt;/div&gt;
+        
+        &lt;div&gt;
+            &lt;label&gt;Prénom :&lt;/label&gt;
+            &lt;input type="text" name="prenom" value="&lt;?php echo isset($prenom) ? htmlspecialchars($prenom) : ''; ?&gt;"&gt;
+        &lt;/div&gt;
+        
+        &lt;div&gt;
+            &lt;label&gt;Email :&lt;/label&gt;
+            &lt;input type="email" name="email" value="&lt;?php echo isset($email) ? htmlspecialchars($email) : ''; ?&gt;"&gt;
+        &lt;/div&gt;
+        
+        &lt;div&gt;
+            &lt;label&gt;Téléphone :&lt;/label&gt;
+            &lt;input type="text" name="telephone" value="&lt;?php echo isset($telephone) ? htmlspecialchars($telephone) : ''; ?&gt;"&gt;
+        &lt;/div&gt;
+        
+        &lt;button type="submit"&gt;Ajouter&lt;/button&gt;
+        &lt;a href="liste.php"&gt;Voir la liste&lt;/a&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></div>
+
+                    <h5>4. READ - Lister les utilisateurs (liste.php)</h5>
+                    <div class="code-block"><code>&lt;?php
+require 'config.php';
+
+// Récupérer tous les utilisateurs
+$stmt = $pdo->query("SELECT * FROM utilisateurs ORDER BY nom ASC");
+$utilisateurs = $stmt->fetchAll();
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Liste des utilisateurs&lt;/title&gt;
+    &lt;style&gt;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Liste des utilisateurs&lt;/h1&gt;
+    
+    &lt;a href="ajouter.php"&gt; Ajouter un utilisateur&lt;/a&gt;
+    
+    &lt;p&gt;Total : &lt;strong&gt;&lt;?php echo count($utilisateurs); ?&gt;&lt;/strong&gt; utilisateur(s)&lt;/p&gt;
+    
+    &lt;table&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;ID&lt;/th&gt;
+                &lt;th&gt;Nom&lt;/th&gt;
+                &lt;th&gt;Prénom&lt;/th&gt;
+                &lt;th&gt;Email&lt;/th&gt;
+                &lt;th&gt;Téléphone&lt;/th&gt;
+                &lt;th&gt;Date création&lt;/th&gt;
+                &lt;th&gt;Actions&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            &lt;?php if (empty($utilisateurs)): ?&gt;
+                &lt;tr&gt;
+                    &lt;td colspan="7"&gt;Aucun utilisateur enregistré&lt;/td&gt;
+                &lt;/tr&gt;
+            &lt;?php else: ?&gt;
+                &lt;?php foreach ($utilisateurs as $user): ?&gt;
+                    &lt;tr&gt;
+                        &lt;td&gt;&lt;?php echo $user['id']; ?&gt;&lt;/td&gt;
+                        &lt;td&gt;&lt;?php echo htmlspecialchars($user['nom']); ?&gt;&lt;/td&gt;
+                        &lt;td&gt;&lt;?php echo htmlspecialchars($user['prenom']); ?&gt;&lt;/td&gt;
+                        &lt;td&gt;&lt;?php echo htmlspecialchars($user['email']); ?&gt;&lt;/td&gt;
+                        &lt;td&gt;&lt;?php echo htmlspecialchars($user['telephone']); ?&gt;&lt;/td&gt;
+                        &lt;td&gt;&lt;?php echo date('d/m/Y H:i', strtotime($user['date_creation'])); ?&gt;&lt;/td&gt;
+                        &lt;td&gt;
+                            &lt;a href="modifier.php?id=&lt;?php echo $user['id']; ?&gt;"&gt; Modifier&lt;/a&gt;
+                            &lt;a href="supprimer.php?id=&lt;?php echo $user['id']; ?&gt;" onclick="return confirm('Êtes-vous sûr ?')"&gt; Supprimer&lt;/a&gt;
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;?php endforeach; ?&gt;
+            &lt;?php endif; ?&gt;
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></div>
+
+                    <h5>5. UPDATE - Modifier un utilisateur (modifier.php)</h5>
+                    <div class="code-block"><code>&lt;?php
+require 'config.php';
+
+$erreurs = [];
+$succes = false;
+
+// Récupérer l'ID
+if (!isset($_GET['id'])) {
+    die("ID manquant");
+}
+
+$id = (int)$_GET['id'];
+
+// Charger les données de l'utilisateur
+$stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE id = :id");
+$stmt->execute(['id' => $id]);
+$utilisateur = $stmt->fetch();
+
+if (!$utilisateur) {
+    die("Utilisateur non trouvé");
+}
+
+// Traitement du formulaire
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nom = trim($_POST['nom']);
+    $prenom = trim($_POST['prenom']);
+    $email = trim($_POST['email']);
+    $telephone = trim($_POST['telephone']);
+    
+    // Validation (même que pour ajouter.php)
+    if (empty($nom)) {
+        $erreurs[] = "Le nom est obligatoire";
+    }
+    
+    if (empty($prenom)) {
+        $erreurs[] = "Le prénom est obligatoire";
+    }
+    
+    if (empty($email)) {
+        $erreurs[] = "L'email est obligatoire";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $erreurs[] = "L'email est invalide";
+    }
+    
+    // Si pas d'erreurs
+    if (empty($erreurs)) {
+        try {
+            $stmt = $pdo->prepare("
+                UPDATE utilisateurs 
+                SET nom = :nom, prenom = :prenom, email = :email, telephone = :telephone
+                WHERE id = :id
+            ");
+            
+            $resultat = $stmt->execute([
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'email' => $email,
+                'telephone' => $telephone,
+                'id' => $id
+            ]);
+            
+            if ($resultat) {
+                $succes = true;
+                // Recharger les données
+                $utilisateur['nom'] = $nom;
+                $utilisateur['prenom'] = $prenom;
+                $utilisateur['email'] = $email;
+                $utilisateur['telephone'] = $telephone;
+            }
+        } catch (PDOException $e) {
+            $erreurs[] = "Erreur : " . $e->getMessage();
+        }
+    }
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Modifier l'utilisateur&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Modifier l'utilisateur #&lt;?php echo $id; ?&gt;&lt;/h1&gt;
+    
+    &lt;?php if ($succes): ?&gt;
+        &lt;div style="color: green; background: #d4edda; padding: 15px; margin: 10px 0;"&gt;
+             Modifications enregistrées !
+        &lt;/div&gt;
+    &lt;?php endif; ?&gt;
+    
+    &lt;?php if (!empty($erreurs)): ?&gt;
+        &lt;div style="color: red; background: #f8d7da; padding: 15px; margin: 10px 0;"&gt;
+            &lt;ul&gt;
+                &lt;?php foreach ($erreurs as $erreur): ?&gt;
+                    &lt;li&gt;&lt;?php echo $erreur; ?&gt;&lt;/li&gt;
+                &lt;?php endforeach; ?&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;?php endif; ?&gt;
+    
+    &lt;form method="POST"&gt;
+        &lt;div&gt;
+            &lt;label&gt;Nom :&lt;/label&gt;
+            &lt;input type="text" name="nom" value="&lt;?php echo htmlspecialchars($utilisateur['nom']); ?&gt;"&gt;
+        &lt;/div&gt;
+        
+        &lt;div&gt;
+            &lt;label&gt;Prénom :&lt;/label&gt;
+            &lt;input type="text" name="prenom" value="&lt;?php echo htmlspecialchars($utilisateur['prenom']); ?&gt;"&gt;
+        &lt;/div&gt;
+        
+        &lt;div&gt;
+            &lt;label&gt;Email :&lt;/label&gt;
+            &lt;input type="email" name="email" value="&lt;?php echo htmlspecialchars($utilisateur['email']); ?&gt;"&gt;
+        &lt;/div&gt;
+        
+        &lt;div&gt;
+            &lt;label&gt;Téléphone :&lt;/label&gt;
+            &lt;input type="text" name="telephone" value="&lt;?php echo htmlspecialchars($utilisateur['telephone']); ?&gt;"&gt;
+        &lt;/div&gt;
+        
+        &lt;button type="submit"&gt; Enregistrer&lt;/button&gt;
+        &lt;a href="liste.php"&gt; Retour à la liste&lt;/a&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></div>
+
+                    <h5>6. DELETE - Supprimer un utilisateur (supprimer.php)</h5>
+                    <div class="code-block"><code>&lt;?php
+require 'config.php';
+
+if (!isset($_GET['id'])) {
+    die("ID manquant");
+}
+
+$id = (int)$_GET['id'];
+
+// Supprimer l'utilisateur
+$stmt = $pdo->prepare("DELETE FROM utilisateurs WHERE id = :id");
+$resultat = $stmt->execute(['id' => $id]);
+
+if ($resultat) {
+    // Redirection avec message de succès
+    header("Location: liste.php?succes=suppression");
+    exit();
+} else {
+    die("Erreur lors de la suppression");
+}
+?&gt;</code></div>
+                </div>
+
+                <div class="success-box">
+                    <h4> Récapitulatif CRUD :</h4>
+                    <table style="margin-top: 15px;">
+                        <thead>
+                            <tr>
+                                <th>Opération</th>
+                                <th>SQL</th>
+                                <th>Fichier</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>CREATE</strong></td>
+                                <td>INSERT INTO</td>
+                                <td>ajouter.php</td>
+                            </tr>
+                            <tr>
+                                <td><strong>READ</strong></td>
+                                <td>SELECT FROM</td>
+                                <td>liste.php</td>
+                            </tr>
+                            <tr>
+                                <td><strong>UPDATE</strong></td>
+                                <td>UPDATE SET WHERE</td>
+                                <td>modifier.php</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DELETE</strong></td>
+                                <td>DELETE FROM WHERE</td>
+                                <td>supprimer.php</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- MODULE 16 : SÉCURITÉ -->
+            <section id="module16">
+                <h2> Module 16 : Sécurité</h2>
+
+                <h3>1. Hachage des mots de passe</h3>
+                <div class="code-block"><code>&lt;?php
+//  TOUJOURS hacher les mots de passe !
+
+// Inscription - Hacher le mot de passe
+$password = "motdepasse123";
+$hash = password_hash($password, PASSWORD_DEFAULT);
+// Résultat : $2y$10$randomsaltandhashvalue...
+
+// Stocker $hash en BDD (PAS le mot de passe en clair !)
+
+// Connexion - Vérifier le mot de passe
+$password_saisli = "motdepasse123";
+$hash_en_bdd = "$2y$10$...";  // Récupéré depuis la BDD
+
+if (password_verify($password_saisi, $hash_en_bdd)) {
+    echo " Mot de passe correct !";
+} else {
+    echo " Mot de passe incorrect";
+}
+?&gt;</code></div>
+
+                <h3>2. Protection contre les injections SQL</h3>
+                <div class="code-block"><code>&lt;?php
+//  DANGEREUX - Injection SQL
+$email = $_GET['email'];
+$query = "SELECT * FROM users WHERE email = '$email'";
+
+//  SÉCURISÉ - Requête préparée
+$email = $_GET['email'];
+$stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
+$stmt->execute(['email' => $email]);
+?&gt;</code></div>
+
+                <h3>3. Protection XSS (Cross-Site Scripting)</h3>
+                <div class="code-block"><code>&lt;?php
+// Toujours échapper les données avant affichage
+$nom = $_POST['nom'];
+
+//  DANGEREUX
+echo $nom;
+
+//  SÉCURISÉ
+echo htmlspecialchars($nom, ENT_QUOTES, 'UTF-8');
+?&gt;</code></div>
+
+                <h3>4. Protection CSRF (Cross-Site Request Forgery)</h3>
+                <div class="code-block"><code>&lt;?php
+session_start();
+
+// Générer un token CSRF
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Dans le formulaire
+?&gt;
+&lt;form method="POST"&gt;
+    &lt;input type="hidden" name="csrf_token" value="&lt;?php echo $_SESSION['csrf_token']; ?&gt;"&gt;
+    &lt;!-- autres champs --&gt;
+&lt;/form&gt;
+
+&lt;?php
+// Vérifier le token
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Token CSRF invalide");
+    }
+    
+    // Traiter le formulaire...
+}
+?&gt;</code></div>
+
+                <div class="warning-box">
+                    <h4> Règles de sécurité essentielles :</h4>
+                    <ol>
+                        <li>Toujours utiliser des requêtes préparées (PDO)</li>
+                        <li>Hacher les mots de passe avec <code>password_hash()</code></li>
+                        <li>Échapper les données avec <code>htmlspecialchars()</code></li>
+                        <li>Valider toutes les entrées utilisateur</li>
+                        <li>Utiliser HTTPS en production</li>
+                        <li>Ne jamais afficher les erreurs en production</li>
+                        <li>Limiter les tentatives de connexion</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- MODULE 17 : POO SIMPLIFIÉ -->
+            <section id="module17">
+                <h2> Module 17 : POO - Programmation Orientée Objet</h2>
+
+                <h3>Créer une classe</h3>
+                <div class="code-block"><code>&lt;?php
+class Utilisateur {
+    // Propriétés
+    public $nom;
+    public $prenom;
+    public $email;
+    
+    // Constructeur
+    public function __construct($nom, $prenom, $email) {
+        $this->nom = $nom;
+        $this->prenom = $prenom;
+        $this->email = $email;
+    }
+    
+    // Méthode
+    public function getNomComplet() {
+        return $this->prenom . ' ' . $this->nom;
+    }
+    
+    public function sePresenter() {
+        return "Je suis " . $this->getNomComplet() . " (" . $this->email . ")";
+    }
+}
+
+// Créer un objet
+$user = new Utilisateur("Dupont", "Marie", "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="264b47544f4366435e474b564a430845494b">[email&#160;protected]</a>");
+
+echo $user->getNomComplet();  // Marie Dupont
+echo $user->sePresenter();
+?&gt;</code></div>
+
+                <div class="info-box">
+                    <p>La POO est un module avancé. Pour la formation DWWM, concentrez-vous d'abord sur les bases (GET/POST, Sessions, PDO, CRUD) avant d'aborder la POO en profondeur.</p>
+                </div>
+            </section>
+
+            <!-- MODULE 18 : PROJETS -->
+            <section id="module18">
+                <h2> Module 18 : Projets Pratiques</h2>
+
+                <h3>Projets pour s'entraîner :</h3>
+                <ol>
+                    <li>
+                        <strong> Formulaire de contact</strong>
+                        <p>Formulaire qui envoie un email et enregistre les messages en BDD</p>                    </li>
+                    <li>
+                        <strong> Mini e-commerce</strong>
+                        <p>Système de panier avec gestion de produits et commandes</p>
+                    </li>
+                    <li>
+                        <strong> Blog</strong>
+                        <p>Blog avec articles, commentaires et système d'authentification</p>
+                    </li>
+                    <li>
+                        <strong> Todo List</strong>
+                        <p>Application de gestion de tâches avec CRUD complet</p>
+                    </li>
+                </ol>
+
+                <div class="success-box">
+                    <p><strong> Félicitations !</strong></p>
+                    <p>Vous avez maintenant une base solide en PHP. Continuez à pratiquer avec des projets réels pour progresser !</p>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+           <p>2026 Formation DWWM développeur web web mobile Lille</p>
+        <p>&copy; Thomas cours de PHP</p>
+        <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/Region.jpg" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/U.E.jpg" width="70px" alt="">
+        </footer>
+    </div>
+
+    <!-- MENU FLOTTANT EN BAS -->
+    <div class="floating-nav">
+        <button class="floating-nav-toggle" onclick="toggleFloatingMenu()" title="Navigation rapide">
+              &#9776; 
+        </button>
+        <div class="floating-nav-menu" id="floatingMenu">
+            <h3> Navigation</h3>
+            <a href="#module10" onclick="closeFloatingMenu()">10. Sessions</a>
+            <a href="#module11" onclick="closeFloatingMenu()">11. Cookies</a>
+            <a href="#module12" onclick="closeFloatingMenu()">12. Fichiers</a>
+            <a href="#module13" onclick="closeFloatingMenu()">13. MySQL</a>
+            <a href="#module14" onclick="closeFloatingMenu()">14. PDO</a>
+            <a href="#module15" onclick="closeFloatingMenu()">15. CRUD</a>
+            <a href="#module16" onclick="closeFloatingMenu()">16. Sécurité</a>
+            <a href="#module17" onclick="closeFloatingMenu()">17. POO</a>
+            <a href="#module18" onclick="closeFloatingMenu()">18. Projets</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleFloatingMenu() {
+            const menu = document.getElementById('floatingMenu');
+            menu.classList.toggle('active');
+        }
+
+        function closeFloatingMenu() {
+            const menu = document.getElementById('floatingMenu');
+            menu.classList.remove('active');
+        }
+
+        // Fermer le menu si on clique à l'extérieur
+        document.addEventListener('click', function(event) {
+            const nav = document.querySelector('.floating-nav');
+            const menu = document.getElementById('floatingMenu');
+            if (!nav.contains(event.target) && menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
