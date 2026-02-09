@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Backup - Guide Complet | Real Conseil</title>
+    <style>
+
+ :root {
+          
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+              background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .brand {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        nav {
+            background: var(--conseil);
+            padding: 20px;
+            border-bottom: 3px solid var(--real);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        nav a:hover {
+            background: var(--real);
+            color: white;
+           
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            color: var(--conseil);
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--real);
+        }
+
+        h3 {
+            color: var(--conseil);
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--real);
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 5px solid var(--conseil);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .tip-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .inline-code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #d63384;
+            font-family: 'Courier New', monospace;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #e7f3ff;
+        }
+
+        .example {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid #667eea;
+        }
+
+        .example h4 {
+            margin-top: 0;
+        }
+
+        .command-explanation {
+            background: white;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #764ba2;
+        }
+
+        footer {
+            background: #2d2d2d;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        /* Menu Hamburger */
+        .menu-toggle {
+            display: none;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            border-radius: 8px;
+            margin: 10px auto;
+            width: 90%;
+            max-width: 300px;
+        }
+
+        .menu-toggle:hover {
+            background: #764ba2;
+        }
+
+        .menu-toggle.active {
+            background: #764ba2;
+        }
+
+        @media (max-width: 1024px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 30px;
+            }
+
+            table {
+                font-size: 0.95em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                padding: 30px 20px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .brand {
+                font-size: 1em;
+            }
+
+            nav {
+                padding: 10px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            nav ul {
+                display: none;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            nav ul.show {
+                display: flex;
+            }
+
+            nav a {
+                display: block;
+                text-align: center;
+                padding: 12px 20px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            h2 {
+                font-size: 1.6em;
+            }
+
+            h3 {
+                font-size: 1.3em;
+            }
+
+            h4 {
+                font-size: 1.1em;
+            }
+
+            table {
+                font-size: 0.85em;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+
+            pre {
+                font-size: 0.8em;
+                padding: 15px;
+                overflow-x: auto;
+            }
+
+            code {
+                font-size: 0.9em;
+            }
+
+            .info-box, .warning-box, .tip-box, .danger-box {
+                padding: 15px;
+                margin: 15px 0;
+            }
+
+            .example {
+                padding: 15px;
+                margin: 15px 0;
+            }
+
+            .command-explanation {
+                padding: 12px;
+                font-size: 0.95em;
+            }
+
+            ul, ol {
+                margin-left: 20px;
+            }
+
+            footer {
+                padding: 20px 15px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            .brand {
+                font-size: 0.9em;
+            }
+
+            h2 {
+                font-size: 1.4em;
+            }
+
+            h3 {
+                font-size: 1.2em;
+            }
+
+            h4 {
+                font-size: 1em;
+            }
+
+            .content {
+                padding: 15px 10px;
+            }
+
+            pre {
+                font-size: 0.75em;
+                padding: 10px;
+            }
+
+            table {
+                font-size: 0.75em;
+            }
+
+            th, td {
+                padding: 6px 8px;
+            }
+
+            nav a {
+                padding: 10px 15px;
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐳 Docker Backup</h1>
+           <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="" srcset="">
+        </header>
+
+        <nav>
+            <button class="menu-toggle" id="menuToggle" aria-label="Menu de navigation">
+                ☰ Menu
+            </button>
+            <ul id="navMenu">
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#pourquoi">Pourquoi Sauvegarder</a></li>
+                <li><a href="#types">Types de Sauvegarde</a></li>
+                <li><a href="#volumes">Sauvegarder les Volumes</a></li>
+                <li><a href="#conteneurs">Sauvegarder les Conteneurs</a></li>
+                <li><a href="#images">Sauvegarder les Images</a></li>
+                <li><a href="#strategies">Stratégies</a></li>
+                <li><a href="#exercices">Exercices</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <!-- INTRODUCTION -->
+            <section id="introduction">
+                <h2>Introduction aux Sauvegardes Docker</h2>
+                
+                <p>La sauvegarde dans Docker est un aspect <span class="highlight">crucial</span> pour assurer la pérennité et la sécurité de vos applications conteneurisées. Contrairement aux serveurs traditionnels, Docker fonctionne avec des couches éphémères qui peuvent être supprimées à tout moment.</p>
+
+                <div class="info-box">
+                    <h4>Objectifs d'apprentissage</h4>
+                    <ul>
+                        <li>Comprendre l'importance des sauvegardes Docker</li>
+                        <li>Maîtriser les différentes techniques de backup</li>
+                        <li>Savoir restaurer des données en cas de problème</li>
+                        <li>Mettre en place une stratégie de sauvegarde efficace</li>
+                    </ul>
+                </div>
+
+                <h3>Qu'est-ce qu'une sauvegarde Docker ?</h3>
+                <p>Une sauvegarde Docker consiste à <span class="highlight">préserver l'état</span> de vos conteneurs, volumes et images pour pouvoir les restaurer en cas de :</p>
+                <ul>
+                    <li><strong>Panne matérielle</strong> : disque dur défaillant, serveur en panne</li>
+                    <li><strong>Erreur humaine</strong> : suppression accidentelle de données</li>
+                    <li><strong>Corruption de données</strong> : fichiers endommagés</li>
+                    <li><strong>Migration</strong> : déplacement vers un nouveau serveur</li>
+                    <li><strong>Mise à jour ratée</strong> : problème lors d'un update</li>
+                </ul>
+            </section>
+
+            <!-- POURQUOI SAUVEGARDER -->
+            <section id="pourquoi">
+                <h2>Pourquoi Sauvegarder Docker ?</h2>
+
+                <h3>Particularités de Docker</h3>
+                <p>Docker a des caractéristiques spécifiques qui rendent les sauvegardes essentielles :</p>
+
+                <div class="example">
+                    <h4>Nature Éphémère des Conteneurs</h4>
+                    <p>Les conteneurs Docker sont conçus pour être <span class="highlight">immutables</span> et remplaçables. Toute donnée stockée dans un conteneur (hors volumes) est perdue lorsque le conteneur est supprimé.</p>
+                    
+                    <pre><code># Créer un conteneur avec des données
+docker run -d --name temp_container nginx
+docker exec temp_container bash -c "echo 'Données importantes' > /tmp/data.txt"
+
+# Les données sont dans le conteneur
+docker exec temp_container cat /tmp/data.txt
+# Affiche: Données importantes
+
+# Supprimer le conteneur
+docker rm -f temp_container
+
+# Les données sont perdues définitivement !</code></pre>
+                    
+                    <div class="command-explanation">
+                        <strong>Explication :</strong> Les données stockées directement dans le conteneur (sans volume) sont perdues lors de sa suppression. C'est pourquoi on utilise des volumes pour la persistance.
+                    </div>
+                </div>
+
+                <h3>Les Trois Piliers à Sauvegarder</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Élément</th>
+                            <th>Description</th>
+                            <th>Priorité</th>
+                            <th>Fréquence recommandée</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Volumes</strong></td>
+                            <td>Données persistantes des applications (BDD, fichiers utilisateurs)</td>
+                            <td>Critique</td>
+                            <td>Quotidienne ou continue</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Images</strong></td>
+                            <td>Applications et environnements configurés</td>
+                            <td>Importante</td>
+                            <td>À chaque version</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Configurations</strong></td>
+                            <td>docker-compose.yml, variables d'environnement</td>
+                            <td>Importante</td>
+                            <td>À chaque modification</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="warning-box">
+                    <h4>Attention aux Conteneurs</h4>
+                    <p>On ne sauvegarde généralement <strong>pas</strong> les conteneurs eux-mêmes, mais plutôt :</p>
+                    <ul>
+                        <li>Les <strong>volumes</strong> qui contiennent leurs données</li>
+                        <li>Les <strong>images</strong> qui permettent de les recréer</li>
+                        <li>Les <strong>configurations</strong> (docker-compose.yml)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- TYPES DE SAUVEGARDE -->
+            <section id="types">
+                <h2>Types de Sauvegarde Docker</h2>
+
+                <h3>Sauvegarde Complète (Full Backup)</h3>
+                <p>Sauvegarde totale de tous les éléments Docker à un instant T.</p>
+                
+                <div class="tip-box">
+                    <strong>Avantages :</strong>
+                    <ul>
+                        <li>Restauration complète possible</li>
+                        <li>Simple à gérer</li>
+                        <li>Idéal pour migration</li>
+                    </ul>
+                    <strong>Inconvénients :</strong>
+                    <ul>
+                        <li>Très volumineuse</li>
+                        <li>Temps de backup long</li>
+                        <li>Consomme beaucoup d'espace</li>
+                    </ul>
+                </div>
+
+                <h3>Sauvegarde Incrémentale</h3>
+                <p>Sauvegarde uniquement les modifications depuis la dernière sauvegarde.</p>
+                
+                <div class="tip-box">
+                    <strong>Avantages :</strong>
+                    <ul>
+                        <li>Rapide à exécuter</li>
+                        <li>Économe en espace</li>
+                        <li>Idéal pour sauvegardes fréquentes</li>
+                    </ul>
+                    <strong>Inconvénients :</strong>
+                    <ul>
+                        <li>Restauration plus complexe</li>
+                        <li>Dépendance entre sauvegardes</li>
+                    </ul>
+                </div>
+
+                <h3>Sauvegarde Différentielle</h3>
+                <p>Sauvegarde les modifications depuis la dernière sauvegarde complète.</p>
+
+                <div class="example">
+                    <h4>Exemple de Stratégie Hybride</h4>
+                    <pre><code># Dimanche : Sauvegarde COMPLÈTE
+docker-backup-full.sh
+
+# Lundi à Samedi : Sauvegardes INCRÉMENTIELLES
+docker-backup-incremental.sh
+
+# Résultat :
+# - 1 sauvegarde complète par semaine
+# - 6 sauvegardes incrémentielles
+# - Optimisation espace/sécurité</code></pre>
+                </div>
+            </section>
+
+            <!-- SAUVEGARDER LES VOLUMES -->
+            <section id="volumes">
+                <h2>Sauvegarder les Volumes Docker</h2>
+
+                <p>Les volumes sont l'élément <span class="highlight">le plus critique</span> à sauvegarder car ils contiennent vos données persistantes (bases de données, fichiers utilisateurs, configurations).</p>
+
+                <h3>Lister les Volumes Existants</h3>
+                <pre><code># Lister tous les volumes
+docker volume ls
+
+# Inspecter un volume spécifique
+docker volume inspect mon_volume
+
+# Afficher l'emplacement physique du volume
+docker volume inspect mon_volume --format '{{ .Mountpoint }}'</code></pre>
+
+                <div class="command-explanation">
+                    <strong>Résultat typique :</strong> <span class="inline-code">/var/lib/docker/volumes/mon_volume/_data</span>
+                    <br>C'est ici que Docker stocke physiquement les données du volume sur votre système.
+                </div>
+
+                <h3>Méthode 1 : Sauvegarde avec tar (Recommandée)</h3>
+                
+                <div class="example">
+                    <h4>Principe</h4>
+                    <p>On utilise un conteneur temporaire pour créer une archive tar du volume.</p>
+
+                    <pre><code># Sauvegarder un volume dans un fichier tar.gz
+docker run --rm \
+  -v mon_volume:/data \
+  -v $(pwd):/backup \
+  ubuntu tar czf /backup/mon_volume_backup.tar.gz -C /data .</code></pre>
+
+                    <div class="command-explanation">
+                        <h4>Décortiquons cette commande :</h4>
+                        <ul>
+                            <li><span class="inline-code">docker run --rm</span> : Créer un conteneur temporaire qui s'auto-détruira</li>
+                            <li><span class="inline-code">-v mon_volume:/data</span> : Monter le volume à sauvegarder dans /data</li>
+                            <li><span class="inline-code">-v $(pwd):/backup</span> : Monter le répertoire actuel dans /backup</li>
+                            <li><span class="inline-code">ubuntu</span> : Utiliser l'image Ubuntu comme base</li>
+                            <li><span class="inline-code">tar czf</span> : Créer une archive compressée (c=create, z=gzip, f=file)</li>
+                            <li><span class="inline-code">/backup/mon_volume_backup.tar.gz</span> : Destination de l'archive</li>
+                            <li><span class="inline-code">-C /data .</span> : Compresser tout le contenu de /data</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Restaurer un Volume</h3>
+
+                <pre><code># 1. Créer un nouveau volume (si nécessaire)
+docker volume create mon_volume_restaure
+
+# 2. Restaurer les données depuis l'archive
+docker run --rm \
+  -v mon_volume_restaure:/data \
+  -v $(pwd):/backup \
+  ubuntu tar xzf /backup/mon_volume_backup.tar.gz -C /data</code></pre>
+
+                <div class="command-explanation">
+                    <h4>Explication de la restauration :</h4>
+                    <ul>
+                        <li><span class="inline-code">tar xzf</span> : Extraire une archive (x=extract, z=gzip, f=file)</li>
+                        <li>Les données sont extraites dans le nouveau volume</li>
+                        <li>Le conteneur temporaire est supprimé automatiquement (--rm)</li>
+                    </ul>
+                </div>
+
+                <h3>Méthode 2 : Copie Directe (Pour Tests)</h3>
+
+                <div class="warning-box">
+                    <h4>Utilisation Limitée</h4>
+                    <p>Cette méthode copie directement les fichiers du volume. <strong>Attention :</strong> cela peut causer des problèmes de permissions et n'est pas recommandé en production.</p>
+                </div>
+
+                <pre><code># Trouver l'emplacement du volume
+VOLUME_PATH=$(docker volume inspect mon_volume --format '{{ .Mountpoint }}')
+
+# Copier les données (nécessite sudo)
+sudo cp -r $VOLUME_PATH /chemin/vers/backup/
+
+# Problèmes potentiels :
+# - Nécessite les droits root
+# - Problèmes de permissions possibles
+# - Pas de compression automatique</code></pre>
+
+                <h3>Méthode 3 : Backup MySQL/PostgreSQL Spécifique</h3>
+
+                <div class="example">
+                    <h4>Sauvegarde de Base de Données MySQL</h4>
+                    
+                    <pre><code># Sauvegarder une base MySQL
+docker exec mon_container_mysql \
+  mysqldump -u root -pMotDePasse ma_base \
+  > backup_mysql_$(date +%Y%m%d).sql</code></pre>
+
+                    <div class="command-explanation">
+                        <strong>Explication :</strong>
+                        <ul>
+                            <li><span class="inline-code">docker exec</span> : Exécuter une commande dans un conteneur en cours</li>
+                            <li><span class="inline-code">mysqldump</span> : Outil de sauvegarde MySQL</li>
+                            <li><span class="inline-code">$(date +%Y%m%d)</span> : Ajouter la date au nom (ex: 20250209)</li>
+                            <li>Résultat : fichier SQL réimportable facilement</li>
+                        </ul>
+                    </div>
+
+                    <h4>Restaurer MySQL</h4>
+                    <pre><code># Restaurer la base de données
+docker exec -i mon_container_mysql \
+  mysql -u root -pMotDePasse ma_base \
+  < backup_mysql_20250209.sql</code></pre>
+                </div>
+
+                <div class="example">
+                    <h4>Sauvegarde PostgreSQL</h4>
+                    
+                    <pre><code># Sauvegarder PostgreSQL
+docker exec mon_container_postgres \
+  pg_dump -U postgres ma_base \
+  > backup_postgres_$(date +%Y%m%d).sql
+
+# Restaurer PostgreSQL
+docker exec -i mon_container_postgres \
+  psql -U postgres ma_base \
+  < backup_postgres_20250209.sql</code></pre>
+                </div>
+
+                <h3>Automatiser les Sauvegardes avec Cron</h3>
+
+                <pre><code>#!/bin/bash
+# Script: docker-volume-backup.sh
+# Description: Sauvegarde automatique des volumes Docker
+
+# Variables
+BACKUP_DIR="/backups/docker"
+DATE=$(date +%Y%m%d_%H%M%S)
+VOLUME_NAME="mon_volume_important"
+
+# Créer le dossier de backup
+mkdir -p $BACKUP_DIR
+
+# Sauvegarder le volume
+docker run --rm \
+  -v $VOLUME_NAME:/data \
+  -v $BACKUP_DIR:/backup \
+  ubuntu tar czf /backup/${VOLUME_NAME}_${DATE}.tar.gz -C /data .
+
+# Nettoyer les anciennes sauvegardes (garder 7 jours)
+find $BACKUP_DIR -name "${VOLUME_NAME}_*.tar.gz" -mtime +7 -delete
+
+echo "Sauvegarde terminée: ${VOLUME_NAME}_${DATE}.tar.gz"</code></pre>
+
+                <div class="command-explanation">
+                    <h4>Configuration Cron</h4>
+                    <pre><code># Éditer le crontab
+crontab -e
+
+# Ajouter cette ligne pour backup quotidien à 2h du matin
+0 2 * * * /scripts/docker-volume-backup.sh >> /var/log/docker-backup.log 2>&1</code></pre>
+                </div>
+            </section>
+
+            <!-- SAUVEGARDER LES CONTENEURS -->
+            <section id="conteneurs">
+                <h2>Sauvegarder les Conteneurs</h2>
+
+                <div class="info-box">
+                    <h4>Note Importante</h4>
+                    <p>On ne sauvegarde généralement pas les conteneurs directement, mais on peut créer une <strong>image depuis un conteneur</strong> pour capturer son état actuel. Cependant, il est préférable de sauvegarder les volumes et de recréer les conteneurs depuis leurs images officielles.</p>
+                </div>
+
+                <h3>Créer une Image depuis un Conteneur</h3>
+
+                <pre><code># Créer une image depuis un conteneur en cours d'exécution
+docker commit mon_conteneur mon_image_backup:v1
+
+# Avec un message de commit
+docker commit -m "Backup avant mise à jour" \
+  -a "Votre Nom" \
+  mon_conteneur \
+  mon_image_backup:v1</code></pre>
+
+                <div class="command-explanation">
+                    <strong>Paramètres :</strong>
+                    <ul>
+                        <li><span class="inline-code">-m</span> : Message décrivant le commit</li>
+                        <li><span class="inline-code">-a</span> : Auteur du commit</li>
+                        <li><span class="inline-code">mon_conteneur</span> : Conteneur source</li>
+                        <li><span class="inline-code">mon_image_backup:v1</span> : Nom et tag de la nouvelle image</li>
+                    </ul>
+                </div>
+
+                <h3>Exporter un Conteneur</h3>
+
+                <pre><code># Exporter le système de fichiers d'un conteneur
+docker export mon_conteneur > conteneur_backup.tar
+
+# Ou avec compression
+docker export mon_conteneur | gzip > conteneur_backup.tar.gz</code></pre>
+
+                <div class="warning-box">
+                    <h4>Différence Export vs Commit</h4>
+                    <ul>
+                        <li><strong>docker export</strong> : Exporte uniquement le système de fichiers (pas d'historique, pas de métadonnées)</li>
+                        <li><strong>docker commit</strong> : Crée une image complète avec historique et métadonnées</li>
+                        <li><strong>Recommandation</strong> : Utilisez commit pour préserver l'historique</li>
+                    </ul>
+                </div>
+
+                <h3>Restaurer depuis un Export</h3>
+
+                <pre><code># Importer depuis un tar (crée une image)
+docker import conteneur_backup.tar mon_image_restauree:v1
+
+# Créer un conteneur depuis l'image restaurée
+docker run -d --name conteneur_restaure mon_image_restauree:v1</code></pre>
+            </section>
+
+            <!-- SAUVEGARDER LES IMAGES -->
+            <section id="images">
+                <h2>Sauvegarder les Images Docker</h2>
+
+                <p>Les images sont vos applications conteneurisées. Les sauvegarder permet de :</p>
+                <ul>
+                    <li>Migrer vers un autre serveur sans connexion internet</li>
+                    <li>Conserver une version spécifique d'une application</li>
+                    <li>Distribuer votre application sans registre Docker</li>
+                </ul>
+
+                <h3>Sauvegarder une Image</h3>
+
+                <pre><code># Sauvegarder une seule image
+docker save nginx:latest > nginx_backup.tar
+
+# Avec compression (recommandé)
+docker save nginx:latest | gzip > nginx_backup.tar.gz
+
+# Sauvegarder plusieurs images en une fois
+docker save nginx:latest mysql:8.0 redis:alpine > multi_images_backup.tar</code></pre>
+
+                <div class="command-explanation">
+                    <h4>Comparaison de Taille</h4>
+                    <table>
+                        <tr>
+                            <th>Format</th>
+                            <th>Taille</th>
+                            <th>Temps</th>
+                        </tr>
+                        <tr>
+                            <td>Sans compression (.tar)</td>
+                            <td>~150 MB</td>
+                            <td>Rapide</td>
+                        </tr>
+                        <tr>
+                            <td>Avec gzip (.tar.gz)</td>
+                            <td>~50 MB</td>
+                            <td>Moyen</td>
+                        </tr>
+                        <tr>
+                            <td>Économie</td>
+                            <td>~66%</td>
+                            <td>+30% temps</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3>Restaurer une Image</h3>
+
+                <pre><code># Charger une image depuis un fichier tar
+docker load < nginx_backup.tar
+
+# Ou depuis un fichier compressé
+docker load < nginx_backup.tar.gz
+
+# Vérifier que l'image est bien chargée
+docker images | grep nginx</code></pre>
+
+                <h3>Sauvegarder Toutes les Images</h3>
+
+                <div class="example">
+                    <h4>Script Complet de Sauvegarde d'Images</h4>
+
+                    <pre><code>#!/bin/bash
+# Script: backup-all-images.sh
+# Sauvegarde toutes les images Docker locales
+
+BACKUP_DIR="/backups/docker-images"
+DATE=$(date +%Y%m%d)
+
+# Créer le dossier
+mkdir -p $BACKUP_DIR
+
+# Lister toutes les images
+echo "Recherche des images Docker..."
+docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>" > /tmp/images_list.txt
+
+# Compter les images
+IMAGE_COUNT=$(wc -l < /tmp/images_list.txt)
+echo "$IMAGE_COUNT images trouvées"
+
+# Sauvegarder chaque image
+COUNTER=1
+while IFS= read -r image; do
+    # Remplacer les / par _ dans le nom du fichier
+    filename=$(echo "$image" | tr '/:' '__')
+    
+    echo "[$COUNTER/$IMAGE_COUNT] Sauvegarde de $image..."
+    
+    docker save "$image" | gzip > "$BACKUP_DIR/${filename}_${DATE}.tar.gz"
+    
+    if [ $? -eq 0 ]; then
+        echo "  Succès"
+    else
+        echo "   Erreur"
+    fi
+    
+    ((COUNTER++))
+done < /tmp/images_list.txt
+
+echo "Sauvegarde terminée dans $BACKUP_DIR"
+
+# Nettoyer le fichier temporaire
+rm /tmp/images_list.txt</code></pre>
+
+                    <div class="command-explanation">
+                        <h4>Utilisation du Script</h4>
+                        <pre><code># Rendre le script exécutable
+chmod +x backup-all-images.sh
+
+# Exécuter
+./backup-all-images.sh
+
+# Résultat : toutes vos images sauvegardées dans /backups/docker-images/</code></pre>
+                    </div>
+                </div>
+
+                <h3>Script de Restauration</h3>
+
+                <pre><code>#!/bin/bash
+# Script: restore-all-images.sh
+# Restaure toutes les images Docker depuis un dossier
+
+BACKUP_DIR="/backups/docker-images"
+
+echo "Restauration des images depuis $BACKUP_DIR"
+
+# Trouver tous les fichiers .tar.gz
+find $BACKUP_DIR -name "*.tar.gz" | while read -r file; do
+    echo "Chargement de $(basename $file)..."
+    docker load < "$file"
+    
+    if [ $? -eq 0 ]; then
+        echo "   Image chargée avec succès"
+    else
+        echo "   Erreur lors du chargement"
+    fi
+done
+
+echo "Restauration terminée"
+docker images</code></pre>
+            </section>
+
+            <!-- STRATÉGIES DE SAUVEGARDE -->
+            <section id="strategies">
+                <h2> Stratégies de Sauvegarde Docker</h2>
+
+                <h3> Règle 3-2-1</h3>
+                
+                <div class="tip-box">
+                    <h4> La Règle d'Or des Backups</h4>
+                    <ul>
+                        <li><strong>3</strong> copies de vos données (1 originale + 2 backups)</li>
+                        <li><strong>2</strong> supports différents (disque dur + cloud par exemple)</li>
+                        <li><strong>1</strong> copie hors site (protection contre incendie, vol, etc.)</li>
+                    </ul>
+                </div>
+
+                <h3>Fréquences Recommandées</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type de Donnée</th>
+                            <th>Fréquence</th>
+                            <th>Rétention</th>
+                            <th>Méthode</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Base de données critique</td>
+                            <td>Toutes les 4h ou continue</td>
+                            <td>30 jours</td>
+                            <td>mysqldump + stockage cloud</td>
+                        </tr>
+                        <tr>
+                            <td>Volumes applicatifs</td>
+                            <td>Quotidienne (nuit)</td>
+                            <td>14 jours</td>
+                            <td>tar + compression</td>
+                        </tr>
+                        <tr>
+                            <td>Images Docker</td>
+                            <td>À chaque version</td>
+                            <td>3 dernières versions</td>
+                            <td>docker save</td>
+                        </tr>
+                        <tr>
+                            <td>Configurations</td>
+                            <td>À chaque modification</td>
+                            <td>Illimité</td>
+                            <td>Git</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Architecture de Sauvegarde Complète</h3>
+
+                <div class="example">
+                    <h4>Structure Organisée</h4>
+                    <pre><code>/backups/
+├── daily/              # Sauvegardes quotidiennes (7 jours)
+│   ├── volumes/
+│   ├── databases/
+│   └── configs/
+├── weekly/             # Sauvegardes hebdomadaires (4 semaines)
+│   └── full/
+├── monthly/            # Sauvegardes mensuelles (12 mois)
+│   └── archives/
+└── scripts/            # Scripts d'automatisation
+    ├── backup-daily.sh
+    ├── backup-weekly.sh
+    └── restore.sh</code></pre>
+                </div>
+
+                <h3>Script de Sauvegarde Complète Automatisée</h3>
+
+                <pre><code>#!/bin/bash
+# Script: docker-backup-complete.sh
+# Sauvegarde complète automatisée de l'environnement Docker
+
+# Configuration
+BACKUP_ROOT="/backups/docker"
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="$BACKUP_ROOT/backup_$DATE"
+LOG_FILE="$BACKUP_ROOT/backup.log"
+
+# Fonction de log
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a $LOG_FILE
+}
+
+# Créer le dossier de backup
+mkdir -p $BACKUP_DIR/{volumes,images,configs}
+
+log "Démarrage de la sauvegarde complète"
+
+# 1. SAUVEGARDER LES VOLUMES
+log "Sauvegarde des volumes..."
+docker volume ls -q | while read volume; do
+    log "  - Volume: $volume"
+    docker run --rm \
+        -v $volume:/data \
+        -v $BACKUP_DIR/volumes:/backup \
+        ubuntu tar czf /backup/${volume}.tar.gz -C /data .
+done
+
+# 2. SAUVEGARDER LES BASES DE DONNÉES
+log "Sauvegarde des bases de données..."
+
+# MySQL
+if docker ps --format '{{.Names}}' | grep -q mysql; then
+    MYSQL_CONTAINER=$(docker ps --format '{{.Names}}' | grep mysql | head -1)
+    log "  - MySQL: $MYSQL_CONTAINER"
+    docker exec $MYSQL_CONTAINER sh -c \
+        'mysqldump -u root -p$MYSQL_ROOT_PASSWORD --all-databases' \
+        > $BACKUP_DIR/configs/mysql_dump_$DATE.sql
+fi
+
+# PostgreSQL
+if docker ps --format '{{.Names}}' | grep -q postgres; then
+    POSTGRES_CONTAINER=$(docker ps --format '{{.Names}}' | grep postgres | head -1)
+    log "  - PostgreSQL: $POSTGRES_CONTAINER"
+    docker exec $POSTGRES_CONTAINER sh -c \
+        'pg_dumpall -U postgres' \
+        > $BACKUP_DIR/configs/postgres_dump_$DATE.sql
+fi
+
+# 3. SAUVEGARDER LES IMAGES PERSONNALISÉES
+log "Sauvegarde des images personnalisées..."
+docker images --filter "dangling=false" --format "{{.Repository}}:{{.Tag}}" | \
+grep -v "^<none>" | \
+while read image; do
+    # Sauvegarder uniquement vos images (pas les officielles)
+    if [[ $image != *"/"* ]] || [[ $image == "localhost/"* ]]; then
+        filename=$(echo $image | tr '/:' '__')
+        log "  - Image: $image"
+        docker save $image | gzip > $BACKUP_DIR/images/${filename}.tar.gz
+    fi
+done
+
+# 4. SAUVEGARDER LES CONFIGURATIONS
+log "Sauvegarde des configurations..."
+
+# Docker Compose files
+find /opt/docker -name "docker-compose.yml" -o -name "docker-compose.yaml" | \
+while read compose_file; do
+    cp $compose_file $BACKUP_DIR/configs/
+    log "  - Copie: $compose_file"
+done
+
+# Variables d'environnement
+find /opt/docker -name ".env" | while read env_file; do
+    cp $env_file $BACKUP_DIR/configs/
+    log "  - Copie: $env_file"
+done
+
+# 5. CRÉER UN MANIFESTE
+log "Création du manifeste..."
+cat > $BACKUP_DIR/MANIFEST.txt << EOF
+
+SAUVEGARDE DOCKER - $(date)
+
+
+DATE: $DATE
+SERVEUR: $(hostname)
+
+VOLUMES SAUVEGARDÉS:
+$(docker volume ls --format "- {{.Name}}")
+
+CONTENEURS ACTIFS:
+$(docker ps --format "- {{.Names}} ({{.Image}})")
+
+IMAGES SAUVEGARDÉES:
+$(ls -lh $BACKUP_DIR/images/ 2>/dev/null || echo "Aucune")
+
+TAILLE TOTALE: $(du -sh $BACKUP_DIR | cut -f1)
+EOF
+
+# 6. COMPRESSION FINALE (optionnel)
+log "Compression de la sauvegarde..."
+tar czf "$BACKUP_ROOT/backup_$DATE.tar.gz" -C $BACKUP_ROOT backup_$DATE
+rm -rf $BACKUP_DIR
+
+# 7. NETTOYAGE DES ANCIENNES SAUVEGARDES
+log "Nettoyage des sauvegardes de plus de 7 jours..."
+find $BACKUP_ROOT -name "backup_*.tar.gz" -mtime +7 -delete
+
+# 8. UPLOAD VERS CLOUD (optionnel)
+# Décommentez si vous utilisez AWS S3, Google Cloud Storage, etc.
+# log " Upload vers le cloud..."
+# aws s3 cp "$BACKUP_ROOT/backup_$DATE.tar.gz" s3://mon-bucket/backups/
+
+log " Sauvegarde terminée avec succès!"
+log " Fichier: backup_$DATE.tar.gz"
+log " Taille: $(du -sh "$BACKUP_ROOT/backup_$DATE.tar.gz" | cut -f1)"</code></pre>
+
+                <div class="command-explanation">
+                    <h4>Configuration Cron pour Automatisation</h4>
+                    <pre><code># Éditer le crontab
+sudo crontab -e
+
+# Sauvegarde complète tous les jours à 2h du matin
+0 2 * * * /scripts/docker-backup-complete.sh
+
+# Sauvegarde des bases de données toutes les 6 heures
+0 */6 * * * /scripts/backup-databases.sh
+
+# Notification hebdomadaire du statut des backups
+0 9 * * 1 /scripts/check-backup-health.sh | mail -s "Docker Backup Status" <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="80e1e4ede9eec0e5f8e5edf0ece5aee3efed">[email&#160;protected]</a></code></pre>
+                </div>
+
+                <h3>Script de Vérification de Sauvegarde</h3>
+
+                <pre><code>#!/bin/bash
+# Script: check-backup-health.sh
+# Vérifie l'intégrité des sauvegardes
+
+BACKUP_ROOT="/backups/docker"
+
+echo "Vérification des sauvegardes Docker"
+echo ""
+
+# Vérifier la présence de sauvegardes récentes
+LATEST_BACKUP=$(find $BACKUP_ROOT -name "backup_*.tar.gz" -mtime -1 | head -1)
+
+if [ -z "$LATEST_BACKUP" ]; then
+    echo " ALERTE: Aucune sauvegarde récente trouvée !"
+    exit 1
+else
+    echo " Dernière sauvegarde: $(basename $LATEST_BACKUP)"
+    echo " Date: $(stat -c %y "$LATEST_BACKUP" | cut -d' ' -f1)"
+    echo "Taille: $(du -sh "$LATEST_BACKUP" | cut -f1)"
+fi
+
+# Vérifier l'intégrité de l'archive
+echo ""
+echo " Test d'intégrité..."
+if tar tzf "$LATEST_BACKUP" > /dev/null 2>&1; then
+    echo " Archive valide"
+else
+    echo " ALERTE: Archive corrompue !"
+    exit 1
+fi
+
+# Compter les sauvegardes disponibles
+BACKUP_COUNT=$(find $BACKUP_ROOT -name "backup_*.tar.gz" | wc -l)
+echo ""
+echo " Statistiques:"
+echo "   - Nombre de sauvegardes: $BACKUP_COUNT"
+echo "   - Espace utilisé: $(du -sh $BACKUP_ROOT | cut -f1)"
+
+echo ""
+echo " Vérification terminée avec succès"</code></pre>
+            </section>
+
+            <!-- EXERCICES PRATIQUES -->
+            <section id="exercices">
+                <h2> Exercices Pratiques</h2>
+
+                <div class="example">
+                    <h3>Exercice 1 : Sauvegarde Basique d'un Volume</h3>
+                    <h4> Objectif</h4>
+                    <p>Créer un volume avec des données, le sauvegarder, supprimer le volume, puis le restaurer.</p>
+
+                    <h4> Étapes</h4>
+                    <pre><code># 1. Créer un volume
+docker volume create mon_volume_test
+
+# 2. Ajouter des données dans le volume
+docker run --rm -v mon_volume_test:/data ubuntu bash -c \
+  "echo 'Données importantes' > /data/fichier.txt && \
+   echo 'Autre fichier' > /data/fichier2.txt && \
+   mkdir -p /data/dossier && \
+   echo 'Contenu dossier' > /data/dossier/info.txt"
+
+# 3. Vérifier le contenu
+docker run --rm -v mon_volume_test:/data ubuntu ls -laR /data
+
+# 4. Sauvegarder le volume
+docker run --rm \
+  -v mon_volume_test:/data \
+  -v $(pwd):/backup \
+  ubuntu tar czf /backup/test_backup.tar.gz -C /data .
+
+# 5. Supprimer le volume
+docker volume rm mon_volume_test
+
+# 6. Créer un nouveau volume et restaurer
+docker volume create mon_volume_restaure
+docker run --rm \
+  -v mon_volume_restaure:/data \
+  -v $(pwd):/backup \
+  ubuntu tar xzf /backup/test_backup.tar.gz -C /data
+
+# 7. Vérifier que tout est restauré
+docker run --rm -v mon_volume_restaure:/data ubuntu ls -laR /data</code></pre>
+                </div>
+
+                <div class="example">
+                    <h3>Exercice 2 : Sauvegarde d'une Application WordPress</h3>
+                    <h4> Objectif</h4>
+                    <p>Déployer WordPress avec Docker, sauvegarder les données et la base MySQL, puis restaurer le tout.</p>
+
+                    <h4> Étape 1 : Déployer WordPress</h4>
+                    <pre><code># Créer un docker-compose.yml
+cat > docker-compose.yml << 'EOF'
+version: '3'
+
+services:
+  db:
+    image: mysql:8.0
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: wp_password
+
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - wp_content:/var/www/html/wp-content
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: wp_password
+      WORDPRESS_DB_NAME: wordpress
+
+volumes:
+  db_data:
+  wp_content:
+EOF
+
+# Démarrer WordPress
+docker-compose up -d
+
+# Attendre le démarrage
+sleep 30
+
+# Vérifier que ça fonctionne
+curl -I http://localhost:8080</code></pre>
+
+                    <h4> Étape 2 : Sauvegarder</h4>
+                    <pre><code>#!/bin/bash
+# Créer un dossier de backup
+mkdir -p wordpress_backup
+
+# 1. Sauvegarder la base de données MySQL
+docker-compose exec -T db mysqldump \
+  -u wp_user -pwp_password wordpress \
+  > wordpress_backup/database.sql
+
+# 2. Sauvegarder les fichiers WordPress
+docker run --rm \
+  -v $(docker volume ls -q | grep wp_content):/data \
+  -v $(pwd)/wordpress_backup:/backup \
+  ubuntu tar czf /backup/wp_content.tar.gz -C /data .
+
+echo " Sauvegarde WordPress terminée"
+ls -lh wordpress_backup/</code></pre>
+
+                    <h4> Étape 3 : Restaurer</h4>
+                    <pre><code>#!/bin/bash
+# Arrêter et nettoyer
+docker-compose down -v
+
+# Redémarrer avec de nouveaux volumes
+docker-compose up -d
+sleep 30
+
+# Restaurer la base de données
+docker-compose exec -T db mysql \
+  -u wp_user -pwp_password wordpress \
+  < wordpress_backup/database.sql
+
+# Restaurer les fichiers
+docker run --rm \
+  -v $(docker volume ls -q | grep wp_content):/data \
+  -v $(pwd)/wordpress_backup:/backup \
+  ubuntu tar xzf /backup/wp_content.tar.gz -C /data
+
+# Redémarrer pour prendre en compte les changements
+docker-compose restart
+
+echo " Restauration terminée"
+echo " Accédez à http://localhost:8080"</code></pre>
+                </div>
+
+                <div class="example">
+                    <h3>Exercice 3 : Automatisation Complète</h3>
+                    <h4> Objectif</h4>
+                    <p>Créer un système de sauvegarde automatisé avec rotation des backups.</p>
+
+                    <pre><code>#!/bin/bash
+# Script: auto-backup-wordpress.sh
+
+BACKUP_ROOT="/backups/wordpress"
+DATE=$(date +%Y%m%d_%H%M%S)
+RETENTION_DAYS=7
+
+# Créer la structure
+mkdir -p $BACKUP_ROOT/{daily,weekly,monthly}
+
+# Déterminer le type de backup
+DAY_OF_WEEK=$(date +%u)  # 1-7 (1=lundi)
+DAY_OF_MONTH=$(date +%d) # 01-31
+
+if [ "$DAY_OF_MONTH" == "01" ]; then
+    BACKUP_DIR="$BACKUP_ROOT/monthly/backup_$DATE"
+    RETENTION=365
+elif [ "$DAY_OF_WEEK" == "7" ]; then
+    BACKUP_DIR="$BACKUP_ROOT/weekly/backup_$DATE"
+    RETENTION=28
+else
+    BACKUP_DIR="$BACKUP_ROOT/daily/backup_$DATE"
+    RETENTION=$RETENTION_DAYS
+fi
+
+# Créer le dossier
+mkdir -p $BACKUP_DIR
+
+# Backup MySQL
+docker-compose exec -T db mysqldump \
+  -u wp_user -pwp_password wordpress \
+  | gzip > $BACKUP_DIR/database.sql.gz
+
+# Backup fichiers
+docker run --rm \
+  -v $(docker volume ls -q | grep wp_content):/data \
+  -v $BACKUP_DIR:/backup \
+  ubuntu tar czf /backup/wp_content.tar.gz -C /data .
+
+# Créer un checksum
+cd $BACKUP_DIR
+sha256sum * > CHECKSUMS.txt
+
+# Nettoyer les anciennes sauvegardes
+find $BACKUP_ROOT/daily -name "backup_*" -mtime +$RETENTION_DAYS -exec rm -rf {} \;
+find $BACKUP_ROOT/weekly -name "backup_*" -mtime +28 -exec rm -rf {} \;
+find $BACKUP_ROOT/monthly -name "backup_*" -mtime +365 -exec rm -rf {} \;
+
+echo " Backup WordPress terminé: $BACKUP_DIR"</code></pre>
+
+                    <h4> Configuration</h4>
+                    <pre><code># Cron pour backup quotidien
+0 3 * * * /scripts/auto-backup-wordpress.sh
+
+# Vérification hebdomadaire d'intégrité
+0 10 * * 1 /scripts/verify-backups.sh</code></pre>
+                </div>
+
+                <div class="danger-box">
+                    <h3> Exercice 4 : Test de Restauration d'Urgence</h3>
+                    <h4> Scénario</h4>
+                    <p>Simuler une catastrophe totale et restaurer l'environnement complet.</p>
+
+                    <h4> Checklist de Restauration</h4>
+                    <ol>
+                        <li> Arrêter tous les conteneurs</li>
+                        <li> Supprimer tous les volumes</li>
+                        <li> Supprimer toutes les images personnalisées</li>
+                        <li> Restaurer depuis la dernière sauvegarde</li>
+                        <li> Vérifier que tout fonctionne</li>
+                    </ol>
+
+                    <pre><code>#!/bin/bash
+# disaster-recovery-test.sh
+
+echo " SIMULATION DE CATASTROPHE"
+echo ""
+read -p "Êtes-vous sûr ? (oui/non) " confirm
+
+if [ "$confirm" != "oui" ]; then
+    echo "Annulé."
+    exit 0
+fi
+
+# 1. Sauvegarder l'état actuel
+echo " Sauvegarde de sécurité..."
+./docker-backup-complete.sh
+
+# 2. DESTRUCTION TOTALE
+echo " Destruction de l'environnement..."
+docker-compose down -v
+docker system prune -af --volumes
+
+# 3. RESTAURATION
+echo " Restauration depuis backup..."
+LATEST_BACKUP=$(ls -t /backups/docker/backup_*.tar.gz | head -1)
+
+tar xzf $LATEST_BACKUP -C /tmp/
+cd /tmp/backup_*
+
+# Restaurer les volumes
+for volume_file in volumes/*.tar.gz; do
+    volume_name=$(basename $volume_file .tar.gz)
+    docker volume create $volume_name
+    docker run --rm \
+        -v $volume_name:/data \
+        -v $(pwd)/volumes:/backup \
+        ubuntu tar xzf /backup/$(basename $volume_file) -C /data
+done
+
+# Restaurer les images
+for image_file in images/*.tar.gz; do
+    docker load < $image_file
+done
+
+# Restaurer la configuration
+cp configs/docker-compose.yml /opt/docker/
+
+# 4. REDÉMARRAGE
+cd /opt/docker
+docker-compose up -d
+
+# 5. VÉRIFICATION
+echo " Vérification..."
+sleep 10
+docker-compose ps
+curl -I http://localhost:8080
+
+echo " Restauration terminée !"</code></pre>
+                </div>
+            </section>
+
+            <!-- BONNES PRATIQUES -->
+            <section>
+                <h2> Bonnes Pratiques et Conseils</h2>
+
+                <h3> À FAIRE</h3>
+                <div class="tip-box">
+                    <ul>
+                        <li> <strong>Tester régulièrement</strong> vos procédures de restauration</li>
+                        <li> <strong>Automatiser</strong> les sauvegardes avec cron</li>
+                        <li> <strong>Chiffrer</strong> les backups contenant des données sensibles</li>
+                        <li> <strong>Documenter</strong> vos procédures de backup/restore</li>
+                        <li> <strong>Monitorer</strong> l'espace disque disponible</li>
+                        <li> <strong>Versionner</strong> vos docker-compose.yml avec Git</li>
+                        <li> <strong>Stocker hors site</strong> au moins une copie</li>
+                        <li> <strong>Nettoyer</strong> régulièrement les anciennes sauvegardes</li>
+                    </ul>
+                </div>
+
+                <h3> À ÉVITER</h3>
+                <div class="danger-box">
+                    <ul>
+                        <li> Ne jamais sauvegarder <strong>uniquement</strong> sur le même serveur</li>
+                        <li> Ne pas stocker de <strong>mots de passe en clair</strong> dans les scripts</li>
+                        <li> Ne pas faire de backup pendant que les <strong>bases de données écrivent</strong></li>
+                        <li> Ne jamais considérer qu'un backup <strong>non testé</strong> fonctionne</li>
+                        <li> Ne pas oublier de <strong>vérifier l'intégrité</strong> des archives</li>
+                        <li> Ne pas négliger la <strong>documentation</strong> de restauration</li>
+                    </ul>
+                </div>
+
+                <h3> Sécurité des Sauvegardes</h3>
+
+                <div class="example">
+                    <h4> Chiffrement avec GPG</h4>
+                    <pre><code># Générer une clé GPG (si nécessaire)
+gpg --gen-key
+
+# Sauvegarder et chiffrer
+docker run --rm \
+  -v mon_volume:/data \
+  -v $(pwd):/backup \
+  ubuntu tar czf - -C /data . | \
+  gpg --encrypt --recipient <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89ffe6fdfbecc9ece4e8e0e5a7eae6e4">[email&#160;protected]</a> > backup_encrypted.tar.gz.gpg
+
+# Déchiffrer et restaurer
+gpg --decrypt backup_encrypted.tar.gz.gpg | \
+docker run --rm -i \
+  -v mon_volume_restore:/data \
+  ubuntu tar xzf - -C /data</code></pre>
+                </div>
+
+                <h3> Monitoring des Sauvegardes</h3>
+
+                <pre><code>#!/bin/bash
+# healthcheck-backups.sh
+
+# Vérifier l'âge de la dernière sauvegarde
+LATEST=$(find /backups -name "*.tar.gz" -mtime -1 | wc -l)
+
+if [ $LATEST -eq 0 ]; then
+    echo " CRITIQUE: Pas de sauvegarde depuis 24h"
+    # Envoyer une alerte
+    curl -X POST "https://hooks.slack.com/services/YOUR/WEBHOOK/URL" \
+      -d '{"text":" Docker backup failed"}'
+    exit 1
+fi
+
+echo " Backups OK"</code></pre>
+            </section>
+
+            <!-- RESSOURCES -->
+            <section>
+                <h2> Ressources et Documentation</h2>
+
+                <h3> Liens Utiles</h3>
+                <ul>
+                    <li><a href="https://docs.docker.com/storage/volumes/" target="_blank">Documentation Docker - Volumes</a></li>
+                    <li><a href="https://docs.docker.com/engine/reference/commandline/save/" target="_blank">Docker Save Command</a></li>
+                    <li><a href="https://docs.docker.com/engine/reference/commandline/export/" target="_blank">Docker Export Command</a></li>
+                </ul>
+
+                <h3>🛠️ Outils Recommandés</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Outil</th>
+                            <th>Description</th>
+                            <th>Usage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Duplicati</strong></td>
+                            <td>Sauvegarde chiffrée vers cloud</td>
+                            <td>Automatisation backups</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Restic</strong></td>
+                            <td>Backup rapide et déduplication</td>
+                            <td>Volumes Docker</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Velero</strong></td>
+                            <td>Backup pour Kubernetes</td>
+                            <td>Environnements complexes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Docker Registry</strong></td>
+                            <td>Registre privé d'images</td>
+                            <td>Stockage images</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- RÉCAPITULATIF -->
+            <section>
+                <h2> Récapitulatif Final</h2>
+
+                <div class="info-box">
+                    <h3>Points Clés à Retenir</h3>
+                    <ol>
+                        <li><strong>Volumes = Priorité #1</strong> : C'est là que sont vos données critiques</li>
+                        <li><strong>Testez vos restaurations</strong> : Un backup non testé ne vaut rien</li>
+                        <li><strong>Automatisez</strong> : Les humains oublient, les machines non</li>
+                        <li><strong>Règle 3-2-1</strong> : 3 copies, 2 supports, 1 hors site</li>
+                        <li><strong>Documentez</strong> : Vos procédures doivent être claires pour tous</li>
+                        <li><strong>Surveillez</strong> : Mettez en place des alertes sur l'échec des backups</li>
+                    </ol>
+                </div>
+
+                <h3> Checklist de Compétences</h3>
+                <div class="example">
+                    <h4>Après ce cours, vous devez savoir :</h4>
+                    <ul>
+                        <li>Sauvegarder un volume Docker avec tar</li>
+                        <li>Restaurer un volume depuis une archive</li>
+                        <li>Exporter et importer une image Docker</li>
+                        <li>Sauvegarder une base de données MySQL/PostgreSQL</li>
+                        <li>Créer un script de sauvegarde automatisée</li>
+                        <li>Configurer des tâches cron pour backups réguliers</li>
+                        <li>Mettre en place une stratégie de rétention</li>
+                        <li>Vérifier l'intégrité des sauvegardes</li>
+                        <li>Effectuer une restauration d'urgence complète</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+          <p>2026 Formation DWWM développeur web web mobile Lille</p>
+        <p>&copy; Thomas cours Docker</p>
+        <img src="../JAVASCRIPT/Supports/IMG/Real.jpg" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/Region.jpg" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/U.E.jpg" width="70px" alt="">
+        </footer>
+    </div>
+
+    <script>
+        // Menu hamburger pour mobile
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        menuToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('show');
+            this.classList.toggle('active');
+            
+            // Changer l'icône
+            if (navMenu.classList.contains('show')) {
+                this.textContent = '✕ Fermer';
+            } else {
+                this.textContent = '☰ Menu';
+            }
+        });
+
+        // Fermer le menu quand on clique sur un lien
+        const navLinks = navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    navMenu.classList.remove('show');
+                    menuToggle.classList.remove('active');
+                    menuToggle.textContent = '☰ Menu';
+                }
+            });
+        });
+
+        // Smooth scroll pour les ancres
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80; // Hauteur du menu fixe
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
