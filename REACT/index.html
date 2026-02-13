@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="./favicon-32x32.png" type="image/png">
-    <title>Formation DWWM - Devlille</title>
+    <link rel="icon" href="../favicon-32x32.png" type="image/png">
+    <title> React - Formation DWWM</title>
     <style>
         * {
             margin: 0;
@@ -38,7 +38,6 @@
             animation: float 20s infinite ease-in-out;
         }
 
-        /* Différentes icônes avec positions variées */
         .tech-icon:nth-child(1) {
             top: 10%;
             left: 5%;
@@ -121,60 +120,12 @@
         .container {
             position: relative;
             z-index: 1;
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 50px 20px;
         }
 
-        /* Animation du titre h1 - Dégradé animé + effet 3D au hover */
-        h1 {
-            color: white;
-            text-align: center;
-            padding-bottom: 10px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-            
-            /* Dégradé animé */
-            background: linear-gradient(90deg, 
-                #ffffff 0%, 
-                #a8b5ff 25%, 
-                #2C3F77 50%, 
-                #ffd4ff 75%, 
-                #A0866B 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 10s ease infinite;
-            
-            /* Préparation pour l'effet 3D */
-            transition: all 0.3s ease;
-            cursor: default;
-        }
-
-        /* Animation du dégradé */
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% center;
-            }
-            50% {
-                background-position: 100% center;
-            }
-            100% {
-                background-position: 0% center;
-            }
-        }
-
-        /* Effet 3D au hover */
-        h1:hover {
-            transform: translateY(-5px);
-            text-shadow: 
-                0 10px 20px rgba(0,0,0,0.3),
-                0 15px 30px rgba(102, 126, 234, 0.4),
-                0 20px 40px rgba(118, 75, 162, 0.3);
-        }
-
+        /* Logo avec animation pulse */
         .logo-container {
             text-align: center;
             margin-bottom: 20px;
@@ -196,64 +147,99 @@
             50% {
                 box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6),
                             0 0 40px rgba(118, 75, 162, 0.4),
-                            0 0 50px rgba(240, 147, 251, 0.3);
+                            0 0 60px rgba(240, 147, 251, 0.3);
             }
         }
 
-        .subtitle {
-            text-align: center;
-            font-size: 18px;
+        /* Titre avec dégradé animé + effet 3D au hover */
+        h1 {
             color: white;
+            text-align: center;
+            padding-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             margin-bottom: 40px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            
+            /* Dégradé animé */
+            background: linear-gradient(90deg, 
+                #ffffff 0%, 
+                #a8b5ff 25%, 
+                #2C3F77 50%, 
+            #ffd4ff 75%, 
+            #A0866B 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 10s ease infinite;
+            
+            transition: all 0.3s ease;
+            cursor: default;
         }
 
-        /* Grille pour afficher les dossiers en 2 colonnes */
-        .dossiers-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% center;
+            }
+            50% {
+                background-position: 100% center;
+            }
+            100% {
+                background-position: 0% center;
+            }
         }
 
-        .dossier {
+        /* Effet 3D au hover sur le titre */
+        h1:hover {
+            transform: translateY(-5px);
+            text-shadow: 
+                0 10px 20px rgba(0,0,0,0.3),
+                0 15px 30px rgba(102, 126, 234, 0.4),
+                0 20px 40px rgba(118, 75, 162, 0.3);
+        }
+
+        h3 {
+            color: #A0866B;
+            margin-top: 0;
+            border-left: 4px solid #A0866B;
+            padding-left: 10px;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        /* Sections/Cartes avec effet glow */
+        .section {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 20px;
+            padding: 25px;
+            margin: 20px 0;
             border-radius: 15px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
             transition: all 0.4s ease;
             border: 2px solid transparent;
         }
 
-        .dossier:hover {
+        .section:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 30px rgba(0,0,0,0.3),
                         0 0 40px rgba(102, 126, 234, 0.5),
                         0 0 60px rgba(118, 75, 162, 0.3),
                         inset 0 0 20px rgba(102, 126, 234, 0.1);
-            border: 3px solid #A0866B;
+            border: 2px solid rgba(102, 126, 234, 0.3);
         }
 
-        .dossier h3 {
-            color: #A0866B;
-            margin-top: 0;
-            border-left: 4px solid #A0866B;
-            padding-left: 10px;
-            font-size: 1.3em;
-            margin-bottom: 10px;
-        }
-
+        /* Liens */
         a {
             color: #2C3F77;
             text-decoration: none;
             font-size: 16px;
             display: block;
-            padding: 10px;
-            margin: 5px 0;
+            padding: 12px;
+            margin: 8px 0;
             border-left: 3px solid #2C3F77;
             padding-left: 15px;
             transition: all 0.3s ease;
+            border-radius: 5px;
         }
 
         a:hover {
@@ -262,6 +248,30 @@
             padding-left: 20px;
         }
 
+        /* Bouton */
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white !important;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: inline-block;
+            text-align: center;
+            border-left: none !important;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            padding-left: 30px !important;
+        }
+
+        /* Footer */
         footer {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -297,10 +307,6 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .dossiers-grid {
-                grid-template-columns: 1fr;
-            }
-
             h1 {
                 font-size: 1.8em;
             }
@@ -317,7 +323,7 @@
     </style>
 </head>
 <body>
-    <!-- Icônes technologiques flottantes -->
+    <!-- Icônes flottantes -->
     <div class="floating-icons">
         <!-- HTML5 -->
         <div class="tech-icon">
@@ -393,95 +399,26 @@
 
     <!-- Contenu principal -->
     <div class="container">
-        <h1>Formation DWWM - Real Conseil</h1>
-        
+        <!-- Logo Real Conseil -->
         <div class="logo-container">
-            <img src="./JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
-        </div>
-        
-        <p class="subtitle">Supports de cours et exercices</p>
-
-        <!-- Grille des dossiers en 2 colonnes -->
-        <div class="dossiers-grid">
-            <!-- HTML -->
-            <div class="dossier">
-                <h3>HTML</h3>
-                <a href="./HTML/">Accéder au dossier HTML</a>
-            </div>
-
-            <!-- CSS -->
-            <div class="dossier">
-                <h3>CSS</h3>
-                <a href="./CSS/">Accéder au dossier CSS</a>
-            </div>
-
-            <!-- RESPONSIVE -->
-            <div class="dossier">
-                <h3>RESPONSIVE</h3>
-                <a href="./RESPONSIVE/">Accéder au dossier Responsive</a>
-            </div>
-            
-            <!-- JavaScript -->
-            <div class="dossier">
-                <h3>JAVASCRIPT</h3>
-                <a href="./JAVASCRIPT/">Accéder au dossier JavaScript</a>
-            </div>
-
-            <!-- Révision JavaScript -->
-            <div class="dossier">
-                <h3>RÉVISION JAVASCRIPT</h3>
-                <a href="./RÉVISION/">Accéder au dossier Révision</a>
-            </div>
-
-            <!-- Storage JavaScript -->
-            <div class="dossier">
-                <h3>STORAGE</h3>
-                <a href="./STORAGE/">Accéder au dossier Storage</a>
-            </div>
-
-            <!-- PHP -->
-            <div class="dossier">
-                <h3>PHP</h3>
-                <a href="./PHP/">Accéder au dossier PHP</a>
-            </div>
-
-             <!-- REACT -->
-            <div class="dossier">
-                <h3>REACT</h3>
-                <a href="./REACT/">Accéder au dossier React</a>
-            </div>
-
-            <!-- Code -->
-            <div class="dossier">
-                <h3>CODE</h3>
-                <a href="CODE/">Accéder aux exemples</a>
-            </div>
-
-            <!-- Docker -->
-            <div class="dossier">
-                <h3>DOCKER</h3>
-                <a href="DOCKER/">Accéder au dossier Docker</a>
-            </div>
-
-            <!-- Réseaux -->
-            <div class="dossier">
-                <h3>RÉSEAUX</h3>
-                <a href="RESEAUX/">Accéder au dossier Réseaux</a>
-            </div>
-
-            <!-- Sécurité -->
-            <div class="dossier">
-                <h3>SÉCURITÉ</h3>
-                <a href="SECURITE/">Accéder au dossier Sécurité</a>
-            </div>
-
-            <!-- UI/UX -->
-            <div class="dossier">
-                <h3>UI/UX</h3>
-                <a href="UI_UX/">Accéder au dossier UI/UX</a>
-            </div>
+            <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
         </div>
 
+        <h1>React - Supports de cours</h1>
+
+        <div class="section">
+            <h3>Supports</h3>
+            <a href="./cours_react_complet.html">Fonctionnement de React</a>
+        </div>
+
+       
+
+        <!-- Bouton retour -->
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="../index.html" class="btn">← Retour à l'accueil</a>
+        </div>
+
+        <!-- Footer -->
         <footer>
             <p><strong>Formation Real Conseil - DWWM 2025-2026</strong></p>
             <p>&copy; DARRAS Thomas</p>
@@ -490,7 +427,7 @@
                 Les supports sont mis à jour régulièrement via GitHub
             </p>
             <div style="text-align: center; margin-top: 20px;">
-                <img src="./JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
+                <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
                 <p style="font-size: 12px; color: #999;">
                     <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo GitHub</a>
                 </p>

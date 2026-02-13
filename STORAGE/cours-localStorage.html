@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>localStorage - Sauvegarder des données en JavaScript</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            
+        }
+
+        h1 {
+            color: var(--conseil);
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--real);
+            padding-bottom: 20px;
+        }
+
+        h2 {
+           color: var(--conseil);
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            border-left: 2px solid var(--real);
+            padding-left: 20px;
+        }
+
+        h3 {
+            color: var(--conseil);
+            font-size: 1.5em;
+            margin: 25px 0 15px 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.5em;
+            color: var(--conseil);
+            margin-bottom: 50px;
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px;
+            margin: 40px 0;
+            border: 5px solid var(--real);
+        }
+
+        .schema {
+            background: white;
+            border: 2px solid var(--real);
+            padding: 30px;
+            margin: 30px 0;
+            
+        }
+
+        .schema-titre {
+            font-size: 1.8em;
+            color: var(--conseil);
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .code-box {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            margin: 20px 0;
+            border: 2px solid var(--real);
+            overflow-x: auto;
+        }
+
+        .keyword {
+            color: var(--conseil);
+            font-weight: bold;
+        }
+
+        .function-name {
+            color: #61afef;
+            font-weight: bold;
+        }
+
+        .string {
+            color: #98c379;
+        }
+
+        .comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .number {
+            color: #d19a66;
+        }
+
+        .annotation {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .attention {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .astuce {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .etape {
+            background: #f8f9ff;
+            border-left: 5px solid var(--real);
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .etape-numero {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            font-size: 1.1em;
+        }
+
+        th, td {
+            border: 2px solid var(--real);
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9ff;
+        }
+
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .flow-box {
+            background: #667eea;
+            color: white;
+            padding: 25px 40px;
+            font-size: 1.4em;
+            font-weight: bold;
+            text-align: center;
+            min-width: 400px;
+        }
+
+        .flow-arrow {
+            font-size: 3em;
+            color: #667eea;
+        }
+
+        @media (max-width: 900px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .flow-box {
+                min-width: 100%;
+            }
+        }
+        img {
+            display: block;
+            margin: 0 auto 30px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <h1>localStorage en JavaScript</h1>
+        <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="">
+
+       
+
+        <div class="concept-box">
+            <h2 style="margin-top: 0; ">Qu'est-ce que le localStorage ?</h2>
+            
+            <div class="schema">
+                <p style="font-size: 1.3em; line-height: 1.8;">
+                    Le <strong style="color: #667eea;">localStorage</strong> est un espace de stockage dans le navigateur qui permet de <strong>sauvegarder des données de manière permanente</strong>.
+                </p>
+                <p style="font-size: 1.3em; line-height: 1.8; margin-top: 20px;">
+                    C'est comme une <strong style="color: #764ba2;">petite base de données locale</strong> dans le navigateur de l'utilisateur.
+                </p>
+            </div>
+
+            <div class="flowchart">
+                <div class="flow-box" style="background: #28a745;">
+                    L'utilisateur ajoute des données
+                </div>
+                
+                <div class="flow-arrow">↓</div>
+                
+                <div class="flow-box" style="background: #667eea;">
+                    localStorage les sauvegarde
+                </div>
+                
+                <div class="flow-arrow">↓</div>
+                
+                <div class="flow-box" style="background: #dc3545;">
+                     La page se recharge
+                </div>
+                
+                <div class="flow-arrow">↓</div>
+                
+                <div class="flow-box" style="background: #28a745;">
+                     Les données sont TOUJOURS LÀ !
+                </div>
+            </div>
+        </div>
+
+        
+
+        <h2>Comparaison : Avec et Sans localStorage</h2>
+
+        <div class="grid-2">
+            <div class="attention">
+                <h3 style="margin-top: 0; color: #721c24;">SANS localStorage</h3>
+                <ul style="margin-left: 30px; margin-top: 15px; line-height: 2;">
+                    <li>Les données sont dans des variables JavaScript</li>
+                    <li>Elles existent uniquement en mémoire</li>
+                    <li>Quand on recharge la page → TOUT DISPARAÎT</li>
+                    <li>Les données sont perdues à jamais</li>
+                </ul>
+            </div>
+
+            <div class="astuce">
+                <h3 style="margin-top: 0; color: #155724;">AVEC localStorage</h3>
+                <ul style="margin-left: 30px; margin-top: 15px; line-height: 2;">
+                    <li>Les données sont sauvegardées dans le navigateur</li>
+                    <li>Elles persistent même après fermeture</li>
+                    <li>Quand on recharge la page → TOUT RESTE</li>
+                    <li>Les données sont conservées indéfiniment</li>
+                </ul>
+            </div>
+        </div>
+
+      
+
+        <h2>Les 4 opérations du localStorage</h2>
+
+        <table>
+            <tr>
+                <th>Opération</th>
+                <th>Méthode</th>
+                <th>Rôle</th>
+            </tr>
+            <tr>
+                <td><strong>Sauvegarder</strong></td>
+                <td><code>localStorage.setItem(clé, valeur)</code></td>
+                <td>Enregistrer des données</td>
+            </tr>
+            <tr>
+                <td><strong>Récupérer</strong></td>
+                <td><code>localStorage.getItem(clé)</code></td>
+                <td>Lire des données sauvegardées</td>
+            </tr>
+            <tr>
+                <td><strong>Supprimer</strong></td>
+                <td><code>localStorage.removeItem(clé)</code></td>
+                <td>Effacer une donnée spécifique</td>
+            </tr>
+            <tr>
+                <td><strong>Tout effacer</strong></td>
+                <td><code>localStorage.clear()</code></td>
+                <td>Supprimer TOUTES les données</td>
+            </tr>
+        </table>
+
+     
+
+        <h2>Sauvegarder des données simples</h2>
+
+        <div class="etape">
+            <p><span class="etape-numero">1</span><strong style="font-size: 1.3em;">Sauvegarder une chaîne de caractères</strong></p>
+        </div>
+
+        <div class="code-box">
+<span class="comment">// Syntaxe : localStorage.setItem(clé, valeur)</span>
+
+localStorage.<span class="function-name">setItem</span>(<span class="string">"prenom"</span>, <span class="string">"Thomas"</span>);
+localStorage.<span class="function-name">setItem</span>(<span class="string">"age"</span>, <span class="string">"30"</span>);
+localStorage.<span class="function-name">setItem</span>(<span class="string">"ville"</span>, <span class="string">"Paris"</span>);
+
+console.log(<span class="string">"Données sauvegardées !"</span>);
+        </div>
+
+        <div class="annotation">
+            <strong>Explication :</strong><br>
+            • <code>setItem()</code> prend 2 paramètres : une <strong>clé</strong> et une <strong>valeur</strong><br>
+            • La clé = le nom de la donnée (comme le nom d'une variable)<br>
+            • La valeur = le contenu à sauvegarder<br>
+            • Les données restent même après fermeture du navigateur !
+        </div>
+
+   
+
+        <h2>Récupérer des données</h2>
+
+        <div class="etape">
+            <p><span class="etape-numero">2</span><strong style="font-size: 1.3em;">Lire les données sauvegardées</strong></p>
+        </div>
+
+        <div class="code-box">
+<span class="comment">// Syntaxe : localStorage.getItem(clé)</span>
+
+<span class="keyword">let</span> prenom = localStorage.<span class="function-name">getItem</span>(<span class="string">"prenom"</span>);
+<span class="keyword">let</span> age = localStorage.<span class="function-name">getItem</span>(<span class="string">"age"</span>);
+<span class="keyword">let</span> ville = localStorage.<span class="function-name">getItem</span>(<span class="string">"ville"</span>);
+
+console.log(prenom); <span class="comment">// Affiche : Thomas</span>
+console.log(age);    <span class="comment">// Affiche : 30</span>
+console.log(ville);  <span class="comment">// Affiche : Paris</span>
+        </div>
+
+        <div class="attention">
+            <strong>ATTENTION :</strong><br>
+            Si la clé n'existe pas, <code>getItem()</code> retourne <code>null</code>.<br>
+            Il faut toujours vérifier avant d'utiliser !
+        </div>
+
+        <div class="code-box">
+<span class="comment">// Vérifier si une donnée existe</span>
+
+<span class="keyword">let</span> prenom = localStorage.<span class="function-name">getItem</span>(<span class="string">"prenom"</span>);
+
+<span class="keyword">if</span> (prenom !== <span class="keyword">null</span>) {
+    console.log(<span class="string">"Bonjour "</span> + prenom);
+} <span class="keyword">else</span> {
+    console.log(<span class="string">"Aucun prénom sauvegardé"</span>);
+}
+        </div>
+
+      
+
+        <h2>Sauvegarder des tableaux et objets avec JSON</h2>
+
+        <div class="attention">
+            <strong>PROBLÈME :</strong><br>
+            localStorage ne peut sauvegarder QUE des chaînes de caractères !<br>
+            Pour les tableaux et objets, il faut les <strong>convertir en JSON</strong>.
+        </div>
+
+        <div class="schema">
+            <div class="schema-titre">Processus de conversion</div>
+            
+            <div class="flowchart">
+                <div class="flow-box" style="background: #28a745;">
+                    Objet JavaScript<br>
+                    { nom: "Alice", age: 25 }
+                </div>
+                
+                <div class="flow-arrow">↓ JSON.stringify()</div>
+                
+                <div class="flow-box" style="background: #667eea;">
+                    Chaîne JSON<br>
+                    '{"nom":"Alice","age":25}'
+                </div>
+                
+                <div class="flow-arrow">↓ localStorage.setItem()</div>
+                
+                <div class="flow-box" style="background: #dc3545;">
+                    Sauvegardé dans localStorage
+                </div>
+                
+                <div class="flow-arrow">↓ localStorage.getItem()</div>
+                
+                <div class="flow-box" style="background: #667eea;">
+                    Chaîne JSON récupérée<br>
+                    '{"nom":"Alice","age":25}'
+                </div>
+                
+                <div class="flow-arrow">↓ JSON.parse()</div>
+                
+                <div class="flow-box" style="background: #28a745;">
+                    Objet JavaScript reconstitué<br>
+                    { nom: "Alice", age: 25 }
+                </div>
+            </div>
+        </div>
+
+        <h3>Exemple complet : Sauvegarder un tableau</h3>
+
+        <div class="code-box">
+<span class="comment">// </span>
+<span class="comment">// SAUVEGARDER un tableau</span>
+<span class="comment">// </span>
+
+<span class="keyword">let</span> mesCours = [
+    { lecon: <span class="string">"JavaScript"</span>, heure: <span class="string">"09h00"</span> },
+    { lecon: <span class="string">"PHP"</span>, heure: <span class="string">"14h00"</span> },
+    { lecon: <span class="string">"HTML/CSS"</span>, heure: <span class="string">"16h30"</span> }
+];
+
+<span class="comment">// Convertir en JSON (chaîne de caractères)</span>
+<span class="keyword">let</span> coursJSON = JSON.<span class="function-name">stringify</span>(mesCours);
+
+<span class="comment">// Sauvegarder dans localStorage</span>
+localStorage.<span class="function-name">setItem</span>(<span class="string">"cours"</span>, coursJSON);
+
+console.log(<span class="string">" Cours sauvegardés !"</span>);
+        </div>
+
+        <div class="code-box">
+<span class="comment">// </span>
+<span class="comment">// RÉCUPÉRER le tableau</span>
+<span class="comment">// </span>
+
+<span class="comment">// Récupérer la chaîne JSON</span>
+<span class="keyword">let</span> coursJSON = localStorage.<span class="function-name">getItem</span>(<span class="string">"cours"</span>);
+
+<span class="comment">// Vérifier que des données existent</span>
+<span class="keyword">if</span> (coursJSON !== <span class="keyword">null</span>) {
+    <span class="comment">//Convertir le JSON en tableau JavaScript</span>
+    <span class="keyword">let</span> mesCours = JSON.<span class="function-name">parse</span>(coursJSON);
+    
+    <span class="comment">//Utiliser le tableau</span>
+    console.log(mesCours);
+    console.log(<span class="string">"Premier cours : "</span> + mesCours[<span class="number">0</span>].lecon);
+} <span class="keyword">else</span> {
+    console.log(<span class="string">"Aucun cours sauvegardé"</span>);
+}
+        </div>
+
+        <h2>Exemple complet : Application de gestion de cours</h2>
+
+        <div class="code-box">
+<span class="comment">//</span>
+<span class="comment">// CONSTRUCTEUR</span>
+<span class="comment">//</span>
+
+<span class="keyword">function</span> <span class="function-name">Cours</span>(lecon, heure, salle) {
+    <span class="keyword">this</span>.lecon = lecon;
+    <span class="keyword">this</span>.heure = heure;
+    <span class="keyword">this</span>.salle = salle;
+}
+
+<span class="comment">//</span>
+<span class="comment">// FONCTION : Sauvegarder tous les cours</span>
+<span class="comment">//</span>
+
+<span class="keyword">function</span> <span class="function-name">sauvegarderCours</span>(tableauCours) {
+    <span class="comment">// Convertir en JSON</span>
+    <span class="keyword">let</span> coursJSON = JSON.<span class="function-name">stringify</span>(tableauCours);
+    
+    <span class="comment">// Sauvegarder</span>
+    localStorage.<span class="function-name">setItem</span>(<span class="string">"mesCours"</span>, coursJSON);
+    
+    console.log(<span class="string">"Cours sauvegardés !"</span>);
+}
+
+<span class="comment">//</span>
+<span class="comment">// FONCTION : Charger les cours sauvegardés</span>
+<span class="comment">//</span>
+
+<span class="keyword">function</span> <span class="function-name">chargerCours</span>() {
+    <span class="comment">// Récupérer les données</span>
+    <span class="keyword">let</span> coursJSON = localStorage.<span class="function-name">getItem</span>(<span class="string">"mesCours"</span>);
+    
+    <span class="comment">// Si des cours existent</span>
+    <span class="keyword">if</span> (coursJSON !== <span class="keyword">null</span>) {
+        <span class="comment">// Convertir en tableau JavaScript</span>
+        <span class="keyword">let</span> coursData = JSON.<span class="function-name">parse</span>(coursJSON);
+        
+        <span class="comment">// Recréer les objets Cours</span>
+        <span class="keyword">let</span> coursReconstruits = coursData.<span class="function-name">map</span>(<span class="keyword">function</span>(data) {
+            <span class="keyword">return new</span> <span class="function-name">Cours</span>(data.lecon, data.heure, data.salle);
+        });
+        
+        <span class="keyword">return</span> coursReconstruits;
+    } <span class="keyword">else</span> {
+        <span class="comment">// Retourner un tableau vide</span>
+        <span class="keyword">return</span> [];
+    }
+}
+
+<span class="comment">//</span>
+<span class="comment">// UTILISATION</span>
+<span class="comment">//</span>
+
+<span class="comment">// Au chargement de la page : charger les cours</span>
+<span class="keyword">let</span> tousLesCours = <span class="function-name">chargerCours</span>();
+
+<span class="comment">// Ajouter un nouveau cours</span>
+<span class="keyword">let</span> nouveauCours = <span class="keyword">new</span> <span class="function-name">Cours</span>(<span class="string">"JavaScript"</span>, <span class="string">"09h00"</span>, <span class="string">"A101"</span>);
+tousLesCours.<span class="function-name">push</span>(nouveauCours);
+
+<span class="comment">// Sauvegarder après chaque modification</span>
+<span class="function-name">sauvegarderCours</span>(tousLesCours);
+        </div>
+
+        <h2>Supprimer des données</h2>
+
+        <h3>Supprimer une donnée spécifique</h3>
+
+        <div class="code-box">
+<span class="comment">// Supprimer la clé "prenom"</span>
+localStorage.<span class="function-name">removeItem</span>(<span class="string">"prenom"</span>);
+
+console.log(<span class="string">"Prénom supprimé"</span>);
+        </div>
+
+        <h3>Tout supprimer</h3>
+
+        <div class="code-box">
+<span class="comment">// Supprimer TOUTES les données du localStorage</span>
+localStorage.<span class="function-name">clear</span>();
+
+console.log(<span class="string">"Tout le localStorage est vide"</span>);
+        </div>
+
+
+        <h2>Récapitulatif des méthodes</h2>
+
+        <table>
+            <tr>
+                <th>Méthode</th>
+                <th>Syntaxe</th>
+                <th>Exemple</th>
+            </tr>
+            <tr>
+                <td><strong>Sauvegarder</strong></td>
+                <td><code>setItem(clé, valeur)</code></td>
+                <td><code>localStorage.setItem("nom", "Alice")</code></td>
+            </tr>
+            <tr>
+                <td><strong>Récupérer</strong></td>
+                <td><code>getItem(clé)</code></td>
+                <td><code>let nom = localStorage.getItem("nom")</code></td>
+            </tr>
+            <tr>
+                <td><strong>Supprimer</strong></td>
+                <td><code>removeItem(clé)</code></td>
+                <td><code>localStorage.removeItem("nom")</code></td>
+            </tr>
+            <tr>
+                <td><strong>Tout effacer</strong></td>
+                <td><code>clear()</code></td>
+                <td><code>localStorage.clear()</code></td>
+            </tr>
+            <tr>
+                <td><strong>Convertir en JSON</strong></td>
+                <td><code>JSON.stringify(objet)</code></td>
+                <td><code>JSON.stringify(mesCours)</code></td>
+            </tr>
+            <tr>
+                <td><strong>Reconvertir</strong></td>
+                <td><code>JSON.parse(chaîne)</code></td>
+                <td><code>JSON.parse(coursJSON)</code></td>
+            </tr>
+        </table>
+
+        
+
+        <h2>Points importants à retenir</h2>
+
+        <div class="etape">
+            <p><span class="etape-numero">1</span><strong>localStorage ne sauvegarde QUE des chaînes de caractères</strong></p>
+            <p style="margin-left: 65px; margin-top: 10px;">Pour les objets/tableaux, utilisez <code>JSON.stringify()</code> et <code>JSON.parse()</code></p>
+        </div>
+
+        <div class="etape">
+            <p><span class="etape-numero">2</span><strong>Toujours vérifier si une donnée existe avant de l'utiliser</strong></p>
+            <p style="margin-left: 65px; margin-top: 10px;">Utilisez <code>if (donnée !== null)</code></p>
+        </div>
+
+        <div class="etape">
+            <p><span class="etape-numero">3</span><strong>Les données persistent indéfiniment</strong></p>
+            <p style="margin-left: 65px; margin-top: 10px;">Même après fermeture du navigateur ou redémarrage de l'ordinateur</p>
+        </div>
+
+        <div class="etape">
+            <p><span class="etape-numero">4</span><strong>Limite de stockage : environ 5-10 MB</strong></p>
+            <p style="margin-left: 65px; margin-top: 10px;">Suffisant pour la plupart des applications web</p>
+        </div>
+
+        <div class="etape">
+            <p><span class="etape-numero">5</span><strong>Les données sont spécifiques à un domaine</strong></p>
+            <p style="margin-left: 65px; margin-top: 10px;">chaque site web a son propre localStorage</p>
+        </div>
+
+        
+
+        <h2> Exercice pratique</h2>
+
+        <div class="concept-box">
+            <h3 style="margin-top: 0; color: white;">Créer une liste de tâches persistante</h3>
+            
+            <div class="schema">
+                <p style="font-size: 1.2em;"><strong>Objectifs :</strong></p>
+                <ul style="margin-left: 30px; font-size: 1.2em; line-height: 2;">
+                    <li>Créer un constructeur <code>Tache(nom, fait)</code></li>
+                    <li>Permettre d'ajouter des tâches</li>
+                    <li>Sauvegarder dans localStorage après chaque ajout</li>
+                    <li>Charger les tâches au démarrage</li>
+                    <li>Permettre de marquer une tâche comme "terminée"</li>
+                    <li>Les tâches doivent persister après rechargement</li>
+                </ul>
+            </div>
+        </div>
+
+    
+
+    </div>
+</body>
+</html>

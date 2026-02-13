@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schémas - Comment créer une fonction JavaScript</title>
+    <style>
+
+  :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: var(--real);
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--real);
+            padding-bottom: 20px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1em;
+            color: var(--conseil);
+            margin-bottom: 50px;
+        }
+
+        /* ÉTAPES */
+        .etape-container {
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            padding: 40px;
+            margin: 40px 0;
+            border: 2px solid var(--real);
+        }
+
+        .etape-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .etape-numero {
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-right: 25px;
+        }
+
+        .etape-titre {
+            font-size: 2em;
+            color: #ecedef;
+            font-weight: bold;
+        }
+
+        /* SCHÉMAS */
+        .schema {
+            background: white;
+            border: 2px solid var(--real);
+            padding: 30px;
+            margin: 30px 0;
+            
+        }
+
+        .schema-titre {
+            font-size: 1.8em;
+            color: var(--conseil);
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* BOÎTES DE CODE */
+        .code-box {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            margin: 20px 0;
+            border: 2px solid var(--real);
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-box::before {
+            
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #eff0f5;
+            color: white;
+            padding: 5px 15px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        /* FLÈCHES */
+        .fleche-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .fleche {
+            font-size: 4em;
+            color: var(--conseil);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* BLOCS VISUELS */
+        .bloc-visuel {
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            font-size: 1em;
+            margin: 20px;
+            transition: transform 0.3s;
+        }
+
+        .bloc-visuel:hover {
+            transform: scale(1.05);
+        }
+
+        .bloc-visuel-titre {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* GRILLE 3 COLONNES */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        /* GRILLE 2 COLONNES */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        /* ANNOTATION */
+        .annotation {
+            background: #fff3cd;
+            border-left: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1em;
+        }
+
+        .annotation strong {
+            color: #856404;
+            font-size: 1em;
+        }
+
+        /* EXEMPLE BON/MAUVAIS */
+        .exemple-bon {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .exemple-mauvais {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .exemple-titre {
+            font-size: 1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .exemple-bon .exemple-titre {
+            color: #155724;
+        }
+
+        .exemple-mauvais .exemple-titre {
+            color: #721c24;
+        }
+
+        /* FLOW CHART */
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .flow-box {
+            background: var(--conseil);
+            color: white;
+            padding: 25px 40px;
+            font-size: 1em;
+            font-weight: bold;
+            text-align: center;
+            min-width: 300px;
+            
+        }
+
+        .flow-box.input {
+            background: #28a745;
+        }
+
+        .flow-box.process {
+            background: var(--conseil);
+        }
+
+        .flow-box.output {
+            background: #dc3545;
+        }
+
+        .flow-arrow {
+            font-size: 3em;
+            color: var(--conseil);
+        }
+
+        /* TABLEAU DE SYNTAXE */
+        .syntax-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            font-size: 1.2em;
+        }
+
+        .syntax-table th,
+        .syntax-table td {
+            border: 2px solid var(--real);
+            padding: 20px;
+            text-align: left;
+        }
+
+        .syntax-table th {
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            color: white;
+            font-size: 1.3em;
+        }
+
+        .syntax-table tr:nth-child(even) {
+            background: #f8f9ff;
+        }
+
+        /* CODE KEYWORD COLORS */
+        .keyword {
+            color: #c678dd;
+            font-weight: bold;
+        }
+
+        .function-name {
+            color: #61afef;
+            font-weight: bold;
+        }
+
+        .parameter {
+            color: #e06c75;
+        }
+
+        .string {
+            color: #98c379;
+        }
+
+        .number {
+            color: #d19a66;
+        }
+
+        .comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        /* HIGHLIGHT BOX */
+        .highlight {
+            background: #fff3cd;
+            padding: 30px;
+            margin: 30px 0;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .highlight-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .etape-numero {
+                width: 60px;
+                height: 60px;
+                font-size: 2em;
+            }
+
+            .etape-titre {
+                font-size: 1.5em;
+            }
+        }
+        img {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <h1>Révision : créer une FONCTION en JavaScript</h1>
+        <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100"   alt="">
+
+     
+        
+        <div class="etape-container">
+            <div class="etape-header">
+                <div class="etape-numero">0</div>
+                <div class="etape-titre">Comprendre le concept</div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Une fonction, c'est comme une MACHINE</div>
+                
+                <div class="flowchart">
+                    <div class="flow-box input">
+                        ENTRÉE<br>
+                        (Paramètres / Ingrédients)
+                    </div>
+                    
+                    <div class="flow-arrow">↓</div>
+                    
+                    <div class="flow-box process">
+                        TRAITEMENT<br>
+                        (Instructions / Recette)
+                    </div>
+                    
+                    <div class="flow-arrow">↓</div>
+                    
+                    <div class="flow-box output">
+                        SORTIE<br>
+                        (Return / Résultat)
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <div class="highlight-icon"></div>
+                <strong>ANALOGIE :</strong> Une fonction, c'est comme une recette de cuisine !<br>
+                On donne des ingrédients (paramètres) → On suit la recette (code) → On obtient un plat (résultat)
+            </div>
+
+            <div class="annotation">
+                <strong>Pourquoi utiliser des fonctions ?</strong><br>
+                Pour ne pas répéter le même code plusieurs fois<br>
+                Pour organiser et structurer son code<br>
+                Pour pouvoir réutiliser facilement du code<br>
+                Pour rendre le code plus lisible
+            </div>
+        </div>
+
+      
+        
+        <div class="etape-container">
+            <div class="etape-header">
+                <div class="etape-numero">1</div>
+                <div class="etape-titre">L'anatomie d'une fonction</div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Décomposition visuelle</div>
+                
+                <div class="code-box">
+<span class="keyword">function</span> <span class="function-name">nomDeLaFonction</span>(<span class="parameter">parametre1</span>, <span class="parameter">parametre2</span>) {
+    <span class="comment">// Instructions à exécuter</span>
+    <span class="keyword">return</span> resultat;
+}
+                </div>
+
+                <table class="syntax-table">
+                    <tr>
+                        <th>Élément</th>
+                        <th>Rôle</th>
+                        <th>Obligatoire ?</th>
+                    </tr>
+                    <tr>
+                        <td><code class="keyword">function</code></td>
+                        <td>Mot-clé pour déclarer une fonction</td>
+                        <td>OUI</td>
+                    </tr>
+                    <tr>
+                        <td><code class="function-name">nomDeLaFonction</code></td>
+                        <td>Le nom que vous donnez à votre fonction</td>
+                        <td>OUI</td>
+                    </tr>
+                    <tr>
+                        <td><code>()</code></td>
+                        <td>Parenthèses pour les paramètres</td>
+                        <td>OUI (même vides)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="parameter">parametre1, parametre2</code></td>
+                        <td>Données que la fonction peut recevoir</td>
+                        <td>NON (optionnel)</td>
+                    </tr>
+                    <tr>
+                        <td><code>{}</code></td>
+                        <td>Accolades contenant le code</td>
+                        <td>OUI</td>
+                    </tr>
+                    <tr>
+                        <td><code class="keyword">return</code></td>
+                        <td>Renvoyer un résultat</td>
+                        <td>NON (optionnel)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+     
+        
+        <div class="etape-container">
+            <div class="etape-header">
+                <div class="etape-numero">2</div>
+                <div class="etape-titre">Créer une fonction SIMPLE (sans paramètre)</div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Objectif : Afficher "Bonjour !"</div>
+                
+                <div class="grid-2">
+                    <div>
+                        <h3 style="color: #667eea; margin-bottom: 20px; font-size: 1.5em;">ÉTAPE A : Déclarer la fonction</h3>
+                        <div class="code-box">
+<span class="keyword">function</span> <span class="function-name">direBonjour</span>() {
+    console.log(<span class="string">"Bonjour !"</span>);
+}
+                        </div>
+                        <div class="annotation">
+                            <strong>Explication :</strong><br>
+                            • <code>function</code> = je crée une fonction<br>
+                            • <code>direBonjour</code> = son nom<br>
+                            • <code>()</code> = pas de paramètre<br>
+                            • <code>{...}</code> = le code à exécuter
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="color: #667eea; margin-bottom: 20px; font-size: 1.5em;">ÉTAPE B : Appeler la fonction</h3>
+                        <div class="code-box">
+<span class="function-name">direBonjour</span>();
+
+<span class="comment">// Résultat dans la console :</span>
+<span class="comment">// Bonjour !</span>
+                        </div>
+                        <div class="annotation">
+                            <strong>Explication :</strong><br>
+                            • Pour utiliser la fonction, on écrit son nom<br>
+                            • Suivi de <code>()</code><br>
+                            • C'est ce qu'on appelle "appeler" une fonction
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <div class="highlight-icon"></div>
+                <strong>ATTENTION :</strong> Déclarer une fonction NE l'exécute PAS !<br>
+                Il faut l'appeler avec <code>nomDeLaFonction()</code> pour qu'elle s'exécute.
+            </div>
+
+            <div class="grid-2">
+                <div class="exemple-mauvais">
+                    <div class="exemple-titre">MAUVAIS</div>
+                    <div class="code-box">
+<span class="comment">// La fonction est déclarée mais jamais appelée</span>
+<span class="keyword">function</span> <span class="function-name">direBonjour</span>() {
+    console.log(<span class="string">"Bonjour !"</span>);
+}
+
+<span class="comment">// Rien ne s'affiche !</span>
+                    </div>
+                </div>
+
+                <div class="exemple-bon">
+                    <div class="exemple-titre">BON</div>
+                    <div class="code-box">
+<span class="comment">// 1. On déclare la fonction</span>
+<span class="keyword">function</span> <span class="function-name">direBonjour</span>() {
+    console.log(<span class="string">"Bonjour !"</span>);
+}
+
+<span class="comment">// 2. On l'appelle !</span>
+<span class="function-name">direBonjour</span>();
+                    </div>
+                </div>
+            </div>
+        </div>
+
+     
+        
+        <div class="etape-container">
+            <div class="etape-header">
+                <div class="etape-numero">3</div>
+                <div class="etape-titre">Ajouter des PARAMÈTRES</div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Objectif : Dire bonjour à une personne spécifique</div>
+                
+                <div class="flowchart">
+                    <div class="flow-box input">
+                        PARAMÈTRE : "Alice"<br>
+                        (Donnée entrante)
+                    </div>
+                    
+                    <div class="flow-arrow">↓</div>
+                    
+                    <div class="flow-box process">
+                        FONCTION : direBonjour(prenom)<br>
+                        Créer le message "Bonjour Alice !"
+                    </div>
+                    
+                    <div class="flow-arrow">↓</div>
+                    
+                    <div class="flow-box output">
+                        RÉSULTAT : Affiche "Bonjour Alice !"
+                    </div>
+                </div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Le code</div>
+                
+                <div class="code-box">
+<span class="comment">// DÉCLARATION avec un paramètre</span>
+<span class="keyword">function</span> <span class="function-name">direBonjour</span>(<span class="parameter">prenom</span>) {
+    console.log(<span class="string">"Bonjour "</span> + <span class="parameter">prenom</span> + <span class="string">" !"</span>);
+}
+
+<span class="comment">// APPELS avec différents arguments</span>
+<span class="function-name">direBonjour</span>(<span class="string">"Alice"</span>);   <span class="comment">// Affiche : Bonjour Alice !</span>
+<span class="function-name">direBonjour</span>(<span class="string">"Bob"</span>);     <span class="comment">// Affiche : Bonjour Bob !</span>
+<span class="function-name">direBonjour</span>(<span class="string">"Charlie"</span>); <span class="comment">// Affiche : Bonjour Charlie !</span>
+                </div>
+            </div>
+
+            <div class="annotation">
+                <strong>Vocabulaire important :</strong><br>
+                • <strong>PARAMÈTRE</strong> = Variable dans la déclaration (<code>prenom</code> dans l'exemple)<br>
+                • <strong>ARGUMENT</strong> = Valeur passée lors de l'appel (<code>"Alice"</code>, <code>"Bob"</code>...)
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Plusieurs paramètres</div>
+                
+                <div class="code-box">
+<span class="comment">// Fonction avec 2 paramètres</span>
+<span class="keyword">function</span> <span class="function-name">saluer</span>(<span class="parameter">prenom</span>, <span class="parameter">age</span>) {
+    console.log(<span class="string">"Bonjour "</span> + <span class="parameter">prenom</span> + <span class="string">", tu as "</span> + <span class="parameter">age</span> + <span class="string">" ans."</span>);
+}
+
+<span class="comment">// Appel avec 2 arguments</span>
+<span class="function-name">saluer</span>(<span class="string">"Marie"</span>, <span class="number">25</span>);
+<span class="comment">// Affiche : Bonjour Marie, tu as 25 ans.</span>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <div class="highlight-icon"></div>
+                <strong>ASTUCE :</strong> Les paramètres sont séparés par des virgules<br>
+                L'ordre est important : 1er argument → 1er paramètre, 2ème argument → 2ème paramètre
+            </div>
+        </div>
+
+    
+        
+        <div class="etape-container">
+            <div class="etape-header">
+                <div class="etape-numero">4</div>
+                <div class="etape-titre">Utiliser RETURN pour renvoyer un résultat</div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Objectif : Calculer et réutiliser le résultat</div>
+                
+                <div class="grid-2">
+                    <div>
+                        <h3 style="color: #dc3545; margin-bottom: 20px; font-size: 1.5em;">SANS return</h3>
+                        <div class="code-box">
+<span class="keyword">function</span> <span class="function-name">additionner</span>(<span class="parameter">a</span>, <span class="parameter">b</span>) {
+    <span class="keyword">let</span> resultat = <span class="parameter">a</span> + <span class="parameter">b</span>;
+    console.log(resultat);
+}
+
+<span class="keyword">let</span> total = <span class="function-name">additionner</span>(<span class="number">5</span>, <span class="number">3</span>);
+<span class="comment">// Affiche : 8</span>
+
+console.log(total);
+<span class="comment">// Affiche : undefined </span>
+
+console.log(total + <span class="number">10</span>);
+<span class="comment">// Affiche : NaN (impossible !)</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="color: #28a745; margin-bottom: 20px; font-size: 1.5em;">AVEC return</h3>
+                        <div class="code-box">
+<span class="keyword">function</span> <span class="function-name">additionner</span>(<span class="parameter">a</span>, <span class="parameter">b</span>) {
+    <span class="keyword">let</span> resultat = <span class="parameter">a</span> + <span class="parameter">b</span>;
+    <span class="keyword">return</span> resultat;
+}
+
+<span class="keyword">let</span> total = <span class="function-name">additionner</span>(<span class="number">5</span>, <span class="number">3</span>);
+<span class="comment">// total vaut 8 </span>
+
+console.log(total);
+<span class="comment">// Affiche : 8 </span>
+
+console.log(total + <span class="number">10</span>);
+<span class="comment">// Affiche : 18 </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <div class="highlight-icon"></div>
+                <strong>RETURN = DONNER UN CADEAU</strong><br>
+                Sans <code>return</code>, la fonction fait son travail mais ne vous donne rien !<br>
+                Avec <code>return</code>, elle vous rend un résultat que vous pouvez réutiliser.
+            </div>
+
+            <div class="annotation">
+                <strong>RÈGLE IMPORTANTE :</strong><br>
+                Une fois que <code>return</code> est exécuté, <strong>la fonction s'arrête immédiatement</strong>.<br>
+                Tout le code après <code>return</code> ne sera JAMAIS exécuté !
+            </div>
+
+            <div class="code-box">
+<span class="keyword">function</span> <span class="function-name">exemple</span>() {
+    console.log(<span class="string">"Ligne 1"</span>); <span class="comment">// S'exécute </span>
+    console.log(<span class="string">"Ligne 2"</span>); <span class="comment">// S'exécute </span>
+    <span class="keyword">return</span> <span class="string">"Résultat"</span>;    <span class="comment">// S'exécute et STOP </span>
+    console.log(<span class="string">"Ligne 3"</span>); <span class="comment">// NE S'EXÉCUTE JAMAIS </span>
+    console.log(<span class="string">"Ligne 4"</span>); <span class="comment">// NE S'EXÉCUTE JAMAIS </span>
+}
+            </div>
+        </div>
+
+     
+        
+        <div class="etape-container">
+            <div class="etape-header">
+                <div class="etape-numero">5</div>
+                <div class="etape-titre">Exemple COMPLET pas à pas</div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Créer une calculatrice simple</div>
+                
+                <div class="code-box">
+<span class="comment">// </span>
+<span class="comment">// ÉTAPE 1 : Déclarer les fonctions</span>
+<span class="comment">// </span>
+
+<span class="keyword">function</span> <span class="function-name">additionner</span>(<span class="parameter">a</span>, <span class="parameter">b</span>) {
+    <span class="keyword">return</span> <span class="parameter">a</span> + <span class="parameter">b</span>;
+}
+
+<span class="keyword">function</span> <span class="function-name">soustraire</span>(<span class="parameter">a</span>, <span class="parameter">b</span>) {
+    <span class="keyword">return</span> <span class="parameter">a</span> - <span class="parameter">b</span>;
+}
+
+<span class="keyword">function</span> <span class="function-name">multiplier</span>(<span class="parameter">a</span>, <span class="parameter">b</span>) {
+    <span class="keyword">return</span> <span class="parameter">a</span> * <span class="parameter">b</span>;
+}
+
+<span class="keyword">function</span> <span class="function-name">diviser</span>(<span class="parameter">a</span>, <span class="parameter">b</span>) {
+    <span class="keyword">return</span> <span class="parameter">a</span> / <span class="parameter">b</span>;
+}
+
+<span class="comment">// </span>
+<span class="comment">// ÉTAPE 2 : Utiliser les fonctions</span>
+<span class="comment">// </span>
+
+<span class="keyword">let</span> resultat1 = <span class="function-name">additionner</span>(<span class="number">10</span>, <span class="number">5</span>);
+console.log(<span class="string">"10 + 5 = "</span> + resultat1);  <span class="comment">// Affiche : 10 + 5 = 15</span>
+
+<span class="keyword">let</span> resultat2 = <span class="function-name">soustraire</span>(<span class="number">10</span>, <span class="number">5</span>);
+console.log(<span class="string">"10 - 5 = "</span> + resultat2);  <span class="comment">// Affiche : 10 - 5 = 5</span>
+
+<span class="keyword">let</span> resultat3 = <span class="function-name">multiplier</span>(<span class="number">10</span>, <span class="number">5</span>);
+console.log(<span class="string">"10 × 5 = "</span> + resultat3);  <span class="comment">// Affiche : 10 × 5 = 50</span>
+
+<span class="keyword">let</span> resultat4 = <span class="function-name">diviser</span>(<span class="number">10</span>, <span class="number">5</span>);
+console.log(<span class="string">"10 ÷ 5 = "</span> + resultat4);  <span class="comment">// Affiche : 10 ÷ 5 = 2</span>
+
+<span class="comment">// </span>
+<span class="comment">// ÉTAPE 3 : Réutiliser les résultats</span>
+<span class="comment">// </span>
+
+<span class="keyword">let</span> calcul = <span class="function-name">additionner</span>(resultat1, resultat2);
+console.log(<span class="string">"Calcul final : "</span> + calcul); <span class="comment">// Affiche : Calcul final : 20</span>
+                </div>
+            </div>
+        </div>
+
+   
+        
+        <div class="etape-container">
+            <div class="etape-header">
+                <div class="etape-numero">6</div>
+                <div class="etape-titre">Connecter la fonction au HTML</div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Créer un bouton qui utilise une fonction</div>
+                
+                <div class="grid-2">
+                    <div>
+                        <h3 style="color: #667eea; margin-bottom: 20px; font-size: 1.5em;">HTML</h3>
+                        <div class="code-box">
+&lt;button id="<span class="parameter">monBouton</span>"&gt;
+    Cliquez-moi !
+&lt;/button&gt;
+
+&lt;p id="<span class="parameter">resultat</span>"&gt;&lt;/p&gt;
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="color: #667eea; margin-bottom: 20px; font-size: 1.5em;"> JavaScript</h3>
+                        <div class="code-box">
+<span class="comment">// 1. Créer la fonction</span>
+<span class="keyword">function</span> <span class="function-name">afficherMessage</span>() {
+    <span class="keyword">let</span> element = document.querySelector(<span class="string">"#resultat"</span>);
+    element.textContent = <span class="string">"Bouton cliqué !"</span>;
+}
+
+<span class="comment">// 2. Connecter au bouton</span>
+<span class="keyword">let</span> bouton = document.querySelector(<span class="string">"#monBouton"</span>);
+bouton.addEventListener(<span class="string">"click"</span>, <span class="function-name">afficherMessage</span>);
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flowchart">
+                <div class="flow-box">
+                    L'utilisateur clique sur le bouton
+                </div>
+                
+                <div class="flow-arrow">↓</div>
+                
+                <div class="flow-box">
+                    L'événement "click" est détecté
+                </div>
+                
+                <div class="flow-arrow">↓</div>
+                
+                <div class="flow-box">
+                    La fonction afficherMessage() s'exécute
+                </div>
+                
+                <div class="flow-arrow">↓</div>
+                
+                <div class="flow-box">
+                    Le texte "Bouton cliqué !" s'affiche
+                </div>
+            </div>
+        </div>
+
+      
+        
+        <div class="etape-container" style="color: white;">
+            <h2 style="text-align: center; font-size: 2.5em; margin-bottom: 40px; color: white;"> RÉCAPITULATIF COMPLET</h2>
+
+            <div class="grid-3">
+                <div class="bloc-visuel" style="background: white; color: #2d3748;">
+                    <div class="bloc-visuel-titre" style="color: #667eea;">DÉCLARER</div>
+                    <div class="code-box">
+<span class="keyword">function</span> <span class="function-name">nom</span>() {
+    <span class="comment">// code</span>
+}
+                    </div>
+                </div>
+
+                <div class="bloc-visuel" style="background: white; color: #2d3748;">
+                    <div class="bloc-visuel-titre" style="color: #667eea;">PARAMÈTRES</div>
+                    <div class="code-box">
+<span class="keyword">function</span> <span class="function-name">nom</span>(<span class="parameter">a</span>, <span class="parameter">b</span>) {
+    <span class="comment">// code</span>
+}
+                    </div>
+                </div>
+
+                <div class="bloc-visuel" style="background: white; color: #2d3748;">
+                    <div class="bloc-visuel-titre" style="color: #667eea;">RETURN</div>
+                    <div class="code-box">
+<span class="keyword">function</span> <span class="function-name">nom</span>(<span class="parameter">a</span>, <span class="parameter">b</span>) {
+    <span class="keyword">return</span> <span class="parameter">a</span> + <span class="parameter">b</span>;
+}
+                    </div>
+                </div>
+
+                <div class="bloc-visuel" style="background: white; color: #2d3748;">
+                    <div class="bloc-visuel-titre" style="color: #667eea;">APPELER</div>
+                    <div class="code-box">
+<span class="function-name">nom</span>();
+                    </div>
+                </div>
+
+                <div class="bloc-visuel" style="background: white; color: #2d3748;">
+                    <div class="bloc-visuel-titre" style="color: #667eea;">AVEC ARGUMENTS</div>
+                    <div class="code-box">
+<span class="function-name">nom</span>(<span class="number">5</span>, <span class="number">10</span>);
+                    </div>
+                </div>
+
+                <div class="bloc-visuel" style="background: white; color: #2d3748;">
+                    <div class="bloc-visuel-titre" style="color: #667eea;">RÉCUPÉRER</div>
+                    <div class="code-box">
+<span class="keyword">let</span> r = <span class="function-name">nom</span>(<span class="number">5</span>, <span class="number">10</span>);
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+        
+        <div class="etape-container">
+            <h2 style="text-align: center; font-size: 2.5em; margin-bottom: 40px; color: #667eea;"> CHECKLIST pour créer une fonction</h2>
+
+            <table class="syntax-table">
+                <tr>
+                    <th style="width: 60px;">✓</th>
+                    <th>Question à se poser</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td style="text-align: center; font-size: 2em;">1</td>
+                    <td><strong>Quel est le rôle de ma fonction ?</strong></td>
+                    <td>Donner un nom clair et descriptif (verbe d'action)</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; font-size: 2em;">2</td>
+                    <td><strong>Ai-je besoin de données en entrée ?</strong></td>
+                    <td>Ajouter des paramètres entre <code>()</code></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; font-size: 2em;">3</td>
+                    <td><strong>Que doit faire la fonction ?</strong></td>
+                    <td>Écrire le code entre <code>{}</code></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; font-size: 2em;">4</td>
+                    <td><strong>Ai-je besoin de renvoyer un résultat ?</strong></td>
+                    <td>Utiliser <code>return</code> si oui</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; font-size: 2em;">5</td>
+                    <td><strong>Comment l'utiliser ?</strong></td>
+                    <td>Appeler avec <code>nomFonction()</code></td>
+                </tr>
+            </table>
+        </div>
+
+    
+        
+        <div class="etape-container">
+            <h2 style="text-align: center; font-size: 2.5em; margin-bottom: 40px; color: #667eea;"> EXERCICES PRATIQUES</h2>
+
+            <div class="schema">
+                <div class="schema-titre">Exercice 1 : Fonction simple</div>
+                <div class="annotation">
+                    <strong>Objectif :</strong> Créer une fonction <code>direAuRevoir()</code> qui affiche "Au revoir !" dans la console.
+                </div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Exercice 2 : Fonction avec paramètre</div>
+                <div class="annotation">
+                    <strong>Objectif :</strong> Créer une fonction <code>presenterPersonne(nom, age)</code> qui affiche "Je m'appelle [nom] et j'ai [age] ans."
+                </div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Exercice 3 : Fonction avec return</div>
+                <div class="annotation">
+                    <strong>Objectif :</strong> Créer une fonction <code>calculerCarre(nombre)</code> qui retourne le carré d'un nombre.<br>
+                    Exemple : <code>calculerCarre(5)</code> doit retourner <code>25</code>
+                </div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Exercice 4 : Convertisseur de température</div>
+                <div class="annotation">
+                    <strong>Objectif :</strong> Créer une fonction <code>celsiusVersFahrenheit(celsius)</code> qui convertit des degrés Celsius en Fahrenheit.<br>
+                    Formule : <code>F = C × 9/5 + 32</code>
+                </div>
+            </div>
+        </div>
+
+        
+   
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍽️ Le Gourmet Lillois - Gestion Restaurant</title>
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+       
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+       
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            color: #667eea;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+    
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+       
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+       
+        .menu-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s;
+        }
+
+        .menu-item:hover {
+            transform: scale(1.05);
+        }
+
+        .menu-item h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            color: #667eea;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .description {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+       
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .table-card {
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .table-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .table-card.libre {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+        }
+
+        .table-card.occupee {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+
+        .table-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+       
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+       
+        .commande-card {
+            background: #f5f5f5;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
+
+        .commande-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .article-list {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .article {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .total-box {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .total-final {
+            font-size: 1.5em;
+            font-weight: bold;
+            border-top: 2px solid white;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+       
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+      
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>Le Gourmet Lillois</h1>
+            <p>Système de Gestion Simplifié</p>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="afficherSection('menu')">Menu</button>
+            <button class="tab-btn" onclick="afficherSection('tables')">Tables</button>
+            <button class="tab-btn" onclick="afficherSection('commander')">Commander</button>
+            <button class="tab-btn" onclick="afficherSection('commandes')">Commandes</button>
+            <button class="tab-btn" onclick="afficherSection('stats')">Stats</button>
+        </div>
+
+        <!-- SECTION MENU -->
+        <div id="menu" class="section active">
+            <div class="card">
+                <h2>Entrées</h2>
+                <div class="grid" id="entrees-list"></div>
+            </div>
+            <div class="card">
+                <h2>Plats</h2>
+                <div class="grid" id="plats-list"></div>
+            </div>
+            <div class="card">
+                <h2>Desserts</h2>
+                <div class="grid" id="desserts-list"></div>
+            </div>
+            <div class="card">
+                <h2>Boissons</h2>
+                <div class="grid" id="boissons-list"></div>
+            </div>
+        </div>
+
+        <!-- SECTION TABLES -->
+        <div id="tables" class="section">
+            <div class="card">
+                <h2>État des Tables</h2>
+                <div class="grid" id="tables-list"></div>
+            </div>
+        </div>
+
+        <!-- SECTION COMMANDER -->
+        <div id="commander" class="section">
+            <div class="card">
+                <h2>Nouvelle Commande</h2>
+                
+                <div class="form-group">
+                    <label>Sélectionner une table</label>
+                    <select id="select-table">
+                        <option value="">-- Choisir une table --</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="reserverEtCommencer()">Réserver et Commencer</button>
+
+                <div id="zone-commande" style="display: none; margin-top: 30px;">
+                    <h3>Ajouter des articles</h3>
+                    
+                    <div class="form-group">
+                        <label>Plat</label>
+                        <select id="select-plat"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quantité</label>
+                        <input type="number" id="quantite" value="1" min="1">
+                    </div>
+
+                    <button class="btn btn-success" onclick="ajouterArticle()">➕ Ajouter</button>
+
+                    <div id="commande-actuelle"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION COMMANDES -->
+        <div id="commandes" class="section">
+            <div class="card">
+                <h2>Commandes en Cours</h2>
+                <div id="commandes-list"></div>
+            </div>
+        </div>
+
+        <!-- SECTION STATS -->
+        <div id="stats" class="section">
+            <div class="stats-grid" id="stats-cards"></div>
+            <div class="card">
+                <h2>Top 5 des Plats</h2>
+                <div id="top-plats"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        // DONNÉES DU RESTAURANT 
+        
+
+        const restaurant = {
+            nom: "Le Gourmet Lillois",
+            
+            // Menu avec tous les plats
+            menu: {
+                entrees: [
+                    { id: 1, nom: "Salade César", prix: 8.50, disponible: true, description: "Laitue, poulet, parmesan, croûtons" },
+                    { id: 2, nom: "Soupe à l'oignon", prix: 7.00, disponible: true, description: "Gratinée au fromage" }
+                ],
+                plats: [
+                    { id: 3, nom: "Steak frites", prix: 18.00, disponible: true, description: "Pièce de bœuf 250g, frites maison" },
+                    { id: 4, nom: "Saumon grillé", prix: 22.00, disponible: true, description: "Avec légumes de saison" },
+                    { id: 5, nom: "Risotto champignons", prix: 16.50, disponible: false, description: "Riz arborio, cèpes" }
+                ],
+                desserts: [
+                    { id: 6, nom: "Tarte au citron", prix: 6.50, disponible: true, description: "Meringuée maison" },
+                    { id: 7, nom: "Fondant chocolat", prix: 7.00, disponible: true, description: "Cœur coulant" }
+                ],
+                boissons: [
+                    { id: 8, nom: "Eau minérale", prix: 3.00, disponible: true, description: "50cl" },
+                    { id: 9, nom: "Vin rouge", prix: 5.50, disponible: true, description: "Verre 15cl" },
+                    { id: 10, nom: "Café", prix: 2.50, disponible: true, description: "Expresso" }
+                ]
+            },
+            
+            // Liste des tables
+            tables: [
+                { numero: 1, capacite: 2, statut: "libre" },
+                { numero: 2, capacite: 4, statut: "libre" },
+                { numero: 3, capacite: 4, statut: "libre" },
+                { numero: 4, capacite: 6, statut: "libre" },
+                { numero: 5, capacite: 2, statut: "libre" }
+            ],
+            
+            // Liste des commandes
+            commandes: [],
+            prochainNumero: 1,
+            commandeEnCours: null
+        };
+
+       
+        // FONCTIONS D'AFFICHAGE
+       
+
+        // Changer de section (onglets)
+        function afficherSection(sectionId) {
+            // Masquer toutes les sections
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            // Afficher la section demandée
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Charger les données de la section
+            if (sectionId === 'menu') afficherMenu();
+            if (sectionId === 'tables') afficherTables();
+            if (sectionId === 'commander') preparerCommande();
+            if (sectionId === 'commandes') afficherCommandes();
+            if (sectionId === 'stats') afficherStats();
+        }
+
+        // Afficher le menu complet
+        function afficherMenu() {
+            afficherCategorie('entrees', 'entrees-list');
+            afficherCategorie('plats', 'plats-list');
+            afficherCategorie('desserts', 'desserts-list');
+            afficherCategorie('boissons', 'boissons-list');
+        }
+
+        // Afficher une catégorie du menu
+        function afficherCategorie(categorie, elementId) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '';
+            
+            restaurant.menu[categorie].forEach(item => {
+                const badge = item.disponible 
+                    ? '<span class="badge badge-success">✓ Disponible</span>'
+                    : '<span class="badge badge-danger">✗ Indisponible</span>';
+                
+                element.innerHTML += `
+                    <div class="menu-item">
+                        <h3>${item.nom}</h3>
+                        <div class="description">${item.description}</div>
+                        <div class="price">${item.prix.toFixed(2)}€</div>
+                        ${badge}
+                    </div>
+                `;
+            });
+        }
+
+        // Afficher les tables
+        function afficherTables() {
+            const element = document.getElementById('tables-list');
+            element.innerHTML = '';
+            
+            restaurant.tables.forEach(table => {
+                const icon = table.statut === 'libre' ? '✓' : '✗';
+                const color = table.statut === 'libre' ? '#4CAF50' : '#f44336';
+                
+                element.innerHTML += `
+                    <div class="table-card ${table.statut}">
+                        <div class="table-icon" style="color: ${color}">${icon}</div>
+                        <h3>Table ${table.numero}</h3>
+                        <p>${table.capacite} places</p>
+                        <span class="badge ${table.statut === 'libre' ? 'badge-success' : 'badge-danger'}">
+                            ${table.statut.toUpperCase()}
+                        </span>
+                    </div>
+                `;
+            });
+        }
+
+        
+        // GESTION DES COMMANDES
+       
+
+        // Préparer le formulaire de commande
+        function preparerCommande() {
+            const selectTable = document.getElementById('select-table');
+            const selectPlat = document.getElementById('select-plat');
+            
+            // Remplir la liste des tables libres
+            selectTable.innerHTML = '<option value="">-- Choisir une table --</option>';
+            restaurant.tables.forEach(table => {
+                if (table.statut === 'libre') {
+                    selectTable.innerHTML += `<option value="${table.numero}">Table ${table.numero} (${table.capacite} places)</option>`;
+                }
+            });
+            
+            // Remplir la liste des plats disponibles
+            selectPlat.innerHTML = '<option value="">-- Choisir un plat --</option>';
+            for (let categorie in restaurant.menu) {
+                restaurant.menu[categorie].forEach(item => {
+                    if (item.disponible) {
+                        selectPlat.innerHTML += `<option value="${item.id}">${item.nom} - ${item.prix.toFixed(2)}€</option>`;
+                    }
+                });
+            }
+        }
+
+        // Réserver une table et commencer une commande
+        function reserverEtCommencer() {
+            const tableNumero = parseInt(document.getElementById('select-table').value);
+            
+            if (!tableNumero) {
+                alert('Veuillez sélectionner une table');
+                return;
+            }
+            
+            // Trouver la table
+            const table = restaurant.tables.find(t => t.numero === tableNumero);
+            
+            if (table.statut === 'occupée') {
+                alert('Table déjà occupée');
+                return;
+            }
+            
+            // Réserver la table
+            table.statut = 'occupée';
+            
+            // Créer une nouvelle commande
+            restaurant.commandeEnCours = {
+                id: restaurant.prochainNumero++,
+                table: tableNumero,
+                articles: [],
+                statut: 'en préparation',
+                date: new Date().toLocaleString('fr-FR'),
+                sousTotal: 0,
+                total: 0
+            };
+            
+            // Afficher la zone de commande
+            document.getElementById('zone-commande').style.display = 'block';
+            afficherCommandeActuelle();
+            
+            alert(`✓ Table ${tableNumero} réservée - Commande #${restaurant.commandeEnCours.id} créée`);
+        }
+
+        // Ajouter un article à la commande
+        function ajouterArticle() {
+            if (!restaurant.commandeEnCours) {
+                alert('Veuillez d\'abord réserver une table');
+                return;
+            }
+            
+            const platId = parseInt(document.getElementById('select-plat').value);
+            const quantite = parseInt(document.getElementById('quantite').value);
+            
+            if (!platId) {
+                alert('Veuillez sélectionner un plat');
+                return;
+            }
+            
+            // Trouver le plat
+            let plat = null;
+            for (let categorie in restaurant.menu) {
+                const trouve = restaurant.menu[categorie].find(p => p.id === platId);
+                if (trouve) {
+                    plat = trouve;
+                    break;
+                }
+            }
+            
+            // Vérifier si l'article existe déjà
+            const existant = restaurant.commandeEnCours.articles.find(a => a.id === platId);
+            
+            if (existant) {
+                existant.quantite += quantite;
+            } else {
+                restaurant.commandeEnCours.articles.push({
+                    id: plat.id,
+                    nom: plat.nom,
+                    prix: plat.prix,
+                    quantite: quantite
+                });
+            }
+            
+            // Calculer le total
+            calculerTotal();
+            afficherCommandeActuelle();
+            
+            // Réinitialiser le formulaire
+            document.getElementById('quantite').value = 1;
+        }
+
+        // Calculer le total de la commande
+        function calculerTotal() {
+            if (!restaurant.commandeEnCours) return;
+            
+            restaurant.commandeEnCours.sousTotal = 0;
+            
+            restaurant.commandeEnCours.articles.forEach(article => {
+                restaurant.commandeEnCours.sousTotal += article.prix * article.quantite;
+            });
+            
+            restaurant.commandeEnCours.total = restaurant.commandeEnCours.sousTotal;
+        }
+
+        // Afficher la commande en cours
+        function afficherCommandeActuelle() {
+            const element = document.getElementById('commande-actuelle');
+            
+            if (!restaurant.commandeEnCours || restaurant.commandeEnCours.articles.length === 0) {
+                element.innerHTML = '<p style="text-align: center; color: #999; margin-top: 20px;">Aucun article ajouté</p>';
+                return;
+            }
+            
+            let html = '<div class="article-list">';
+            
+            restaurant.commandeEnCours.articles.forEach(article => {
+                const sousTotal = article.prix * article.quantite;
+                html += `
+                    <div class="article">
+                        <span><strong>${article.quantite}x</strong> ${article.nom}</span>
+                        <span>${sousTotal.toFixed(2)}€</span>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            
+            html += `
+                <div class="total-box">
+                    <div class="total-line total-final">
+                        <span>TOTAL:</span>
+                        <span>${restaurant.commandeEnCours.total.toFixed(2)}€</span>
+                    </div>
+                </div>
+            `;
+            
+            html += '<button class="btn btn-success" onclick="validerCommande()">✓ Valider la Commande</button>';
+            
+            element.innerHTML = html;
+        }
+
+        // Valider la commande
+        function validerCommande() {
+            if (!restaurant.commandeEnCours || restaurant.commandeEnCours.articles.length === 0) {
+                alert('La commande est vide');
+                return;
+            }
+            
+            // Ajouter la commande à la liste
+            restaurant.commandes.push(restaurant.commandeEnCours);
+            
+            alert(`✓ Commande #${restaurant.commandeEnCours.id} validée pour ${restaurant.commandeEnCours.total.toFixed(2)}€`);
+            
+            // Réinitialiser
+            restaurant.commandeEnCours = null;
+            document.getElementById('zone-commande').style.display = 'none';
+            document.getElementById('select-table').value = '';
+        }
+
+        // Afficher toutes les commandes
+        function afficherCommandes() {
+            const element = document.getElementById('commandes-list');
+            
+            if (restaurant.commandes.length === 0) {
+                element.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">Aucune commande</p>';
+                return;
+            }
+            
+            element.innerHTML = '';
+            
+            restaurant.commandes.forEach(commande => {
+                let articlesHTML = '';
+                commande.articles.forEach(article => {
+                    const sousTotal = article.prix * article.quantite;
+                    articlesHTML += `
+                        <div class="article">
+                            <span><strong>${article.quantite}x</strong> ${article.nom}</span>
+                            <span>${sousTotal.toFixed(2)}€</span>
+                        </div>
+                    `;
+                });
+                
+                element.innerHTML += `
+                    <div class="commande-card">
+                        <div class="commande-header">
+                            <h3>Commande #${commande.id}</h3>
+                            <span class="badge badge-warning">${commande.statut}</span>
+                        </div>
+                        <p><strong>Table:</strong> ${commande.table}</p>
+                        <p><strong>Date:</strong> ${commande.date}</p>
+                        <div class="article-list">${articlesHTML}</div>
+                        <div class="total-box">
+                            <div class="total-line total-final">
+                                <span>TOTAL:</span>
+                                <span>${commande.total.toFixed(2)}€</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-success" onclick="payerCommande(${commande.id})"> Payer</button>
+                    </div>
+                `;
+            });
+        }
+
+        // Payer une commande
+        function payerCommande(commandeId) {
+            const commande = restaurant.commandes.find(c => c.id === commandeId);
+            
+            if (!commande) return;
+            
+            commande.statut = 'payée';
+            
+            // Libérer la table
+            const table = restaurant.tables.find(t => t.numero === commande.table);
+            if (table) {
+                table.statut = 'libre';
+            }
+            
+            alert(`✓ Commande #${commandeId} payée - Table ${commande.table} libérée`);
+            afficherCommandes();
+        }
+
+        
+        // STATISTIQUES
+        
+
+        function afficherStats() {
+            const totalCommandes = restaurant.commandes.length;
+            const commandesPayees = restaurant.commandes.filter(c => c.statut === 'payée').length;
+            const chiffreAffaires = restaurant.commandes
+                .filter(c => c.statut === 'payée')
+                .reduce((total, c) => total + c.total, 0);
+            
+            // Afficher les cartes statistiques
+            document.getElementById('stats-cards').innerHTML = `
+                <div class="stat-card">
+                    <div>Total Commandes</div>
+                    <div class="stat-value">${totalCommandes}</div>
+                </div>
+                <div class="stat-card">
+                    <div>Payées</div>
+                    <div class="stat-value">${commandesPayees}</div>
+                </div>
+                <div class="stat-card">
+                    <div>En Cours</div>
+                    <div class="stat-value">${totalCommandes - commandesPayees}</div>
+                </div>
+                <div class="stat-card">
+                    <div>Chiffre d'Affaires</div>
+                    <div class="stat-value">${chiffreAffaires.toFixed(0)}€</div>
+                </div>
+            `;
+            
+            // Top 5 des plats
+            const compteur = {};
+            restaurant.commandes.forEach(commande => {
+                commande.articles.forEach(article => {
+                    compteur[article.nom] = (compteur[article.nom] || 0) + article.quantite;
+                });
+            });
+            
+            const top5 = Object.entries(compteur)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            let topHTML = '';
+            if (top5.length === 0) {
+                topHTML = '<p style="text-align: center; color: #999; padding: 40px;">Aucune donnée</p>';
+            } else {
+                top5.forEach(([plat, quantite], index) => {
+                    topHTML += `
+                        <div style="display: flex; justify-content: space-between; padding: 15px; margin: 10px 0; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #667eea;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="background: #667eea; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">${index + 1}</div>
+                                <strong>${plat}</strong>
+                            </div>
+                            <div style="font-size: 1.5em; font-weight: bold; color: #667eea;">${quantite}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('top-plats').innerHTML = topHTML;
+        }
+
+
+        // Charger le menu au démarrage
+        document.addEventListener('DOMContentLoaded', function() {
+            afficherMenu();
+        });
+    </script>
+</body>
+</html>

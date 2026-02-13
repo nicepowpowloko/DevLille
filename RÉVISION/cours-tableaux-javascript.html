@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Tableaux en JavaScript - Révision</title>
+    <style>
+
+ :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+        }
+
+        h1 {
+            color: var(--conseil);
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--real);
+            padding-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--real);
+            font-size: 1em;
+            margin: 50px 0 25px 0;
+            border-left: 2px solid var(--real);
+            padding-left: 20px;
+        }
+
+        h3 {
+            color: var(--conseil);
+            font-size: 1.2em;
+            margin: 30px 0 15px 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.6em;
+            color: var(--real);
+            margin-bottom: 50px;
+        }
+
+        .concept-box {
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+            padding: 40px;
+            margin: 40px 0;
+            border: 2px solid var(--real);
+        }
+
+        .schema {
+            background: white;
+            border: 4px solid var(--conseil);
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .schema-titre {
+            font-size: 1.6em;
+            color: var(--real);
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .code-box {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            margin: 20px 0;
+            border: 2px solid var(--real);
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-box::before {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: var(--conseil);
+            color: white;
+            padding: 5px 15px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .keyword {
+            color: var(--conseil);
+            font-weight: bold;
+        }
+
+        .function-name {
+            color: var(--real);
+            font-weight: bold;
+        }
+
+        .string {
+            color: #98c379;
+        }
+
+        .comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .number {
+            color: #d19a66;
+        }
+
+        .annotation {
+            background: #fff3cd;
+            border-left: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .attention {
+            background: #f8d7da;
+            border-left: 2px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .astuce {
+            background: #d4edda;
+            border-left: 2px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .etape {
+            background: #f8f9ff;
+            border-left: 2px solid var(--real);
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .etape-numero {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--real) 0%, var(--conseil) 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            font-size: 1.1em;
+        }
+
+        th, td {
+            border: 2px solid var(--real);
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--real) 0%, var(--conseil) 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9ff;
+        }
+
+        /* SCHÉMAS VISUELS DE TABLEAUX */
+        .array-visual {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .array-box {
+            background: linear-gradient(135deg, var(--real) 0%, var(--conseil) 100%);
+            color: white;
+            padding: 20px 30px;
+            font-size: 1.3em;
+            font-weight: bold;
+            min-width: 100px;
+            text-align: center;
+            position: relative;
+        }
+
+        .array-index {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffc107;
+            color: #2d3748;
+            padding: 5px 15px;
+            font-size: 0.8em;
+        }
+
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .flow-box {
+            background: var(--conseil);
+            color: white;
+            padding: 25px 40px;
+            font-size: 1.4em;
+            font-weight: bold;
+            text-align: center;
+            min-width: 400px;
+            
+        }
+
+        .flow-arrow {
+            font-size: 3em;
+            color: var(--real);
+        }
+
+        .methode-card {
+            background: white;
+            border: 2px solid var(--real);
+            padding: 25px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .methode-card:hover {
+            transform: translateY(-5px);
+
+        }
+
+        .methode-titre {
+            color: var(--real);
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--conseil);
+            padding-bottom: 10px;
+        }
+
+        .exemple-box {
+            background: #f8f9ff;
+            border-left: 2px solid var(--real);
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 30px;
+            margin: 30px 0;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .highlight-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .flow-box {
+                min-width: 100%;
+            }
+
+            .array-visual {
+                flex-direction: column;
+            }
+        }
+        img {
+            display: block;
+            margin: 20px auto;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <h1>Les TABLEAUX en JavaScript</h1>
+        <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="">
+
+
+        <div class="concept-box">
+            <h2 style="margin-top: 0; color: white;">Qu'est-ce qu'un tableau (Array) ?</h2>
+            
+            <div class="schema">
+                <p style="font-size: 1.3em; line-height: 1.8;">
+                    Un <strong style="color: var(--real);">tableau</strong> est une <strong>liste ordonnée</strong> qui peut contenir plusieurs valeurs dans une seule variable.
+                </p>
+                <p style="font-size: 1.3em; line-height: 1.8; margin-top: 20px;">
+                    C'est comme un <strong style="color: var(--conseil);">casier de rangement</strong> avec plusieurs compartiments numérotés.
+                </p>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Représentation visuelle d'un tableau</div>
+                
+                <div class="array-visual">
+                    <div class="array-box">
+                        <div class="array-index">Index 0</div>
+                        "Alice"
+                    </div>
+                    <div class="array-box">
+                        <div class="array-index">Index 1</div>
+                        "Bob"
+                    </div>
+                    <div class="array-box">
+                        <div class="array-index">Index 2</div>
+                        "Charlie"
+                    </div>
+                    <div class="array-box">
+                        <div class="array-index">Index 3</div>
+                        "David"
+                    </div>
+                </div>
+
+                <div class="code-box">
+<span class="keyword">let</span> prenoms = [<span class="string">"Alice"</span>, <span class="string">"Bob"</span>, <span class="string">"Charlie"</span>, <span class="string">"David"</span>];
+                </div>
+            </div>
+
+            <div class="attention">
+                <strong>RÈGLE IMPORTANTE :</strong><br>
+                Les tableaux commencent à l'<strong>index 0</strong> (pas 1) !<br>
+                • Premier élément = index 0<br>
+                • Deuxième élément = index 1<br>
+                • Troisième élément = index 2
+            </div>
+        </div>
+
+  
+
+        <h2>Créer un tableau</h2>
+
+        <div class="grid-2">
+            <div class="schema">
+                <h3 style="margin-top: 0;">Tableau vide</h3>
+                <div class="code-box">
+<span class="comment">// Méthode 1 : Crochets []</span>
+<span class="keyword">let</span> monTableau = [];
+
+<span class="comment">// Méthode 2 : new Array()</span>
+<span class="keyword">let</span> monTableau = <span class="keyword">new</span> <span class="function-name">Array</span>();
+                </div>
+                <div class="annotation">
+                    <strong>Astuce :</strong> Préférez la méthode avec <code>[]</code>, c'est plus simple et plus rapide !
+                </div>
+            </div>
+
+            <div class="schema">
+                <h3 style="margin-top: 0;">Tableau avec valeurs</h3>
+                <div class="code-box">
+<span class="comment">// Nombres</span>
+<span class="keyword">let</span> nombres = [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>];
+
+<span class="comment">// Textes</span>
+<span class="keyword">let</span> fruits = [<span class="string">"Pomme"</span>, <span class="string">"Banane"</span>, <span class="string">"Orange"</span>];
+
+<span class="comment">// Mixte</span>
+<span class="keyword">let</span> mixte = [<span class="string">"Alice"</span>, <span class="number">25</span>, <span class="keyword">true</span>, <span class="string">"Paris"</span>];
+                </div>
+            </div>
+        </div>
+
+       
+
+        <h2>Accéder aux éléments</h2>
+
+        <div class="schema">
+            <div class="schema-titre">Lire un élément avec son index</div>
+            
+            <div class="array-visual">
+                <div class="array-box">
+                    <div class="array-index">Index 0</div>
+                    "Pomme"
+                </div>
+                <div class="array-box">
+                    <div class="array-index">Index 1</div>
+                    "Banane"
+                </div>
+                <div class="array-box">
+                    <div class="array-index">Index 2</div>
+                    "Orange"
+                </div>
+            </div>
+
+            <div class="code-box">
+<span class="keyword">let</span> fruits = [<span class="string">"Pomme"</span>, <span class="string">"Banane"</span>, <span class="string">"Orange"</span>];
+
+<span class="comment">// Accéder à un élément : nomTableau[index]</span>
+console.log(fruits[<span class="number">0</span>]); <span class="comment">// Affiche : Pomme</span>
+console.log(fruits[<span class="number">1</span>]); <span class="comment">// Affiche : Banane</span>
+console.log(fruits[<span class="number">2</span>]); <span class="comment">// Affiche : Orange</span>
+
+<span class="comment">// Premier élément</span>
+<span class="keyword">let</span> premier = fruits[<span class="number">0</span>];
+console.log(premier); <span class="comment">// Affiche : Pomme</span>
+
+<span class="comment">// Dernier élément</span>
+<span class="keyword">let</span> dernier = fruits[fruits.length - <span class="number">1</span>];
+console.log(dernier); <span class="comment">// Affiche : Orange</span>
+            </div>
+        </div>
+
+        <div class="astuce">
+            <strong>FORMULE MAGIQUE :</strong><br>
+            Pour accéder au <strong>dernier élément</strong> d'un tableau : <code>tableau[tableau.length - 1]</code><br>
+            <strong>Pourquoi -1 ?</strong> Parce que les index commencent à 0 !
+        </div>
+
+     
+        <h2>Propriétés importantes</h2>
+
+        <div class="schema">
+            <div class="schema-titre">length - Connaître la taille du tableau</div>
+
+            <div class="code-box">
+<span class="keyword">let</span> fruits = [<span class="string">"Pomme"</span>, <span class="string">"Banane"</span>, <span class="string">"Orange"</span>];
+
+<span class="comment">// Obtenir le nombre d'éléments</span>
+console.log(fruits.length); <span class="comment">// Affiche : 3</span>
+
+<span class="comment">// Vérifier si le tableau est vide</span>
+<span class="keyword">if</span> (fruits.length === <span class="number">0</span>) {
+    console.log(<span class="string">"Le tableau est vide"</span>);
+} <span class="keyword">else</span> {
+    console.log(<span class="string">"Le tableau contient "</span> + fruits.length + <span class="string">" éléments"</span>);
+}
+            </div>
+
+            <div class="highlight">
+                <div class="highlight-icon"></div>
+                <strong>RAPPEL :</strong> <code>length</code> donne le NOMBRE d'éléments, PAS le dernier index !<br>
+                Tableau de 3 éléments → length = 3, mais dernier index = 2
+            </div>
+        </div>
+
+   
+
+        <h2>Méthodes pour AJOUTER des éléments</h2>
+
+        <div class="grid-2">
+            <div class="methode-card">
+                <div class="methode-titre">push() - Ajouter à la FIN</div>
+                
+                <div class="array-visual">
+                    <div class="array-box">Alice</div>
+                    <div class="array-box">Bob</div>
+                    <div class="array-box" style="background: #28a745;">Charlie ← NOUVEAU</div>
+                </div>
+
+                <div class="code-box">
+<span class="keyword">let</span> prenoms = [<span class="string">"Alice"</span>, <span class="string">"Bob"</span>];
+
+<span class="comment">// Ajouter "Charlie" à la fin</span>
+prenoms.<span class="function-name">push</span>(<span class="string">"Charlie"</span>);
+
+console.log(prenoms);
+<span class="comment">// Affiche : ["Alice", "Bob", "Charlie"]</span>
+
+<span class="comment">// On peut ajouter plusieurs éléments</span>
+prenoms.<span class="function-name">push</span>(<span class="string">"David"</span>, <span class="string">"Emma"</span>);
+                </div>
+            </div>
+
+            <div class="methode-card">
+                <div class="methode-titre">unshift() - Ajouter au DÉBUT</div>
+                
+                <div class="array-visual">
+                    <div class="array-box" style="background: #28a745;">Zoé ← NOUVEAU</div>
+                    <div class="array-box">Alice</div>
+                    <div class="array-box">Bob</div>
+                </div>
+
+                <div class="code-box">
+<span class="keyword">let</span> prenoms = [<span class="string">"Alice"</span>, <span class="string">"Bob"</span>];
+
+<span class="comment">// Ajouter "Zoé" au début</span>
+prenoms.<span class="function-name">unshift</span>(<span class="string">"Zoé"</span>);
+
+console.log(prenoms);
+<span class="comment">// Affiche : ["Zoé", "Alice", "Bob"]</span>
+                </div>
+            </div>
+        </div>
+
+        <h2>Méthodes pour SUPPRIMER des éléments</h2>
+
+        <div class="grid-2">
+            <div class="methode-card">
+                <div class="methode-titre">pop() - Supprimer le DERNIER</div>
+                
+                <div class="array-visual">
+                    <div class="array-box">Alice</div>
+                    <div class="array-box">Bob</div>
+                    <div class="array-box" style="background: #dc3545; text-decoration: line-through;">Charlie ✗</div>
+                </div>
+
+                <div class="code-box">
+<span class="keyword">let</span> prenoms = [<span class="string">"Alice"</span>, <span class="string">"Bob"</span>, <span class="string">"Charlie"</span>];
+
+<span class="comment">// Supprimer le dernier élément</span>
+<span class="keyword">let</span> supprime = prenoms.<span class="function-name">pop</span>();
+
+console.log(supprime); <span class="comment">// Affiche : Charlie</span>
+console.log(prenoms);  <span class="comment">// Affiche : ["Alice", "Bob"]</span>
+                </div>
+            </div>
+
+            <div class="methode-card">
+                <div class="methode-titre">shift() - Supprimer le PREMIER</div>
+                
+                <div class="array-visual">
+                    <div class="array-box" style="background: #dc3545; text-decoration: line-through;">Alice ✗</div>
+                    <div class="array-box">Bob</div>
+                    <div class="array-box">Charlie</div>
+                </div>
+
+                <div class="code-box">
+<span class="keyword">let</span> prenoms = [<span class="string">"Alice"</span>, <span class="string">"Bob"</span>, <span class="string">"Charlie"</span>];
+
+<span class="comment">// Supprimer le premier élément</span>
+<span class="keyword">let</span> supprime = prenoms.<span class="function-name">shift</span>();
+
+console.log(supprime); <span class="comment">// Affiche : Alice</span>
+console.log(prenoms);  <span class="comment">// Affiche : ["Bob", "Charlie"]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="schema">
+            <div class="schema-titre">Schéma récapitulatif AJOUT/SUPPRESSION</div>
+            
+            <div style="text-align: center; font-size: 1.5em; margin: 30px 0;">
+                <div style="margin: 20px 0;">
+                    <span style="background: #28a745; color: white; padding: 10px 20px; border-radius: 10px;">unshift() </span>
+                    <span style="margin: 0 20px; font-size: 2em;">[</span>
+                    <span style="background: #667eea; color: white; padding: 10px 20px; border-radius: 10px;">éléments</span>
+                    <span style="margin: 0 20px; font-size: 2em;">]</span>
+                    <span style="background: #28a745; color: white; padding: 10px 20px; border-radius: 10px;">push()</span>
+                </div>
+                <div style="margin: 40px 0;">
+                    <span style="background: #dc3545; color: white; padding: 10px 20px; border-radius: 10px;">shift() </span>
+                    <span style="margin: 0 20px; font-size: 2em;">[</span>
+                    <span style="background: #667eea; color: white; padding: 10px 20px; border-radius: 10px;">éléments</span>
+                    <span style="margin: 0 20px; font-size: 2em;">]</span>
+                    <span style="background: #dc3545; color: white; padding: 10px 20px; border-radius: 10px;">pop()</span>
+                </div>
+            </div>
+        </div>
+
+      
+
+        <h2>Parcourir un tableau (Boucles)</h2>
+
+        <div class="grid-2">
+            <div class="methode-card">
+                <div class="methode-titre">Boucle FOR classique</div>
+                
+                <div class="code-box">
+<span class="keyword">let</span> fruits = [<span class="string">"Pomme"</span>, <span class="string">"Banane"</span>, <span class="string">"Orange"</span>];
+
+<span class="comment">// Parcourir avec for</span>
+<span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i < fruits.length; i++) {
+    console.log(<span class="string">"Index "</span> + i + <span class="string">" : "</span> + fruits[i]);
+}
+
+<span class="comment">// Résultat :</span>
+<span class="comment">// Index 0 : Pomme</span>
+<span class="comment">// Index 1 : Banane</span>
+<span class="comment">// Index 2 : Orange</span>
+                </div>
+
+                <div class="annotation">
+                    <strong>Explication :</strong><br>
+                    • <code>i = 0</code> : On commence à l'index 0<br>
+                    • <code>i < fruits.length</code> : On continue tant qu'on n'a pas dépassé<br>
+                    • <code>i++</code> : On passe à l'élément suivant
+                </div>
+            </div>
+
+            <div class="methode-card">
+                <div class="methode-titre">forEach() - Méthode moderne</div>
+                
+                <div class="code-box">
+<span class="keyword">let</span> fruits = [<span class="string">"Pomme"</span>, <span class="string">"Banane"</span>, <span class="string">"Orange"</span>];
+
+<span class="comment">// Parcourir avec forEach</span>
+fruits.<span class="function-name">forEach</span>(<span class="keyword">function</span>(fruit, index) {
+    console.log(<span class="string">"Index "</span> + index + <span class="string">" : "</span> + fruit);
+});
+
+<span class="comment">// Version fléchée (moderne)</span>
+fruits.<span class="function-name">forEach</span>((fruit, index) => {
+    console.log(<span class="string">`Index ${index} : ${fruit}`</span>);
+});
+                </div>
+
+                <div class="astuce">
+                    <strong>Astuce :</strong><br>
+                    <code>forEach()</code> est plus simple car on n'a pas besoin de gérer l'index manuellement !
+                </div>
+            </div>
+        </div>
+
+   
+
+        <h2>Rechercher dans un tableau</h2>
+
+        <div class="grid-2">
+            <div class="methode-card">
+                <div class="methode-titre"> indexOf() - Trouver la position</div>
+                
+                <div class="code-box">
+<span class="keyword">let</span> fruits = [<span class="string">"Pomme"</span>, <span class="string">"Banane"</span>, <span class="string">"Orange"</span>];
+
+<span class="comment">// Chercher "Banane"</span>
+<span class="keyword">let</span> position = fruits.<span class="function-name">indexOf</span>(<span class="string">"Banane"</span>);
+console.log(position); <span class="comment">// Affiche : 1</span>
+
+<span class="comment">// Chercher quelque chose qui n'existe pas</span>
+<span class="keyword">let</span> pos = fruits.<span class="function-name">indexOf</span>(<span class="string">"Kiwi"</span>);
+console.log(pos); <span class="comment">// Affiche : -1 (non trouvé)</span>
+                </div>
+            </div>
+
+            <div class="methode-card">
+                <div class="methode-titre">includes() - Vérifier la présence</div>
+                
+                <div class="code-box">
+<span class="keyword">let</span> fruits = [<span class="string">"Pomme"</span>, <span class="string">"Banane"</span>, <span class="string">"Orange"</span>];
+
+<span class="comment">// Vérifier si "Banane" existe</span>
+<span class="keyword">if</span> (fruits.<span class="function-name">includes</span>(<span class="string">"Banane"</span>)) {
+    console.log(<span class="string">"Banane trouvée !"</span>);
+}
+
+<span class="comment">// Vérifier si "Kiwi" existe</span>
+console.log(fruits.<span class="function-name">includes</span>(<span class="string">"Kiwi"</span>)); <span class="comment">// false</span>
+                </div>
+            </div>
+        </div>
+
+   
+
+        <h2>Transformer un tableau</h2>
+
+        <div class="methode-card">
+            <div class="methode-titre">map() - Transformer chaque élément</div>
+            
+            <div class="schema">
+                <p style="font-size: 1.2em; margin-bottom: 20px;">
+                    <code>map()</code> parcourt le tableau et crée un <strong>nouveau tableau</strong> avec les valeurs transformées.
+                </p>
+
+                <div class="flowchart">
+                    <div class="flow-box" style="background: #667eea;">
+                        Tableau initial : [1, 2, 3, 4]
+                    </div>
+                    
+                    <div class="flow-arrow">↓ map(nombre × 2)</div>
+                    
+                    <div class="flow-box" style="background: #28a745;">
+                        Nouveau tableau : [2, 4, 6, 8]
+                    </div>
+                </div>
+
+                <div class="code-box">
+<span class="keyword">let</span> nombres = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];
+
+<span class="comment">// Multiplier chaque nombre par 2</span>
+<span class="keyword">let</span> doubles = nombres.<span class="function-name">map</span>(<span class="keyword">function</span>(nombre) {
+    <span class="keyword">return</span> nombre * <span class="number">2</span>;
+});
+
+console.log(doubles); <span class="comment">// Affiche : [2, 4, 6, 8]</span>
+
+<span class="comment">// Version fléchée (moderne)</span>
+<span class="keyword">let</span> doubles = nombres.<span class="function-name">map</span>(nombre => nombre * <span class="number">2</span>);
+                </div>
+            </div>
+
+            <div class="exemple-box">
+                <strong>Exemple concret :</strong> Ajouter "€" à chaque prix
+                <div class="code-box">
+<span class="keyword">let</span> prix = [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>];
+
+<span class="keyword">let</span> prixAvecEuro = prix.<span class="function-name">map</span>(p => p + <span class="string">"€"</span>);
+
+console.log(prixAvecEuro); <span class="comment">// ["10€", "20€", "30€"]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="methode-card">
+            <div class="methode-titre">filter() - Filtrer les éléments</div>
+            
+            <div class="schema">
+                <p style="font-size: 1.2em; margin-bottom: 20px;">
+                    <code>filter()</code> crée un <strong>nouveau tableau</strong> contenant uniquement les éléments qui respectent une condition.
+                </p>
+
+                <div class="flowchart">
+                    <div class="flow-box" style="background: #667eea;">
+                        Tableau initial : [5, 12, 8, 20, 3]
+                    </div>
+                    
+                    <div class="flow-arrow">↓ filter(nombre > 10)</div>
+                    
+                    <div class="flow-box" style="background: #28a745;">
+                        Nouveau tableau : [12, 20]
+                    </div>
+                </div>
+
+                <div class="code-box">
+<span class="keyword">let</span> nombres = [<span class="number">5</span>, <span class="number">12</span>, <span class="number">8</span>, <span class="number">20</span>, <span class="number">3</span>];
+
+<span class="comment">// Garder seulement les nombres > 10</span>
+<span class="keyword">let</span> grands = nombres.<span class="function-name">filter</span>(<span class="keyword">function</span>(nombre) {
+    <span class="keyword">return</span> nombre > <span class="number">10</span>;
+});
+
+console.log(grands); <span class="comment">// Affiche : [12, 20]</span>
+
+<span class="comment">// Version fléchée</span>
+<span class="keyword">let</span> grands = nombres.<span class="function-name">filter</span>(nombre => nombre > <span class="number">10</span>);
+                </div>
+            </div>
+
+            <div class="exemple-box">
+                <strong>Exemple concret :</strong> Filtrer les utilisateurs majeurs
+                <div class="code-box">
+<span class="keyword">let</span> ages = [<span class="number">15</span>, <span class="number">22</span>, <span class="number">17</span>, <span class="number">30</span>, <span class="number">16</span>];
+
+<span class="keyword">let</span> majeurs = ages.<span class="function-name">filter</span>(age => age >= <span class="number">18</span>);
+
+console.log(majeurs); <span class="comment">// [22, 30]</span>
+                </div>
+            </div>
+        </div>
+
+    
+
+        <h2>Autres méthodes utiles</h2>
+
+        <div class="grid-3">
+            <div class="methode-card">
+                <div class="methode-titre">join()</div>
+                <p>Convertir en texte</p>
+                <div class="code-box">
+<span class="keyword">let</span> fruits = [<span class="string">"Pomme"</span>, <span class="string">"Banane"</span>];
+
+<span class="keyword">let</span> texte = fruits.<span class="function-name">join</span>(<span class="string">", "</span>);
+console.log(texte);
+<span class="comment">// "Pomme, Banane"</span>
+                </div>
+            </div>
+
+            <div class="methode-card">
+                <div class="methode-titre"> slice()</div>
+                <p>Extraire une portion</p>
+                <div class="code-box">
+<span class="keyword">let</span> fruits = [<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, <span class="string">"D"</span>];
+
+<span class="keyword">let</span> portion = fruits.<span class="function-name">slice</span>(<span class="number">1</span>, <span class="number">3</span>);
+console.log(portion);
+<span class="comment">// ["B", "C"]</span>
+                </div>
+            </div>
+
+            <div class="methode-card">
+                <div class="methode-titre">reverse()</div>
+                <p>Inverser l'ordre</p>
+                <div class="code-box">
+<span class="keyword">let</span> nombres = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];
+
+nombres.<span class="function-name">reverse</span>();
+console.log(nombres);
+<span class="comment">// [3, 2, 1]</span>
+                </div>
+            </div>
+
+            <div class="methode-card">
+                <div class="methode-titre">sort()</div>
+                <p>Trier le tableau</p>
+                <div class="code-box">
+<span class="keyword">let</span> fruits = [<span class="string">"C"</span>, <span class="string">"A"</span>, <span class="string">"B"</span>];
+
+fruits.<span class="function-name">sort</span>();
+console.log(fruits);
+<span class="comment">// ["A", "B", "C"]</span>
+                </div>
+            </div>
+
+            <div class="methode-card">
+                <div class="methode-titre">concat()</div>
+                <p>Fusionner tableaux</p>
+                <div class="code-box">
+<span class="keyword">let</span> t1 = [<span class="number">1</span>, <span class="number">2</span>];
+<span class="keyword">let</span> t2 = [<span class="number">3</span>, <span class="number">4</span>];
+
+<span class="keyword">let</span> fusion = t1.<span class="function-name">concat</span>(t2);
+console.log(fusion);
+<span class="comment">// [1, 2, 3, 4]</span>
+                </div>
+            </div>
+
+            <div class="methode-card">
+                <div class="methode-titre">find()</div>
+                <p>Trouver un élément</p>
+                <div class="code-box">
+<span class="keyword">let</span> nombres = [<span class="number">5</span>, <span class="number">12</span>, <span class="number">8</span>];
+
+<span class="keyword">let</span> trouve = nombres.<span class="function-name">find</span>(n => n > <span class="number">10</span>);
+console.log(trouve);
+<span class="comment">// 12</span>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <h2>Tableaux d'objets (très important !)</h2>
+
+        <div class="concept-box">
+            <div class="schema">
+                <div class="schema-titre">Exemple : Liste d'utilisateurs</div>
+
+                <div class="code-box">
+<span class="comment">// Créer un tableau d'objets</span>
+<span class="keyword">let</span> utilisateurs = [
+    { nom: <span class="string">"Alice"</span>, age: <span class="number">25</span>, ville: <span class="string">"Paris"</span> },
+    { nom: <span class="string">"Bob"</span>, age: <span class="number">30</span>, ville: <span class="string">"Lyon"</span> },
+    { nom: <span class="string">"Charlie"</span>, age: <span class="number">22</span>, ville: <span class="string">"Paris"</span> }
+];
+
+<span class="comment">// Accéder à un utilisateur</span>
+console.log(utilisateurs[<span class="number">0</span>]); 
+<span class="comment">// { nom: "Alice", age: 25, ville: "Paris" }</span>
+
+<span class="comment">// Accéder à une propriété spécifique</span>
+console.log(utilisateurs[<span class="number">0</span>].nom); <span class="comment">// "Alice"</span>
+console.log(utilisateurs[<span class="number">1</span>].age); <span class="comment">// 30</span>
+
+<span class="comment">// Parcourir et afficher</span>
+utilisateurs.<span class="function-name">forEach</span>(<span class="keyword">function</span>(user) {
+    console.log(user.nom + <span class="string">" a "</span> + user.age + <span class="string">" ans"</span>);
+});
+                </div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-titre">Filtrer et transformer des objets</div>
+
+                <div class="code-box">
+<span class="comment">// Filtrer : Utilisateurs de Paris seulement</span>
+<span class="keyword">let</span> parisiens = utilisateurs.<span class="function-name">filter</span>(<span class="keyword">function</span>(user) {
+    <span class="keyword">return</span> user.ville === <span class="string">"Paris"</span>;
+});
+
+console.log(parisiens);
+<span class="comment">// [{ nom: "Alice", ... }, { nom: "Charlie", ... }]</span>
+
+<span class="comment">// Map : Récupérer seulement les noms</span>
+<span class="keyword">let</span> noms = utilisateurs.<span class="function-name">map</span>(<span class="keyword">function</span>(user) {
+    <span class="keyword">return</span> user.nom;
+});
+
+console.log(noms); <span class="comment">// ["Alice", "Bob", "Charlie"]</span>
+
+<span class="comment">// Trouver : Utilisateur qui a 30 ans</span>
+<span class="keyword">let</span> user30 = utilisateurs.<span class="function-name">find</span>(<span class="keyword">function</span>(user) {
+    <span class="keyword">return</span> user.age === <span class="number">30</span>;
+});
+
+console.log(user30); <span class="comment">// { nom: "Bob", age: 30, ville: "Lyon" }</span>
+                </div>
+            </div>
+        </div>
+
+       
+
+        <h2>Tableau récapitulatif des méthodes</h2>
+
+        <table>
+            <tr>
+                <th>Méthode</th>
+                <th>Action</th>
+                <th>Modifie l'original ?</th>
+                <th>Exemple</th>
+            </tr>
+            <tr>
+                <td><code>push()</code></td>
+                <td>Ajouter à la fin</td>
+                <td>Oui</td>
+                <td><code>tab.push("X")</code></td>
+            </tr>
+            <tr>
+                <td><code>pop()</code></td>
+                <td>Supprimer le dernier</td>
+                <td>Oui</td>
+                <td><code>tab.pop()</code></td>
+            </tr>
+            <tr>
+                <td><code>unshift()</code></td>
+                <td>Ajouter au début</td>
+                <td>Oui</td>
+                <td><code>tab.unshift("X")</code></td>
+            </tr>
+            <tr>
+                <td><code>shift()</code></td>
+                <td>Supprimer le premier</td>
+                <td>Oui</td>
+                <td><code>tab.shift()</code></td>
+            </tr>
+            <tr>
+                <td><code>forEach()</code></td>
+                <td>Parcourir</td>
+                <td>Non</td>
+                <td><code>tab.forEach(fn)</code></td>
+            </tr>
+            <tr>
+                <td><code>map()</code></td>
+                <td>Transformer → nouveau tableau</td>
+                <td>Non</td>
+                <td><code>tab.map(fn)</code></td>
+            </tr>
+            <tr>
+                <td><code>filter()</code></td>
+                <td>Filtrer → nouveau tableau</td>
+                <td>Non</td>
+                <td><code>tab.filter(fn)</code></td>
+            </tr>
+            <tr>
+                <td><code>find()</code></td>
+                <td>Trouver UN élément</td>
+                <td>Non</td>
+                <td><code>tab.find(fn)</code></td>
+            </tr>
+            <tr>
+                <td><code>indexOf()</code></td>
+                <td>Trouver la position</td>
+                <td>Non</td>
+                <td><code>tab.indexOf("X")</code></td>
+            </tr>
+            <tr>
+                <td><code>includes()</code></td>
+                <td>Vérifier présence</td>
+                <td>Non</td>
+                <td><code>tab.includes("X")</code></td>
+            </tr>
+            <tr>
+                <td><code>join()</code></td>
+                <td>Convertir en texte</td>
+                <td>Non</td>
+                <td><code>tab.join(", ")</code></td>
+            </tr>
+            <tr>
+                <td><code>slice()</code></td>
+                <td>Extraire portion</td>
+                <td>Non</td>
+                <td><code>tab.slice(1, 3)</code></td>
+            </tr>
+            <tr>
+                <td><code>sort()</code></td>
+                <td>Trier</td>
+                <td>Oui</td>
+                <td><code>tab.sort()</code></td>
+            </tr>
+            <tr>
+                <td><code>reverse()</code></td>
+                <td>Inverser</td>
+                <td>Oui</td>
+                <td><code>tab.reverse()</code></td>
+            </tr>
+        </table>
+
+        
+
+        <h2>Exercices pratiques</h2>
+
+        <div class="grid-2">
+            <div class="schema">
+                <h3 style="margin-top: 0;">Exercice 1 : Manipulation basique</h3>
+                <div class="annotation">
+                    Créez un tableau de fruits. Ajoutez 2 fruits à la fin, supprimez le premier, puis affichez tous les fruits restants.
+                </div>
+            </div>
+
+            <div class="schema">
+                <h3 style="margin-top: 0;">Exercice 2 : Filtrage</h3>
+                <div class="annotation">
+                    Créez un tableau de nombres. Filtrez pour garder uniquement les nombres pairs.
+                </div>
+            </div>
+
+            <div class="schema">
+                <h3 style="margin-top: 0;">Exercice 3 : Transformation</h3>
+                <div class="annotation">
+                    Créez un tableau de prix. Multipliez chaque prix par 1.2 (TVA 20%) avec map().
+                </div>
+            </div>
+
+            <div class="schema">
+                <h3 style="margin-top: 0;">Exercice 4 : Tableaux d'objets</h3>
+                <div class="annotation">
+                    Créez un tableau de 5 étudiants (nom, note). Trouvez tous les étudiants avec une note ≥ 10.
+                </div>
+            </div>
+        </div>
+
+
+        <h2>Pièges courants à éviter</h2>
+
+        <div class="grid-2">
+            <div class="attention">
+                <h3 style="margin-top: 0; color: #721c24;"> PIÈGE 1 : Index qui n'existe pas</h3>
+                <div class="code-box">
+<span class="keyword">let</span> fruits = [<span class="string">"Pomme"</span>, <span class="string">"Banane"</span>];
+
+console.log(fruits[<span class="number">5</span>]); <span class="comment">// undefined</span>
+                </div>
+                <p style="margin-top: 10px;">Toujours vérifier que l'index est valide !</p>
+            </div>
+
+            <div class="attention">
+                <h3 style="margin-top: 0; color: #721c24;"> PIÈGE 2 : Oublier le return dans map()</h3>
+                <div class="code-box">
+<span class="comment">//  MAUVAIS</span>
+<span class="keyword">let</span> doubles = nombres.<span class="function-name">map</span>(n => {
+    n * <span class="number">2</span>; <span class="comment">// Oubli du return !</span>
+});
+
+<span class="comment">//  BON</span>
+<span class="keyword">let</span> doubles = nombres.<span class="function-name">map</span>(n => {
+    <span class="keyword">return</span> n * <span class="number">2</span>;
+});
+                </div>
+            </div>
+
+            <div class="attention">
+                <h3 style="margin-top: 0; color: #721c24;"> PIÈGE 3 : Confondre length et index</h3>
+                <div class="code-box">
+<span class="keyword">let</span> tab = [<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>];
+
+console.log(tab.length);      <span class="comment">// 3</span>
+console.log(tab[tab.length]); <span class="comment">// undefined !</span>
+console.log(tab[tab.length - <span class="number">1</span>]); <span class="comment">// "C" </span>
+                </div>
+            </div>
+
+            <div class="attention">
+                <h3 style="margin-top: 0; color: #721c24;"> PIÈGE 4 : Modifier pendant forEach</h3>
+                <div class="code-box">
+<span class="comment">//  Dangereux !</span>
+fruits.<span class="function-name">forEach</span>(<span class="keyword">function</span>() {
+    fruits.<span class="function-name">push</span>(<span class="string">"Nouveau"</span>); <span class="comment">// Boucle infinie !</span>
+});
+                </div>
+            </div>
+        </div>
+
+       
+
+        <div style="text-align: center; margin-top: 60px; padding: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; color: white;">
+            <h2 style="font-size: 3em; margin-bottom: 20px; color: white;">FIN DU COURS</h2>
+            <p style="font-size: 1.5em; margin-bottom: 30px;">Vos apprenants maîtrisent maintenant les tableaux JavaScript !</p>
+            <div style="font-size: 1.2em; opacity: 0.9;">
+                 Conseil : Faites-les pratiquer avec des exercices concrets (listes de courses, contacts, notes d'étudiants...)
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
