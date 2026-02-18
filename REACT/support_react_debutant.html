@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apprendre React - Guide Complet </title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        
+          :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+            color: #333;
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        header {
+            background: linear-gradient(135deg, #20232a 0%, #2E75B6 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(97,218,251,0.08) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        header h1 span { color: #61dafb; }
+
+        header .subtitle {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        header .author {
+            font-size: 1.05em;
+            font-style: italic;
+            opacity: 0.7;
+            position: relative;
+        }
+
+        .react-logo {
+            font-size: 3em;
+            color: #61dafb;
+            margin-bottom: 15px;
+            display: block;
+            position: relative;
+        }
+
+        /* Burger */
+        .burger-menu {
+            display: none;
+            background-color: #20232a;
+            padding: 15px 20px;
+            cursor: pointer;
+            position: sticky;
+            top: 0;
+            z-index: 101;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .burger-text { color: #61dafb; font-size: 1em; font-weight: bold; }
+        .burger-icon { display: flex; flex-direction: column; gap: 5px; width: 30px; }
+        .burger-icon span { width: 100%; height: 3px; background-color: #61dafb; transition: 0.3s; display: block; }
+        .burger-menu.active .burger-icon span:nth-child(1) { transform: rotate(45deg) translate(8px, 8px); }
+        .burger-menu.active .burger-icon span:nth-child(2) { opacity: 0; }
+        .burger-menu.active .burger-icon span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+
+        .nav-menu {
+            background-color: #20232a;
+            padding: 14px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-menu a {
+            color: #abb2bf;
+            text-decoration: none;
+            margin-right: 18px;
+            font-size: 0.88em;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover { color: var(--real); 
+                            border-bottom: #61dafb 2px solid;
+                          font-weight: bolder;}
+
+        .content { padding: 40px; }
+
+        h2 {
+            color: var(--real);
+            font-size: 1.9em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #61dafb;
+        }
+
+        h3 { color: var(--conseil); font-size: 1.35em; margin-top: 30px; margin-bottom: 15px; }
+        h4 { color: #404040; font-size: 1.1em; margin-top: 20px; margin-bottom: 10px; }
+
+        p { margin-bottom: 15px; }
+
+        .highlight {
+            background-color: #e8f8fd;
+            border: 1px solid #61dafb;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #20232a;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #282c34;
+            color: #61dafb;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.92em;
+        }
+
+        .code-block {
+            background-color: #282c34;
+            border-left: 4px solid #61dafb;
+            padding: 22px;
+            margin: 20px 0;
+            border-radius: 6px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block .code-label {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background-color: #61dafb;
+            color: #20232a;
+            font-size: 0.75em;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .code-block pre {
+            font-family: 'Courier New', monospace;
+            font-size: 0.93em;
+            line-height: 1.7;
+            color: #abb2bf;
+            white-space: pre;
+        }
+
+        .c-comment { color: #5c6370; font-style: italic; }
+        .c-keyword { color: #c678dd; }
+        .c-function { color: #61afef; }
+        .c-string { color: #98c379; }
+        .c-tag { color: #e06c75; }
+        .c-attr { color: #d19a66; }
+        .c-value { color: #98c379; }
+        .c-jsx { color: #abb2bf; }
+        .c-number { color: #d19a66; }
+
+        .info-box {
+            background-color: #e8f8fd;
+            border-left: 4px solid #61dafb;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background-color: #fff8e6;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .error-box {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        ul { margin: 12px 0 12px 35px; }
+        li { margin-bottom: 9px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table thead, table tbody { display: table; width: 100%; }
+
+        table th {
+            background-color: #20232a;
+            color: #61dafb;
+            padding: 13px 15px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        table td {
+            padding: 11px 15px;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+
+        table tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .diagram {
+            background-color: white;
+            border: 2px solid #61dafb;
+            border-radius: 8px;
+            margin: 25px 0;
+            overflow: hidden;
+        }
+
+        .diagram-header {
+            background-color: #20232a;
+            color: #61dafb;
+            padding: 14px 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .diagram-step {
+            padding: 13px 20px;
+            border-bottom: 1px solid #e8f8fd;
+        }
+
+        .diagram-step:last-child { border-bottom: none; }
+        .diagram-step:nth-child(even) { background-color: #f9fdff; }
+
+        .step-label { color: #2E75B6; font-weight: bold; margin-right: 8px; }
+
+        .step-box {
+            background-color: #f9fdff;
+            border: 1px solid #bee8f8;
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin: 15px 0;
+        }
+
+        .step-box h4 { color: var(--real); margin-top: 0; margin-bottom: 12px; }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #61dafb;
+            color: #20232a;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .comparison-column {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-header {
+            padding: 13px 15px;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .comparison-header.html { background-color: #e34c26; }
+        .comparison-header.react { background-color: #20232a; color: #61dafb; }
+
+        .comparison-content {
+            padding: 18px;
+            background-color: #282c34;
+        }
+
+        .hook-card {
+            background-color: #f9fdff;
+            border: 2px solid #61dafb;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .hook-title {
+            background-color: #20232a;
+            color: #61dafb;
+            padding: 12px 20px;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .hook-body { padding: 20px; }
+
+        .page-break {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid #e8f8fd;
+        }
+
+        .exercise {
+            background-color: #f0f9ff;
+            border: 2px solid #61dafb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .exercise h4 { color: #20232a; margin-top: 0; }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin: 25px 0;
+        }
+
+        .concept-card {
+            background-color: #20232a;
+            border-radius: 8px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .concept-card .icon {
+            font-size: 1.5em;
+            color: #61dafb;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .concept-card h4 { color: #61dafb; margin: 0 0 8px 0; }
+        .concept-card p { font-size: 0.88em; color: #abb2bf; margin: 0; text-align: center; }
+
+        .result-preview {
+            background-color: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .result-preview .preview-label {
+            background-color: #e8f8fd;
+            border: 1px solid #61dafb;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #20232a;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        @media print {
+            .nav-menu, .burger-menu { display: none; }
+            body { background-color: white; }
+            .container { box-shadow: none; }
+        }
+
+        @media (max-width: 900px) {
+            .concept-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 40px 20px; }
+            header h1 { font-size: 1.8em; }
+            header .subtitle { font-size: 1.05em; }
+
+            .burger-menu { display: flex; }
+            .nav-menu { display: none; padding: 0; max-height: 0; overflow: hidden; }
+            .nav-menu.active { display: block; max-height: 700px; padding: 10px 0; }
+            .nav-menu a { display: block; margin: 0; padding: 12px 20px; border-bottom: 1px solid #333; }
+            .nav-menu a:hover { background-color: #333; }
+
+            .content { padding: 20px 15px; }
+            h2 { font-size: 1.45em; }
+            h3 { font-size: 1.15em; }
+            .comparison-table { grid-template-columns: 1fr; }
+            .concept-grid { grid-template-columns: 1fr; }
+            .code-block { font-size: 0.82em; padding: 15px; }
+
+            table th, table td { white-space: normal; }
+            table::after {
+                content: "Faites défiler si besoin";
+                display: block;
+                text-align: center;
+                padding: 6px;
+                background-color: #e8f8fd;
+                color: #2E75B6;
+                font-size: 0.85em;
+                font-style: italic;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.4em; }
+            .content { padding: 15px 10px; }
+            h2 { font-size: 1.3em; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <span class="react-logo">&#9883;</span>
+        <h1>Apprendre <span>React</span></h1>
+        <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="">
+    </header>
+
+    <div class="burger-menu" onclick="toggleMenu()">
+        <span class="burger-text">Menu React</span>
+        <div class="burger-icon"><span></span><span></span><span></span></div>
+    </div>
+
+    <nav class="nav-menu" id="navMenu">
+        <a href="#section1" onclick="closeMenu()">Pourquoi React</a>
+        <a href="#section2" onclick="closeMenu()">Installation</a>
+        <a href="#section3" onclick="closeMenu()">JSX</a>
+        <a href="#section4" onclick="closeMenu()">Composants</a>
+        <a href="#section5" onclick="closeMenu()">Props</a>
+        <a href="#section6" onclick="closeMenu()">useState</a>
+        <a href="#section7" onclick="closeMenu()">useEffect</a>
+        <a href="#section8" onclick="closeMenu()">Listes et events</a>
+        <a href="#section9" onclick="closeMenu()">API REST</a>
+        <a href="#section10" onclick="closeMenu()">Exercices</a>
+        <a href="#section11" onclick="closeMenu()">React Router</a>
+        <a href="#section12" onclick="closeMenu()">Panier</a>
+        <a href="#section13" onclick="closeMenu()">Projet</a>
+    </nav>
+
+    <div class="content">
+
+        <!-- SECTION 1 -->
+        <section id="section1">
+            <h2>1. Pourquoi apprendre React ?</h2>
+
+            <h3>1.1 Qu'est-ce que React ?</h3>
+
+            <p>React est une <span class="highlight">bibliothèque JavaScript</span> créée par Facebook en 2013. Elle permet de construire des interfaces utilisateur (UI) modernes et dynamiques en découpant l'interface en petits blocs réutilisables appelés <strong>composants</strong>.</p>
+
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="icon">[ ]</div>
+                    <h4>Composants</h4>
+                    <p>L'interface est découpée en blocs réutilisables. Chaque bouton, formulaire, carte est un composant.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="icon">~</div>
+                    <h4>Réactif</h4>
+                    <p>L'interface se met à jour automatiquement quand les données changent, sans recharger la page.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="icon">#</div>
+                    <h4>Populaire</h4>
+                    <p>React est utilisé par Facebook, Netflix, Airbnb, Uber, Instagram. C'est la lib JS la plus demandée en emploi.</p>
+                </div>
+            </div>
+
+            <h3>1.2 Pourquoi React plutôt que du JavaScript natif ?</h3>
+
+            <div class="comparison-table">
+                <div class="comparison-column">
+                    <div class="comparison-header html">JavaScript natif (Vanilla JS)</div>
+                    <div class="comparison-content">
+                        <div class="code-block" style="margin: 0; border-left: none; border-radius: 0;">
+                            <pre><span class="c-comment">// Afficher et mettre à jour un compteur</span>
+<span class="c-keyword">let</span> count = <span class="c-number">0</span>;
+<span class="c-keyword">const</span> btn = document.<span class="c-function">getElementById</span>(<span class="c-string">'btn'</span>);
+<span class="c-keyword">const</span> display = document.<span class="c-function">getElementById</span>(<span class="c-string">'count'</span>);
+
+btn.<span class="c-function">addEventListener</span>(<span class="c-string">'click'</span>, () => {
+    count++;
+    display.textContent = count;
+    <span class="c-comment">// Mise à jour manuelle du DOM</span>
+});</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-column">
+                    <div class="comparison-header react">React</div>
+                    <div class="comparison-content">
+                        <div class="code-block" style="margin: 0; border-left: none; border-radius: 0;">
+                            <pre><span class="c-comment">// Même chose en React</span>
+<span class="c-keyword">function</span> <span class="c-function">Compteur</span>() {
+  <span class="c-keyword">const</span> [count, setCount] = <span class="c-function">useState</span>(<span class="c-number">0</span>);
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>{count}<span class="c-tag">&lt;/p&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => setCount(count + 1)}</span><span class="c-tag">&gt;</span>
+        Incrementer
+      <span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>1.3 Où utilise-t-on React ?</h3>
+
+            <div class="diagram">
+                <div class="diagram-header">Cas d'usage de React</div>
+                <div class="diagram-step">
+                    <span class="step-label">Applications SPA :</span>
+                    Single Page Application - une seule page HTML, navigation sans rechargement (comme Gmail, Twitter)
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Tableaux de bord :</span>
+                    Dashboard avec graphiques, données en temps réel, filtres interactifs
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">E-commerce :</span>
+                    Panier en temps réel, filtres produits, pages dynamiques
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Applications mobiles :</span>
+                    React Native permet de créer des apps iOS et Android avec React
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Sites avec beaucoup d'interactions :</span>
+                    Formulaires multi-étapes, filtres en temps réel, notifications live
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Prérequis avant React :</strong>
+                <ul style="margin-top: 8px;">
+                    <li>HTML / CSS bases</li>
+                    <li>JavaScript : variables, fonctions, tableaux, objets</li>
+                    <li>JavaScript moderne : arrow functions, destructuring, spread operator, modules (import/export)</li>
+                    <li>Notions de fetch() et async/await (optionnel mais utile)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SECTION 2 -->
+        <section id="section2" class="page-break">
+            <h2>2. Installation et Premier Projet</h2>
+
+            <h3>2.1 Ce qu'il faut installer</h3>
+
+            <div class="step-box">
+                <h4><span class="step-number">1</span>Node.js (obligatoire)</h4>
+                <p>React nécessite Node.js pour fonctionner. Node.js inclut <strong>npm</strong> (gestionnaire de paquets).</p>
+                <p>Télécharger sur : <code>nodejs.org</code> → choisir la version <strong>LTS</strong> (recommandée)</p>
+                <p>Vérifier l'installation :</p>
+                <div class="code-block" style="margin: 10px 0;">
+                    <pre><span class="c-comment"># Vérifier Node.js</span>
+node --version
+<span class="c-comment"># Résultat attendu : v20.x.x ou supérieur</span>
+
+<span class="c-comment"># Vérifier npm</span>
+npm --version
+<span class="c-comment"># Résultat attendu : 10.x.x ou supérieur</span></pre>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <h4><span class="step-number">2</span>VS Code (recommandé)</h4>
+                <p>Télécharger sur : <code>code.visualstudio.com</code></p>
+                <p>Extensions utiles pour React :</p>
+                <ul>
+                    <li><strong>ES7+ React/Redux/React-Native snippets</strong> (raccourcis de code)</li>
+                    <li><strong>Prettier</strong> (formater le code automatiquement)</li>
+                    <li><strong>Auto Import</strong> (imports automatiques)</li>
+                    <li><strong>Bracket Pair Colorizer</strong> (colorisation des accolades)</li>
+                </ul>
+            </div>
+
+            <h3>2.2 Créer un projet React avec Vite</h3>
+
+            <p><span class="highlight">Vite</span> est l'outil recommandé en 2024-2025 pour créer des projets React. Il est beaucoup plus rapide que l'ancien Create React App (CRA).</p>
+
+            <div class="code-block">
+                <div class="code-label">Terminal</div>
+                <pre><span class="c-comment"># Créer un nouveau projet React avec Vite</span>
+npm create vite@latest mon-projet -- --template react
+
+<span class="c-comment"># Aller dans le dossier du projet</span>
+<span class="c-function">cd</span> mon-projet
+
+<span class="c-comment"># Installer les dépendances</span>
+npm install
+
+<span class="c-comment"># Démarrer le serveur de développement</span>
+npm run dev</pre>
+            </div>
+
+            <div class="success-box">
+                <strong>Résultat :</strong> Le navigateur s'ouvre sur <code>http://localhost:5173</code> avec la page de démarrage React. Toute modification du code se rafraichit automatiquement (Hot Reload).
+            </div>
+
+            <h3>2.3 Structure du projet créé</h3>
+
+            <div class="code-block">
+                <div class="code-label">Structure</div>
+                <pre>mon-projet/
+├── node_modules/       <span class="c-comment">← Dépendances (ne pas toucher)</span>
+├── public/             <span class="c-comment">← Fichiers statiques (images, favicon...)</span>
+├── src/                <span class="c-comment">← Ton code source (ici on travaille)</span>
+│   ├── App.jsx         <span class="c-comment">← Composant principal</span>
+│   ├── App.css         <span class="c-comment">← Styles du composant App</span>
+│   ├── main.jsx        <span class="c-comment">← Point d'entrée de l'application</span>
+│   └── index.css       <span class="c-comment">← Styles globaux</span>
+├── index.html          <span class="c-comment">← Page HTML unique (SPA)</span>
+├── package.json        <span class="c-comment">← Configuration du projet et dépendances</span>
+└── vite.config.js      <span class="c-comment">← Configuration Vite</span></pre>
+            </div>
+
+            <div class="info-box">
+                <strong>Fichier principal :</strong> On travaille principalement dans le dossier <code>src/</code>. Le fichier <code>main.jsx</code> est le point d'entrée qui injecte notre application dans l'index.html. On créera nos composants dans <code>src/components/</code>.
+            </div>
+
+            <h3>2.4 Les commandes npm essentielles</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Commande</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>npm run dev</code></td><td>Démarrer le serveur de développement (localhost:5173)</td></tr>
+                    <tr><td><code>npm run build</code></td><td>Compiler le projet pour la production</td></tr>
+                    <tr><td><code>npm install</code></td><td>Installer toutes les dépendances du package.json</td></tr>
+                    <tr><td><code>npm install nom-paquet</code></td><td>Installer une nouvelle dépendance</td></tr>
+                    <tr><td><code>npm install -D nom-paquet</code></td><td>Installer une dépendance de développement</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 3 -->
+        <section id="section3" class="page-break">
+            <h2>3. Le JSX</h2>
+
+            <p>Le <span class="highlight">JSX</span> (JavaScript XML) est une syntaxe spéciale qui permet d'écrire du HTML directement dans JavaScript. C'est la base de React.</p>
+
+            <div class="code-block">
+                <div class="code-label">JSX basique</div>
+                <pre><span class="c-comment">// JSX : HTML dans JavaScript</span>
+<span class="c-keyword">const</span> element = (
+  <span class="c-tag">&lt;div</span> <span class="c-attr">className</span>=<span class="c-string">"carte"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;h1&gt;</span>Bonjour React !<span class="c-tag">&lt;/h1&gt;</span>
+    <span class="c-tag">&lt;p&gt;</span>Mon premier composant<span class="c-tag">&lt;/p&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+);</pre>
+            </div>
+
+            <h3>3.1 Différences JSX vs HTML</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>HTML classique</th>
+                        <th>JSX (React)</th>
+                        <th>Raison</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>class="..."</code></td>
+                        <td><code>className="..."</code></td>
+                        <td>class est un mot reservé en JS</td>
+                    </tr>
+                    <tr>
+                        <td><code>for="..."</code></td>
+                        <td><code>htmlFor="..."</code></td>
+                        <td>for est un mot reservé en JS</td>
+                    </tr>
+                    <tr>
+                        <td><code>onclick="..."</code></td>
+                        <td><code>onClick={...}</code></td>
+                        <td>camelCase + accolades pour JS</td>
+                    </tr>
+                    <tr>
+                        <td><code>&lt;input&gt;</code></td>
+                        <td><code>&lt;input /&gt;</code></td>
+                        <td>Tags auto-fermants obligatoires</td>
+                    </tr>
+                    <tr>
+                        <td><code>style="color: red"</code></td>
+                        <td><code>style={{'{{'}}color: 'red'{{'}}'}}</code></td>
+                        <td>style est un objet JS</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.2 Expressions JavaScript dans le JSX</h3>
+
+            <p>On peut insérer n'importe quelle expression JavaScript dans le JSX en utilisant des <strong>accolades { }</strong>.</p>
+
+            <div class="code-block">
+                <div class="code-label">JSX + JavaScript</div>
+                <pre><span class="c-keyword">function</span> <span class="c-function">Bonjour</span>() {
+  <span class="c-keyword">const</span> prenom = <span class="c-string">"Thomas"</span>;
+  <span class="c-keyword">const</span> age = <span class="c-number">30</span>;
+  <span class="c-keyword">const</span> estMajeur = age >= <span class="c-number">18</span>;
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h1&gt;</span>Bonjour {prenom} !<span class="c-tag">&lt;/h1&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>Tu as {age} ans.<span class="c-tag">&lt;/p&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>2 + 2 = {<span class="c-number">2</span> + <span class="c-number">2</span>}<span class="c-tag">&lt;/p&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>{estMajeur ? <span class="c-string">"Majeur"</span> : <span class="c-string">"Mineur"</span>}<span class="c-tag">&lt;/p&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <div class="result-preview">
+                <span class="preview-label">Rendu dans le navigateur</span>
+                <h3 style="color: #333; margin: 0;">Bonjour Thomas !</h3>
+                <p style="margin: 5px 0;">Tu as 30 ans.</p>
+                <p style="margin: 5px 0;">2 + 2 = 4</p>
+                <p style="margin: 5px 0;">Majeur</p>
+            </div>
+
+            <div class="warning-box">
+                <strong>Règle importante :</strong> Un composant React ne peut retourner qu'un seul élément racine. Si tu as plusieurs éléments, les entoure avec une <code>&lt;div&gt;</code> ou un <code>&lt;&gt;&lt;/&gt;</code> (Fragment React).
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">Fragment React</div>
+                <pre><span class="c-comment">// Utiliser un Fragment pour éviter une div inutile</span>
+<span class="c-keyword">return</span> (
+  <span class="c-tag">&lt;&gt;</span>
+    <span class="c-tag">&lt;h1&gt;</span>Titre<span class="c-tag">&lt;/h1&gt;</span>
+    <span class="c-tag">&lt;p&gt;</span>Paragraphe<span class="c-tag">&lt;/p&gt;</span>
+  <span class="c-tag">&lt;/&gt;</span>
+);</pre>
+            </div>
+        </section>
+
+        <!-- SECTION 4 -->
+        <section id="section4" class="page-break">
+            <h2>4. Les Composants</h2>
+
+            <p>Un <span class="highlight">composant</span> est un bloc de code réutilisable qui retourne du JSX. C'est le concept central de React. Pense-y comme à une brique LEGO : on assemble des petits composants pour créer une interface complète.</p>
+
+            <h3>4.1 Créer un composant</h3>
+
+            <div class="code-block">
+                <div class="code-label">MonComposant.jsx</div>
+                <pre><span class="c-comment">// 1. Un composant = une fonction qui retourne du JSX</span>
+<span class="c-comment">// 2. Le nom commence TOUJOURS par une majuscule</span>
+<span class="c-comment">// 3. Un seul export par fichier (bonne pratique)</span>
+
+<span class="c-keyword">function</span> <span class="c-function">Carte</span>() {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div</span> <span class="c-attr">className</span>=<span class="c-string">"carte"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;h2&gt;</span>Thomas Dupont<span class="c-tag">&lt;/h2&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>Développeur Web<span class="c-tag">&lt;/p&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> Carte;</pre>
+            </div>
+
+            <h3>4.2 Utiliser un composant dans un autre</h3>
+
+            <div class="code-block">
+                <div class="code-label">App.jsx</div>
+                <pre><span class="c-comment">// Importer le composant</span>
+<span class="c-keyword">import</span> Carte <span class="c-keyword">from</span> <span class="c-string">'./components/Carte'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">App</span>() {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h1&gt;</span>Mon équipe<span class="c-tag">&lt;/h1&gt;</span>
+
+      <span class="c-comment">// Utiliser le composant comme une balise HTML</span>
+      <span class="c-tag">&lt;Carte /&gt;</span>
+      <span class="c-tag">&lt;Carte /&gt;</span>
+      <span class="c-tag">&lt;Carte /&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> App;</pre>
+            </div>
+
+            <h3>4.3 Organisation des composants</h3>
+
+            <div class="code-block">
+                <div class="code-label">Structure recommandée</div>
+                <pre>src/
+├── components/           <span class="c-comment">← Composants réutilisables</span>
+│   ├── Carte.jsx
+│   ├── Bouton.jsx
+│   ├── Header.jsx
+│   └── Footer.jsx
+├── pages/               <span class="c-comment">← Pages complètes</span>
+│   ├── Accueil.jsx
+│   ├── Contact.jsx
+│   └── APropos.jsx
+├── App.jsx              <span class="c-comment">← Composant racine</span>
+└── main.jsx             <span class="c-comment">← Point d'entrée</span></pre>
+            </div>
+        </section>
+
+        <!-- SECTION 5 -->
+        <section id="section5" class="page-break">
+            <h2>5. Les Props</h2>
+
+            <p>Les <span class="highlight">props</span> (propriétés) permettent de passer des données d'un composant parent à un composant enfant. Elles rendent les composants dynamiques et réutilisables.</p>
+
+            <h3>5.1 Passer des props</h3>
+
+            <div class="code-block">
+                <div class="code-label">App.jsx - Passer des props</div>
+                <pre><span class="c-comment">// On passe les props comme des attributs HTML</span>
+<span class="c-keyword">function</span> <span class="c-function">App</span>() {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;Carte</span>
+        <span class="c-attr">nom</span>=<span class="c-string">"Thomas"</span>
+        <span class="c-attr">metier</span>=<span class="c-string">"Formateur"</span>
+        <span class="c-attr">age</span>=<span class="c-value">{35}</span>
+      <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;Carte</span>
+        <span class="c-attr">nom</span>=<span class="c-string">"Alice"</span>
+        <span class="c-attr">metier</span>=<span class="c-string">"Développeuse"</span>
+        <span class="c-attr">age</span>=<span class="c-value">{28}</span>
+      <span class="c-tag">/&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">Carte.jsx - Recevoir des props</div>
+                <pre><span class="c-comment">// Les props arrivent comme un objet dans la fonction</span>
+<span class="c-keyword">function</span> <span class="c-function">Carte</span>(props) {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div</span> <span class="c-attr">className</span>=<span class="c-string">"carte"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;h2&gt;</span>{props.nom}<span class="c-tag">&lt;/h2&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>{props.metier}<span class="c-tag">&lt;/p&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>{props.age} ans<span class="c-tag">&lt;/p&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-comment">// Version avec destructuring (recommandée)</span>
+<span class="c-keyword">function</span> <span class="c-function">Carte</span>({ nom, metier, age }) {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div</span> <span class="c-attr">className</span>=<span class="c-string">"carte"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;h2&gt;</span>{nom}<span class="c-tag">&lt;/h2&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>{metier}<span class="c-tag">&lt;/p&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>{age} ans<span class="c-tag">&lt;/p&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> Carte;</pre>
+            </div>
+
+            <div class="info-box">
+                <strong>Règle fondamentale :</strong> Les props sont en lecture seule. Un composant ne peut jamais modifier ses propres props. Les données vont toujours du parent vers l'enfant (sens unique).
+            </div>
+
+            <h3>5.2 Props avec valeurs par défaut</h3>
+
+            <div class="code-block">
+                <div class="code-label">Valeurs par défaut</div>
+                <pre><span class="c-keyword">function</span> <span class="c-function">Bouton</span>({ texte = <span class="c-string">"Cliquer"</span>, couleur = <span class="c-string">"bleu"</span>, taille = <span class="c-string">"moyen"</span> }) {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;button</span> <span class="c-attr">className</span>=<span class="c-value">{`btn btn-${couleur} btn-${taille}`}</span><span class="c-tag">&gt;</span>
+      {texte}
+    <span class="c-tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="c-comment">// Utilisation</span>
+<span class="c-tag">&lt;Bouton /&gt;</span>                        <span class="c-comment">← "Cliquer" en bleu moyen</span>
+<span class="c-tag">&lt;Bouton</span> <span class="c-attr">texte</span>=<span class="c-string">"Valider"</span> <span class="c-attr">couleur</span>=<span class="c-string">"vert"</span> <span class="c-tag">/&gt;</span>  <span class="c-comment">← "Valider" en vert</span></pre>
+            </div>
+        </section>
+
+        <!-- SECTION 6 -->
+        <section id="section6" class="page-break">
+            <h2>6. Le State avec useState</h2>
+
+            <p>Le <span class="highlight">state</span> (état) permet à un composant de stocker et gérer ses propres données. Quand le state change, React re-rend automatiquement le composant.</p>
+
+            <div class="hook-card">
+                <div class="hook-title">Hook : useState</div>
+                <div class="hook-body">
+                    <div class="code-block">
+                        <div class="code-label">Syntaxe</div>
+                        <pre><span class="c-keyword">import</span> { useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-comment">// const [valeur, modifieur] = useState(valeurInitiale)</span>
+<span class="c-keyword">const</span> [compteur, setCompteur] = <span class="c-function">useState</span>(<span class="c-number">0</span>);
+<span class="c-keyword">const</span> [nom, setNom] = <span class="c-function">useState</span>(<span class="c-string">""</span>);
+<span class="c-keyword">const</span> [afficher, setAfficher] = <span class="c-function">useState</span>(<span class="c-keyword">false</span>);
+<span class="c-keyword">const</span> [liste, setListe] = <span class="c-function">useState</span>([]);</pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>6.1 Exemple : Compteur</h3>
+
+            <div class="code-block">
+                <div class="code-label">Compteur.jsx</div>
+                <pre><span class="c-keyword">import</span> { useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">Compteur</span>() {
+  <span class="c-keyword">const</span> [count, setCount] = <span class="c-function">useState</span>(<span class="c-number">0</span>);
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h2&gt;</span>Compteur : {count}<span class="c-tag">&lt;/h2&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => setCount(count + 1)}</span><span class="c-tag">&gt;</span>
+        Incrementer
+      <span class="c-tag">&lt;/button&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => setCount(count - 1)}</span><span class="c-tag">&gt;</span>
+        Decrementer
+      <span class="c-tag">&lt;/button&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => setCount(0)}</span><span class="c-tag">&gt;</span>
+        Reset
+      <span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> Compteur;</pre>
+            </div>
+
+            <h3>6.2 Exemple : Formulaire contrôlé</h3>
+
+            <div class="code-block">
+                <div class="code-label">Formulaire.jsx</div>
+                <pre><span class="c-keyword">import</span> { useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">Formulaire</span>() {
+  <span class="c-keyword">const</span> [nom, setNom] = <span class="c-function">useState</span>(<span class="c-string">""</span>);
+  <span class="c-keyword">const</span> [email, setEmail] = <span class="c-function">useState</span>(<span class="c-string">""</span>);
+  <span class="c-keyword">const</span> [message, setMessage] = <span class="c-function">useState</span>(<span class="c-string">""</span>);
+
+  <span class="c-keyword">const</span> <span class="c-function">handleSubmit</span> = (e) => {
+    e.<span class="c-function">preventDefault</span>();
+    console.<span class="c-function">log</span>({ nom, email });
+    <span class="c-function">setMessage</span>(<span class="c-string">`Bonjour ${nom}, votre email est ${email}`</span>);
+  };
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;form</span> <span class="c-attr">onSubmit</span>=<span class="c-value">{handleSubmit}</span><span class="c-tag">&gt;</span>
+        <span class="c-tag">&lt;input</span>
+          <span class="c-attr">type</span>=<span class="c-string">"text"</span>
+          <span class="c-attr">value</span>=<span class="c-value">{nom}</span>
+          <span class="c-attr">onChange</span>=<span class="c-value">{(e) => setNom(e.target.value)}</span>
+          <span class="c-attr">placeholder</span>=<span class="c-string">"Votre nom"</span>
+        <span class="c-tag">/&gt;</span>
+        <span class="c-tag">&lt;input</span>
+          <span class="c-attr">type</span>=<span class="c-string">"email"</span>
+          <span class="c-attr">value</span>=<span class="c-value">{email}</span>
+          <span class="c-attr">onChange</span>=<span class="c-value">{(e) => setEmail(e.target.value)}</span>
+          <span class="c-attr">placeholder</span>=<span class="c-string">"Votre email"</span>
+        <span class="c-tag">/&gt;</span>
+        <span class="c-tag">&lt;button</span> <span class="c-attr">type</span>=<span class="c-string">"submit"</span><span class="c-tag">&gt;</span>Envoyer<span class="c-tag">&lt;/button&gt;</span>
+      <span class="c-tag">&lt;/form&gt;</span>
+
+      {message &amp;&amp; <span class="c-tag">&lt;p&gt;</span>{message}<span class="c-tag">&lt;/p&gt;</span>}
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> Formulaire;</pre>
+            </div>
+        </section>
+
+        <!-- SECTION 7 -->
+        <section id="section7" class="page-break">
+            <h2>7. useEffect</h2>
+
+            <p><span class="highlight">useEffect</span> permet d'exécuter du code quand le composant s'affiche ou quand une donnée change. C'est ici qu'on met les appels API, les timers, etc.</p>
+
+            <div class="hook-card">
+                <div class="hook-title">Hook : useEffect</div>
+                <div class="hook-body">
+                    <div class="code-block">
+                        <div class="code-label">Syntaxe</div>
+                        <pre><span class="c-keyword">import</span> { useEffect } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-comment">// Tableau de dépendances [] = exécuté UNE SEULE FOIS au chargement</span>
+<span class="c-function">useEffect</span>(() => {
+  console.<span class="c-function">log</span>(<span class="c-string">"Composant monté !"</span>);
+}, []);
+
+<span class="c-comment">// Exécuté à chaque fois que 'valeur' change</span>
+<span class="c-function">useEffect</span>(() => {
+  console.<span class="c-function">log</span>(<span class="c-string">"valeur a changé :"</span>, valeur);
+}, [valeur]);
+
+<span class="c-comment">// Sans tableau : exécuté à CHAQUE rendu (déconseillé)</span>
+<span class="c-function">useEffect</span>(() => {
+  console.<span class="c-function">log</span>(<span class="c-string">"Re-rendu !"</span>);
+});</pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>7.1 Exemple : Chargement au démarrage</h3>
+
+            <div class="code-block">
+                <div class="code-label">ChargementData.jsx</div>
+                <pre><span class="c-keyword">import</span> { useState, useEffect } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">ListeUtilisateurs</span>() {
+  <span class="c-keyword">const</span> [users, setUsers] = <span class="c-function">useState</span>([]);
+  <span class="c-keyword">const</span> [loading, setLoading] = <span class="c-function">useState</span>(<span class="c-keyword">true</span>);
+  <span class="c-keyword">const</span> [erreur, setErreur] = <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+
+  <span class="c-comment">// Charger les données au montage du composant</span>
+  <span class="c-function">useEffect</span>(() => {
+    <span class="c-keyword">const</span> <span class="c-function">fetchUsers</span> = <span class="c-keyword">async</span> () => {
+      <span class="c-keyword">try</span> {
+        <span class="c-keyword">const</span> response = <span class="c-keyword">await</span> <span class="c-function">fetch</span>(<span class="c-string">'https://jsonplaceholder.typicode.com/users'</span>);
+        <span class="c-keyword">const</span> data = <span class="c-keyword">await</span> response.<span class="c-function">json</span>();
+        <span class="c-function">setUsers</span>(data);
+      } <span class="c-keyword">catch</span> (err) {
+        <span class="c-function">setErreur</span>(<span class="c-string">"Erreur lors du chargement"</span>);
+      } <span class="c-keyword">finally</span> {
+        <span class="c-function">setLoading</span>(<span class="c-keyword">false</span>);
+      }
+    };
+
+    <span class="c-function">fetchUsers</span>();
+  }, []); <span class="c-comment">← tableau vide = une seule fois au chargement</span>
+
+  <span class="c-keyword">if</span> (loading) <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>Chargement...<span class="c-tag">&lt;/p&gt;</span>;
+  <span class="c-keyword">if</span> (erreur) <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>{erreur}<span class="c-tag">&lt;/p&gt;</span>;
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;ul&gt;</span>
+      {users.<span class="c-function">map</span>(user => (
+        <span class="c-tag">&lt;li</span> <span class="c-attr">key</span>=<span class="c-value">{user.id}</span><span class="c-tag">&gt;</span>{user.name}<span class="c-tag">&lt;/li&gt;</span>
+      ))}
+    <span class="c-tag">&lt;/ul&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> ListeUtilisateurs;</pre>
+            </div>
+        </section>
+
+        <!-- SECTION 8 -->
+        <section id="section8" class="page-break">
+            <h2>8. Listes et Événements</h2>
+
+            <h3>8.1 Afficher une liste avec .map()</h3>
+
+            <p>En React, on utilise <code>.map()</code> pour afficher une liste d'éléments. Chaque élément doit avoir une <span class="highlight">prop key unique</span>.</p>
+
+            <div class="code-block">
+                <div class="code-label">Liste.jsx</div>
+                <pre><span class="c-keyword">function</span> <span class="c-function">ListeProduits</span>() {
+  <span class="c-keyword">const</span> produits = [
+    { id: <span class="c-number">1</span>, nom: <span class="c-string">"Laptop"</span>, prix: <span class="c-number">999</span> },
+    { id: <span class="c-number">2</span>, nom: <span class="c-string">"Souris"</span>, prix: <span class="c-number">29</span> },
+    { id: <span class="c-number">3</span>, nom: <span class="c-string">"Clavier"</span>, prix: <span class="c-number">79</span> },
+  ];
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;ul&gt;</span>
+      {produits.<span class="c-function">map</span>((produit) => (
+        <span class="c-comment">// La prop key est OBLIGATOIRE dans les listes</span>
+        <span class="c-tag">&lt;li</span> <span class="c-attr">key</span>=<span class="c-value">{produit.id}</span><span class="c-tag">&gt;</span>
+          {produit.nom} - {produit.prix} euros
+        <span class="c-tag">&lt;/li&gt;</span>
+      ))}
+    <span class="c-tag">&lt;/ul&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <h3>8.2 Affichage conditionnel</h3>
+
+            <div class="code-block">
+                <div class="code-label">Affichage conditionnel</div>
+                <pre><span class="c-keyword">function</span> <span class="c-function">Alerte</span>({ estConnecte, prenom }) {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-comment">// Méthode 1 : opérateur ternaire</span>
+      {estConnecte ? (
+        <span class="c-tag">&lt;p&gt;</span>Bienvenue {prenom} !<span class="c-tag">&lt;/p&gt;</span>
+      ) : (
+        <span class="c-tag">&lt;p&gt;</span>Veuillez vous connecter.<span class="c-tag">&lt;/p&gt;</span>
+      )}
+
+      <span class="c-comment">// Méthode 2 : && (affiche seulement si vrai)</span>
+      {estConnecte &amp;&amp; <span class="c-tag">&lt;button&gt;</span>Deconnexion<span class="c-tag">&lt;/button&gt;</span>}
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <h3>8.3 Gérer les événements</h3>
+
+            <div class="code-block">
+                <div class="code-label">Événements courants</div>
+                <pre><span class="c-keyword">function</span> <span class="c-function">Interactions</span>() {
+  <span class="c-keyword">const</span> <span class="c-function">handleClick</span> = () => alert(<span class="c-string">"Bouton cliqué !"</span>);
+  <span class="c-keyword">const</span> <span class="c-function">handleChange</span> = (e) => console.<span class="c-function">log</span>(e.target.value);
+  <span class="c-keyword">const</span> <span class="c-function">handleSubmit</span> = (e) => { e.<span class="c-function">preventDefault</span>(); };
+  <span class="c-keyword">const</span> <span class="c-function">handleHover</span> = () => console.<span class="c-function">log</span>(<span class="c-string">"Survol !"</span>);
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{handleClick}</span><span class="c-tag">&gt;</span>Cliquer<span class="c-tag">&lt;/button&gt;</span>
+      <span class="c-tag">&lt;input</span> <span class="c-attr">onChange</span>=<span class="c-value">{handleChange}</span> <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;form</span> <span class="c-attr">onSubmit</span>=<span class="c-value">{handleSubmit}</span><span class="c-tag">&gt;</span>...<span class="c-tag">&lt;/form&gt;</span>
+      <span class="c-tag">&lt;div</span> <span class="c-attr">onMouseEnter</span>=<span class="c-value">{handleHover}</span><span class="c-tag">&gt;</span>Survole-moi<span class="c-tag">&lt;/div&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}</pre>
+            </div>
+        </section>
+
+        <!-- SECTION 9 -->
+        <section id="section9" class="page-break">
+            <h2>9. Consommer une API REST avec React</h2>
+
+            <p>Voici un exemple complet qui combine <code>useState</code>, <code>useEffect</code> et <code>fetch()</code> pour afficher des données depuis une API.</p>
+
+            <div class="code-block">
+                <div class="code-label">AppPokemon.jsx - Exemple complet</div>
+                <pre><span class="c-keyword">import</span> { useState, useEffect } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-comment">// Composant carte Pokemon</span>
+<span class="c-keyword">function</span> <span class="c-function">CartePokemon</span>({ pokemon }) {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div</span> <span class="c-attr">className</span>=<span class="c-string">"carte"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;img</span> <span class="c-attr">src</span>=<span class="c-value">{pokemon.sprites.front_default}</span> <span class="c-attr">alt</span>=<span class="c-value">{pokemon.name}</span> <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;h3&gt;</span>{pokemon.name}<span class="c-tag">&lt;/h3&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>HP : {pokemon.stats[<span class="c-number">0</span>].base_stat}<span class="c-tag">&lt;/p&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-comment">// Composant principal avec recherche</span>
+<span class="c-keyword">function</span> <span class="c-function">AppPokemon</span>() {
+  <span class="c-keyword">const</span> [recherche, setRecherche] = <span class="c-function">useState</span>(<span class="c-string">"pikachu"</span>);
+  <span class="c-keyword">const</span> [pokemon, setPokemon] = <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+  <span class="c-keyword">const</span> [loading, setLoading] = <span class="c-function">useState</span>(<span class="c-keyword">false</span>);
+  <span class="c-keyword">const</span> [erreur, setErreur] = <span class="c-function">useState</span>(<span class="c-string">""</span>);
+
+  <span class="c-keyword">const</span> <span class="c-function">chercher</span> = <span class="c-keyword">async</span> () => {
+    <span class="c-function">setLoading</span>(<span class="c-keyword">true</span>);
+    <span class="c-function">setErreur</span>(<span class="c-string">""</span>);
+
+    <span class="c-keyword">try</span> {
+      <span class="c-keyword">const</span> res = <span class="c-keyword">await</span> <span class="c-function">fetch</span>(
+        <span class="c-string">`https://pokeapi.co/api/v2/pokemon/${recherche.toLowerCase()}`</span>
+      );
+      <span class="c-keyword">if</span> (!res.ok) <span class="c-keyword">throw new</span> Error(<span class="c-string">"Pokemon non trouvé"</span>);
+      <span class="c-keyword">const</span> data = <span class="c-keyword">await</span> res.<span class="c-function">json</span>();
+      <span class="c-function">setPokemon</span>(data);
+    } <span class="c-keyword">catch</span> (err) {
+      <span class="c-function">setErreur</span>(err.message);
+      <span class="c-function">setPokemon</span>(<span class="c-keyword">null</span>);
+    } <span class="c-keyword">finally</span> {
+      <span class="c-function">setLoading</span>(<span class="c-keyword">false</span>);
+    }
+  };
+
+  <span class="c-comment">// Charger Pikachu au démarrage</span>
+  <span class="c-function">useEffect</span>(() => { <span class="c-function">chercher</span>(); }, []);
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h1&gt;</span>Recherche Pokemon<span class="c-tag">&lt;/h1&gt;</span>
+
+      <span class="c-tag">&lt;input</span>
+        <span class="c-attr">value</span>=<span class="c-value">{recherche}</span>
+        <span class="c-attr">onChange</span>=<span class="c-value">{(e) => setRecherche(e.target.value)}</span>
+        <span class="c-attr">placeholder</span>=<span class="c-string">"Nom du Pokemon"</span>
+      <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{chercher}</span><span class="c-tag">&gt;</span>Rechercher<span class="c-tag">&lt;/button&gt;</span>
+
+      {loading &amp;&amp; <span class="c-tag">&lt;p&gt;</span>Chargement...<span class="c-tag">&lt;/p&gt;</span>}
+      {erreur &amp;&amp; <span class="c-tag">&lt;p</span> <span class="c-attr">style</span>=<span class="c-value">{{'{{'}}color: 'red'{{'}}'}}</span><span class="c-tag">&gt;</span>{erreur}<span class="c-tag">&lt;/p&gt;</span>}
+      {pokemon &amp;&amp; <span class="c-tag">&lt;CartePokemon</span> <span class="c-attr">pokemon</span>=<span class="c-value">{pokemon}</span> <span class="c-tag">/&gt;</span>}
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> AppPokemon;</pre>
+            </div>
+
+            <div class="diagram">
+                <div class="diagram-header">Flux de données dans ce composant</div>
+                <div class="diagram-step">
+                    <span class="step-label">1. Montage :</span>
+                    useEffect déclenche chercher() → appel API PokéAPI
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">2. Loading :</span>
+                    setLoading(true) → affiche "Chargement..."
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">3. Réponse API :</span>
+                    setPokemon(data) → React re-rend le composant
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">4. Affichage :</span>
+                    CartePokemon reçoit pokemon en prop → affiche les données
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">5. Nouvelle recherche :</span>
+                    L'utilisateur tape un nom → clique "Rechercher" → chercher() relancé
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 10 -->
+        <section id="section10" class="page-break">
+            <h2>10. Exercices Pratiques</h2>
+
+            <div class="exercise">
+                <h4>Exercice 1 : Compteur personnalisé</h4>
+                <p><strong>Objectif :</strong> Créer un composant Compteur avec useState.</p>
+                <ol style="margin-left: 20px;">
+                    <li>Créer un projet React avec Vite</li>
+                    <li>Créer un composant <code>Compteur.jsx</code></li>
+                    <li>Ajouter un state <code>count</code> initialisé à 0</li>
+                    <li>Ajouter 3 boutons : Incrémenter (+1), Décrémenter (-1), Réinitialiser (0)</li>
+                    <li>Bonus : empêcher le compteur de passer en dessous de 0</li>
+                    <li>Bonus : changer la couleur du chiffre selon la valeur (vert positif, rouge négatif)</li>
+                </ol>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercice 2 : Liste de tâches (Todo List)</h4>
+                <p><strong>Objectif :</strong> Créer une application de gestion de tâches.</p>
+                <ol style="margin-left: 20px;">
+                    <li>Créer un composant <code>TodoApp.jsx</code></li>
+                    <li>State : une liste de tâches (tableau) et un input texte</li>
+                    <li>Fonctionnalité : ajouter une tâche via un formulaire</li>
+                    <li>Fonctionnalité : supprimer une tâche avec un bouton "Supprimer"</li>
+                    <li>Fonctionnalité : marquer une tâche comme terminée (ligne barrée)</li>
+                    <li>Afficher le nombre de tâches restantes</li>
+                </ol>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercice 3 : Liste d'utilisateurs depuis une API</h4>
+                <p><strong>Objectif :</strong> Utiliser useState + useEffect + fetch() ensemble.</p>
+                <ol style="margin-left: 20px;">
+                    <li>Créer un composant <code>ListeUsers.jsx</code></li>
+                    <li>Au chargement, récupérer les utilisateurs depuis <code>jsonplaceholder.typicode.com/users</code></li>
+                    <li>Afficher un message "Chargement..." pendant la requête</li>
+                    <li>Afficher les utilisateurs dans des cartes (nom, email, ville)</li>
+                    <li>Ajouter une barre de recherche pour filtrer par nom</li>
+                    <li>Bonus : cliquer sur un utilisateur affiche ses détails complets</li>
+                </ol>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercice 4 : Météo avec OpenWeatherMap</h4>
+                <p><strong>Objectif :</strong> Projet complet avec API réelle.</p>
+                <ol style="margin-left: 20px;">
+                    <li>Créer un compte sur <code>openweathermap.org</code> et obtenir une clé API gratuite</li>
+                    <li>Créer un composant <code>Meteo.jsx</code></li>
+                    <li>Ajouter un input pour saisir une ville</li>
+                    <li>Afficher : température, description, icône météo, humidité, vent</li>
+                    <li>Gérer les erreurs (ville introuvable)</li>
+                    <li>Bonus : afficher les prévisions sur 5 jours</li>
+                </ol>
+            </div>
+
+            <h3>Récapitulatif des concepts clés</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Description</th>
+                        <th>Syntaxe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Composant</strong></td>
+                        <td>Bloc réutilisable qui retourne du JSX</td>
+                        <td><code>function MonComposant() {'{'}...{'}'}</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>JSX</strong></td>
+                        <td>HTML dans JavaScript</td>
+                        <td><code>return (&lt;div&gt;...&lt;/div&gt;)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Props</strong></td>
+                        <td>Données passées parent → enfant</td>
+                        <td><code>&lt;Comp nom="Alice" /&gt;</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>useState</strong></td>
+                        <td>Données locales du composant</td>
+                        <td><code>const [val, setVal] = useState(0)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>useEffect</strong></td>
+                        <td>Effets de bord (API, timers...)</td>
+                        <td><code>useEffect(() =&gt; {'{'}...{'}'}, [])</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>.map()</strong></td>
+                        <td>Afficher une liste</td>
+                        <td><code>{'{'}liste.map(item =&gt; &lt;li key={'{'}item.id{'}'}&gt;...&lt;/li&gt;){'}'}</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Événements</strong></td>
+                        <td>Interactions utilisateur</td>
+                        <td><code>onClick={'{'}fn{'}'} onChange={'{'}fn{'}'}</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="diagram">
+                <div class="diagram-header">Ressources pour aller plus loin</div>
+                <div class="diagram-step">
+                    <span class="step-label">Documentation officielle :</span>
+                    react.dev (en anglais, très bien faite avec des exercices interactifs)
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">React Router :</span>
+                    npmjs.com/package/react-router-dom (navigation entre pages)
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Axios :</span>
+                    npmjs.com/package/axios (alternative à fetch(), plus simple pour les APIs)
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Tailwind CSS avec React :</span>
+                    tailwindcss.com (framework CSS très utilisé avec React)
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Next.js :</span>
+                    nextjs.org (framework React pour les applications avancées avec SSR)
+                </div>
+            </div>
+
+            <div class="success-box" style="margin-top: 40px; text-align: center;">
+                <strong>Vous avez les bases de React !</strong><br>
+                Composants, Props, useState, useEffect, appels API - vous pouvez maintenant créer des applications web modernes et dynamiques.
+            </div>
+
+        </section>
+
+        <!-- SECTION 11 : REACT ROUTER -->
+        <section id="section11" class="page-break">
+            <h2>11. React Router - Navigation entre pages</h2>
+
+            <p>React Router est la bibliothèque standard pour gérer la <span class="highlight">navigation entre pages</span> dans une application React. Sans React Router, on ne peut pas avoir plusieurs pages dans une SPA.</p>
+
+            <h3>11.1 Installation</h3>
+
+            <div class="code-block">
+                <div class="code-label">Terminal</div>
+                <pre><span class="c-comment"># Installer React Router</span>
+npm install react-router-dom</pre>
+            </div>
+
+            <h3>11.2 Concepts essentiels</h3>
+
+            <div class="diagram">
+                <div class="diagram-header">Les 4 composants principaux de React Router</div>
+                <div class="diagram-step">
+                    <span class="step-label">BrowserRouter :</span>
+                    Enveloppe toute l'application - active le système de routing (dans main.jsx)
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Routes :</span>
+                    Conteneur de toutes les routes - remplace l'ancien Switch
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Route :</span>
+                    Associe une URL (/accueil, /contact) à un composant page
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Link :</span>
+                    Remplace les balises &lt;a href&gt; - navigation sans rechargement de page
+                </div>
+            </div>
+
+            <h3>11.3 Mise en place</h3>
+
+            <div class="code-block">
+                <div class="code-label">main.jsx - Activer le Router</div>
+                <pre><span class="c-keyword">import</span> { StrictMode } <span class="c-keyword">from</span> <span class="c-string">'react'</span>
+<span class="c-keyword">import</span> { createRoot } <span class="c-keyword">from</span> <span class="c-string">'react-dom/client'</span>
+<span class="c-keyword">import</span> { BrowserRouter } <span class="c-keyword">from</span> <span class="c-string">'react-router-dom'</span>
+<span class="c-keyword">import</span> App <span class="c-keyword">from</span> <span class="c-string">'./App.jsx'</span>
+
+<span class="c-function">createRoot</span>(document.<span class="c-function">getElementById</span>(<span class="c-string">'root'</span>)).<span class="c-function">render</span>(
+  <span class="c-tag">&lt;StrictMode&gt;</span>
+    <span class="c-tag">&lt;BrowserRouter&gt;</span>
+      <span class="c-tag">&lt;App /&gt;</span>
+    <span class="c-tag">&lt;/BrowserRouter&gt;</span>
+  <span class="c-tag">&lt;/StrictMode&gt;</span>
+)</pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">App.jsx - Définir les routes</div>
+                <pre><span class="c-keyword">import</span> { Routes, Route } <span class="c-keyword">from</span> <span class="c-string">'react-router-dom'</span>
+<span class="c-keyword">import</span> Header <span class="c-keyword">from</span> <span class="c-string">'./components/Header'</span>
+<span class="c-keyword">import</span> Accueil <span class="c-keyword">from</span> <span class="c-string">'./pages/Accueil'</span>
+<span class="c-keyword">import</span> Produits <span class="c-keyword">from</span> <span class="c-string">'./pages/Produits'</span>
+<span class="c-keyword">import</span> Contact <span class="c-keyword">from</span> <span class="c-string">'./pages/Contact'</span>
+<span class="c-keyword">import</span> PageNotFound <span class="c-keyword">from</span> <span class="c-string">'./pages/PageNotFound'</span>
+
+<span class="c-keyword">function</span> <span class="c-function">App</span>() {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;&gt;</span>
+      <span class="c-tag">&lt;Header /&gt;</span>  <span class="c-comment">← toujours visible sur toutes les pages</span>
+
+      <span class="c-tag">&lt;Routes&gt;</span>
+        <span class="c-tag">&lt;Route</span> <span class="c-attr">path</span>=<span class="c-string">"/"</span>          <span class="c-attr">element</span>=<span class="c-value">{&lt;Accueil /&gt;}</span>      <span class="c-tag">/&gt;</span>
+        <span class="c-tag">&lt;Route</span> <span class="c-attr">path</span>=<span class="c-string">"/produits"</span>  <span class="c-attr">element</span>=<span class="c-value">{&lt;Produits /&gt;}</span>     <span class="c-tag">/&gt;</span>
+        <span class="c-tag">&lt;Route</span> <span class="c-attr">path</span>=<span class="c-string">"/contact"</span>   <span class="c-attr">element</span>=<span class="c-value">{&lt;Contact /&gt;}</span>      <span class="c-tag">/&gt;</span>
+        <span class="c-tag">&lt;Route</span> <span class="c-attr">path</span>=<span class="c-string">"*"</span>          <span class="c-attr">element</span>=<span class="c-value">{&lt;PageNotFound /&gt;}</span>  <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;/Routes&gt;</span>
+    <span class="c-tag">&lt;/&gt;</span>
+  )
+}
+
+<span class="c-keyword">export default</span> App</pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">Header.jsx - Navigation avec Link</div>
+                <pre><span class="c-keyword">import</span> { Link, NavLink } <span class="c-keyword">from</span> <span class="c-string">'react-router-dom'</span>
+
+<span class="c-keyword">function</span> <span class="c-function">Header</span>() {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;nav&gt;</span>
+      <span class="c-comment">// Link : navigation simple sans rechargement</span>
+      <span class="c-tag">&lt;Link</span> <span class="c-attr">to</span>=<span class="c-string">"/"</span><span class="c-tag">&gt;</span>Accueil<span class="c-tag">&lt;/Link&gt;</span>
+      <span class="c-tag">&lt;Link</span> <span class="c-attr">to</span>=<span class="c-string">"/produits"</span><span class="c-tag">&gt;</span>Produits<span class="c-tag">&lt;/Link&gt;</span>
+
+      <span class="c-comment">// NavLink : ajoute automatiquement la class "active"</span>
+      <span class="c-comment">// sur le lien de la page actuelle</span>
+      <span class="c-tag">&lt;NavLink</span>
+        <span class="c-attr">to</span>=<span class="c-string">"/contact"</span>
+        <span class="c-attr">className</span>=<span class="c-value">{({ isActive }) => isActive ? 'lien-actif' : 'lien'}</span>
+      <span class="c-tag">&gt;</span>
+        Contact
+      <span class="c-tag">&lt;/NavLink&gt;</span>
+    <span class="c-tag">&lt;/nav&gt;</span>
+  )
+}
+
+<span class="c-keyword">export default</span> Header</pre>
+            </div>
+
+            <h3>11.4 Routes dynamiques avec paramètres</h3>
+
+            <p>Une route dynamique permet d'afficher un produit, un utilisateur, un article selon son ID dans l'URL.</p>
+
+            <div class="code-block">
+                <div class="code-label">App.jsx - Route avec paramètre :id</div>
+                <pre><span class="c-comment">// Définir la route avec un paramètre :id</span>
+<span class="c-tag">&lt;Route</span> <span class="c-attr">path</span>=<span class="c-string">"/produits/:id"</span> <span class="c-attr">element</span>=<span class="c-value">{&lt;DetailProduit /&gt;}</span> <span class="c-tag">/&gt;</span>
+
+<span class="c-comment">// URL résultante : /produits/1, /produits/42, /produits/abc</span></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">DetailProduit.jsx - Récupérer le paramètre</div>
+                <pre><span class="c-keyword">import</span> { useParams } <span class="c-keyword">from</span> <span class="c-string">'react-router-dom'</span>
+<span class="c-keyword">import</span> { useState, useEffect } <span class="c-keyword">from</span> <span class="c-string">'react'</span>
+
+<span class="c-keyword">function</span> <span class="c-function">DetailProduit</span>() {
+  <span class="c-comment">// useParams récupère les paramètres de l'URL</span>
+  <span class="c-keyword">const</span> { id } = <span class="c-function">useParams</span>()
+  <span class="c-keyword">const</span> [produit, setProduit] = <span class="c-function">useState</span>(<span class="c-keyword">null</span>)
+
+  <span class="c-function">useEffect</span>(() => {
+    <span class="c-function">fetch</span>(<span class="c-string">`https://fakestoreapi.com/products/${id}`</span>)
+      .<span class="c-function">then</span>(res => res.<span class="c-function">json</span>())
+      .<span class="c-function">then</span>(data => <span class="c-function">setProduit</span>(data))
+  }, [id]) <span class="c-comment">← se relance si l'id change dans l'URL</span>
+
+  <span class="c-keyword">if</span> (!produit) <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>Chargement...<span class="c-tag">&lt;/p&gt;</span>
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h1&gt;</span>{produit.title}<span class="c-tag">&lt;/h1&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>{produit.price} euros<span class="c-tag">&lt;/p&gt;</span>
+      <span class="c-tag">&lt;img</span> <span class="c-attr">src</span>=<span class="c-value">{produit.image}</span> <span class="c-attr">alt</span>=<span class="c-value">{produit.title}</span> <span class="c-tag">/&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="c-keyword">export default</span> DetailProduit</pre>
+            </div>
+
+            <h3>11.5 Navigation programmatique</h3>
+
+            <p>Parfois on veut naviguer vers une autre page après une action (après un login, après un formulaire...).</p>
+
+            <div class="code-block">
+                <div class="code-label">useNavigate - Redirection après action</div>
+                <pre><span class="c-keyword">import</span> { useNavigate } <span class="c-keyword">from</span> <span class="c-string">'react-router-dom'</span>
+
+<span class="c-keyword">function</span> <span class="c-function">Connexion</span>() {
+  <span class="c-keyword">const</span> navigate = <span class="c-function">useNavigate</span>()
+
+  <span class="c-keyword">const</span> <span class="c-function">handleLogin</span> = () => {
+    <span class="c-comment">// Après connexion réussie → rediriger vers l'accueil</span>
+    navigate(<span class="c-string">'/'</span>)
+
+    <span class="c-comment">// Revenir en arrière</span>
+    navigate(-<span class="c-number">1</span>)
+
+    <span class="c-comment">// Rediriger sans pouvoir revenir en arrière</span>
+    navigate(<span class="c-string">'/dashboard'</span>, { replace: <span class="c-keyword">true</span> })
+  }
+
+  <span class="c-keyword">return</span> <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{handleLogin}</span><span class="c-tag">&gt;</span>Se connecter<span class="c-tag">&lt;/button&gt;</span>
+}
+
+<span class="c-keyword">export default</span> Connexion</pre>
+            </div>
+
+            <h3>11.6 Tableau récapitulatif React Router</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Composant / Hook</th>
+                        <th>Rôle</th>
+                        <th>Exemple</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>BrowserRouter</code></td>
+                        <td>Active le routing dans l'app</td>
+                        <td>Dans main.jsx autour de &lt;App /&gt;</td>
+                    </tr>
+                    <tr>
+                        <td><code>Routes</code></td>
+                        <td>Conteneur des routes</td>
+                        <td>Dans App.jsx</td>
+                    </tr>
+                    <tr>
+                        <td><code>Route</code></td>
+                        <td>URL → Composant</td>
+                        <td>&lt;Route path="/contact" element={'{&lt;Contact /&gt;}'} /&gt;</td>
+                    </tr>
+                    <tr>
+                        <td><code>Link</code></td>
+                        <td>Navigation sans rechargement</td>
+                        <td>&lt;Link to="/contact"&gt;Contact&lt;/Link&gt;</td>
+                    </tr>
+                    <tr>
+                        <td><code>NavLink</code></td>
+                        <td>Link avec classe active auto</td>
+                        <td>Pour la navbar</td>
+                    </tr>
+                    <tr>
+                        <td><code>useParams()</code></td>
+                        <td>Récupère les paramètres URL</td>
+                        <td>const {'{ id }'} = useParams()</td>
+                    </tr>
+                    <tr>
+                        <td><code>useNavigate()</code></td>
+                        <td>Navigation programmatique</td>
+                        <td>navigate('/accueil')</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 12 : PANIER -->
+        <section id="section12" class="page-break">
+            <h2>12. Gestion d'un Panier E-commerce</h2>
+
+            <p>Le panier est un excellent exercice pour maîtriser <span class="highlight">useState avancé</span>, le passage de données entre composants, et la logique métier en React.</p>
+
+            <h3>12.1 Structure du projet panier</h3>
+
+            <div class="code-block">
+                <div class="code-label">Structure</div>
+                <pre>src/
+├── components/
+│   ├── CarteProduit.jsx   <span class="c-comment">← affiche un produit avec bouton "Ajouter"</span>
+│   ├── Panier.jsx         <span class="c-comment">← affiche les articles du panier</span>
+│   ├── LignePanier.jsx    <span class="c-comment">← une ligne du panier (produit + quantité)</span>
+│   └── Header.jsx         <span class="c-comment">← navbar avec compteur panier</span>
+├── pages/
+│   ├── Boutique.jsx       <span class="c-comment">← liste des produits</span>
+│   └── MonPanier.jsx      <span class="c-comment">← page panier complète</span>
+└── App.jsx</pre>
+            </div>
+
+            <h3>12.2 Le state du panier dans App.jsx</h3>
+
+            <div class="code-block">
+                <div class="code-label">App.jsx - State central du panier</div>
+                <pre><span class="c-keyword">import</span> { useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>
+<span class="c-keyword">import</span> { Routes, Route } <span class="c-keyword">from</span> <span class="c-string">'react-router-dom'</span>
+<span class="c-keyword">import</span> Header <span class="c-keyword">from</span> <span class="c-string">'./components/Header'</span>
+<span class="c-keyword">import</span> Boutique <span class="c-keyword">from</span> <span class="c-string">'./pages/Boutique'</span>
+<span class="c-keyword">import</span> MonPanier <span class="c-keyword">from</span> <span class="c-string">'./pages/MonPanier'</span>
+
+<span class="c-keyword">function</span> <span class="c-function">App</span>() {
+  <span class="c-comment">// Le panier est un tableau d'objets { ...produit, quantite }</span>
+  <span class="c-keyword">const</span> [panier, setPanier] = <span class="c-function">useState</span>([])
+
+  <span class="c-comment">// Ajouter un produit au panier</span>
+  <span class="c-keyword">const</span> <span class="c-function">ajouterAuPanier</span> = (produit) => {
+    setPanier(panierActuel => {
+      <span class="c-comment">// Le produit est déjà dans le panier ?</span>
+      <span class="c-keyword">const</span> existe = panierActuel.<span class="c-function">find</span>(item => item.id === produit.id)
+
+      <span class="c-keyword">if</span> (existe) {
+        <span class="c-comment">// Oui → augmenter la quantité</span>
+        <span class="c-keyword">return</span> panierActuel.<span class="c-function">map</span>(item =>
+          item.id === produit.id
+            ? { ...item, quantite: item.quantite + <span class="c-number">1</span> }
+            : item
+        )
+      } <span class="c-keyword">else</span> {
+        <span class="c-comment">// Non → l'ajouter avec quantite = 1</span>
+        <span class="c-keyword">return</span> [...panierActuel, { ...produit, quantite: <span class="c-number">1</span> }]
+      }
+    })
+  }
+
+  <span class="c-comment">// Retirer un produit du panier</span>
+  <span class="c-keyword">const</span> <span class="c-function">retirerDuPanier</span> = (id) => {
+    setPanier(panierActuel =>
+      panierActuel.<span class="c-function">filter</span>(item => item.id !== id)
+    )
+  }
+
+  <span class="c-comment">// Modifier la quantité d'un article</span>
+  <span class="c-keyword">const</span> <span class="c-function">modifierQuantite</span> = (id, quantite) => {
+    <span class="c-keyword">if</span> (quantite <= <span class="c-number">0</span>) {
+      <span class="c-function">retirerDuPanier</span>(id)
+      <span class="c-keyword">return</span>
+    }
+    setPanier(panierActuel =>
+      panierActuel.<span class="c-function">map</span>(item =>
+        item.id === id ? { ...item, quantite } : item
+      )
+    )
+  }
+
+  <span class="c-comment">// Vider le panier</span>
+  <span class="c-keyword">const</span> <span class="c-function">viderPanier</span> = () => <span class="c-function">setPanier</span>([])
+
+  <span class="c-comment">// Nombre total d'articles</span>
+  <span class="c-keyword">const</span> nbArticles = panier.<span class="c-function">reduce</span>((total, item) => total + item.quantite, <span class="c-number">0</span>)
+
+  <span class="c-comment">// Total du panier</span>
+  <span class="c-keyword">const</span> totalPanier = panier.<span class="c-function">reduce</span>(
+    (total, item) => total + item.prix * item.quantite, <span class="c-number">0</span>
+  )
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;&gt;</span>
+      <span class="c-tag">&lt;Header</span> <span class="c-attr">nbArticles</span>=<span class="c-value">{nbArticles}</span> <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;Routes&gt;</span>
+        <span class="c-tag">&lt;Route</span> <span class="c-attr">path</span>=<span class="c-string">"/"</span>       <span class="c-attr">element</span>=<span class="c-value">{&lt;Boutique ajouterAuPanier={ajouterAuPanier} /&gt;}</span> <span class="c-tag">/&gt;</span>
+        <span class="c-tag">&lt;Route</span> <span class="c-attr">path</span>=<span class="c-string">"/panier"</span> <span class="c-attr">element</span>=<span class="c-value">{</span>
+          <span class="c-tag">&lt;MonPanier</span>
+            <span class="c-attr">panier</span>=<span class="c-value">{panier}</span>
+            <span class="c-attr">retirerDuPanier</span>=<span class="c-value">{retirerDuPanier}</span>
+            <span class="c-attr">modifierQuantite</span>=<span class="c-value">{modifierQuantite}</span>
+            <span class="c-attr">viderPanier</span>=<span class="c-value">{viderPanier}</span>
+            <span class="c-attr">total</span>=<span class="c-value">{totalPanier}</span>
+          <span class="c-tag">/&gt;</span>
+        <span class="c-value">}</span> <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;/Routes&gt;</span>
+    <span class="c-tag">&lt;/&gt;</span>
+  )
+}
+
+<span class="c-keyword">export default</span> App</pre>
+            </div>
+
+            <h3>12.3 Composant CarteProduit</h3>
+
+            <div class="code-block">
+                <div class="code-label">CarteProduit.jsx</div>
+                <pre><span class="c-keyword">function</span> <span class="c-function">CarteProduit</span>({ produit, ajouterAuPanier }) {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div</span> <span class="c-attr">className</span>=<span class="c-string">"carte-produit"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;img</span> <span class="c-attr">src</span>=<span class="c-value">{produit.image}</span> <span class="c-attr">alt</span>=<span class="c-value">{produit.nom}</span> <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;h3&gt;</span>{produit.nom}<span class="c-tag">&lt;/h3&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>{produit.prix.toFixed(<span class="c-number">2</span>)} euros<span class="c-tag">&lt;/p&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => ajouterAuPanier(produit)}</span><span class="c-tag">&gt;</span>
+        Ajouter au panier
+      <span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="c-keyword">export default</span> CarteProduit</pre>
+            </div>
+
+            <h3>12.4 Page MonPanier</h3>
+
+            <div class="code-block">
+                <div class="code-label">MonPanier.jsx</div>
+                <pre><span class="c-keyword">function</span> <span class="c-function">MonPanier</span>({ panier, retirerDuPanier, modifierQuantite, viderPanier, total }) {
+  <span class="c-keyword">if</span> (panier.length === <span class="c-number">0</span>) {
+    <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>Votre panier est vide.<span class="c-tag">&lt;/p&gt;</span>
+  }
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h1&gt;</span>Mon panier ({panier.length} articles)<span class="c-tag">&lt;/h1&gt;</span>
+
+      {panier.<span class="c-function">map</span>(item => (
+        <span class="c-tag">&lt;div</span> <span class="c-attr">key</span>=<span class="c-value">{item.id}</span> <span class="c-attr">className</span>=<span class="c-string">"ligne-panier"</span><span class="c-tag">&gt;</span>
+          <span class="c-tag">&lt;span&gt;</span>{item.nom}<span class="c-tag">&lt;/span&gt;</span>
+
+          <span class="c-comment">// Contrôle de quantité</span>
+          <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => modifierQuantite(item.id, item.quantite - 1)}</span><span class="c-tag">&gt;</span>-<span class="c-tag">&lt;/button&gt;</span>
+          <span class="c-tag">&lt;span&gt;</span>{item.quantite}<span class="c-tag">&lt;/span&gt;</span>
+          <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => modifierQuantite(item.id, item.quantite + 1)}</span><span class="c-tag">&gt;</span>+<span class="c-tag">&lt;/button&gt;</span>
+
+          <span class="c-tag">&lt;span&gt;</span>{(item.prix * item.quantite).toFixed(<span class="c-number">2</span>)} euros<span class="c-tag">&lt;/span&gt;</span>
+          <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => retirerDuPanier(item.id)}</span><span class="c-tag">&gt;</span>Supprimer<span class="c-tag">&lt;/button&gt;</span>
+        <span class="c-tag">&lt;/div&gt;</span>
+      ))}
+
+      <span class="c-tag">&lt;hr /&gt;</span>
+      <span class="c-tag">&lt;h2&gt;</span>Total : {total.toFixed(<span class="c-number">2</span>)} euros<span class="c-tag">&lt;/h2&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{viderPanier}</span><span class="c-tag">&gt;</span>Vider le panier<span class="c-tag">&lt;/button&gt;</span>
+      <span class="c-tag">&lt;button&gt;</span>Commander<span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="c-keyword">export default</span> MonPanier</pre>
+            </div>
+
+            <div class="info-box">
+                <strong>Concept important - Remontée d'état (Lifting State Up) :</strong>
+                <p style="margin-top: 8px;">Le panier est géré dans App.jsx et non dans le composant Panier. Pourquoi ? Parce que plusieurs composants ont besoin d'y accéder : le Header (affiche le nombre d'articles), la Boutique (ajouter), le Panier (lire et modifier). On place toujours le state dans le composant parent commun le plus proche.</p>
+            </div>
+        </section>
+
+        <!-- SECTION 13 : PROJET COMPLET -->
+        <section id="section13" class="page-break">
+            <h2>13. Projet Complet - Application de Gestion de Tâches</h2>
+
+            <p>Ce projet final regroupe <span class="highlight">tous les concepts vus</span> : composants, props, useState, useEffect, React Router, et appel API. On construit une application de gestion de tâches complète.</p>
+
+            <h3>13.1 Cahier des charges</h3>
+
+            <div class="diagram">
+                <div class="diagram-header">Fonctionnalités de l'application</div>
+                <div class="diagram-step">
+                    <span class="step-label">Page Accueil :</span>
+                    Liste toutes les tâches avec filtres (Toutes / En cours / Terminées)
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Ajouter une tâche :</span>
+                    Formulaire avec titre, description, priorité (faible/normale/haute)
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Détail d'une tâche :</span>
+                    Page dédiée accessible via /taches/:id
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Marquer comme terminée :</span>
+                    Coche pour changer le statut d'une tâche
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Supprimer une tâche :</span>
+                    Bouton supprimer avec confirmation
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Statistiques :</span>
+                    Nombre de tâches totales, en cours, terminées
+                </div>
+            </div>
+
+            <h3>13.2 Structure complète du projet</h3>
+
+            <div class="code-block">
+                <div class="code-label">Structure du projet</div>
+                <pre>src/
+├── components/
+│   ├── Header.jsx          <span class="c-comment">← navbar avec logo et liens</span>
+│   ├── CarteTache.jsx      <span class="c-comment">← affiche une tâche dans la liste</span>
+│   ├── FormulaireAjout.jsx <span class="c-comment">← formulaire pour ajouter une tâche</span>
+│   ├── Filtre.jsx          <span class="c-comment">← boutons de filtre</span>
+│   └── Stats.jsx           <span class="c-comment">← statistiques en haut de page</span>
+├── pages/
+│   ├── ListeTaches.jsx     <span class="c-comment">← page principale</span>
+│   └── DetailTache.jsx     <span class="c-comment">← page détail /taches/:id</span>
+├── App.jsx
+└── main.jsx</pre>
+            </div>
+
+            <h3>13.3 App.jsx - State et logique centrale</h3>
+
+            <div class="code-block">
+                <div class="code-label">App.jsx</div>
+                <pre><span class="c-keyword">import</span> { useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>
+<span class="c-keyword">import</span> { Routes, Route } <span class="c-keyword">from</span> <span class="c-string">'react-router-dom'</span>
+<span class="c-keyword">import</span> Header <span class="c-keyword">from</span> <span class="c-string">'./components/Header'</span>
+<span class="c-keyword">import</span> ListeTaches <span class="c-keyword">from</span> <span class="c-string">'./pages/ListeTaches'</span>
+<span class="c-keyword">import</span> DetailTache <span class="c-keyword">from</span> <span class="c-string">'./pages/DetailTache'</span>
+
+<span class="c-keyword">function</span> <span class="c-function">App</span>() {
+  <span class="c-keyword">const</span> [taches, setTaches] = <span class="c-function">useState</span>([
+    { id: <span class="c-number">1</span>, titre: <span class="c-string">"Apprendre React"</span>, description: <span class="c-string">"Étudier les hooks"</span>, priorite: <span class="c-string">"haute"</span>, terminee: <span class="c-keyword">false</span> },
+    { id: <span class="c-number">2</span>, titre: <span class="c-string">"Faire le TP"</span>, description: <span class="c-string">"Exercice Todo List"</span>, priorite: <span class="c-string">"normale"</span>, terminee: <span class="c-keyword">false</span> },
+    { id: <span class="c-number">3</span>, titre: <span class="c-string">"Réviser JS"</span>, description: <span class="c-string">"Arrow functions, map, filter"</span>, priorite: <span class="c-string">"faible"</span>, terminee: <span class="c-keyword">true</span> },
+  ])
+
+  <span class="c-comment">// Ajouter une tâche</span>
+  <span class="c-keyword">const</span> <span class="c-function">ajouterTache</span> = (nouvelleTache) => {
+    <span class="c-keyword">const</span> tacheAvecId = {
+      ...nouvelleTache,
+      id: Date.<span class="c-function">now</span>(), <span class="c-comment">← ID unique basé sur timestamp</span>
+      terminee: <span class="c-keyword">false</span>
+    }
+    <span class="c-function">setTaches</span>([...taches, tacheAvecId])
+  }
+
+  <span class="c-comment">// Basculer terminée / en cours</span>
+  <span class="c-keyword">const</span> <span class="c-function">toggleTerminee</span> = (id) => {
+    <span class="c-function">setTaches</span>(taches.<span class="c-function">map</span>(t =>
+      t.id === id ? { ...t, terminee: !t.terminee } : t
+    ))
+  }
+
+  <span class="c-comment">// Supprimer une tâche</span>
+  <span class="c-keyword">const</span> <span class="c-function">supprimerTache</span> = (id) => {
+    <span class="c-keyword">if</span> (<span class="c-function">confirm</span>(<span class="c-string">"Supprimer cette tâche ?"</span>)) {
+      <span class="c-function">setTaches</span>(taches.<span class="c-function">filter</span>(t => t.id !== id))
+    }
+  }
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;&gt;</span>
+      <span class="c-tag">&lt;Header /&gt;</span>
+      <span class="c-tag">&lt;Routes&gt;</span>
+        <span class="c-tag">&lt;Route</span> <span class="c-attr">path</span>=<span class="c-string">"/"</span> <span class="c-attr">element</span>=<span class="c-value">{</span>
+          <span class="c-tag">&lt;ListeTaches</span>
+            <span class="c-attr">taches</span>=<span class="c-value">{taches}</span>
+            <span class="c-attr">ajouterTache</span>=<span class="c-value">{ajouterTache}</span>
+            <span class="c-attr">toggleTerminee</span>=<span class="c-value">{toggleTerminee}</span>
+            <span class="c-attr">supprimerTache</span>=<span class="c-value">{supprimerTache}</span>
+          <span class="c-tag">/&gt;</span>
+        <span class="c-value">}</span> <span class="c-tag">/&gt;</span>
+        <span class="c-tag">&lt;Route</span> <span class="c-attr">path</span>=<span class="c-string">"/taches/:id"</span> <span class="c-attr">element</span>=<span class="c-value">{&lt;DetailTache taches={taches} /&gt;}</span> <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;/Routes&gt;</span>
+    <span class="c-tag">&lt;/&gt;</span>
+  )
+}
+
+<span class="c-keyword">export default</span> App</pre>
+            </div>
+
+            <h3>13.4 ListeTaches.jsx - Page principale</h3>
+
+            <div class="code-block">
+                <div class="code-label">ListeTaches.jsx</div>
+                <pre><span class="c-keyword">import</span> { useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>
+<span class="c-keyword">import</span> CarteTache <span class="c-keyword">from</span> <span class="c-string">'../components/CarteTache'</span>
+<span class="c-keyword">import</span> FormulaireAjout <span class="c-keyword">from</span> <span class="c-string">'../components/FormulaireAjout'</span>
+
+<span class="c-keyword">function</span> <span class="c-function">ListeTaches</span>({ taches, ajouterTache, toggleTerminee, supprimerTache }) {
+  <span class="c-keyword">const</span> [filtre, setFiltre] = <span class="c-function">useState</span>(<span class="c-string">'toutes'</span>)
+
+  <span class="c-comment">// Filtrer les tâches selon le filtre actif</span>
+  <span class="c-keyword">const</span> tachesFiltrees = taches.<span class="c-function">filter</span>(t => {
+    <span class="c-keyword">if</span> (filtre === <span class="c-string">'en_cours'</span>) <span class="c-keyword">return</span> !t.terminee
+    <span class="c-keyword">if</span> (filtre === <span class="c-string">'terminees'</span>) <span class="c-keyword">return</span> t.terminee
+    <span class="c-keyword">return true</span> <span class="c-comment">← toutes</span>
+  })
+
+  <span class="c-comment">// Stats</span>
+  <span class="c-keyword">const</span> nbTerminees = taches.<span class="c-function">filter</span>(t => t.terminee).length
+  <span class="c-keyword">const</span> nbEnCours = taches.length - nbTerminees
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;main&gt;</span>
+      <span class="c-comment">// Statistiques</span>
+      <span class="c-tag">&lt;div</span> <span class="c-attr">className</span>=<span class="c-string">"stats"</span><span class="c-tag">&gt;</span>
+        <span class="c-tag">&lt;span&gt;</span>Total : {taches.length}<span class="c-tag">&lt;/span&gt;</span>
+        <span class="c-tag">&lt;span&gt;</span>En cours : {nbEnCours}<span class="c-tag">&lt;/span&gt;</span>
+        <span class="c-tag">&lt;span&gt;</span>Terminees : {nbTerminees}<span class="c-tag">&lt;/span&gt;</span>
+      <span class="c-tag">&lt;/div&gt;</span>
+
+      <span class="c-comment">// Formulaire d'ajout</span>
+      <span class="c-tag">&lt;FormulaireAjout</span> <span class="c-attr">ajouterTache</span>=<span class="c-value">{ajouterTache}</span> <span class="c-tag">/&gt;</span>
+
+      <span class="c-comment">// Boutons de filtre</span>
+      <span class="c-tag">&lt;div</span> <span class="c-attr">className</span>=<span class="c-string">"filtres"</span><span class="c-tag">&gt;</span>
+        {[<span class="c-string">'toutes'</span>, <span class="c-string">'en_cours'</span>, <span class="c-string">'terminees'</span>].<span class="c-function">map</span>(f => (
+          <span class="c-tag">&lt;button</span>
+            <span class="c-attr">key</span>=<span class="c-value">{f}</span>
+            <span class="c-attr">onClick</span>=<span class="c-value">{() => setFiltre(f)}</span>
+            <span class="c-attr">className</span>=<span class="c-value">{filtre === f ? 'actif' : ''}</span>
+          <span class="c-tag">&gt;</span>{f}<span class="c-tag">&lt;/button&gt;</span>
+        ))}
+      <span class="c-tag">&lt;/div&gt;</span>
+
+      <span class="c-comment">// Liste des tâches filtrées</span>
+      {tachesFiltrees.length === <span class="c-number">0</span>
+        ? <span class="c-tag">&lt;p&gt;</span>Aucune tache dans cette categorie.<span class="c-tag">&lt;/p&gt;</span>
+        : tachesFiltrees.<span class="c-function">map</span>(tache => (
+            <span class="c-tag">&lt;CarteTache</span>
+              <span class="c-attr">key</span>=<span class="c-value">{tache.id}</span>
+              <span class="c-attr">tache</span>=<span class="c-value">{tache}</span>
+              <span class="c-attr">toggleTerminee</span>=<span class="c-value">{toggleTerminee}</span>
+              <span class="c-attr">supprimerTache</span>=<span class="c-value">{supprimerTache}</span>
+            <span class="c-tag">/&gt;</span>
+          ))
+      }
+    <span class="c-tag">&lt;/main&gt;</span>
+  )
+}
+
+<span class="c-keyword">export default</span> ListeTaches</pre>
+            </div>
+
+            <h3>13.5 FormulaireAjout.jsx</h3>
+
+            <div class="code-block">
+                <div class="code-label">FormulaireAjout.jsx</div>
+                <pre><span class="c-keyword">import</span> { useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>
+
+<span class="c-keyword">function</span> <span class="c-function">FormulaireAjout</span>({ ajouterTache }) {
+  <span class="c-keyword">const</span> [form, setForm] = <span class="c-function">useState</span>({
+    titre: <span class="c-string">''</span>,
+    description: <span class="c-string">''</span>,
+    priorite: <span class="c-string">'normale'</span>
+  })
+
+  <span class="c-keyword">const</span> <span class="c-function">handleChange</span> = (e) => {
+    <span class="c-function">setForm</span>({ ...form, [e.target.name]: e.target.value })
+  }
+
+  <span class="c-keyword">const</span> <span class="c-function">handleSubmit</span> = (e) => {
+    e.<span class="c-function">preventDefault</span>()
+    <span class="c-keyword">if</span> (!form.titre.trim()) <span class="c-keyword">return</span>
+    <span class="c-function">ajouterTache</span>(form)
+    <span class="c-function">setForm</span>({ titre: <span class="c-string">''</span>, description: <span class="c-string">''</span>, priorite: <span class="c-string">'normale'</span> })
+  }
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;form</span> <span class="c-attr">onSubmit</span>=<span class="c-value">{handleSubmit}</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;input</span>
+        <span class="c-attr">name</span>=<span class="c-string">"titre"</span>
+        <span class="c-attr">value</span>=<span class="c-value">{form.titre}</span>
+        <span class="c-attr">onChange</span>=<span class="c-value">{handleChange}</span>
+        <span class="c-attr">placeholder</span>=<span class="c-string">"Titre de la tache"</span>
+        <span class="c-attr">required</span>
+      <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;textarea</span>
+        <span class="c-attr">name</span>=<span class="c-string">"description"</span>
+        <span class="c-attr">value</span>=<span class="c-value">{form.description}</span>
+        <span class="c-attr">onChange</span>=<span class="c-value">{handleChange}</span>
+        <span class="c-attr">placeholder</span>=<span class="c-string">"Description (optionnel)"</span>
+      <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;select</span> <span class="c-attr">name</span>=<span class="c-string">"priorite"</span> <span class="c-attr">value</span>=<span class="c-value">{form.priorite}</span> <span class="c-attr">onChange</span>=<span class="c-value">{handleChange}</span><span class="c-tag">&gt;</span>
+        <span class="c-tag">&lt;option</span> <span class="c-attr">value</span>=<span class="c-string">"faible"</span><span class="c-tag">&gt;</span>Faible<span class="c-tag">&lt;/option&gt;</span>
+        <span class="c-tag">&lt;option</span> <span class="c-attr">value</span>=<span class="c-string">"normale"</span><span class="c-tag">&gt;</span>Normale<span class="c-tag">&lt;/option&gt;</span>
+        <span class="c-tag">&lt;option</span> <span class="c-attr">value</span>=<span class="c-string">"haute"</span><span class="c-tag">&gt;</span>Haute<span class="c-tag">&lt;/option&gt;</span>
+      <span class="c-tag">&lt;/select&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">type</span>=<span class="c-string">"submit"</span><span class="c-tag">&gt;</span>Ajouter la tache<span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/form&gt;</span>
+  )
+}
+
+<span class="c-keyword">export default</span> FormulaireAjout</pre>
+            </div>
+
+            <h3>13.6 DetailTache.jsx - Page de détail</h3>
+
+            <div class="code-block">
+                <div class="code-label">DetailTache.jsx</div>
+                <pre><span class="c-keyword">import</span> { useParams, Link } <span class="c-keyword">from</span> <span class="c-string">'react-router-dom'</span>
+
+<span class="c-keyword">function</span> <span class="c-function">DetailTache</span>({ taches }) {
+  <span class="c-keyword">const</span> { id } = <span class="c-function">useParams</span>()
+
+  <span class="c-comment">// Trouver la tâche dont l'id correspond à l'URL</span>
+  <span class="c-keyword">const</span> tache = taches.<span class="c-function">find</span>(t => t.id === <span class="c-function">Number</span>(id))
+
+  <span class="c-keyword">if</span> (!tache) <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>Tache introuvable.<span class="c-tag">&lt;/p&gt;</span>
+
+  <span class="c-keyword">const</span> couleurPriorite = {
+    faible: <span class="c-string">'green'</span>,
+    normale: <span class="c-string">'orange'</span>,
+    haute: <span class="c-string">'red'</span>
+  }
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;Link</span> <span class="c-attr">to</span>=<span class="c-string">"/"</span><span class="c-tag">&gt;</span>← Retour a la liste<span class="c-tag">&lt;/Link&gt;</span>
+
+      <span class="c-tag">&lt;h1&gt;</span>{tache.titre}<span class="c-tag">&lt;/h1&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>{tache.description}<span class="c-tag">&lt;/p&gt;</span>
+
+      <span class="c-tag">&lt;span</span> <span class="c-attr">style</span>=<span class="c-value">{{'{{'} color: couleurPriorite[tache.priorite] {'}}'}}}</span><span class="c-tag">&gt;</span>
+        Priorite : {tache.priorite}
+      <span class="c-tag">&lt;/span&gt;</span>
+
+      <span class="c-tag">&lt;p&gt;</span>Statut : {tache.terminee ? <span class="c-string">"Terminee"</span> : <span class="c-string">"En cours"</span>}<span class="c-tag">&lt;/p&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="c-keyword">export default</span> DetailTache</pre>
+            </div>
+
+            <h3>13.7 Schéma du flux de données complet</h3>
+
+            <div class="diagram">
+                <div class="diagram-header">Flux de données - Application Gestion de Tâches</div>
+                <div class="diagram-step">
+                    <span class="step-label">State central :</span>
+                    taches[] vit dans App.jsx - c'est la source de vérité unique
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Vers ListeTaches :</span>
+                    App passe taches, ajouterTache, toggleTerminee, supprimerTache en props
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Vers CarteTache :</span>
+                    ListeTaches passe chaque tache individuelle + toggleTerminee + supprimerTache
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Vers FormulaireAjout :</span>
+                    ListeTaches passe ajouterTache - le formulaire remonte la nouvelle tâche
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Vers DetailTache :</span>
+                    App passe taches - DetailTache utilise useParams() pour trouver la bonne tâche
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Mise à jour :</span>
+                    Quand setTaches() est appelé dans App, tous les composants qui dépendent de taches se re-rendent automatiquement
+                </div>
+            </div>
+
+
+            <div class="success-box">
+                <strong>Améliorations possibles :</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Sauvegarder les tâches dans <code>localStorage</code> pour qu'elles persistent après rechargement</li>
+                    <li>Ajouter une date d'échéance et trier par date</li>
+                    <li>Connecter le tout à une vraie API REST avec un backend PHP/Node.js</li>
+                    <li>Ajouter des catégories et des tags</li>
+                    <li>Implémenter la fonctionnalité de recherche par titre</li>
+                    <li>Ajouter des animations avec CSS ou Framer Motion</li>
+                </ul>
+            </div>
+
+          
+
+        </section>
+
+    </div>
+</div>
+
+<script>
+    function toggleMenu() {
+        const burger = document.querySelector('.burger-menu');
+        const nav = document.getElementById('navMenu');
+        burger.classList.toggle('active');
+        nav.classList.toggle('active');
+    }
+
+    function closeMenu() {
+        const burger = document.querySelector('.burger-menu');
+        const nav = document.getElementById('navMenu');
+        burger.classList.remove('active');
+        nav.classList.remove('active');
+    }
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../favicon-32x32.png" type="image/png">
-    <title>Fonctions - Révision JS - Formation DWWM</title>
+    <title>API REST - Supports de cours - Formation DWWM</title>
     <style>
         * {
             margin: 0;
@@ -120,7 +120,7 @@
         .container {
             position: relative;
             z-index: 1;
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 50px 20px;
         }
@@ -208,7 +208,7 @@
         }
 
         /* Sections/Cartes avec effet glow */
-        .section {
+        .dossier {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             padding: 25px;
@@ -219,13 +219,20 @@
             border: 2px solid transparent;
         }
 
-        .section:hover {
+        .dossier:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 30px rgba(0,0,0,0.3),
                         0 0 40px rgba(102, 126, 234, 0.5),
                         0 0 60px rgba(118, 75, 162, 0.3),
                         inset 0 0 20px rgba(102, 126, 234, 0.1);
             border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        /* Grid pour les fichiers */
+        .fichiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
         }
 
         /* Liens */
@@ -319,6 +326,10 @@
             .container {
                 padding: 30px 15px;
             }
+
+            .fichiers {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -404,26 +415,14 @@
             <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
         </div>
 
-        <h1>Révision</h1>
+        <h1>API REST - Supports de cours</h1>
 
-        <div class="section">
-            <h3>Supports</h3>
-            <a href="./schemas-fonctions-javascript.html">Fonctions JavaScript</a>
-        </div>
-
-          <div class="section">
-            <h3>Supports</h3>
-            <a href="./cours-tableaux-javascript.html">Tableaux JavaScript</a>
-        </div>
-
-         <div class="section">
-            <h3>Supports</h3>
-            <a href="./support_filter_javascript.html">Filter()</a>
-        </div>
-
-         <div class="section"> 
-            <h3>Supports</h3>
-            <a href="./support_find_javascript.html">Find</a>
+        <!-- DOSSIERS -->
+        <div class="dossier">
+            <h3>Support</h3>
+            <div class="fichiers">
+                <a href="./support_api_rest_javascript.html">Formation API REST</a>
+            </div>
         </div>
 
         <!-- Bouton retour -->
@@ -433,7 +432,18 @@
 
         <!-- Footer -->
         <footer>
-        
+            <p><strong>Formation Real Conseil - DWWM 2025-2026</strong></p>
+            <p>&copy; DARRAS Thomas</p>
+            <a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a>
+            <p style="font-size: 14px; margin-top: 15px;">
+                Les supports sont mis à jour régulièrement via GitHub
+            </p>
+            <div style="text-align: center; margin-top: 20px;">
+                <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
+                <p style="font-size: 12px; color: #999;">
+                    <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo GitHub</a>
+                </p>
+            </div>
         </footer>
     </div>
 </body>

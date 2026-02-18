@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installer son environnement de développement - Windows, Mac, Linux</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+   :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+             background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        header {
+            background: #1e5a8e;
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 { font-size: 2.6em; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        header .subtitle { font-size: 1.3em; margin-bottom: 10px; opacity: 0.9; }
+        header .author { font-size: 1.1em; font-style: italic; opacity: 0.8; }
+
+        /* OS Badges */
+        .os-badges {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .os-badge {
+            background-color: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        /* Burger */
+        .burger-menu {
+            display: none;
+            background-color: #404040;
+            padding: 15px 20px;
+            cursor: pointer;
+            position: sticky;
+            top: 0;
+            z-index: 101;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .burger-text { color: white; font-size: 1em; font-weight: bold; }
+        .burger-icon { display: flex; flex-direction: column; gap: 5px; width: 30px; }
+        .burger-icon span { width: 100%; height: 3px; background-color: white; transition: 0.3s; display: block; }
+        .burger-menu.active .burger-icon span:nth-child(1) { transform: rotate(45deg) translate(8px, 8px); }
+        .burger-menu.active .burger-icon span:nth-child(2) { opacity: 0; }
+        .burger-menu.active .burger-icon span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+
+        .nav-menu {
+            background-color: #404040;
+            padding: 12px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            margin-right: 18px;
+            font-size: 0.88em;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover { color: #D5E8F0; }
+
+        .content { padding: 40px; }
+
+        h2 {
+            color: var(--real);
+            font-size: 1.9em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--conseil);
+        }
+
+        h3 { color: var(--conseil); font-size: 1.4em; margin-top: 30px; margin-bottom: 15px; }
+        h4 { color: #404040; font-size: 1.15em; margin-top: 20px; margin-bottom: 10px; }
+
+        p { margin-bottom: 15px; text-align: justify; }
+
+        .highlight {
+            background-color: #D5E8F0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.93em;
+        }
+
+        /* Code blocks sombres */
+        .code-block {
+            background-color: #1e1e1e;
+            border-left: 4px solid #2E75B6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            font-family: 'Courier New', monospace;
+            font-size: 0.92em;
+            line-height: 1.6;
+            color: #d4d4d4;
+            white-space: pre;
+        }
+
+        .code-block .comment { color: #6a9955; }
+        .code-block .keyword { color: #569cd6; }
+        .code-block .string { color: #ce9178; }
+        .code-block .value { color: #b5cea8; }
+        .code-block .command { color: #dcdcaa; }
+
+        /* OS Sections colorées */
+        .os-section {
+            border-radius: 10px;
+            margin: 30px 0;
+            overflow: hidden;
+            border: 2px solid;
+        }
+
+        .os-section.windows { border-color: #0078d4; }
+        .os-section.mac { border-color: #555555; }
+        .os-section.linux { border-color: #dd4814; }
+
+        .os-header {
+            padding: 18px 25px;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .os-header.windows { background-color: #0078d4; }
+        .os-header.mac { background-color: #555555; }
+        .os-header.linux { background-color: #dd4814; }
+
+        .os-body { padding: 25px; }
+
+        /* Steps */
+        .step-box {
+            background-color: #f0f7ff;
+            border: 1px solid #bee3f8;
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin: 15px 0;
+        }
+
+        .step-box h4 { color: #2E75B6; margin-top: 0; margin-bottom: 12px; }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #2E75B6;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+            flex-shrink: 0;
+            font-size: 0.95em;
+        }
+
+        /* Boxes */
+        .info-box {
+            background-color: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .error-box {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        ul { margin: 12px 0 12px 35px; }
+        li { margin-bottom: 8px; }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table thead, table tbody { display: table; width: 100%; }
+
+        table th {
+            background-color: var(--real);
+            color: white;
+            padding: 13px 15px;
+            text-align: left;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        table td {
+            padding: 11px 15px;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+
+        table tr:nth-child(even) { background-color: #f9f9f9; }
+
+        /* Colonnes OS */
+        .os-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .os-card {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid;
+        }
+
+        .os-card.windows { border-color: #0078d4; }
+        .os-card.mac { border-color: #555555; }
+        .os-card.linux { border-color: #dd4814; }
+
+        .os-card-header {
+            padding: 12px 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        .os-card-header.windows { background-color: #0078d4; }
+        .os-card-header.mac { background-color: #555555; }
+        .os-card-header.linux { background-color: #dd4814; }
+
+        .os-card-body {
+            padding: 15px;
+            background-color: #f9f9f9;
+            font-size: 0.9em;
+        }
+
+        .os-card-body p { margin-bottom: 8px; text-align: left; }
+        .os-card-body strong { color: #2E75B6; }
+
+        .diagram {
+            background-color: white;
+            border: 1px solid var(--conseil);
+            border-radius: 8px;
+            margin: 25px 0;
+            overflow: hidden;
+        }
+
+        .diagram-header {
+            background-color: var(--real);
+            color: white;
+            padding: 14px 20px;
+            font-weight: bold;
+            font-size: 1.05em;
+            text-align: center;
+        }
+
+        .diagram-step {
+            padding: 13px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .diagram-step:last-child { border-bottom: none; }
+        .diagram-step:nth-child(even) { background-color: #f9f9f9; }
+
+        .step-label {
+            color: #2E75B6;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .page-break {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .exercise {
+            background-color: #e8f4f8;
+            border: 2px solid #2E75B6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .exercise h4 { color: #2E75B6; margin-top: 0; }
+
+        .tag-windows { background-color: #0078d4; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+        .tag-mac { background-color: #555; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+        .tag-linux { background-color: #dd4814; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+
+        @media print {
+            .nav-menu, .burger-menu { display: none; }
+            body { background-color: white; }
+            .container { box-shadow: none; }
+        }
+
+        @media (max-width: 900px) {
+            .os-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 40px 20px; }
+            header h1 { font-size: 1.7em; }
+            header .subtitle { font-size: 1.05em; }
+
+            .burger-menu { display: flex; }
+
+            .nav-menu {
+                display: none;
+                padding: 0;
+                max-height: 0;
+                overflow: hidden;
+            }
+
+            .nav-menu.active {
+                display: block;
+                max-height: 600px;
+                padding: 10px 0;
+            }
+
+            .nav-menu a {
+                display: block;
+                margin: 0;
+                padding: 12px 20px;
+                font-size: 1em;
+                border-bottom: 1px solid #555;
+            }
+
+            .nav-menu a:hover { background-color: #555; }
+            .content { padding: 20px 15px; }
+            h2 { font-size: 1.45em; }
+            h3 { font-size: 1.2em; }
+            .code-block { font-size: 0.82em; padding: 15px; }
+
+            table th, table td { white-space: normal; }
+
+            table::after {
+                content: "Faites défiler si besoin";
+                display: block;
+                text-align: center;
+                padding: 6px;
+                background-color: #D5E8F0;
+                color: #2E75B6;
+                font-size: 0.85em;
+                font-style: italic;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.4em; }
+            .content { padding: 15px 10px; }
+            h2 { font-size: 1.3em; }
+            .os-badges { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <h1>Installer son environnement de développement</h1>
+        <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="">
+        <div class="os-badges">
+            <span class="os-badge">Windows - Laragon</span>
+            <span class="os-badge">Mac - MAMP</span>
+            <span class="os-badge">Linux - XAMPP</span>
+        </div>
+    </header>
+
+    <div class="burger-menu" onclick="toggleMenu()">
+        <span class="burger-text">Menu</span>
+        <div class="burger-icon"><span></span><span></span><span></span></div>
+    </div>
+
+    <nav class="nav-menu" id="navMenu">
+        <a href="#section1" onclick="closeMenu()">Vue d'ensemble</a>
+        <a href="#section2" onclick="closeMenu()">Windows - Laragon</a>
+        <a href="#section3" onclick="closeMenu()">Mac - MAMP</a>
+        <a href="#section4" onclick="closeMenu()">Linux - XAMPP</a>
+        <a href="#section5" onclick="closeMenu()">Looping et alternatives</a>
+        <a href="#section6" onclick="closeMenu()">Tableau comparatif</a>
+        <a href="#section7" onclick="closeMenu()">Dépannage</a>
+        <a href="#section8" onclick="closeMenu()">Exercice de vérification</a>
+    </nav>
+
+    <div class="content">
+
+        <!-- SECTION 1 -->
+        <section id="section1">
+            <h2>1. Vue d'ensemble</h2>
+
+            <p>Pour développer des applications web avec PHP et MySQL, chaque apprenant a besoin d'un <span class="highlight">environnement de développement local</span> sur son ordinateur. Cet environnement simule un vrai serveur web.</p>
+
+            <h3>1.1 Ce dont on a besoin</h3>
+
+            <div class="diagram">
+                <div class="diagram-header">Les outils nécessaires pour tous les OS</div>
+                <div class="diagram-step">
+                    <span class="step-label">Apache :</span>
+                    Serveur web local qui fait tourner les fichiers PHP (simule internet)
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">MySQL :</span>
+                    Moteur de base de donnees qui stocke les donnees
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">PHP :</span>
+                    Langage de programmation cote serveur
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">phpMyAdmin :</span>
+                    Interface graphique pour gerer MySQL (creer des BDD, des tables, etc.)
+                </div>
+            </div>
+
+            <h3>1.2 Quel outil selon l'OS</h3>
+
+            <div class="os-grid">
+                <div class="os-card windows">
+                    <div class="os-card-header windows">Windows</div>
+                    <div class="os-card-body">
+                        <p><strong>Outil :</strong> Laragon</p>
+                        <p><strong>Site :</strong> laragon.org</p>
+                        <p><strong>Difficulte :</strong> Tres simple</p>
+                        <p><strong>Gratuit :</strong> Oui</p>
+                        <p><strong>Looping :</strong> Fonctionne nativement</p>
+                    </div>
+                </div>
+                <div class="os-card mac">
+                    <div class="os-card-header mac">Mac</div>
+                    <div class="os-card-body">
+                        <p><strong>Outil :</strong> MAMP</p>
+                        <p><strong>Site :</strong> mamp.info</p>
+                        <p><strong>Difficulte :</strong> Simple</p>
+                        <p><strong>Gratuit :</strong> Oui (version de base)</p>
+                        <p><strong>Looping :</strong> Non disponible</p>
+                    </div>
+                </div>
+                <div class="os-card linux">
+                    <div class="os-card-header linux">Linux</div>
+                    <div class="os-card-body">
+                        <p><strong>Outil :</strong> XAMPP</p>
+                        <p><strong>Site :</strong> apachefriends.org</p>
+                        <p><strong>Difficulte :</strong> Simple</p>
+                        <p><strong>Gratuit :</strong> Oui</p>
+                        <p><strong>Looping :</strong> Non disponible</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Pour Looping (modélisation Merise) :</strong> Looping fonctionne uniquement sur Windows. Les apprenants Mac et Linux peuvent utiliser les PC Windows de la salle pour les séances de modélisation, ou utiliser les alternatives gratuites détaillées en section 5.
+            </div>
+        </section>
+
+        <!-- SECTION 2 : WINDOWS -->
+        <section id="section2" class="page-break">
+            <h2>2. Windows - Laragon</h2>
+
+            <div class="os-section windows">
+                <div class="os-header windows">
+                    Windows - Installation de Laragon
+                </div>
+                <div class="os-body">
+
+                    <h3>2.1 Télécharger Laragon</h3>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">1</span>Aller sur le site officiel</h4>
+                        <p>Ouvrir le navigateur et aller sur : <code>laragon.org/download</code></p>
+                        <p>Choisir <strong>Laragon Full</strong> (inclut Apache, MySQL, PHP, phpMyAdmin, Git, Node.js)</p>
+                    </div>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">2</span>Installer Laragon</h4>
+                        <p>Double-cliquer sur le fichier <code>.exe</code> téléchargé</p>
+                        <p>Suivre l'assistant d'installation (tout laisser par défaut)</p>
+                        <p>Laragon s'installe dans <code>C:\laragon\</code></p>
+                    </div>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">3</span>Lancer Laragon</h4>
+                        <p>Double-cliquer sur l'icône Laragon sur le Bureau</p>
+                        <p>Cliquer sur <strong>"Démarrer tout"</strong> (Start All)</p>
+                        <p>Apache et MySQL doivent passer au vert</p>
+                    </div>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">4</span>Vérifier l'installation</h4>
+                        <p>Ouvrir le navigateur → aller sur <code>http://localhost</code></p>
+                        <p>La page d'accueil Laragon doit s'afficher</p>
+                    </div>
+
+                    <h3>2.2 Accéder à phpMyAdmin</h3>
+
+                    <div class="info-box">
+                        <strong>URL :</strong> <code>http://localhost/phpmyadmin</code><br>
+                        <strong>Utilisateur :</strong> <code>root</code><br>
+                        <strong>Mot de passe :</strong> (vide, ne rien saisir)
+                    </div>
+
+                    <h3>2.3 Informations importantes</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Information</th>
+                                <th>Valeur</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>URL locale</td><td><code>http://localhost</code></td></tr>
+                            <tr><td>URL phpMyAdmin</td><td><code>http://localhost/phpmyadmin</code></td></tr>
+                            <tr><td>Dossier des projets</td><td><code>C:\laragon\www\</code></td></tr>
+                            <tr><td>Utilisateur MySQL</td><td><code>root</code></td></tr>
+                            <tr><td>Mot de passe MySQL</td><td>(vide)</td></tr>
+                            <tr><td>Port MySQL</td><td><code>3306</code></td></tr>
+                            <tr><td>Port Apache</td><td><code>80</code></td></tr>
+                        </tbody>
+                    </table>
+
+                    <h3>2.4 Connexion PHP (Laravel / PHP natif)</h3>
+
+                    <div class="code-block">
+                        <pre><span class="comment">// Connexion PDO - Windows Laragon</span>
+$pdo = <span class="keyword">new</span> PDO(
+    <span class="string">'mysql:host=localhost;dbname=ma_bdd;charset=utf8mb4'</span>,
+    <span class="string">'root'</span>,
+    <span class="string">''</span>  <span class="comment">// mot de passe vide</span>
+);</pre>
+                    </div>
+
+                    <div class="code-block">
+                        <pre><span class="comment"># .env pour Laravel - Windows Laragon</span>
+<span class="command">DB_CONNECTION</span>=mysql
+<span class="command">DB_HOST</span>=127.0.0.1
+<span class="command">DB_PORT</span>=3306
+<span class="command">DB_DATABASE</span>=ma_bdd
+<span class="command">DB_USERNAME</span>=root
+<span class="command">DB_PASSWORD</span>=</pre>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3 : MAC -->
+        <section id="section3" class="page-break">
+            <h2>3. Mac - MAMP</h2>
+
+            <div class="os-section mac">
+                <div class="os-header mac">
+                    Mac - Installation de MAMP
+                </div>
+                <div class="os-body">
+
+                    <h3>3.1 Télécharger MAMP</h3>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">1</span>Aller sur le site officiel</h4>
+                        <p>Ouvrir le navigateur et aller sur : <code>mamp.info/fr</code></p>
+                        <p>Cliquer sur <strong>"Télécharger MAMP"</strong></p>
+                        <p>Choisir la version <strong>MAMP (gratuit)</strong>, pas MAMP PRO (payant)</p>
+                    </div>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">2</span>Installer MAMP</h4>
+                        <p>Ouvrir le fichier <code>.pkg</code> téléchargé</p>
+                        <p>Suivre l'assistant d'installation</p>
+                        <p>MAMP s'installe dans <code>/Applications/MAMP/</code></p>
+                    </div>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">3</span>Lancer MAMP</h4>
+                        <p>Ouvrir MAMP depuis le dossier Applications</p>
+                        <p>Cliquer sur <strong>"Start Servers"</strong></p>
+                        <p>Les deux indicateurs (Apache et MySQL) doivent passer au vert</p>
+                        <p>La page d'accueil MAMP s'ouvre automatiquement dans le navigateur</p>
+                    </div>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">4</span>Vérifier l'installation</h4>
+                        <p>Ouvrir le navigateur → aller sur <code>http://localhost:8888</code></p>
+                        <p>La page d'accueil MAMP doit s'afficher</p>
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>Difference importante avec Laragon :</strong> MAMP utilise le port <strong>8888</strong> par defaut au lieu du port 80. Toutes les URLs doivent inclure <code>:8888</code>.
+                    </div>
+
+                    <h3>3.2 Accéder à phpMyAdmin</h3>
+
+                    <div class="info-box">
+                        <strong>URL :</strong> <code>http://localhost:8888/phpmyadmin</code><br>
+                        <strong>Utilisateur :</strong> <code>root</code><br>
+                        <strong>Mot de passe :</strong> <code>root</code> (different de Laragon !)
+                    </div>
+
+                    <h3>3.3 Changer le port (optionnel)</h3>
+
+                    <p>Pour utiliser le port 80 (comme Laragon) et simplifier les URLs :</p>
+                    <ol style="margin-left: 25px;">
+                        <li>Ouvrir MAMP → Cliquer sur <strong>"Préférences"</strong></li>
+                        <li>Onglet <strong>"Ports"</strong></li>
+                        <li>Cliquer sur <strong>"Mettre les ports Apache et MySQL à 80 et 3306"</strong></li>
+                        <li>Cliquer <strong>"OK"</strong> et redémarrer les serveurs</li>
+                    </ol>
+
+                    <h3>3.4 Informations importantes</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Information</th>
+                                <th>Valeur par défaut</th>
+                                <th>Après changement port</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>URL locale</td><td><code>http://localhost:8888</code></td><td><code>http://localhost</code></td></tr>
+                            <tr><td>URL phpMyAdmin</td><td><code>http://localhost:8888/phpmyadmin</code></td><td><code>http://localhost/phpmyadmin</code></td></tr>
+                            <tr><td>Dossier des projets</td><td colspan="2"><code>/Applications/MAMP/htdocs/</code></td></tr>
+                            <tr><td>Utilisateur MySQL</td><td colspan="2"><code>root</code></td></tr>
+                            <tr><td>Mot de passe MySQL</td><td colspan="2"><code>root</code></td></tr>
+                            <tr><td>Port MySQL</td><td><code>8889</code></td><td><code>3306</code></td></tr>
+                        </tbody>
+                    </table>
+
+                    <h3>3.5 Connexion PHP</h3>
+
+                    <div class="code-block">
+                        <pre><span class="comment">// Connexion PDO - Mac MAMP (ports par défaut)</span>
+$pdo = <span class="keyword">new</span> PDO(
+    <span class="string">'mysql:host=localhost;port=8889;dbname=ma_bdd;charset=utf8mb4'</span>,
+    <span class="string">'root'</span>,
+    <span class="string">'root'</span>  <span class="comment">// mot de passe root sur MAMP</span>
+);
+
+<span class="comment">// Si ports changés à 80/3306 :</span>
+$pdo = <span class="keyword">new</span> PDO(
+    <span class="string">'mysql:host=localhost;dbname=ma_bdd;charset=utf8mb4'</span>,
+    <span class="string">'root'</span>,
+    <span class="string">'root'</span>
+);</pre>
+                    </div>
+
+                    <div class="code-block">
+                        <pre><span class="comment"># .env pour Laravel - Mac MAMP</span>
+<span class="command">DB_CONNECTION</span>=mysql
+<span class="command">DB_HOST</span>=127.0.0.1
+<span class="command">DB_PORT</span>=8889
+<span class="command">DB_DATABASE</span>=ma_bdd
+<span class="command">DB_USERNAME</span>=root
+<span class="command">DB_PASSWORD</span>=root</pre>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4 : LINUX -->
+        <section id="section4" class="page-break">
+            <h2>4. Linux - XAMPP</h2>
+
+            <div class="os-section linux">
+                <div class="os-header linux">
+                    Linux - Installation de XAMPP
+                </div>
+                <div class="os-body">
+
+                    <h3>4.1 Télécharger XAMPP</h3>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">1</span>Aller sur le site officiel</h4>
+                        <p>Ouvrir le navigateur et aller sur : <code>apachefriends.org/fr/download.html</code></p>
+                        <p>Télécharger la version Linux (fichier <code>.run</code>)</p>
+                        <p>Choisir la version compatible avec PHP 8.x</p>
+                    </div>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">2</span>Rendre le fichier exécutable</h4>
+                        <p>Ouvrir un terminal dans le dossier de téléchargement :</p>
+                        <div class="code-block" style="margin: 10px 0;">
+                            <pre><span class="comment"># Rendre le fichier exécutable</span>
+<span class="command">chmod</span> +x xampp-linux-x64-8.x.x-installer.run
+
+<span class="comment"># Lancer l'installation</span>
+<span class="command">sudo</span> ./xampp-linux-x64-8.x.x-installer.run</pre>
+                        </div>
+                    </div>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">3</span>Suivre l'installateur graphique</h4>
+                        <p>Un assistant graphique s'ouvre</p>
+                        <p>Tout laisser par défaut et cliquer "Next" jusqu'à la fin</p>
+                        <p>XAMPP s'installe dans <code>/opt/lampp/</code></p>
+                    </div>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">4</span>Démarrer XAMPP</h4>
+                        <div class="code-block" style="margin: 10px 0;">
+                            <pre><span class="comment"># Démarrer tous les services</span>
+<span class="command">sudo</span> /opt/lampp/lampp start
+
+<span class="comment"># Démarrer uniquement Apache</span>
+<span class="command">sudo</span> /opt/lampp/lampp startapache
+
+<span class="comment"># Démarrer uniquement MySQL</span>
+<span class="command">sudo</span> /opt/lampp/lampp startmysql
+
+<span class="comment"># Arrêter tous les services</span>
+<span class="command">sudo</span> /opt/lampp/lampp stop
+
+<span class="comment"># Vérifier le statut</span>
+<span class="command">sudo</span> /opt/lampp/lampp status</pre>
+                        </div>
+                    </div>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">5</span>Lancer l'interface graphique XAMPP (optionnel)</h4>
+                        <div class="code-block" style="margin: 10px 0;">
+                            <pre><span class="comment"># Ouvrir le panneau de contrôle graphique</span>
+<span class="command">sudo</span> /opt/lampp/manager-linux-x64.run</pre>
+                        </div>
+                    </div>
+
+                    <div class="step-box">
+                        <h4><span class="step-number">6</span>Vérifier l'installation</h4>
+                        <p>Ouvrir le navigateur → aller sur <code>http://localhost</code></p>
+                        <p>La page d'accueil XAMPP doit s'afficher</p>
+                    </div>
+
+                    <h3>4.2 Alternative : Installation manuelle (Ubuntu / Debian)</h3>
+
+                    <p>Si XAMPP pose des problèmes, voici l'installation directe via les paquets système :</p>
+
+                    <div class="code-block">
+                        <pre><span class="comment"># Mettre à jour les paquets</span>
+<span class="command">sudo</span> apt update && <span class="command">sudo</span> apt upgrade
+
+<span class="comment"># Installer Apache</span>
+<span class="command">sudo</span> apt install apache2
+
+<span class="comment"># Installer MySQL</span>
+<span class="command">sudo</span> apt install mysql-server
+
+<span class="comment"># Installer PHP et l'extension MySQL</span>
+<span class="command">sudo</span> apt install php php-mysql php-mbstring php-xml php-curl
+
+<span class="comment"># Installer phpMyAdmin</span>
+<span class="command">sudo</span> apt install phpmyadmin
+
+<span class="comment"># Démarrer les services</span>
+<span class="command">sudo</span> systemctl start apache2
+<span class="command">sudo</span> systemctl start mysql
+
+<span class="comment"># Activer au démarrage automatique</span>
+<span class="command">sudo</span> systemctl enable apache2
+<span class="command">sudo</span> systemctl enable mysql</pre>
+                    </div>
+
+                    <div class="step-box">
+                        <h4>Sécuriser MySQL après installation</h4>
+                        <div class="code-block" style="margin: 10px 0;">
+                            <pre><span class="comment"># Lancer le script de sécurisation</span>
+<span class="command">sudo</span> mysql_secure_installation
+
+<span class="comment"># Puis se connecter à MySQL</span>
+<span class="command">sudo</span> mysql -u root -p
+
+<span class="comment"># Créer un utilisateur pour phpMyAdmin</span>
+<span class="keyword">CREATE USER</span> <span class="string">'dev'</span>@<span class="string">'localhost'</span> <span class="keyword">IDENTIFIED BY</span> <span class="string">'motdepasse'</span>;
+<span class="keyword">GRANT ALL PRIVILEGES ON</span> *.* <span class="keyword">TO</span> <span class="string">'dev'</span>@<span class="string">'localhost'</span>;
+<span class="keyword">FLUSH PRIVILEGES</span>;</pre>
+                        </div>
+                    </div>
+
+                    <h3>4.3 Accéder à phpMyAdmin</h3>
+
+                    <div class="info-box">
+                        <strong>URL :</strong> <code>http://localhost/phpmyadmin</code><br>
+                        <strong>Utilisateur XAMPP :</strong> <code>root</code> / mot de passe vide<br>
+                        <strong>Utilisateur installation manuelle :</strong> <code>dev</code> / ton mot de passe
+                    </div>
+
+                    <h3>4.4 Informations importantes</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Information</th>
+                                <th>XAMPP</th>
+                                <th>Installation manuelle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>URL locale</td><td><code>http://localhost</code></td><td><code>http://localhost</code></td></tr>
+                            <tr><td>URL phpMyAdmin</td><td><code>http://localhost/phpmyadmin</code></td><td><code>http://localhost/phpmyadmin</code></td></tr>
+                            <tr><td>Dossier des projets</td><td><code>/opt/lampp/htdocs/</code></td><td><code>/var/www/html/</code></td></tr>
+                            <tr><td>Utilisateur MySQL</td><td><code>root</code></td><td><code>root</code> ou personnalisé</td></tr>
+                            <tr><td>Mot de passe MySQL</td><td>(vide)</td><td>Défini à l'installation</td></tr>
+                        </tbody>
+                    </table>
+
+                    <h3>4.5 Connexion PHP</h3>
+
+                    <div class="code-block">
+                        <pre><span class="comment">// Connexion PDO - Linux XAMPP</span>
+$pdo = <span class="keyword">new</span> PDO(
+    <span class="string">'mysql:host=localhost;dbname=ma_bdd;charset=utf8mb4'</span>,
+    <span class="string">'root'</span>,
+    <span class="string">''</span>  <span class="comment">// mot de passe vide avec XAMPP</span>
+);</pre>
+                    </div>
+
+                    <div class="code-block">
+                        <pre><span class="comment"># .env pour Laravel - Linux XAMPP</span>
+<span class="command">DB_CONNECTION</span>=mysql
+<span class="command">DB_HOST</span>=127.0.0.1
+<span class="command">DB_PORT</span>=3306
+<span class="command">DB_DATABASE</span>=ma_bdd
+<span class="command">DB_USERNAME</span>=root
+<span class="command">DB_PASSWORD</span>=</pre>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5 : LOOPING -->
+        <section id="section5" class="page-break">
+            <h2>5. Looping et ses Alternatives</h2>
+
+            <p>Looping est le logiciel de modélisation Merise utilisé en cours. Il fonctionne <span class="highlight">uniquement sur Windows</span>. Voici les solutions pour chaque OS.</p>
+
+            <h3>5.1 Windows - Looping natif</h3>
+
+            <div class="os-section windows">
+                <div class="os-header windows">Windows - Looping fonctionne nativement</div>
+                <div class="os-body">
+                    <div class="step-box">
+                        <h4><span class="step-number">1</span>Télécharger Looping</h4>
+                        <p>Site officiel : <code>looping-mcd.fr</code></p>
+                        <p>Télécharger le fichier <code>.zip</code> et décompresser</p>
+                        <p>Double-cliquer sur <code>Looping.exe</code> (pas d'installation requise)</p>
+                    </div>
+                    <div class="success-box">
+                        Looping fonctionne directement. Aucune configuration necessaire.
+                    </div>
+                </div>
+            </div>
+
+            <h3>5.2 Mac - Alternatives à Looping</h3>
+
+            <div class="os-section mac">
+                <div class="os-header mac">Mac - Alternatives gratuites à Looping</div>
+                <div class="os-body">
+
+                    <h4>Option A : draw.io (recommandée - gratuit, en ligne)</h4>
+                    <div class="step-box">
+                        <h4>Utiliser draw.io pour les MCD</h4>
+                        <p>Site : <code>app.diagrams.net</code></p>
+                        <ul>
+                            <li>Fonctionne dans le navigateur, aucune installation</li>
+                            <li>Contient des formes pour les entités et associations Merise</li>
+                            <li>Export en PDF, PNG, XML</li>
+                            <li>Sauvegarde dans Google Drive ou localement</li>
+                        </ul>
+                        <p style="margin-top: 10px;"><strong>Pour les formes Merise dans draw.io :</strong></p>
+                        <ol style="margin-left: 20px; margin-top: 8px;">
+                            <li>Ouvrir draw.io → Nouveau diagramme</li>
+                            <li>Menu "Extras" → "Modifier le diagramme"</li>
+                            <li>Ou utiliser les rectangles pour les entités et les losanges pour les associations</li>
+                        </ol>
+                    </div>
+
+                    <h4>Option B : MySQL Workbench (gratuit - génère le SQL)</h4>
+                    <div class="step-box">
+                        <h4>Utiliser MySQL Workbench</h4>
+                        <p>Site : <code>mysql.com/products/workbench</code></p>
+                        <ul>
+                            <li>Disponible sur Mac, Windows et Linux</li>
+                            <li>Création de diagrammes EER (Entité-Relation)</li>
+                            <li>Génération automatique du SQL</li>
+                            <li>Connexion directe à MySQL pour exécuter le SQL</li>
+                        </ul>
+                    </div>
+
+                    <h4>Option C : Looping via CrossOver (payant ~60€)</h4>
+                    <div class="step-box">
+                        <h4>Faire tourner Looping sur Mac avec CrossOver</h4>
+                        <p>Site : <code>codeweavers.com</code></p>
+                        <ul>
+                            <li>CrossOver permet de faire tourner des .exe Windows sur Mac</li>
+                            <li>Installer CrossOver → Installer Looping.exe dedans</li>
+                            <li>Fonctionne dans la plupart des cas</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+            <h3>5.3 Linux - Alternatives à Looping</h3>
+
+            <div class="os-section linux">
+                <div class="os-header linux">Linux - Alternatives gratuites à Looping</div>
+                <div class="os-body">
+
+                    <h4>Option A : draw.io (recommandée - gratuit, en ligne)</h4>
+                    <div class="step-box">
+                        <h4>Même chose que Mac</h4>
+                        <p>Site : <code>app.diagrams.net</code></p>
+                        <p>Fonctionne dans le navigateur sur tous les systèmes.</p>
+                    </div>
+
+                    <h4>Option B : MySQL Workbench (gratuit)</h4>
+                    <div class="step-box">
+                        <h4>Installer MySQL Workbench sur Linux</h4>
+                        <div class="code-block" style="margin: 10px 0;">
+                            <pre><span class="comment"># Ubuntu/Debian</span>
+<span class="command">sudo</span> apt install mysql-workbench
+
+<span class="comment"># Ou télécharger depuis le site officiel</span>
+<span class="comment"># mysql.com/products/workbench</span></pre>
+                        </div>
+                    </div>
+
+                    <h4>Option C : Looping via Wine (gratuit)</h4>
+                    <div class="step-box">
+                        <h4>Faire tourner Looping sur Linux avec Wine</h4>
+                        <div class="code-block" style="margin: 10px 0;">
+                            <pre><span class="comment"># Installer Wine</span>
+<span class="command">sudo</span> apt install wine
+
+<span class="comment"># Lancer Looping avec Wine</span>
+<span class="command">wine</span> /chemin/vers/Looping.exe</pre>
+                        </div>
+                        <p>Wine est gratuit et permet de faire tourner Looping sous Linux avec des résultats corrects.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6 : TABLEAU COMPARATIF -->
+        <section id="section6" class="page-break">
+            <h2>6. Tableau Comparatif Complet</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critère</th>
+                        <th><span class="tag-windows">Windows</span> Laragon</th>
+                        <th><span class="tag-mac">Mac</span> MAMP</th>
+                        <th><span class="tag-linux">Linux</span> XAMPP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Téléchargement</strong></td>
+                        <td>laragon.org</td>
+                        <td>mamp.info</td>
+                        <td>apachefriends.org</td>
+                    </tr>
+                    <tr>
+                        <td><strong>URL locale</strong></td>
+                        <td>http://localhost</td>
+                        <td>http://localhost:8888</td>
+                        <td>http://localhost</td>
+                    </tr>
+                    <tr>
+                        <td><strong>phpMyAdmin URL</strong></td>
+                        <td>localhost/phpmyadmin</td>
+                        <td>localhost:8888/phpmyadmin</td>
+                        <td>localhost/phpmyadmin</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Login MySQL</strong></td>
+                        <td>root / (vide)</td>
+                        <td>root / root</td>
+                        <td>root / (vide)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Port MySQL</strong></td>
+                        <td>3306</td>
+                        <td>8889 (ou 3306)</td>
+                        <td>3306</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dossier projets</strong></td>
+                        <td>C:\laragon\www\</td>
+                        <td>/Applications/MAMP/htdocs/</td>
+                        <td>/opt/lampp/htdocs/</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Looping</strong></td>
+                        <td>Natif</td>
+                        <td>draw.io ou Workbench</td>
+                        <td>draw.io, Workbench ou Wine</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Démarrage</strong></td>
+                        <td>"Démarrer tout"</td>
+                        <td>"Start Servers"</td>
+                        <td>lampp start</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>6.1 Connexion PHP selon l'OS</h3>
+
+            <div class="os-grid">
+                <div class="os-card windows">
+                    <div class="os-card-header windows">Windows - PDO</div>
+                    <div class="os-card-body">
+                        <code>host=localhost</code><br>
+                        <code>user=root</code><br>
+                        <code>password=''</code><br>
+                        <code>port=3306</code>
+                    </div>
+                </div>
+                <div class="os-card mac">
+                    <div class="os-card-header mac">Mac - PDO</div>
+                    <div class="os-card-body">
+                        <code>host=localhost</code><br>
+                        <code>user=root</code><br>
+                        <code>password='root'</code><br>
+                        <code>port=8889</code>
+                    </div>
+                </div>
+                <div class="os-card linux">
+                    <div class="os-card-header linux">Linux - PDO</div>
+                    <div class="os-card-body">
+                        <code>host=localhost</code><br>
+                        <code>user=root</code><br>
+                        <code>password=''</code><br>
+                        <code>port=3306</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <strong>Point d'attention pour les apprenants Mac :</strong> Le mot de passe MySQL est <code>root</code> sur MAMP, alors qu'il est vide sur Laragon et XAMPP. Si un apprenant Mac obtient une erreur de connexion, verifier en premier que le mot de passe est bien <code>root</code> dans son code.
+            </div>
+        </section>
+
+        <!-- SECTION 7 : DÉPANNAGE -->
+        <section id="section7" class="page-break">
+            <h2>7. Dépannage courant</h2>
+
+            <h3>7.1 Problèmes Windows - Laragon</h3>
+
+            <div class="diagram">
+                <div class="diagram-header">Erreurs courantes Windows</div>
+                <div class="diagram-step">
+                    <span class="step-label">Apache ne démarre pas :</span>
+                    Le port 80 est déjà utilisé. Vérifier si Skype, IIS ou un autre serveur tourne. Aller dans Laragon → Préférences → changer le port Apache vers 8080.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">MySQL ne démarre pas :</span>
+                    Le port 3306 est déjà utilisé. Vérifier si une autre version de MySQL est installée. Redémarrer l'ordinateur puis relancer Laragon.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">phpMyAdmin inaccessible :</span>
+                    Vérifier que Apache est bien démarré (vert). Essayer http://localhost:80/phpmyadmin.
+                </div>
+            </div>
+
+            <h3>7.2 Problèmes Mac - MAMP</h3>
+
+            <div class="diagram">
+                <div class="diagram-header">Erreurs courantes Mac</div>
+                <div class="diagram-step">
+                    <span class="step-label">Erreur de connexion PHP :</span>
+                    Verifier que le mot de passe est bien "root" (et non vide). Verifier que le port est 8889 (pas 3306).
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Page blanche ou erreur 403 :</span>
+                    Les fichiers du projet ne sont pas dans /Applications/MAMP/htdocs/. Deplacer le dossier au bon endroit.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">MAMP ne s'ouvre pas :</span>
+                    Aller dans Securite et confidentialite → Autoriser les applications de sources inconnues → Relancer MAMP.
+                </div>
+            </div>
+
+            <h3>7.3 Problèmes Linux - XAMPP</h3>
+
+            <div class="diagram">
+                <div class="diagram-header">Erreurs courantes Linux</div>
+                <div class="diagram-step">
+                    <span class="step-label">Permission refusée sur htdocs :</span>
+                    Changer les permissions : sudo chmod -R 777 /opt/lampp/htdocs/
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Apache ne démarre pas :</span>
+                    Apache système déjà actif : sudo systemctl stop apache2 puis sudo /opt/lampp/lampp startapache
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">phpMyAdmin : accès refusé :</span>
+                    Configurer un mot de passe MySQL : sudo /opt/lampp/bin/mysql -u root puis ALTER USER 'root'@'localhost' IDENTIFIED BY '';
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 8 : EXERCICE -->
+        <section id="section8" class="page-break">
+            <h2>8. Exercice de Vérification</h2>
+
+            <p>Chaque apprenant doit réaliser ces étapes pour vérifier que son environnement est correctement installé.</p>
+
+            <div class="exercise">
+                <h4>Exercice : Vérifier son installation</h4>
+
+                <p><strong>Etape 1 : Démarrer les serveurs</strong></p>
+                <ul>
+                    <li><span class="tag-windows">Windows</span> Laragon → "Démarrer tout" → Apache et MySQL verts</li>
+                    <li><span class="tag-mac">Mac</span> MAMP → "Start Servers" → indicateurs verts</li>
+                    <li><span class="tag-linux">Linux</span> Terminal → <code>sudo /opt/lampp/lampp start</code></li>
+                </ul>
+
+                <p style="margin-top: 15px;"><strong>Etape 2 : Vérifier Apache</strong></p>
+                <ul>
+                    <li><span class="tag-windows">Windows</span> + <span class="tag-linux">Linux</span> → ouvrir <code>http://localhost</code></li>
+                    <li><span class="tag-mac">Mac</span> → ouvrir <code>http://localhost:8888</code></li>
+                    <li>La page d'accueil doit s'afficher</li>
+                </ul>
+
+                <p style="margin-top: 15px;"><strong>Etape 3 : Vérifier phpMyAdmin</strong></p>
+                <ul>
+                    <li><span class="tag-windows">Windows</span> + <span class="tag-linux">Linux</span> → <code>http://localhost/phpmyadmin</code> → login root / (vide)</li>
+                    <li><span class="tag-mac">Mac</span> → <code>http://localhost:8888/phpmyadmin</code> → login root / root</li>
+                    <li>L'interface phpMyAdmin doit s'afficher</li>
+                </ul>
+
+                <p style="margin-top: 15px;"><strong>Etape 4 : Créer une base de test</strong></p>
+                <ul>
+                    <li>Dans phpMyAdmin → "Nouvelle base de données"</li>
+                    <li>Nommer la base <code>test_installation</code></li>
+                    <li>Choisir utf8mb4_general_ci</li>
+                    <li>Cliquer "Créer"</li>
+                </ul>
+
+                <p style="margin-top: 15px;"><strong>Etape 5 : Créer un fichier PHP de test</strong></p>
+                <ul>
+                    <li><span class="tag-windows">Windows</span> → créer <code>C:\laragon\www\test\index.php</code></li>
+                    <li><span class="tag-mac">Mac</span> → créer <code>/Applications/MAMP/htdocs/test/index.php</code></li>
+                    <li><span class="tag-linux">Linux</span> → créer <code>/opt/lampp/htdocs/test/index.php</code></li>
+                </ul>
+
+                <div class="code-block">
+                    <pre><span class="comment">&lt;?php
+// Fichier de test - à adapter selon l'OS
+
+// Windows / Linux
+$password = '';
+
+// Mac MAMP
+// $password = 'root';
+
+try {
+    $pdo = new PDO(
+        'mysql:host=localhost;dbname=test_installation;charset=utf8mb4',
+        'root',
+        $password
+    );
+    echo '&lt;h1 style="color:green"&gt;Connexion MySQL reussie !&lt;/h1&gt;';
+    echo '&lt;p&gt;Environnement de developpement fonctionnel.&lt;/p&gt;';
+} catch (PDOException $e) {
+    echo '&lt;h1 style="color:red"&gt;Erreur de connexion&lt;/h1&gt;';
+    echo '&lt;p&gt;' . $e-&gt;getMessage() . '&lt;/p&gt;';
+}
+?&gt;</span></pre>
+                </div>
+
+                <p><strong>Etape 6 : Ouvrir le fichier dans le navigateur</strong></p>
+                <ul>
+                    <li><span class="tag-windows">Windows</span> + <span class="tag-linux">Linux</span> → <code>http://localhost/test</code></li>
+                    <li><span class="tag-mac">Mac</span> → <code>http://localhost:8888/test</code></li>
+                    <li>La page doit afficher "Connexion MySQL réussie !" en vert</li>
+                </ul>
+
+            </div>
+
+            <div class="success-box" style="margin-top: 40px; text-align: center;">
+                <strong>Environnement opérationnel !</strong><br>
+                Chaque apprenant peut maintenant développer des applications PHP/MySQL localement, quel que soit son système d'exploitation.
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script>
+    function toggleMenu() {
+        const burger = document.querySelector('.burger-menu');
+        const nav = document.getElementById('navMenu');
+        burger.classList.toggle('active');
+        nav.classList.toggle('active');
+    }
+
+    function closeMenu() {
+        const burger = document.querySelector('.burger-menu');
+        const nav = document.getElementById('navMenu');
+        burger.classList.remove('active');
+        nav.classList.remove('active');
+    }
+</script>
+</body>
+</html>

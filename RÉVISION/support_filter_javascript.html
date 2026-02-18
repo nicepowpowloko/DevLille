@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Méthode filter() - Guide Complet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+         :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        header {
+            background: linear-gradient(135deg, #2E75B6 0%, #1e5a8e 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header .subtitle {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        header .author {
+            font-size: 1.1em;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            color: #2E75B6;
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2E75B6;
+        }
+
+        h3 {
+            color: var(--real);
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #404040;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight {
+            background-color: #D5E8F0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.95em;
+        }
+
+        .code-block {
+            background-color: #f4f4f4;
+            border-left: 4px solid #2E75B6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .result-block {
+            background-color: #D5E8F0;
+            border-left: 4px solid #2E75B6;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .result-block strong {
+            color: #2E75B6;
+        }
+
+        .diagram {
+            background-color: white;
+            border: 2px solid #2E75B6;
+            border-radius: 8px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .diagram-header {
+            background-color: var(--conseil);
+            color: var(--real);
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .diagram-step {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .diagram-step:last-child {
+            border-bottom: none;
+        }
+
+        .diagram-step:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .step-label {
+            color: #2E75B6;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .comparison-column {
+            border: 2px solid #2E75B6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-header {
+            background-color: #2E75B6;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .comparison-content {
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .comparison-column:last-child .comparison-content {
+            background-color: #D5E8F0;
+        }
+
+        ul {
+            margin: 15px 0 15px 40px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .error-box {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+        }
+
+        table th {
+            background-color: #2E75B6;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        table td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .exercise {
+            background-color: #e8f4f8;
+            border: 2px solid #2E75B6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .exercise h4 {
+            color: #2E75B6;
+            margin-top: 0;
+        }
+
+        .nav-menu {
+            background-color: #404040;
+            padding: 15px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            margin-right: 25px;
+            font-size: 0.95em;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--real);
+            font-weight: bold;
+           
+        }
+
+        @media print {
+            .nav-menu {
+                display: none;
+            }
+            
+            body {
+                background-color: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+            
+            .comparison-table {
+                grid-template-columns: 1fr;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .nav-menu {
+                padding: 10px 20px;
+            }
+            
+            .nav-menu a {
+                display: block;
+                margin: 5px 0;
+            }
+        }
+
+        .page-break {
+            page-break-before: always;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+         footer {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 30px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            flex-direction: column;
+        }
+
+        footer p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>La Méthode filter()</h1>
+          <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="">
+        </header>
+
+        <nav class="nav-menu">
+            <a href="#section1">Définition</a>
+            <a href="#section2">Syntaxe</a>
+            <a href="#section3">Exemples</a>
+            <a href="#section4">Cas Avancés</a>
+            <a href="#section5">Combinaisons</a>
+            <a href="#section6">Pièges</a>
+            <a href="#section7">Exercices</a>
+            <a href="#section8">Récapitulatif</a>
+        </nav>
+
+        <div class="content">
+           
+            <section id="section1">
+                <h2>1. Qu'est-ce que filter() ?</h2>
+                
+                <p>La méthode <code>filter()</code> est une méthode des tableaux JavaScript qui permet de <span class="highlight">créer un nouveau tableau</span> contenant uniquement les éléments qui <span class="highlight">répondent à un critère spécifique</span>.</p>
+
+                <h3>1.1 Caractéristiques principales</h3>
+                
+                <ul>
+                    <li>Ne modifie pas le tableau d'origine (méthode non-mutante)</li>
+                    <li>Retourne un nouveau tableau</li>
+                    <li>Parcourt tous les éléments du tableau</li>
+                    <li>Applique une fonction de test (callback) sur chaque élément</li>
+                    <li>Conserve uniquement les éléments pour lesquels la fonction retourne <code>true</code></li>
+                </ul>
+
+                <div class="diagram">
+                    <div class="diagram-header">Principe de fonctionnement de filter()</div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 1 :</span>
+                        Parcours du tableau d'origine, élément par élément
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 2 :</span>
+                        Application de la fonction de test sur chaque élément
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 3 :</span>
+                        Si la fonction retourne <code>true</code> → l'élément est conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 4 :</span>
+                        Si la fonction retourne <code>false</code> → l'élément est ignoré
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 5 :</span>
+                        Création d'un nouveau tableau avec les éléments conservés
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2 : SYNTAXE -->
+            <section id="section2" class="page-break">
+                <h2>2. Syntaxe de filter()</h2>
+
+                <h3>2.1 Syntaxe de base</h3>
+                
+                <div class="code-block">
+                    <pre>const nouveauTableau = tableau.filter(fonction);</pre>
+                </div>
+
+                <h3>2.2 Syntaxe complète</h3>
+                
+                <div class="code-block">
+                    <pre>const nouveauTableau = tableau.filter((element, index, array) => {
+  // Condition de filtrage
+  return condition;
+});</pre>
+                </div>
+
+                <h3>2.3 Paramètres de la fonction callback</h3>
+                
+                <ul>
+                    <li><code>element</code> : L'élément actuellement traité dans le tableau</li>
+                    <li><code>index</code> : L'index de l'élément en cours de traitement (optionnel)</li>
+                    <li><code>array</code> : Le tableau sur lequel <code>filter()</code> a été appelé (optionnel)</li>
+                </ul>
+            </section>
+
+            <!-- SECTION 3 : EXEMPLES PROGRESSIFS -->
+            <section id="section3" class="page-break">
+                <h2>3. Exemples Progressifs</h2>
+
+                <h3>3.1 Exemple niveau 1 : Filtrer les nombres pairs</h3>
+
+                <h4>Objectif</h4>
+                <p>Créer un nouveau tableau ne contenant que les nombres pairs d'un tableau de départ.</p>
+
+                <h4>Code</h4>
+                <div class="code-block">
+                    <pre>const nombres = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+const nombresPairs = nombres.filter((nombre) => {
+  return nombre % 2 === 0;
+});
+
+console.log(nombresPairs);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong> [2, 4, 6, 8, 10]
+                </div>
+
+                <h4>Schéma explicatif étape par étape</h4>
+                <div class="diagram">
+                    <div class="diagram-header">Filtrage des nombres pairs</div>
+                    <div class="diagram-step">
+                        <span class="step-label">Départ :</span>
+                        nombres = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">1 :</span>
+                        Test de 1 → 1 % 2 === 0 ? → false → ignoré
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">2 :</span>
+                        Test de 2 → 2 % 2 === 0 ? → true → conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">3 :</span>
+                        Test de 3 → 3 % 2 === 0 ? → false → ignoré
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">4 :</span>
+                        Test de 4 → 4 % 2 === 0 ? → true → conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">... :</span>
+                        Continue pour tous les éléments
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Résultat :</span>
+                        nombresPairs = [2, 4, 6, 8, 10]
+                    </div>
+                </div>
+
+                <h4>Version simplifiée (syntaxe fléchée)</h4>
+                <div class="code-block">
+                    <pre>const nombresPairs = nombres.filter(nombre => nombre % 2 === 0);</pre>
+                </div>
+
+                <h4>Comparaison : Avec et sans filter()</h4>
+                <div class="comparison-table">
+                    <div class="comparison-column">
+                        <div class="comparison-header">Sans filter()</div>
+                        <div class="comparison-content">
+                            <pre>// Avec une boucle for
+const nombres = [1, 2, 3, 4, 5];
+const nombresPairs = [];
+
+for (let i = 0; i < nombres.length; i++) {
+  if (nombres[i] % 2 === 0) {
+    nombresPairs.push(nombres[i]);
+  }
+}
+
+console.log(nombresPairs);</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-column">
+                        <div class="comparison-header">Avec filter()</div>
+                        <div class="comparison-content">
+                            <pre>// Avec filter()
+const nombres = [1, 2, 3, 4, 5];
+
+const nombresPairs = nombres.filter(
+  nombre => nombre % 2 === 0
+);
+
+console.log(nombresPairs);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXEMPLE 2 -->
+                <h3 class="page-break">3.2 Exemple niveau 2 : Filtrer des chaînes de caractères</h3>
+
+                <h4>Objectif</h4>
+                <p>Filtrer les noms qui contiennent plus de 5 caractères.</p>
+
+                <h4>Code</h4>
+                <div class="code-block">
+                    <pre>const noms = ["Alice", "Bob", "Charlotte", "David", "Emmanuel"];
+
+const nomsLongs = noms.filter((nom) => {
+  return nom.length > 5;
+});
+
+console.log(nomsLongs);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong> ["Charlotte", "Emmanuel"]
+                </div>
+
+                <h4>Schéma explicatif étape par étape</h4>
+                <div class="diagram">
+                    <div class="diagram-header">Filtrage des noms longs</div>
+                    <div class="diagram-step">
+                        <span class="step-label">Départ :</span>
+                        noms = ["Alice", "Bob", "Charlotte", "David", "Emmanuel"]
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Alice :</span>
+                        length = 5 → 5 > 5 ? → false → ignoré
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Bob :</span>
+                        length = 3 → 3 > 5 ? → false → ignoré
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Charlotte :</span>
+                        length = 9 → 9 > 5 ? → true → conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">David :</span>
+                        length = 5 → 5 > 5 ? → false → ignoré
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Emmanuel :</span>
+                        length = 8 → 8 > 5 ? → true → conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Résultat :</span>
+                        nomsLongs = ["Charlotte", "Emmanuel"]
+                    </div>
+                </div>
+
+                <!-- EXEMPLE 3 -->
+                <h3 class="page-break">3.3 Exemple niveau 3 : Filtrer des objets</h3>
+
+                <h4>Objectif</h4>
+                <p>Filtrer les étudiants qui ont une moyenne supérieure ou égale à 12.</p>
+
+                <h4>Code</h4>
+                <div class="code-block">
+                    <pre>const etudiants = [
+  { nom: "Alice", moyenne: 15 },
+  { nom: "Bob", moyenne: 8 },
+  { nom: "Charlotte", moyenne: 13 },
+  { nom: "David", moyenne: 10 },
+  { nom: "Emma", moyenne: 17 }
+];
+
+const etudiantsReussis = etudiants.filter((etudiant) => {
+  return etudiant.moyenne >= 12;
+});
+
+console.log(etudiantsReussis);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong>
+                    <pre>[
+  { nom: "Alice", moyenne: 15 },
+  { nom: "Charlotte", moyenne: 13 },
+  { nom: "Emma", moyenne: 17 }
+]</pre>
+                </div>
+
+                <h4>Schéma explicatif étape par étape</h4>
+                <div class="diagram">
+                    <div class="diagram-header">Filtrage des étudiants réussis</div>
+                    <div class="diagram-step">
+                        <span class="step-label">Alice :</span>
+                        moyenne = 15 → 15 >= 12 ? → true → conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Bob :</span>
+                        moyenne = 8 → 8 >= 12 ? → false → ignoré
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Charlotte :</span>
+                        moyenne = 13 → 13 >= 12 ? → true → conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">David :</span>
+                        moyenne = 10 → 10 >= 12 ? → false → ignoré
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Emma :</span>
+                        moyenne = 17 → 17 >= 12 ? → true → conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Résultat :</span>
+                        3 étudiants réussis conservés dans le nouveau tableau
+                    </div>
+                </div>
+
+                <!-- EXEMPLE 4 -->
+                <h3 class="page-break">3.4 Exemple niveau 4 : Utilisation de l'index</h3>
+
+                <h4>Objectif</h4>
+                <p>Filtrer uniquement les éléments qui se trouvent à un index pair.</p>
+
+                <h4>Code</h4>
+                <div class="code-block">
+                    <pre>const fruits = ["Pomme", "Banane", "Orange", "Kiwi", "Mangue"];
+
+const fruitsIndexPair = fruits.filter((fruit, index) => {
+  return index % 2 === 0;
+});
+
+console.log(fruitsIndexPair);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong> ["Pomme", "Orange", "Mangue"]
+                </div>
+
+                <h4>Schéma explicatif étape par étape</h4>
+                <div class="diagram">
+                    <div class="diagram-header">Filtrage par index pair</div>
+                    <div class="diagram-step">
+                        <span class="step-label">Index 0 :</span>
+                        Pomme → 0 % 2 === 0 ? → true → conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Index 1 :</span>
+                        Banane → 1 % 2 === 0 ? → false → ignoré
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Index 2 :</span>
+                        Orange → 2 % 2 === 0 ? → true → conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Index 3 :</span>
+                        Kiwi → 3 % 2 === 0 ? → false → ignoré
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Index 4 :</span>
+                        Mangue → 4 % 2 === 0 ? → true → conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Résultat :</span>
+                        Éléments aux positions 0, 2 et 4 conservés
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4 : CAS AVANCÉS -->
+            <section id="section4" class="page-break">
+                <h2>4. Cas d'Usage Avancés</h2>
+
+                <h3>4.1 Filtrer avec plusieurs conditions (ET logique)</h3>
+                
+                <div class="code-block">
+                    <pre>const produits = [
+  { nom: "Ordinateur", prix: 800, stock: 5 },
+  { nom: "Souris", prix: 25, stock: 0 },
+  { nom: "Clavier", prix: 60, stock: 10 },
+  { nom: "Écran", prix: 300, stock: 0 },
+  { nom: "Webcam", prix: 80, stock: 3 }
+];
+
+// Produits en stock ET prix inférieur à 100€
+const produitsDisponibles = produits.filter((produit) => {
+  return produit.stock > 0 && produit.prix < 100;
+});
+
+console.log(produitsDisponibles);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong>
+                    <pre>[
+  { nom: "Clavier", prix: 60, stock: 10 },
+  { nom: "Webcam", prix: 80, stock: 3 }
+]</pre>
+                </div>
+
+                <h3>4.2 Filtrer avec plusieurs conditions (OU logique)</h3>
+                
+                <div class="code-block">
+                    <pre>const utilisateurs = [
+  { nom: "Alice", role: "admin", actif: true },
+  { nom: "Bob", role: "user", actif: false },
+  { nom: "Charlie", role: "moderateur", actif: true },
+  { nom: "David", role: "user", actif: true }
+];
+
+// Admins OU modérateurs
+const personnel = utilisateurs.filter((user) => {
+  return user.role === "admin" || user.role === "moderateur";
+});
+
+console.log(personnel);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong>
+                    <pre>[
+  { nom: "Alice", role: "admin", actif: true },
+  { nom: "Charlie", role: "moderateur", actif: true }
+]</pre>
+                </div>
+
+                <h3>4.3 Supprimer les doublons avec filter()</h3>
+                
+                <div class="code-block">
+                    <pre>const nombres = [1, 2, 3, 2, 4, 1, 5, 3, 6];
+
+const nombresSansDoublons = nombres.filter((nombre, index, array) => {
+  // Garde uniquement la première occurrence
+  return array.indexOf(nombre) === index;
+});
+
+console.log(nombresSansDoublons);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong> [1, 2, 3, 4, 5, 6]
+                </div>
+
+                <h4>Explication du fonctionnement</h4>
+                <div class="diagram">
+                    <div class="diagram-header">Suppression des doublons</div>
+                    <div class="diagram-step">
+                        <span class="step-label">Principe :</span>
+                        indexOf() retourne l'index de la première occurrence
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Exemple 1 :</span>
+                        Premier 2 (index 1) → indexOf(2) = 1 → 1 === 1 → true → conservé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Exemple 2 :</span>
+                        Deuxième 2 (index 3) → indexOf(2) = 1 → 1 !== 3 → false → ignoré
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Résultat :</span>
+                        Seule la première occurrence de chaque nombre est conservée
+                    </div>
+                </div>
+
+                <h3>4.4 Filtrer des valeurs nulles ou undefined</h3>
+                
+                <div class="code-block">
+                    <pre>const donnees = [1, null, 2, undefined, 3, "", 0, false, 4];
+
+const donneesValides = donnees.filter((valeur) => {
+  return valeur !== null && valeur !== undefined;
+});
+
+console.log(donneesValides);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong> [1, 2, 3, "", 0, false, 4]
+                </div>
+
+                <p><strong>Alternative :</strong> Filtrer toutes les valeurs <em>falsy</em> (null, undefined, 0, false, "", NaN)</p>
+                
+                <div class="code-block">
+                    <pre>const donneesNonFalsy = donnees.filter(valeur => valeur);
+// ou
+const donneesNonFalsy = donnees.filter(Boolean);
+
+console.log(donneesNonFalsy);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong> [1, 2, 3, 4]
+                </div>
+            </section>
+
+            <!-- SECTION 5 : COMBINAISONS -->
+            <section id="section5" class="page-break">
+                <h2>5. Combinaisons avec d'Autres Méthodes</h2>
+
+                <h3>5.1 filter() + map()</h3>
+                
+                <p>Filtrer les produits en stock, puis extraire uniquement leurs noms.</p>
+                
+                <div class="code-block">
+                    <pre>const produits = [
+  { nom: "Ordinateur", stock: 5 },
+  { nom: "Souris", stock: 0 },
+  { nom: "Clavier", stock: 10 }
+];
+
+const nomsProduitsEnStock = produits
+  .filter(produit => produit.stock > 0)
+  .map(produit => produit.nom);
+
+console.log(nomsProduitsEnStock);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong> ["Ordinateur", "Clavier"]
+                </div>
+
+                <h4>Schéma du processus</h4>
+                <div class="diagram">
+                    <div class="diagram-header">Chaînage filter() + map()</div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 1 :</span>
+                        filter() → Garde produits avec stock > 0
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">→</span>
+                        [{ nom: "Ordinateur", stock: 5 }, { nom: "Clavier", stock: 10 }]
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 2 :</span>
+                        map() → Extrait uniquement les noms
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">→</span>
+                        ["Ordinateur", "Clavier"]
+                    </div>
+                </div>
+
+                <h3>5.2 filter() + reduce()</h3>
+                
+                <p>Calculer le total des commandes validées.</p>
+                
+                <div class="code-block">
+                    <pre>const commandes = [
+  { id: 1, montant: 150, statut: "validée" },
+  { id: 2, montant: 80, statut: "annulée" },
+  { id: 3, montant: 220, statut: "validée" },
+  { id: 4, montant: 95, statut: "en attente" }
+];
+
+const totalValidees = commandes
+  .filter(commande => commande.statut === "validée")
+  .reduce((total, commande) => total + commande.montant, 0);
+
+console.log(totalValidees);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong> 370
+                </div>
+
+                <h3>5.3 filter() + sort()</h3>
+                
+                <p>Filtrer les étudiants admis et les trier par note décroissante.</p>
+                
+                <div class="code-block">
+                    <pre>const etudiants = [
+  { nom: "Alice", note: 15 },
+  { nom: "Bob", note: 8 },
+  { nom: "Charlotte", note: 17 },
+  { nom: "David", note: 12 }
+];
+
+const admisTriés = etudiants
+  .filter(etudiant => etudiant.note >= 10)
+  .sort((a, b) => b.note - a.note);
+
+console.log(admisTriés);</pre>
+                </div>
+
+                <div class="result-block">
+                    <strong>Résultat :</strong>
+                    <pre>[
+  { nom: "Charlotte", note: 17 },
+  { nom: "Alice", note: 15 },
+  { nom: "David", note: 12 }
+]</pre>
+                </div>
+            </section>
+
+            <!-- SECTION 6 : PIÈGES -->
+            <section id="section6" class="page-break">
+                <h2>6. Pièges et Erreurs Courantes</h2>
+
+                <h3>6.1 Oublier le return</h3>
+                
+                <div class="error-box">
+                    <strong>ERREUR :</strong> Sans <code>return</code>, la fonction renvoie toujours <code>undefined</code> (valeur falsy), donc aucun élément n'est conservé.
+                </div>
+
+                <div class="comparison-table">
+                    <div class="comparison-column">
+                        <div class="comparison-header">MAUVAIS</div>
+                        <div class="comparison-content">
+                            <pre>const pairs = nombres.filter((n) => {
+  n % 2 === 0; // Pas de return !
+});
+// Résultat : []</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-column">
+                        <div class="comparison-header">CORRECT</div>
+                        <div class="comparison-content">
+                            <pre>const pairs = nombres.filter((n) => {
+  return n % 2 === 0;
+});
+// ou syntaxe fléchée implicite
+const pairs = nombres.filter(n => n % 2 === 0);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>6.2 Modifier le tableau d'origine</h3>
+                
+                <div class="error-box">
+                    <strong>ERREUR :</strong> Ne pas confondre <code>filter()</code> avec des méthodes mutantes.
+                </div>
+
+                <div class="code-block">
+                    <pre>const nombres = [1, 2, 3, 4, 5];
+const pairs = nombres.filter(n => n % 2 === 0);
+
+console.log(nombres); // [1, 2, 3, 4, 5] - inchangé
+console.log(pairs);   // [2, 4] - nouveau tableau</pre>
+                </div>
+
+                <h3>6.3 Confusion avec find()</h3>
+                
+                <div class="info-box">
+                    <code>filter()</code> retourne un <strong>tableau</strong> (potentiellement vide). 
+                    <code>find()</code> retourne un <strong>seul élément</strong> ou <code>undefined</code>.
+                </div>
+
+                <div class="comparison-table">
+                    <div class="comparison-column">
+                        <div class="comparison-header">find() - Premier élément</div>
+                        <div class="comparison-content">
+                            <pre>const premier = nombres.find(n => n > 5);
+console.log(premier); // 6</pre>
+                        </div>
+                    </div>
+                    <div class="comparison-column">
+                        <div class="comparison-header">filter() - Tous les éléments</div>
+                        <div class="comparison-content">
+                            <pre>const tous = nombres.filter(n => n > 5);
+console.log(tous); // [6, 7, 8, 9, 10]</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>6.4 Vérifier un tableau vide</h3>
+                
+                <div class="code-block">
+                    <pre>const resultats = donnees.filter(condition);
+
+if (resultats.length === 0) {
+  console.log("Aucun résultat trouvé");
+} else {
+  console.log(`${resultats.length} résultat(s) trouvé(s)`);
+}</pre>
+                </div>
+            </section>
+
+            <!-- SECTION 7 : EXERCICES -->
+            <section id="section7" class="page-break">
+                <h2>7. Exercices Pratiques</h2>
+
+                <div class="exercise">
+                    <h4>Exercice 1 : Filtrage simple</h4>
+                    <p><strong>Consigne :</strong> Créez un tableau contenant uniquement les nombres supérieurs à 10.</p>
+                    
+                    <div class="code-block">
+                        <pre>const nombres = [5, 12, 8, 18, 3, 22, 7, 15];
+
+// Votre code ici
+const resultat = 
+
+console.log(resultat);</pre>
+                    </div>
+                    
+                    <p><strong>Résultat attendu :</strong> <code>[12, 18, 22, 15]</code></p>
+                </div>
+
+                <div class="exercise">
+                    <h4>Exercice 2 : Filtrage de chaînes</h4>
+                    <p><strong>Consigne :</strong> Filtrez les mots qui commencent par la lettre 'a' (insensible à la casse).</p>
+                    
+                    <div class="code-block">
+                        <pre>const mots = ["Avion", "Bateau", "Auto", "Train", "Ambulance"];
+
+// Votre code ici
+const resultat = 
+
+console.log(resultat);</pre>
+                    </div>
+                    
+                    <p><strong>Résultat attendu :</strong> <code>["Avion", "Auto", "Ambulance"]</code></p>
+                </div>
+
+                <div class="exercise">
+                    <h4>Exercice 3 : Filtrage d'objets</h4>
+                    <p><strong>Consigne :</strong> Filtrez les personnes majeures (âge supérieur ou égal à 18 ans).</p>
+                    
+                    <div class="code-block">
+                        <pre>const personnes = [
+  { nom: "Alice", age: 25 },
+  { nom: "Bob", age: 15 },
+  { nom: "Charlie", age: 30 },
+  { nom: "David", age: 17 }
+];
+
+// Votre code ici
+const adultes = 
+
+console.log(adultes);</pre>
+                    </div>
+                    
+                    <p><strong>Résultat attendu :</strong> Tableau avec Alice et Charlie uniquement</p>
+                </div>
+
+                <div class="exercise">
+                    <h4>Exercice 4 : Filtrage multi-critères</h4>
+                    <p><strong>Consigne :</strong> Filtrez les livres disponibles (en stock) et qui coûtent moins de 20€.</p>
+                    
+                    <div class="code-block">
+                        <pre>const livres = [
+  { titre: "JavaScript", prix: 25, stock: 5 },
+  { titre: "HTML/CSS", prix: 18, stock: 0 },
+  { titre: "React", prix: 15, stock: 8 },
+  { titre: "Node.js", prix: 22, stock: 3 }
+];
+
+// Votre code ici
+const livresDisponibles = 
+
+console.log(livresDisponibles);</pre>
+                    </div>
+                    
+                    <p><strong>Résultat attendu :</strong> Tableau avec React uniquement</p>
+                </div>
+
+                <div class="exercise">
+                    <h4>Exercice 5 : Chaînage de méthodes</h4>
+                    <p><strong>Consigne :</strong> Filtrez les produits en promotion, puis créez un tableau avec uniquement leurs noms en majuscules.</p>
+                    
+                    <div class="code-block">
+                        <pre>const produits = [
+  { nom: "Ordinateur", promotion: false },
+  { nom: "Souris", promotion: true },
+  { nom: "Clavier", promotion: true },
+  { nom: "Écran", promotion: false }
+];
+
+// Votre code ici (utilisez filter + map)
+const nomsPromos = 
+
+console.log(nomsPromos);</pre>
+                    </div>
+                    
+                    <p><strong>Résultat attendu :</strong> <code>["SOURIS", "CLAVIER"]</code></p>
+                </div>
+            </section>
+
+            <!-- SECTION 8 : RÉCAPITULATIF -->
+            <section id="section8" class="page-break">
+                <h2>8. Récapitulatif</h2>
+
+                <h3>Points clés à retenir</h3>
+                
+                <ul>
+                    <li><code>filter()</code> crée un nouveau tableau sans modifier l'original</li>
+                    <li>Retourne TOUS les éléments qui satisfont la condition (contrairement à find())</li>
+                    <li>La fonction callback doit retourner true ou false</li>
+                    <li>Ne pas oublier le return (sauf avec syntaxe fléchée implicite)</li>
+                    <li>Peut être chaîné avec d'autres méthodes (map, reduce, sort, etc.)</li>
+                    <li>Peut retourner un tableau vide si aucun élément ne correspond</li>
+                </ul>
+
+                <h3>Tableau de synthèse</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Méthode</th>
+                            <th>Retour</th>
+                            <th>Usage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>filter()</code></td>
+                            <td>Tableau (tous les éléments validés)</td>
+                            <td>Filtrer selon un critère</td>
+                        </tr>
+                        <tr>
+                            <td><code>find()</code></td>
+                            <td>Un seul élément ou undefined</td>
+                            <td>Trouver le premier élément</td>
+                        </tr>
+                        <tr>
+                            <td><code>map()</code></td>
+                            <td>Tableau (même longueur)</td>
+                            <td>Transformer chaque élément</td>
+                        </tr>
+                        <tr>
+                            <td><code>reduce()</code></td>
+                            <td>Une seule valeur</td>
+                            <td>Réduire à une valeur unique</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+              
+
+            </section>
+        </div>
+    </div>
+
+ <footer>
+        <p>2026 Formation DWWM développeur web web mobile Lille</p>
+        <p>&copy; Thomas révision Filter()</p>
+        <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/Region.jpg" width="50px" alt="">
+            <img src="../JAVASCRIPT/Supports/IMG/U.E.jpg" width="70px" alt="">
+    </footer>
+
+
+</body>
+</html>
