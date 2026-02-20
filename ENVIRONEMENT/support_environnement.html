@@ -24,7 +24,7 @@
             max-width: 1200px;
             margin: 0 auto;
             background-color: white;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            
         }
 
         header {
@@ -51,7 +51,6 @@
             background-color: rgba(255,255,255,0.2);
             border: 2px solid white;
             padding: 8px 20px;
-            border-radius: 25px;
             font-weight: bold;
             font-size: 1em;
         }
@@ -113,7 +112,6 @@
         .highlight {
             background-color: #D5E8F0;
             padding: 2px 6px;
-            border-radius: 3px;
             font-weight: bold;
         }
 
@@ -121,7 +119,6 @@
             font-family: 'Courier New', monospace;
             background-color: #f4f4f4;
             padding: 2px 6px;
-            border-radius: 3px;
             font-size: 0.93em;
         }
 
@@ -131,7 +128,6 @@
             border-left: 4px solid #2E75B6;
             padding: 20px;
             margin: 20px 0;
-            border-radius: 5px;
             overflow-x: auto;
         }
 
@@ -151,7 +147,6 @@
 
         /* OS Sections colorées */
         .os-section {
-            border-radius: 10px;
             margin: 30px 0;
             overflow: hidden;
             border: 2px solid;
@@ -181,12 +176,11 @@
         .step-box {
             background-color: #f0f7ff;
             border: 1px solid #bee3f8;
-            border-radius: 8px;
             padding: 18px 20px;
             margin: 15px 0;
         }
 
-        .step-box h4 { color: #2E75B6; margin-top: 0; margin-bottom: 12px; }
+        .step-box h4 { color: var(--conseil)‹; margin-top: 0; margin-bottom: 12px; }
 
         .step-number {
             display: inline-flex;
@@ -196,7 +190,6 @@
             color: white;
             width: 32px;
             height: 32px;
-            border-radius: 50%;
             font-weight: bold;
             margin-right: 10px;
             flex-shrink: 0;
@@ -209,7 +202,6 @@
             border-left: 4px solid #0c5460;
             padding: 15px 20px;
             margin: 20px 0;
-            border-radius: 5px;
         }
 
         .warning-box {
@@ -217,7 +209,6 @@
             border-left: 4px solid #ffc107;
             padding: 15px 20px;
             margin: 20px 0;
-            border-radius: 5px;
         }
 
         .success-box {
@@ -225,7 +216,7 @@
             border-left: 4px solid #28a745;
             padding: 15px 20px;
             margin: 20px 0;
-            border-radius: 5px;
+            
         }
 
         .error-box {
@@ -233,7 +224,7 @@
             border-left: 4px solid #dc3545;
             padding: 15px 20px;
             margin: 20px 0;
-            border-radius: 5px;
+            
         }
 
         ul { margin: 12px 0 12px 35px; }
@@ -283,7 +274,7 @@
             border: 2px solid;
         }
 
-        .os-card.windows { border-color: #0078d4; }
+        .os-card.windows { border-color: var(--conseil); }
         .os-card.mac { border-color: #555555; }
         .os-card.linux { border-color: #dd4814; }
 
@@ -306,12 +297,11 @@
         }
 
         .os-card-body p { margin-bottom: 8px; text-align: left; }
-        .os-card-body strong { color: #2E75B6; }
+        .os-card-body strong { color: var(--conseil); }
 
         .diagram {
             background-color: white;
             border: 1px solid var(--conseil);
-            border-radius: 8px;
             margin: 25px 0;
             overflow: hidden;
         }
@@ -334,7 +324,7 @@
         .diagram-step:nth-child(even) { background-color: #f9f9f9; }
 
         .step-label {
-            color: #2E75B6;
+            color: var(--conseil);
             font-weight: bold;
             margin-right: 10px;
         }
@@ -347,17 +337,16 @@
 
         .exercise {
             background-color: #e8f4f8;
-            border: 2px solid #2E75B6;
-            border-radius: 8px;
+            border: 2px solid var(--real);
             padding: 20px;
             margin: 25px 0;
         }
 
-        .exercise h4 { color: #2E75B6; margin-top: 0; }
+        .exercise h4 { color: var(--conseil); margin-top: 0; }
 
         .tag-windows { background-color: #0078d4; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
-        .tag-mac { background-color: #555; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
-        .tag-linux { background-color: #dd4814; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+        .tag-mac { background-color: #555; color: white; padding: 2px 8px; font-size: 0.8em; font-weight: bold; }
+        .tag-linux { background-color: #dd4814; color: white; padding: 2px 8px;  font-size: 0.8em; font-weight: bold; }
 
         @media print {
             .nav-menu, .burger-menu { display: none; }

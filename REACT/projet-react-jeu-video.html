@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projet Duo React — Jeu Vidéo | Real Conseil DWWM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --neon-cyan:   #00f5ff;
+      --neon-pink:   #ff00aa;
+      --neon-green:  #00ff88;
+      --neon-yellow: #ffe600;
+      --dark:        #07090f;
+      --dark2:       #0d1117;
+      --dark3:       #131820;
+      --card:        #111827;
+      --border:      rgba(0,245,255,.18);
+      --text:        #c8d8e8;
+      --text-dim:    #6b7a8d;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── SCAN LINE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,.08) 2px,
+        rgba(0,0,0,.08) 4px
+      );
+    }
+
+    /* ─── HERO ─── */
+    header {
+      position: relative;
+      text-align: center;
+      padding: 80px 20px 60px;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,245,255,.12) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255,0,170,.08) 0%, transparent 60%);
+    }
+    .rc-badge {
+      display: inline-block;
+      background: rgba(0,245,255,.08);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .75rem;
+      letter-spacing: .2em;
+      padding: 6px 18px;
+      border-radius: 2px;
+      margin-bottom: 28px;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 6vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.1;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: #fff;
+      text-shadow:
+        0 0 20px rgba(0,245,255,.6),
+        0 0 60px rgba(0,245,255,.25);
+    }
+    h1 span { color: var(--neon-cyan); }
+    .hero-sub {
+      margin-top: 18px;
+      font-size: 1.1rem;
+      color: var(--text-dim);
+      font-weight: 300;
+      letter-spacing: .05em;
+    }
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 36px;
+      flex-wrap: wrap;
+    }
+    .meta-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      padding: 8px 20px; border-radius: 40px;
+      font-size: .85rem; color: var(--text);
+    }
+    .meta-pill .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .dot-cyan  { background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
+    .dot-pink  { background: var(--neon-pink); box-shadow: 0 0 8px var(--neon-pink); }
+    .dot-green { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
+
+    /* ─── LAYOUT ─── */
+    main { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* ─── SECTION TITLES ─── */
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--neon-cyan);
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 32px;
+    }
+    h2::after {
+      content: '';
+      display: block;
+      width: 60px; height: 3px;
+      background: linear-gradient(90deg, var(--neon-cyan), transparent);
+      margin-top: 12px;
+    }
+    h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      margin-bottom: 14px;
+      letter-spacing: .05em;
+    }
+    section { margin-bottom: 72px; }
+
+    /* ─── CARDS ─── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), transparent);
+    }
+    .card p { line-height: 1.75; color: var(--text); }
+
+    /* ─── GRID ─── */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+
+    /* ─── ÉTAPES ─── */
+    .step-list { display: flex; flex-direction: column; gap: 16px; }
+    .step {
+      display: flex; gap: 20px; align-items: flex-start;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 22px;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--neon-cyan);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900; font-size: .95rem;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--neon-cyan);
+      box-shadow: 0 0 14px rgba(0,245,255,.2);
+    }
+    .step-content h4 {
+      font-weight: 700; font-size: 1rem; color: #fff;
+      margin-bottom: 6px;
+    }
+    .step-content p { font-size: .9rem; color: var(--text-dim); line-height: 1.65; }
+    .step-content code {
+      font-family: 'Share Tech Mono', monospace;
+      background: rgba(0,245,255,.08);
+      color: var(--neon-cyan);
+      padding: 1px 6px; border-radius: 3px;
+      font-size: .85em;
+    }
+
+    /* ─── JEUX VIDÉO IDÉES ─── */
+    .game-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 22px;
+      position: relative; overflow: hidden;
+      cursor: default;
+      transition: border-color .25s, transform .2s;
+    }
+    .game-card:hover {
+      border-color: var(--neon-pink);
+      transform: translateY(-3px);
+    }
+    .game-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan), transparent);
+    }
+    .game-icon { font-size: 2.2rem; margin-bottom: 12px; }
+    .game-card h4 { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .game-card p { font-size: .85rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 12px; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .7rem;
+      padding: 3px 10px; border-radius: 3px;
+      border: 1px solid;
+    }
+    .tag-cyan  { border-color: var(--neon-cyan);  color: var(--neon-cyan);  background: rgba(0,245,255,.06); }
+    .tag-pink  { border-color: var(--neon-pink);  color: var(--neon-pink);  background: rgba(255,0,170,.06); }
+    .tag-green { border-color: var(--neon-green); color: var(--neon-green); background: rgba(0,255,136,.06); }
+    .tag-yellow{ border-color: var(--neon-yellow);color: var(--neon-yellow);background: rgba(255,230,0,.06); }
+    .diff-badge {
+      position: absolute; top: 14px; right: 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .65rem; padding: 3px 8px; border-radius: 3px;
+      text-transform: uppercase; letter-spacing: .1em;
+    }
+    .diff-easy { background: rgba(0,255,136,.15); color: var(--neon-green); border: 1px solid var(--neon-green); }
+    .diff-med  { background: rgba(255,230,0,.15); color: var(--neon-yellow); border: 1px solid var(--neon-yellow); }
+    .diff-hard { background: rgba(255,0,170,.15); color: var(--neon-pink);   border: 1px solid var(--neon-pink); }
+
+    /* ─── CODE BLOCKS ─── */
+    .code-block {
+      background: #0a0e17;
+      border: 1px solid rgba(0,245,255,.15);
+      border-left: 3px solid var(--neon-cyan);
+      border-radius: 6px;
+      padding: 20px 22px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .82rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      white-space: pre;
+      color: #a8c0d8;
+      margin: 14px 0;
+    }
+    .kw  { color: var(--neon-cyan); }
+    .fn  { color: #79b8ff; }
+    .str { color: var(--neon-green); }
+    .cmt { color: #4a5568; font-style: italic; }
+    .tag-html { color: var(--neon-pink); }
+    .num { color: var(--neon-yellow); }
+    .var-color { color: #e2b96e; }
+
+    /* ─── MEMO / ALERT BOXES ─── */
+    .memo {
+      border-radius: 8px; padding: 20px 24px; margin: 20px 0;
+      border-left: 4px solid;
+    }
+    .memo-info  { background: rgba(0,245,255,.06); border-color: var(--neon-cyan); }
+    .memo-warn  { background: rgba(255,230,0,.06); border-color: var(--neon-yellow); }
+    .memo-error { background: rgba(255,0,170,.06); border-color: var(--neon-pink); }
+    .memo-ok    { background: rgba(0,255,136,.06); border-color: var(--neon-green); }
+    .memo-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .75rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .memo-info  .memo-title { color: var(--neon-cyan); }
+    .memo-warn  .memo-title { color: var(--neon-yellow); }
+    .memo-error .memo-title { color: var(--neon-pink); }
+    .memo-ok    .memo-title { color: var(--neon-green); }
+    .memo p, .memo ul { font-size: .9rem; color: var(--text); line-height: 1.7; }
+    .memo ul { padding-left: 18px; }
+    .memo li { margin-bottom: 4px; }
+    .memo code {
+      font-family: 'Share Tech Mono', monospace;
+      background: rgba(0,0,0,.3);
+      padding: 1px 6px; border-radius: 3px; font-size: .85em;
+    }
+
+    /* ─── LIVRABLE TABLE ─── */
+    .livrable-grid { display: flex; flex-direction: column; gap: 12px; }
+    .livrable-item {
+      display: grid;
+      grid-template-columns: 40px 1fr auto;
+      align-items: center; gap: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px; padding: 14px 18px;
+    }
+    .li-icon { font-size: 1.3rem; text-align: center; }
+    .li-text { font-size: .9rem; color: var(--text); }
+    .li-text strong { color: #fff; display: block; margin-bottom: 2px; }
+    .li-pts {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .85rem; font-weight: 700;
+      color: var(--neon-cyan);
+      white-space: nowrap;
+    }
+
+    /* ─── NAV STICKY ─── */
+    nav.sticky {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(7,9,15,.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex; align-items: center; gap: 0;
+      overflow-x: auto;
+    }
+    nav.sticky a {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 16px 18px;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color .2s, border-color .2s;
+    }
+    nav.sticky a:hover {
+      color: var(--neon-cyan);
+      border-bottom-color: var(--neon-cyan);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 32px 24px;
+      font-size: .8rem;
+      color: var(--text-dim);
+      font-family: 'Share Tech Mono', monospace;
+    }
+    footer span { color: var(--neon-cyan); }
+
+    /* ─── BLINK ─── */
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .cursor::after {
+      content: '█';
+      animation: blink 1s step-end infinite;
+      color: var(--neon-cyan);
+      margin-left: 4px;
+      font-size: .8em;
+    }
+
+    /* ─── PRINT ─── */
+    @media print {
+      body::before { display: none; }
+      nav.sticky { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header>
+  <div class="rc-badge">Real Conseil — DWWM · Formation React</div>
+  <h1>Projet Duo<br><span>Jeu Vidéo</span> en React</h1>
+  <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="">
+  <div class="hero-meta">
+    <div class="meta-pill"><span class="dot dot-cyan"></span> Durée : 3 à 6 jours</div>
+    <div class="meta-pill"><span class="dot dot-pink"></span> En binôme</div>
+    <div class="meta-pill"><span class="dot dot-green"></span> Niveau : Débutant React</div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="sticky">
+  <a href="#objectifs">Objectifs</a>
+  <a href="#jeux">Choix du jeu</a>
+  <a href="#etapes">Étapes</a>
+  <a href="#memo">Mémo React</a>
+  <a href="#erreurs">Erreurs fréquentes</a>
+</nav>
+
+<main>
+
+  <!-- OBJECTIFS -->
+  <section id="objectifs">
+    <div class="section-label">// Section 01</div>
+    <h2>Objectifs pédagogiques</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Ce que vous allez pratiquer</h3>
+        <p>À travers ce projet, vous allez mobiliser <strong>toutes les notions vues en cours</strong> sur React dans un contexte réel et ludique. L'idée est de créer un mini-jeu interactif entièrement en React, de A à Z, en binôme.</p>
+      </div>
+      <div class="card">
+        <h3>Travailler en duo</h3>
+        <p>Répartissez-vous les tâches dès le départ : qui fait quoi ? Utilisez <strong>GitHub</strong> (si possible) ou échangez vos fichiers. Discutez, débugguez ensemble, c'est comme ça qu'on progresse le plus vite !</p>
+      </div>
+    </div>
+    <div style="margin-top:20px;" class="card">
+      <h3>Compétences ciblées</h3>
+      <div class="grid-3" style="margin-top:12px;">
+        <div>
+          <div class="tag tag-cyan" style="margin-bottom:8px;">Composants</div>
+          <p style="font-size:.85rem;color:var(--text-dim);">Découper l'interface en composants réutilisables (plateau, score, boutons…)</p>
+        </div>
+        <div>
+          <div class="tag tag-pink" style="margin-bottom:8px;">useState</div>
+          <p style="font-size:.85rem;color:var(--text-dim);">Gérer l'état du jeu : score, tour, niveau, vie du joueur…</p>
+        </div>
+        <div>
+          <div class="tag tag-green" style="margin-bottom:8px;">Props</div>
+          <p style="font-size:.85rem;color:var(--text-dim);">Passer des données entre composants parents et enfants</p>
+        </div>
+        <div>
+          <div class="tag tag-yellow" style="margin-bottom:8px;">useEffect</div>
+          <p style="font-size:.85rem;color:var(--text-dim);">Gérer des minuteries, des effets automatiques (ex : décompte)</p>
+        </div>
+        <div>
+          <div class="tag tag-cyan" style="margin-bottom:8px;">Événements</div>
+          <p style="font-size:.85rem;color:var(--text-dim);">Gérer les clics, les touches clavier, les actions du joueur</p>
+        </div>
+        <div>
+          <div class="tag tag-pink" style="margin-bottom:8px;">Rendu conditionnel</div>
+          <p style="font-size:.85rem;color:var(--text-dim);">Afficher l'écran de jeu, de victoire, de défaite selon l'état</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHOIX DU JEU -->
+  <section id="jeux">
+    <div class="section-label">// Section 02</div>
+    <h2>Choix du jeu vidéo</h2>
+    <p style="margin-bottom:24px;color:var(--text-dim);">Choisissez librement parmi ces idées, ou proposez la vôtre à votre formateur. Le critère principal : le jeu doit être <strong style="color:#fff;">réalisable en React pur</strong> (pas de canvas complexe ni de 3D).</p>
+    <div class="grid-3">
+
+      <div class="game-card">
+        <span class="diff-badge diff-easy">Facile</span>
+        <div class="game-icon"></div>
+        <h4>Pierre Feuille Ciseaux</h4>
+        <p>Le classique ! Joueur vs ordinateur, score en temps réel, historique des parties.</p>
+        <div class="tag-list">
+          <span class="tag tag-cyan">useState</span>
+          <span class="tag tag-green">Composants</span>
+          <span class="tag tag-pink">Math.random</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <span class="diff-badge diff-easy">Facile</span>
+        <div class="game-icon"></div>
+        <h4>Memory / Paires de cartes</h4>
+        <p>Retournez les cartes, trouvez les paires, comptez les coups. Avec un timer bonus !</p>
+        <div class="tag-list">
+          <span class="tag tag-cyan">useState</span>
+          <span class="tag tag-yellow">useEffect</span>
+          <span class="tag tag-green">.map()</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <span class="diff-badge diff-easy">Facile</span>
+        <div class="game-icon"></div>
+        <h4>Devine le nombre</h4>
+        <p>L'ordi choisit un nombre secret, le joueur saisit des propositions. Plus chaud / plus froid !</p>
+        <div class="tag-list">
+          <span class="tag tag-cyan">useState</span>
+          <span class="tag tag-green">Input / Form</span>
+          <span class="tag tag-pink">Conditions</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <span class="diff-badge diff-med">Moyen</span>
+        <div class="game-icon"></div>
+        <h4>Morpion (Tic-Tac-Toe)</h4>
+        <p>Le projet officiel de la doc React ! 2 joueurs, détection victoire, historique des coups.</p>
+        <div class="tag-list">
+          <span class="tag tag-cyan">useState</span>
+          <span class="tag tag-yellow">Props</span>
+          <span class="tag tag-green">Tableau 2D</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <span class="diff-badge diff-med">Moyen</span>
+        <div class="game-icon"></div>
+        <h4>Pendu (Hangman)</h4>
+        <p>Mot à deviner lettre par lettre, vies limitées, dessin du pendu par étapes, thème au choix.</p>
+        <div class="tag-list">
+          <span class="tag tag-cyan">useState</span>
+          <span class="tag tag-pink">Array.includes</span>
+          <span class="tag tag-yellow">Clavier</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <span class="diff-badge diff-med">Moyen</span>
+        <div class="game-icon"></div>
+        <h4>Quiz / Trivia</h4>
+        <p>Questions à choix multiples, minuteur par question, score final et récap des réponses.</p>
+        <div class="tag-list">
+          <span class="tag tag-cyan">useState</span>
+          <span class="tag tag-yellow">useEffect</span>
+          <span class="tag tag-green">JSON data</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <span class="diff-badge diff-med">Moyen</span>
+        <div class="game-icon"></div>
+        <h4>Snake (version simplifiée)</h4>
+        <p>Grille CSS, le serpent avance automatiquement, gestion du clavier, pomme à manger.</p>
+        <div class="tag-list">
+          <span class="tag tag-yellow">useEffect</span>
+          <span class="tag tag-cyan">setInterval</span>
+          <span class="tag tag-pink">Grille CSS</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <span class="diff-badge diff-hard">Ambitieux</span>
+        <div class="game-icon"></div>
+        <h4>Blackjack</h4>
+        <p>Jeu de cartes complet, logique de tirage, comparaison des mains, mise fictive.</p>
+        <div class="tag-list">
+          <span class="tag tag-cyan">useState</span>
+          <span class="tag tag-pink">Logique complexe</span>
+          <span class="tag tag-yellow">useReducer</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <span class="diff-badge diff-hard">Ambitieux</span>
+        <div class="game-icon"></div>
+        <h4>Votre idée !</h4>
+        <p>Vous avez un jeu en tête ? Proposez-le au formateur. Si la complexité est adaptée, go !</p>
+        <div class="tag-list">
+          <span class="tag tag-green">Créativité</span>
+          <span class="tag tag-cyan">React</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ÉTAPES DU PROJET -->
+  <section id="etapes">
+    <div class="section-label">// Section 03</div>
+    <h2>Étapes du projet</h2>
+    <div class="step-list">
+
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>Choisir le jeu &amp; se répartir les rôles</h4>
+          <p>Discutez en binôme, choisissez votre jeu, puis listez les fonctionnalités à implémenter. Définissez clairement : qui gère l'interface ? qui gère la logique ? Écrivez ça sur papier ou dans un fichier <code>README.md</code>.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>Créer le projet avec Vite</h4>
+          <p>Dans votre terminal : <code>npm create vite@latest mon-jeu -- --template react</code> puis <code>cd mon-jeu</code>, <code>npm install</code>, <code>npm run dev</code>. Supprimez le contenu inutile du fichier <code>App.jsx</code> et partez de zéro !</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>Identifier et créer vos composants</h4>
+          <p>Avant de coder, faites un schéma de votre interface sur papier. Quels sont les "blocs" indépendants ? Exemple pour le Morpion : <code>&lt;Plateau /&gt;</code>, <code>&lt;Case /&gt;</code>, <code>&lt;Score /&gt;</code>, <code>&lt;BoutonRejouer /&gt;</code>. Créez un dossier <code>src/components/</code>.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h4>Gérer l'état avec useState</h4>
+          <p>Identifiez ce qui doit "changer" dans votre jeu : le score, le tour en cours, l'état gagné/perdu, les cases jouées… Chaque valeur qui change = un <code>useState</code>. Placez les états dans le composant parent qui en a besoin.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <h4>Connecter la logique aux événements</h4>
+          <p>Ajoutez les <code>onClick</code>, <code>onKeyDown</code>, etc. Écrivez les fonctions qui modifient l'état : vérifier une victoire, augmenter le score, passer au tour suivant… Testez chaque fonctionnalité une par une.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">06</div>
+        <div class="step-content">
+          <h4>Ajouter le rendu conditionnel</h4>
+          <p>Gérez les écrans : écran d'accueil, jeu en cours, victoire, défaite. Utilisez des conditions dans le JSX : <code>&#123;gameState === 'playing' &amp;&amp; &lt;Plateau /&gt;&#125;</code> ou un opérateur ternaire.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">07</div>
+        <div class="step-content">
+          <h4>Styliser et améliorer</h4>
+          <p>Ajoutez du CSS (fichiers <code>.css</code>, classes CSS ou style inline). Rendez le jeu agréable à utiliser. Bonus : ajoutez des animations CSS, un son, un meilleur score sauvegardé avec <code>localStorage</code>.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">08</div>
+        <div class="step-content">
+          <h4>Présentation au groupe</h4>
+          <p>Préparez une démo de 5 minutes : montrez le jeu en action, expliquez votre découpage en composants, parlez d'une difficulté rencontrée et comment vous l'avez résolue. Montrez votre code !</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- MÉMO REACT -->
+  <section id="memo">
+    <div class="section-label">// Section 05</div>
+    <h2>Mémo React <span class="cursor"></span></h2>
+    <p style="margin-bottom:28px;color:var(--text-dim);">Une référence rapide des notions essentielles utilisées dans ce projet. Consultez cette section si vous avez un trou de mémoire !</p>
+
+    <div style="display:flex;flex-direction:column;gap:28px;">
+
+      <!-- Composant -->
+      <div class="card">
+        <h3>1 — Créer un composant</h3>
+        <p>Un composant React est une <strong>fonction JavaScript</strong> qui retourne du JSX. Son nom commence toujours par une majuscule.</p>
+        <div class="code-block"><span class="cmt">// src/components/Score.jsx</span>
+<span class="kw">function</span> <span class="fn">Score</span>({ <span class="var-color">points</span>, <span class="var-color">joueur</span> }) {
+  <span class="kw">return</span> (
+    <span class="tag-html">&lt;div</span> <span class="fn">className</span>=<span class="str">"score"</span><span class="tag-html">&gt;</span>
+      <span class="tag-html">&lt;h2&gt;</span>{<span class="var-color">joueur</span>}<span class="tag-html">&lt;/h2&gt;</span>
+      <span class="tag-html">&lt;p&gt;</span>Score : {<span class="var-color">points</span>}<span class="tag-html">&lt;/p&gt;</span>
+    <span class="tag-html">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> Score;
+
+<span class="cmt">// Utilisation dans le parent :</span>
+<span class="tag-html">&lt;Score</span> <span class="fn">joueur</span>=<span class="str">"Alice"</span> <span class="fn">points</span>=<span class="num">42</span> <span class="tag-html">/&gt;</span></div>
+        <div class="memo memo-info">
+          <div class="memo-title">À retenir</div>
+          <ul>
+            <li>Les <strong>props</strong> sont des paramètres en lecture seule : le composant enfant ne peut pas les modifier.</li>
+            <li>On destructure les props directement dans les paramètres : <code>({ points, joueur })</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- useState -->
+      <div class="card">
+        <h3>2 — useState : gérer un état local</h3>
+        <p>Chaque fois qu'une valeur doit changer et provoquer un <strong>rafraîchissement de l'affichage</strong>, on utilise <code>useState</code>.</p>
+        <div class="code-block"><span class="kw">import</span> { <span class="fn">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Compteur</span>() {
+  <span class="cmt">// [valeurActuelle, fonctionPourChanger] = useState(valeurInitiale)</span>
+  <span class="kw">const</span> [<span class="var-color">score</span>, <span class="fn">setScore</span>] = <span class="fn">useState</span>(<span class="num">0</span>);
+  <span class="kw">const</span> [<span class="var-color">gameOver</span>, <span class="fn">setGameOver</span>] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="kw">const</span> <span class="fn">marquerPoint</span> = () => {
+    <span class="fn">setScore</span>(<span class="var-color">score</span> + <span class="num">1</span>);       <span class="cmt">// ← provoque un re-render</span>
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag-html">&lt;div&gt;</span>
+      <span class="tag-html">&lt;p&gt;</span>Score : {<span class="var-color">score</span>}<span class="tag-html">&lt;/p&gt;</span>
+      <span class="tag-html">&lt;button</span> <span class="fn">onClick</span>={<span class="var-color">marquerPoint</span>}<span class="tag-html">&gt;</span>+1<span class="tag-html">&lt;/button&gt;</span>
+    <span class="tag-html">&lt;/div&gt;</span>
+  );
+}</div>
+        <div class="memo memo-warn">
+          <div class="memo-title">Piège classique</div>
+          <p>On ne modifie <strong>jamais</strong> la valeur directement : <code>score = score + 1</code>. On utilise toujours la fonction setter : <code>setScore(score + 1)</code>. Sans ça, l'affichage ne se met pas à jour !</p>
+        </div>
+      </div>
+
+      <!-- Tableau dans useState -->
+      <div class="card">
+        <h3>3 — État avec un tableau ou un objet</h3>
+        <p>Pour gérer un plateau de jeu, une liste de cartes ou l'historique des coups, on stocke un tableau dans l'état.</p>
+        <div class="code-block"><span class="kw">const</span> [<span class="var-color">cases</span>, <span class="fn">setCases</span>] = <span class="fn">useState</span>(Array(<span class="num">9</span>).<span class="fn">fill</span>(<span class="kw">null</span>));
+<span class="cmt">// cases = [null, null, null, null, null, null, null, null, null]</span>
+
+<span class="kw">const</span> <span class="fn">jouerCase</span> = (<span class="var-color">index</span>) => {
+  <span class="kw">const</span> <span class="var-color">nouvellesCases</span> = [...<span class="var-color">cases</span>]; <span class="cmt">// ← copie du tableau !</span>
+  <span class="var-color">nouvellesCases</span>[<span class="var-color">index</span>] = <span class="str">'X'</span>;
+  <span class="fn">setCases</span>(<span class="var-color">nouvellesCases</span>);         <span class="cmt">// ← nouveau tableau = re-render</span>
+};</div>
+        <div class="memo memo-warn">
+          <div class="memo-title">Ne jamais muter l'état directement</div>
+          <p>Toujours créer une <strong>copie</strong> avec le spread operator <code>[...cases]</code> ou <code>{...objet}</code> avant de modifier, puis passer la copie à la fonction setter.</p>
+        </div>
+      </div>
+
+      <!-- useEffect -->
+      <div class="card">
+        <h3>4 — useEffect : effets de bord</h3>
+        <p>Utilisez <code>useEffect</code> pour déclencher du code <strong>après le rendu</strong> : minuteurs, décomptes automatiques, chargement de données…</p>
+        <div class="code-block"><span class="kw">import</span> { <span class="fn">useState</span>, <span class="fn">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Minuteur</span>() {
+  <span class="kw">const</span> [<span class="var-color">temps</span>, <span class="fn">setTemps</span>] = <span class="fn">useState</span>(<span class="num">30</span>);
+
+  <span class="fn">useEffect</span>(() => {
+    <span class="kw">const</span> <span class="var-color">intervalle</span> = <span class="fn">setInterval</span>(() => {
+      <span class="fn">setTemps</span>(<span class="var-color">t</span> => <span class="var-color">t</span> - <span class="num">1</span>);  <span class="cmt">// forme fonctionnelle recommandée</span>
+    }, <span class="num">1000</span>);
+
+    <span class="cmt">// ← La fonction de nettoyage : TRÈS IMPORTANTE !</span>
+    <span class="kw">return</span> () => <span class="fn">clearInterval</span>(<span class="var-color">intervalle</span>);
+  }, []);  <span class="cmt">// [] = s'exécute UNE SEULE FOIS au montage</span>
+
+  <span class="kw">return</span> <span class="tag-html">&lt;p&gt;</span>Temps restant : {<span class="var-color">temps</span>}s<span class="tag-html">&lt;/p&gt;</span>;
+}</div>
+        <div class="memo memo-info">
+          <div class="memo-title"> Les dépendances de useEffect</div>
+          <ul>
+            <li><code>useEffect(fn, [])</code> → s'exécute une seule fois au démarrage</li>
+            <li><code>useEffect(fn, [score])</code> → s'exécute à chaque fois que <code>score</code> change</li>
+            <li><code>useEffect(fn)</code> → s'exécute à chaque re-render (rarement souhaité)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Rendu conditionnel -->
+      <div class="card">
+        <h3>5 — Rendu conditionnel</h3>
+        <p>Afficher différents écrans selon l'état du jeu : menu d'accueil, partie en cours, victoire, défaite…</p>
+        <div class="code-block"><span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [<span class="var-color">ecran</span>, <span class="fn">setEcran</span>] = <span class="fn">useState</span>(<span class="str">'accueil'</span>);
+  <span class="cmt">// ecran peut valoir : 'accueil' | 'jeu' | 'victoire' | 'defaite'</span>
+
+  <span class="kw">return</span> (
+    <span class="tag-html">&lt;div&gt;</span>
+      {<span class="cmt">/* Méthode 1 : opérateur ternaire */</span>}
+      {<span class="var-color">ecran</span> === <span class="str">'accueil'</span>
+        ? <span class="tag-html">&lt;Accueil</span> <span class="fn">onStart</span>={() => <span class="fn">setEcran</span>(<span class="str">'jeu'</span>)} <span class="tag-html">/&gt;</span>
+        : <span class="tag-html">&lt;Jeu</span> <span class="fn">onVictoire</span>={() => <span class="fn">setEcran</span>(<span class="str">'victoire'</span>)} <span class="tag-html">/&gt;</span>
+      }
+
+      {<span class="cmt">/* Méthode 2 : && (si seulement dans un cas) */</span>}
+      {<span class="var-color">ecran</span> === <span class="str">'victoire'</span> &amp;&amp; <span class="tag-html">&lt;Victoire /&gt;</span>}
+    <span class="tag-html">&lt;/div&gt;</span>
+  );
+}</div>
+      </div>
+
+      <!-- .map() -->
+      <div class="card">
+        <h3>6 — Afficher une liste avec .map()</h3>
+        <p>Pour afficher un tableau de données (cases du plateau, cartes, questions…), on utilise la méthode <code>.map()</code> dans le JSX.</p>
+        <div class="code-block"><span class="kw">function</span> <span class="fn">Plateau</span>({ <span class="var-color">cases</span>, <span class="var-color">onClic</span> }) {
+  <span class="kw">return</span> (
+    <span class="tag-html">&lt;div</span> <span class="fn">className</span>=<span class="str">"plateau"</span><span class="tag-html">&gt;</span>
+      {<span class="var-color">cases</span>.<span class="fn">map</span>((<span class="var-color">valeur</span>, <span class="var-color">index</span>) => (
+        <span class="tag-html">&lt;Case</span>
+          <span class="fn">key</span>={<span class="var-color">index</span>}          <span class="cmt">// ← OBLIGATOIRE avec .map()</span>
+          <span class="fn">valeur</span>={<span class="var-color">valeur</span>}
+          <span class="fn">onClick</span>={() => <span class="var-color">onClic</span>(<span class="var-color">index</span>)}
+        <span class="tag-html">/&gt;</span>
+      ))}
+    <span class="tag-html">&lt;/div&gt;</span>
+  );
+}</div>
+        <div class="memo memo-error">
+          <div class="memo-title"> La prop key est obligatoire !</div>
+          <p>React a besoin d'une <code>key</code> unique pour chaque élément dans un <code>.map()</code>. Utilisez un identifiant unique (id, index en dernier recours). Sans elle : warning dans la console et bugs potentiels !</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ERREURS FRÉQUENTES -->
+  <section id="erreurs">
+    <div class="section-label">// Section 06</div>
+    <h2>Erreurs fréquentes &amp; solutions</h2>
+    <p style="margin-bottom:24px;color:var(--text-dim);">Voici les problèmes les plus souvent rencontrés lors d'un premier projet React. Si vous êtes bloqués, commencez par vérifier ici !</p>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <div class="memo memo-error">
+        <div class="memo-title"> L'affichage ne se met pas à jour quand je change une valeur</div>
+        <p><strong>Cause :</strong> vous modifiez la variable directement au lieu d'utiliser la fonction setter.<br>
+        <strong>Solution :</strong> remplacez <code>score = score + 1</code> par <code>setScore(score + 1)</code>. React ne peut détecter les changements que via la fonction setter.</p>
+      </div>
+
+      <div class="memo memo-error">
+        <div class="memo-title"> "Cannot read properties of undefined" sur mes props</div>
+        <p><strong>Cause :</strong> le composant parent n'envoie pas la prop, ou le nom est différent.<br>
+        <strong>Solution :</strong> vérifiez le nom dans le parent <code>&lt;MonComposant score={score} /&gt;</code> et dans l'enfant <code>function MonComposant({ score })</code>. Les noms doivent être identiques.</p>
+      </div>
+
+      <div class="memo memo-error">
+        <div class="memo-title"> Warning "Each child in a list should have a unique key prop"</div>
+        <p><strong>Cause :</strong> vous utilisez <code>.map()</code> sans la prop <code>key</code>.<br>
+        <strong>Solution :</strong> ajoutez <code>key={index}</code> ou mieux <code>key={item.id}</code> sur chaque élément retourné dans le <code>.map()</code>.</p>
+      </div>
+
+      <div class="memo memo-error">
+        <div class="memo-title"> Le minuteur ne s'arrête jamais (ou tourne en double)</div>
+        <p><strong>Cause :</strong> vous avez oublié la fonction de nettoyage dans <code>useEffect</code>.<br>
+        <strong>Solution :</strong> retournez toujours <code>return () => clearInterval(monIntervalle);</code> dans votre useEffect pour nettoyer le minuteur quand le composant se démonte.</p>
+      </div>
+
+      <div class="memo memo-warn">
+        <div class="memo-title"> Ma fonction dans onClick déclenche immédiatement sans cliquer</div>
+        <p><strong>Cause :</strong> vous appelez la fonction au lieu de la passer en référence.<br>
+        <code>onClick={jouer()}</code>  — s'exécute au rendu !<br>
+        <code>onClick={jouer}</code> — s'exécute au clic.<br>
+        <code>onClick={() => jouer(index)}</code>  — avec un argument.</p>
+      </div>
+
+      <div class="memo memo-warn">
+        <div class="memo-title">Je dois modifier l'état mais je lis l'ancienne valeur</div>
+        <p><strong>Cause :</strong> plusieurs mises à jour d'état dans la même fonction.<br>
+        <strong>Solution :</strong> utilisez la forme fonctionnelle du setter : <code>setScore(s => s + 1)</code>. React garantit alors que <code>s</code> est la dernière valeur à jour.</p>
+      </div>
+
+      <div class="memo memo-ok">
+        <div class="memo-title">Réflexe de débogage</div>
+        <ul>
+          <li>Ouvrez la console (F12) : les erreurs React sont très explicites !</li>
+          <li>Installez l'extension <strong>React Developer Tools</strong> (Chrome/Firefox) pour inspecter vos composants et leurs états en temps réel.</li>
+          <li>Ajoutez des <code>console.log(etat)</code> dans vos fonctions pour suivre les valeurs.</li>
+        
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BONUS -->
+  <section>
+    <div class="section-label">// Bonus</div>
+    <h2>Idées</h2>
+    <div class="grid-3">
+      <div class="card">
+        <h3>localStorage</h3>
+        <p>Sauvegardez le meilleur score même après fermeture du navigateur avec <code>localStorage.setItem('meilleurScore', score)</code> et rechargez-le avec <code>useEffect</code> au démarrage.</p>
+      </div>
+      <div class="card">
+        <h3>Sons &amp; effets</h3>
+        <p>Ajoutez des sons avec l'API <code>Audio</code> du navigateur : <code>new Audio('son.mp3').play()</code>. Un son de victoire, un son d'erreur, ça change tout !</p>
+      </div>
+      <div class="card">
+        <h3>Données externes</h3>
+        <p>Pour un quiz, récupérez vos questions depuis une API publique comme <strong>Open Trivia DB</strong> avec <code>fetch()</code> dans un <code>useEffect</code>.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+
+
+</body>
+</html>

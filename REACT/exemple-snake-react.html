@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exemple Snake — React | Real Conseil DWWM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- React + Babel via CDN : pas besoin de Vite pour cet exemple -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    
+    :root {
+      --neon-cyan:   #00f5ff;
+      --neon-pink:   #ff00aa;
+      --neon-green:  #00ff88;
+      --neon-yellow: #ffe600;
+      --dark:        #07090f;
+      --dark2:       #0d1117;
+      --card:        #111827;
+      --border:      rgba(0,245,255,.18);
+      --text:        #c8d8e8;
+      --text-dim:    #6b7a8d;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.07) 2px,rgba(0,0,0,.07) 4px);
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      text-align: center;
+      padding: 48px 20px 36px;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,245,255,.1) 0%, transparent 70%);
+    }
+    .rc-badge {
+      display: inline-block;
+      background: rgba(0,245,255,.08);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .72rem; letter-spacing: .2em;
+      padding: 5px 16px; border-radius: 2px; margin-bottom: 20px;
+    }
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      font-weight: 900; text-transform: uppercase; letter-spacing: .04em;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(0,245,255,.5), 0 0 50px rgba(0,245,255,.2);
+    }
+    h1 span { color: var(--neon-cyan); }
+    .hero-sub {
+      margin-top: 12px; font-size: 1rem; color: var(--text-dim);
+      font-weight: 300; letter-spacing: .04em;
+    }
+
+    /* ─── NAV ─── */
+    nav.sticky {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(7,9,15,.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px; display: flex; gap: 0; overflow-x: auto;
+    }
+    nav.sticky a {
+      font-family: 'Share Tech Mono', monospace; font-size: .72rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--text-dim); text-decoration: none;
+      padding: 14px 16px; white-space: nowrap;
+      border-bottom: 2px solid transparent; transition: color .2s, border-color .2s;
+    }
+    nav.sticky a:hover { color: var(--neon-cyan); border-bottom-color: var(--neon-cyan); }
+
+    /* ─── LAYOUT ─── */
+    main { max-width: 1200px; margin: 0 auto; padding: 48px 24px 80px; }
+    section { margin-bottom: 64px; }
+    .section-label {
+      font-family: 'Share Tech Mono', monospace; font-size: .68rem;
+      letter-spacing: .25em; text-transform: uppercase;
+      color: var(--neon-cyan); margin-bottom: 8px;
+    }
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem); font-weight: 700; color: #fff; margin-bottom: 28px;
+    }
+    h2::after {
+      content: ''; display: block; width: 50px; height: 3px;
+      background: linear-gradient(90deg, var(--neon-cyan), transparent); margin-top: 10px;
+    }
+    h3 {
+      font-family: 'Orbitron', sans-serif; font-size: .9rem; font-weight: 700;
+      color: var(--neon-cyan); margin-bottom: 12px; letter-spacing: .05em;
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 24px; position: relative; overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), transparent);
+    }
+    .card p { line-height: 1.75; color: var(--text); font-size: .92rem; }
+
+    /* ─── COLONNES JEU + CODE ─── */
+    .demo-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .demo-layout { grid-template-columns: 1fr; }
+    }
+
+    /* ─── ZONE DE JEU ─── */
+    .game-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 24px;
+      position: sticky; top: 60px;
+    }
+    .game-panel::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan), transparent);
+    }
+
+    /* ─── BLOCS DE CODE ─── */
+    .code-block {
+      background: #0a0e17;
+      border: 1px solid rgba(0,245,255,.15);
+      border-left: 3px solid var(--neon-cyan);
+      border-radius: 6px; padding: 20px 22px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .8rem; line-height: 1.75;
+      overflow-x: auto; white-space: pre;
+      color: #a8c0d8; margin: 14px 0;
+    }
+    .kw   { color: var(--neon-cyan); }
+    .fn   { color: #79b8ff; }
+    .str  { color: var(--neon-green); }
+    .cmt  { color: #4a5568; font-style: italic; }
+    .tag  { color: var(--neon-pink); }
+    .num  { color: var(--neon-yellow); }
+    .var  { color: #e2b96e; }
+
+    /* ─── MEMO ─── */
+    .memo {
+      border-radius: 8px; padding: 16px 20px; margin: 16px 0; border-left: 4px solid;
+    }
+    .memo-info  { background: rgba(0,245,255,.06); border-color: var(--neon-cyan); }
+    .memo-warn  { background: rgba(255,230,0,.06); border-color: var(--neon-yellow); }
+    .memo-ok    { background: rgba(0,255,136,.06); border-color: var(--neon-green); }
+    .memo-title {
+      font-family: 'Orbitron', sans-serif; font-size: .7rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px;
+    }
+    .memo-info .memo-title { color: var(--neon-cyan); }
+    .memo-warn .memo-title { color: var(--neon-yellow); }
+    .memo-ok   .memo-title { color: var(--neon-green); }
+    .memo p, .memo ul { font-size: .88rem; color: var(--text); line-height: 1.7; }
+    .memo ul { padding-left: 16px; }
+    .memo li { margin-bottom: 3px; }
+    .memo code {
+      font-family: 'Share Tech Mono', monospace;
+      background: rgba(0,0,0,.3); padding: 1px 5px; border-radius: 3px; font-size: .84em;
+    }
+
+    /* ─── ÉTAPE BADGE ─── */
+    .etape-header {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+    }
+    .etape-num {
+      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+      border: 2px solid var(--neon-cyan); display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: .85rem;
+      color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0,245,255,.2);
+    }
+    .etape-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 700; color: #fff; }
+
+    footer {
+      border-top: 1px solid var(--border); text-align: center; padding: 28px 24px;
+      font-size: .78rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;
+    }
+    footer span { color: var(--neon-cyan); }
+
+    /* ─── RESPONSIVE MOBILE ─── */
+    @media (max-width: 600px) {
+      header { padding: 32px 16px 24px; }
+      .hero-sub { font-size: .88rem; }
+      main { padding: 28px 14px 60px; }
+      section { margin-bottom: 44px; }
+      h2 { margin-bottom: 18px; }
+      .card { padding: 16px; }
+      .etape-title { font-size: .88rem; }
+      .code-block { font-size: .72rem; padding: 14px 14px; }
+      nav.sticky a { padding: 12px 12px; font-size: .65rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="rc-badge">Real Conseil — DWWM · Exemple Formateur</div>
+  <h1>Le jeu <span>Snake</span><br>étape par étape</h1>
+  <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="Logo Real Conseil">
+</header>
+
+<!-- NAV -->
+<nav class="sticky">
+  <a href="#demo">Démo live</a>
+  <a href="#etape1">1 — Constantes</a>
+  <a href="#etape2">2 — États</a>
+  <a href="#etape3">3 — Boucle de jeu</a>
+  <a href="#etape4">4 — Clavier</a>
+  <a href="#etape5">5 — Nourriture</a>
+  <a href="#etape6">6 — Affichage</a>
+  <a href="#complet">Code complet</a>
+</nav>
+
+<main>
+
+  <!-- ─── DÉMO LIVE ─── -->
+  <section id="demo">
+    <div class="section-label">// Démo </div>
+    <h2>Jouez maintenant !</h2>
+    <div id="snake-root"></div>
+  </section>
+
+  <!-- ─── INTRODUCTION ─── -->
+  <section>
+    <div class="section-label">// Introduction</div>
+    <h2>Comment ce Snake est construit ?</h2>
+    <div class="card">
+      <p>Ce jeu utilise <strong>6 concepts React</strong> que vous venez de voir en cours. On va les construire <strong>étape par étape</strong>, comme des briques. À la fin, vous comprendrez chaque ligne du code.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:18px;">
+        <div style="background:rgba(0,245,255,.06);border:1px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:6px;"></div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--neon-cyan);">Constantes</div>
+          <div style="font-size:.8rem;color:var(--text-dim);margin-top:4px;">Taille grille, vitesse</div>
+        </div>
+        <div style="background:rgba(255,0,170,.06);border:1px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:6px;"></div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--neon-pink);">useState</div>
+          <div style="font-size:.8rem;color:var(--text-dim);margin-top:4px;">Position, direction, score</div>
+        </div>
+        <div style="background:rgba(0,255,136,.06);border:1px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:6px;"></div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--neon-green);">useEffect</div>
+          <div style="font-size:.8rem;color:var(--text-dim);margin-top:4px;">Boucle de jeu (timer)</div>
+        </div>
+        <div style="background:rgba(255,230,0,.06);border:1px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:6px;"></div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--neon-yellow);">useEffect</div>
+          <div style="font-size:.8rem;color:var(--text-dim);margin-top:4px;">Écoute du clavier</div>
+        </div>
+        <div style="background:rgba(0,245,255,.06);border:1px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:6px;"></div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--neon-cyan);">Fonctions</div>
+          <div style="font-size:.8rem;color:var(--text-dim);margin-top:4px;">Nourriture aléatoire</div>
+        </div>
+        <div style="background:rgba(255,0,170,.06);border:1px solid var(--border);border-radius:6px;padding:14px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:6px;"></div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--neon-pink);">.map() + JSX</div>
+          <div style="font-size:.8rem;color:var(--text-dim);margin-top:4px;">Affichage de la grille</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ÉTAPE 1 ─── -->
+  <section id="etape1">
+    <div class="section-label">// Étape 01</div>
+    <h2>Les constantes — les règles du jeu</h2>
+    <div class="card">
+      <div class="etape-header">
+        <div class="etape-num">1</div>
+        <div class="etape-title">Définir les paramètres fixes du jeu</div>
+      </div>
+      <p>Avant de coder, on définit les <strong>valeurs qui ne changeront jamais</strong> : la taille de la grille, la vitesse... Ce sont des <strong>constantes</strong> (pas des états React).</p>
+      <div class="code-block"><span class="cmt">// ─── CONSTANTES ───────────────────────────────────</span>
+<span class="cmt">// Ces valeurs ne changent JAMAIS → pas de useState</span>
+<span class="cmt">// On les définit EN DEHORS du composant</span>
+
+<span class="kw">const</span> <span class="var">LARGEUR</span>  = <span class="num">20</span>;   <span class="cmt">// nombre de cases en largeur</span>
+<span class="kw">const</span> <span class="var">HAUTEUR</span>  = <span class="num">20</span>;   <span class="cmt">// nombre de cases en hauteur</span>
+<span class="kw">const</span> <span class="var">VITESSE</span>  = <span class="num">150</span>;  <span class="cmt">// millisecondes entre chaque mouvement</span>
+
+<span class="cmt">// Position de départ du serpent (milieu de la grille)</span>
+<span class="kw">const</span> <span class="var">DEPART</span> = [
+  { <span class="var">x</span>: <span class="num">10</span>, <span class="var">y</span>: <span class="num">10</span> },  <span class="cmt">// tête</span>
+  { <span class="var">x</span>: <span class="num">9</span>,  <span class="var">y</span>: <span class="num">10</span> },  <span class="cmt">// segment 2</span>
+  { <span class="var">x</span>: <span class="num">8</span>,  <span class="var">y</span>: <span class="num">10</span> },  <span class="cmt">// queue</span>
+];</div>
+      <div class="memo memo-info">
+        <div class="memo-title">Pourquoi EN DEHORS du composant ?</div>
+        <p>Les constantes n'ont pas besoin d'être "réactives". Les mettre en dehors du composant évite de les recréer à chaque re-render. Bonne habitude !</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ÉTAPE 2 ─── -->
+  <section id="etape2">
+    <div class="section-label">// Étape 02</div>
+    <h2>Les états — ce qui peut changer</h2>
+    <div class="card">
+      <div class="etape-header">
+        <div class="etape-num">2</div>
+        <div class="etape-title">Identifier et créer les useState</div>
+      </div>
+      <p>On se pose la question : <strong>qu'est-ce qui peut changer pendant la partie ?</strong> Chaque réponse = un <code>useState</code>.</p>
+      <div class="code-block"><span class="kw">function</span> <span class="fn">Snake</span>() {
+
+  <span class="cmt">// ─── LES ÉTATS (ce qui change = re-render) ────────</span>
+
+  <span class="cmt">// 1) Le serpent : un tableau de segments {x, y}</span>
+  <span class="cmt">// Valeur initiale = position de départ définie plus haut</span>
+  <span class="kw">const</span> [<span class="var">serpent</span>, <span class="fn">setSerpent</span>] = <span class="fn">useState</span>(<span class="var">DEPART</span>);
+
+  <span class="cmt">// 2) La direction : où va la tête ? {x, y}</span>
+  <span class="cmt">// {x:1, y:0} = droite | {x:-1, y:0} = gauche</span>
+  <span class="cmt">// {x:0, y:1} = bas   | {x:0, y:-1} = haut</span>
+  <span class="kw">const</span> [<span class="var">direction</span>, <span class="fn">setDirection</span>] = <span class="fn">useState</span>({ <span class="var">x</span>: <span class="num">1</span>, <span class="var">y</span>: <span class="num">0</span> });
+
+  <span class="cmt">// 3) La nourriture : une seule case {x, y}</span>
+  <span class="kw">const</span> [<span class="var">nourriture</span>, <span class="fn">setNourriture</span>] = <span class="fn">useState</span>({ <span class="var">x</span>: <span class="num">15</span>, <span class="var">y</span>: <span class="num">10</span> });
+
+  <span class="cmt">// 4) Le score : un nombre entier</span>
+  <span class="kw">const</span> [<span class="var">score</span>, <span class="fn">setScore</span>] = <span class="fn">useState</span>(<span class="num">0</span>);
+
+  <span class="cmt">// 5) Game over : vrai ou faux</span>
+  <span class="kw">const</span> [<span class="var">gameOver</span>, <span class="fn">setGameOver</span>] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="cmt">// 6) En jeu ou non (pour la pause et l'écran d'accueil)</span>
+  <span class="kw">const</span> [<span class="var">enJeu</span>, <span class="fn">setEnJeu</span>] = <span class="fn">useState</span>(<span class="kw">false</span>);</div>
+      <div class="memo memo-warn">
+        <div class="memo-title">Règle d'or</div>
+        <p>Si une valeur doit changer ET que ce changement doit <strong>mettre à jour l'affichage</strong> → <code>useState</code>. Sinon → variable simple ou <code>useRef</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ÉTAPE 3 ─── -->
+  <section id="etape3">
+    <div class="section-label">// Étape 03</div>
+    <h2>La boucle de jeu — useEffect + setInterval</h2>
+    <div class="card">
+      <div class="etape-header">
+        <div class="etape-num">3</div>
+        <div class="etape-title">Faire bouger le serpent automatiquement</div>
+      </div>
+      <p>Le cœur du jeu : toutes les X millisecondes, on <strong>calcule la nouvelle position</strong> de la tête et on vérifie si on a mangé ou si on est mort.</p>
+      <div class="code-block"><span class="cmt">// ─── BOUCLE DE JEU ───────────────────────────────</span>
+<span class="fn">useEffect</span>(() => {
+
+  <span class="cmt">// Si pas en jeu ou game over → on ne lance rien</span>
+  <span class="kw">if</span> (!<span class="var">enJeu</span> || <span class="var">gameOver</span>) <span class="kw">return</span>;
+
+  <span class="kw">const</span> <span class="var">timer</span> = <span class="fn">setInterval</span>(() => {
+
+    <span class="cmt">// On met à jour le serpent avec la forme fonctionnelle</span>
+    <span class="cmt">// "ancienSerpent" = valeur GARANTIE à jour (important !)</span>
+    <span class="fn">setSerpent</span>(<span class="var">ancienSerpent</span> => {
+
+      <span class="cmt">// 1) Calculer où va la nouvelle tête</span>
+      <span class="kw">const</span> <span class="var">tete</span> = ancienSerpent[<span class="num">0</span>]; <span class="cmt">// segment [0] = tête</span>
+      <span class="kw">const</span> <span class="var">nouvelleTete</span> = {
+        <span class="var">x</span>: <span class="var">tete</span>.<span class="var">x</span> + <span class="var">direction</span>.<span class="var">x</span>,
+        <span class="var">y</span>: <span class="var">tete</span>.<span class="var">y</span> + <span class="var">direction</span>.<span class="var">y</span>,
+      };
+
+      <span class="cmt">// 2) Vérifier collision avec les murs</span>
+      <span class="kw">const</span> <span class="var">horsMur</span> =
+        <span class="var">nouvelleTete</span>.<span class="var">x</span> < <span class="num">0</span> || <span class="var">nouvelleTete</span>.<span class="var">x</span> >= <span class="var">LARGEUR</span> ||
+        <span class="var">nouvelleTete</span>.<span class="var">y</span> < <span class="num">0</span> || <span class="var">nouvelleTete</span>.<span class="var">y</span> >= <span class="var">HAUTEUR</span>;
+
+      <span class="cmt">// 3) Vérifier collision avec son propre corps</span>
+      <span class="kw">const</span> <span class="var">toucheCorps</span> = <span class="var">ancienSerpent</span>.<span class="fn">some</span>(
+        <span class="var">seg</span> => <span class="var">seg</span>.<span class="var">x</span> === <span class="var">nouvelleTete</span>.<span class="var">x</span> && <span class="var">seg</span>.<span class="var">y</span> === <span class="var">nouvelleTete</span>.<span class="var">y</span>
+      );
+
+      <span class="cmt">// 4) Si collision → Game Over</span>
+      <span class="kw">if</span> (<span class="var">horsMur</span> || <span class="var">toucheCorps</span>) {
+        <span class="fn">setGameOver</span>(<span class="kw">true</span>);
+        <span class="kw">return</span> <span class="var">ancienSerpent</span>; <span class="cmt">// on ne bouge plus</span>
+      }
+
+      <span class="cmt">// 5) A-t-on mangé la nourriture ?</span>
+      <span class="kw">const</span> <span class="var">aMange</span> =
+        <span class="var">nouvelleTete</span>.<span class="var">x</span> === <span class="var">nourriture</span>.<span class="var">x</span> &&
+        <span class="var">nouvelleTete</span>.<span class="var">y</span> === <span class="var">nourriture</span>.<span class="var">y</span>;
+
+      <span class="cmt">// 6) Construire le nouveau serpent</span>
+      <span class="kw">const</span> <span class="var">nouveauCorps</span> = [<span class="var">nouvelleTete</span>, ...<span class="var">ancienSerpent</span>];
+      <span class="cmt">// On ajoute la tête AU DÉBUT du tableau (spread)</span>
+
+      <span class="kw">if</span> (<span class="var">aMange</span>) {
+        <span class="fn">setScore</span>(<span class="var">s</span> => <span class="var">s</span> + <span class="num">10</span>);     <span class="cmt">// +10 points</span>
+        <span class="fn">placerNourriture</span>();        <span class="cmt">// nouvelle pomme</span>
+        <span class="kw">return</span> <span class="var">nouveauCorps</span>;       <span class="cmt">// le serpent GRANDIT</span>
+      } <span class="kw">else</span> {
+        <span class="kw">return</span> <span class="var">nouveauCorps</span>.<span class="fn">slice</span>(<span class="num">0</span>, -<span class="num">1</span>);
+        <span class="cmt">// .slice(0, -1) = on retire le DERNIER segment</span>
+        <span class="cmt">// → le serpent avance sans grandir</span>
+      }
+    });
+
+  }, <span class="var">VITESSE</span>); <span class="cmt">// ← se répète toutes les 150ms</span>
+
+  <span class="cmt">// IMPORTANT : nettoyage quand le composant se démonte</span>
+  <span class="cmt">// ou quand les dépendances changent</span>
+  <span class="kw">return</span> () => <span class="fn">clearInterval</span>(<span class="var">timer</span>);
+
+}, [<span class="var">enJeu</span>, <span class="var">gameOver</span>, <span class="var">direction</span>, <span class="var">nourriture</span>]);
+<span class="cmt">// ↑ Le tableau de dépendances : useEffect se relance</span>
+<span class="cmt">//   si l'une de ces valeurs change</span></div>
+      <div class="memo memo-info">
+        <div class="memo-title">Pourquoi la forme fonctionnelle ?</div>
+        <p><code>setSerpent(ancien => ...)</code> garantit qu'on lit la <strong>dernière version</strong> du serpent, même si plusieurs updates ont eu lieu. C'est crucial dans un <code>setInterval</code> !</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ÉTAPE 4 ─── -->
+  <section id="etape4">
+    <div class="section-label">// Étape 04</div>
+    <h2>Le clavier — écouter les touches</h2>
+    <div class="card">
+      <div class="etape-header">
+        <div class="etape-num">4</div>
+        <div class="etape-title">Changer la direction avec les flèches</div>
+      </div>
+      <p>Un deuxième <code>useEffect</code> s'occupe uniquement d'<strong>écouter les touches du clavier</strong>. On utilise <code>addEventListener</code> et on le nettoie proprement.</p>
+      <div class="code-block"><span class="cmt">// ─── ÉCOUTE DU CLAVIER ───────────────────────────</span>
+<span class="fn">useEffect</span>(() => {
+
+  <span class="kw">const</span> <span class="fn">gererTouche</span> = (<span class="var">e</span>) => {
+
+    <span class="cmt">// e.key contient le nom de la touche pressée</span>
+    <span class="kw">if</span>      (<span class="var">e</span>.<span class="var">key</span> === <span class="str">'ArrowUp'</span>)    <span class="fn">setDirection</span>(<span class="var">d</span> => {
+      <span class="kw">if</span> (<span class="var">d</span>.<span class="var">y</span> === <span class="num">1</span>) <span class="kw">return</span> <span class="var">d</span>; <span class="cmt">// interdit de faire demi-tour ↓→↑</span>
+      <span class="kw">return</span> { <span class="var">x</span>: <span class="num">0</span>, <span class="var">y</span>: -<span class="num">1</span> };
+    });
+    <span class="kw">else if</span> (<span class="var">e</span>.<span class="var">key</span> === <span class="str">'ArrowDown'</span>)  <span class="fn">setDirection</span>(<span class="var">d</span> => {
+      <span class="kw">if</span> (<span class="var">d</span>.<span class="var">y</span> === -<span class="num">1</span>) <span class="kw">return</span> <span class="var">d</span>; <span class="cmt">// interdit demi-tour ↑→↓</span>
+      <span class="kw">return</span> { <span class="var">x</span>: <span class="num">0</span>, <span class="var">y</span>: <span class="num">1</span> };
+    });
+    <span class="kw">else if</span> (<span class="var">e</span>.<span class="var">key</span> === <span class="str">'ArrowLeft'</span>)  <span class="fn">setDirection</span>(<span class="var">d</span> => {
+      <span class="kw">if</span> (<span class="var">d</span>.<span class="var">x</span> === <span class="num">1</span>) <span class="kw">return</span> <span class="var">d</span>; <span class="cmt">// interdit demi-tour →←</span>
+      <span class="kw">return</span> { <span class="var">x</span>: -<span class="num">1</span>, <span class="var">y</span>: <span class="num">0</span> };
+    });
+    <span class="kw">else if</span> (<span class="var">e</span>.<span class="var">key</span> === <span class="str">'ArrowRight'</span>) <span class="fn">setDirection</span>(<span class="var">d</span> => {
+      <span class="kw">if</span> (<span class="var">d</span>.<span class="var">x</span> === -<span class="num">1</span>) <span class="kw">return</span> <span class="var">d</span>; <span class="cmt">// interdit demi-tour ←→</span>
+      <span class="kw">return</span> { <span class="var">x</span>: <span class="num">1</span>, <span class="var">y</span>: <span class="num">0</span> };
+    });
+  };
+
+  <span class="cmt">// On "branche" l'écoute sur la fenêtre</span>
+  <span class="var">window</span>.<span class="fn">addEventListener</span>(<span class="str">'keydown'</span>, <span class="var">gererTouche</span>);
+
+  <span class="cmt">// On "débranche" quand le composant se démonte</span>
+  <span class="kw">return</span> () => <span class="var">window</span>.<span class="fn">removeEventListener</span>(<span class="str">'keydown'</span>, <span class="var">gererTouche</span>);
+
+}, []); <span class="cmt">// [] → s'exécute une seule fois</span></div>
+      <div class="memo memo-warn">
+        <div class="memo-title">Demi-tour interdit !</div>
+        <p>Si le serpent va à droite (<code>x: 1</code>), appuyer sur ←  déclencherait une collision immédiate avec son propre corps. On bloque ce cas avec une condition <code>if (d.x === -1) return d</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ÉTAPE 5 ─── -->
+  <section id="etape5">
+    <div class="section-label">// Étape 05</div>
+    <h2>La nourriture — position aléatoire</h2>
+    <div class="card">
+      <div class="etape-header">
+        <div class="etape-num">5</div>
+        <div class="etape-title">Placer la pomme sur une case libre</div>
+      </div>
+      <p>Quand le serpent mange la pomme, on en place une nouvelle au hasard — mais <strong>pas sur le serpent</strong> !</p>
+      <div class="code-block"><span class="cmt">// ─── FONCTION : placer la nourriture ─────────────</span>
+<span class="kw">const</span> <span class="fn">placerNourriture</span> = () => {
+
+  <span class="cmt">// On génère des positions aléatoires jusqu'à</span>
+  <span class="cmt">// en trouver une qui n'est pas sur le serpent</span>
+  <span class="kw">let</span> <span class="var">pos</span>;
+  <span class="kw">do</span> {
+    <span class="var">pos</span> = {
+      <span class="var">x</span>: <span class="var">Math</span>.<span class="fn">floor</span>(<span class="var">Math</span>.<span class="fn">random</span>() * <span class="var">LARGEUR</span>),
+      <span class="var">y</span>: <span class="var">Math</span>.<span class="fn">floor</span>(<span class="var">Math</span>.<span class="fn">random</span>() * <span class="var">HAUTEUR</span>),
+    };
+  <span class="cmt">// .some() = "au moins un segment est à cette position ?"</span>
+  } <span class="kw">while</span> (<span class="var">serpent</span>.<span class="fn">some</span>(<span class="var">s</span> => <span class="var">s</span>.<span class="var">x</span> === <span class="var">pos</span>.<span class="var">x</span> && <span class="var">s</span>.<span class="var">y</span> === <span class="var">pos</span>.<span class="var">y</span>));
+
+  <span class="fn">setNourriture</span>(<span class="var">pos</span>); <span class="cmt">// mise à jour de l'état → re-render</span>
+};
+
+<span class="cmt">// ─── FONCTION : (re)démarrer le jeu ──────────────</span>
+<span class="kw">const</span> <span class="fn">demarrer</span> = () => {
+  <span class="fn">setSerpent</span>(<span class="var">DEPART</span>);                    <span class="cmt">// remet le serpent au départ</span>
+  <span class="fn">setDirection</span>({ <span class="var">x</span>: <span class="num">1</span>, <span class="var">y</span>: <span class="num">0</span> });           <span class="cmt">// direction : droite</span>
+  <span class="fn">setNourriture</span>({ <span class="var">x</span>: <span class="num">15</span>, <span class="var">y</span>: <span class="num">10</span> });        <span class="cmt">// pomme initiale</span>
+  <span class="fn">setScore</span>(<span class="num">0</span>);                            <span class="cmt">// score à 0</span>
+  <span class="fn">setGameOver</span>(<span class="kw">false</span>);                     <span class="cmt">// reset game over</span>
+  <span class="fn">setEnJeu</span>(<span class="kw">true</span>);                         <span class="cmt">// lance la boucle !</span>
+};</div>
+    </div>
+  </section>
+
+  <!-- ─── ÉTAPE 6 ─── -->
+  <section id="etape6">
+    <div class="section-label">// Étape 06</div>
+    <h2>L'affichage — JSX et .map()</h2>
+    <div class="card">
+      <div class="etape-header">
+        <div class="etape-num">6</div>
+        <div class="etape-title">Dessiner la grille avec .map()</div>
+      </div>
+      <p>On génère toutes les cases de la grille avec <code>.map()</code>. Pour chaque case, on vérifie si c'est la tête, le corps ou la nourriture pour lui donner la bonne couleur.</p>
+      <div class="code-block"><span class="cmt">// ─── AFFICHAGE (le return du composant) ──────────</span>
+<span class="kw">return</span> (
+  <span class="tag">&lt;div&gt;</span>
+
+    <span class="cmt">{/* ── Écran d'accueil ── */}</span>
+    {!<span class="var">enJeu</span> && !<span class="var">gameOver</span> && (
+      <span class="tag">&lt;div</span> <span class="fn">className</span>=<span class="str">"ecran"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h2&gt;</span>🐍 Snake<span class="tag">&lt;/h2&gt;</span>
+        <span class="tag">&lt;button</span> <span class="fn">onClick</span>={<span class="var">demarrer</span>}<span class="tag">&gt;</span>Jouer<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    )}
+
+    <span class="cmt">{/* ── Écran Game Over ── */}</span>
+    {<span class="var">gameOver</span> && (
+      <span class="tag">&lt;div</span> <span class="fn">className</span>=<span class="str">"ecran"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h2&gt;</span>Game Over<span class="tag">&lt;/h2&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Score final : {<span class="var">score</span>}<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;button</span> <span class="fn">onClick</span>={<span class="var">demarrer</span>}<span class="tag">&gt;</span>Rejouer<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    )}
+
+    <span class="cmt">{/* ── La grille ── */}</span>
+    <span class="tag">&lt;div</span> <span class="fn">className</span>=<span class="str">"grille"</span><span class="tag">&gt;</span>
+
+      <span class="cmt">{/* On crée un tableau [0,1,2,...,19] pour les lignes */}</span>
+      {[...<span class="var">Array</span>(<span class="var">HAUTEUR</span>)].<span class="fn">map</span>((_, <span class="var">y</span>) =>
+
+        <span class="cmt">{/* Pour chaque ligne, on crée les colonnes */}</span>
+        [...<span class="var">Array</span>(<span class="var">LARGEUR</span>)].<span class="fn">map</span>((_, <span class="var">x</span>) => {
+
+          <span class="cmt">// Quelle est cette case ?</span>
+          <span class="kw">const</span> <span class="var">estTete</span>   = <span class="var">serpent</span>[<span class="num">0</span>].<span class="var">x</span> === <span class="var">x</span> && <span class="var">serpent</span>[<span class="num">0</span>].<span class="var">y</span> === <span class="var">y</span>;
+          <span class="kw">const</span> <span class="var">estCorps</span>  = <span class="var">serpent</span>.<span class="fn">some</span>(<span class="var">s</span> => <span class="var">s</span>.<span class="var">x</span> === <span class="var">x</span> && <span class="var">s</span>.<span class="var">y</span> === <span class="var">y</span>);
+          <span class="kw">const</span> <span class="var">estPomme</span>  = <span class="var">nourriture</span>.<span class="var">x</span> === <span class="var">x</span> && <span class="var">nourriture</span>.<span class="var">y</span> === <span class="var">y</span>;
+
+          <span class="kw">return</span> (
+            <span class="tag">&lt;div</span>
+              <span class="fn">key</span>=<span class="str">{`</span>{<span class="var">x</span>}-{<span class="var">y</span>}<span class="str">`}</span>         <span class="cmt">// ← clé unique obligatoire</span>
+              <span class="fn">className</span>={
+                <span class="var">estTete</span>  ? <span class="str">'case tete'</span>  :
+                <span class="var">estCorps</span> ? <span class="str">'case corps'</span> :
+                <span class="var">estPomme</span> ? <span class="str">'case pomme'</span> : <span class="str">'case'</span>
+              }
+            <span class="tag">/&gt;</span>
+          );
+        })
+      )}
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+);</div>
+      <div class="memo memo-ok">
+        <div class="memo-title">Astuce : générer un tableau de N éléments</div>
+        <p><code>[...Array(20)]</code> crée un tableau de 20 cases vides. Combiné à <code>.map((_, index) => ...)</code>, c'est la façon la plus propre de boucler N fois en JSX.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CODE COMPLET ─── -->
+  <section id="complet">
+    <div class="section-label">// Code complet</div>
+    <h2>Le fichier App.jsx — tout assemblé</h2>
+    <div class="memo memo-info" style="margin-bottom:20px;">
+      <div class="memo-title">Comment utiliser ce code</div>
+      <p>Créez un projet Vite (<code>npm create vite@latest mon-snake -- --template react</code>), remplacez le contenu de <code>src/App.jsx</code> par le code ci-dessous, et remplacez <code>src/App.css</code> par les styles. C'est tout !</p>
+    </div>
+    <div class="code-block"><span class="cmt">
+// src/App.jsx — Snake complet en React
+// Formation DWWM — Real Conseil
+</span>
+
+<span class="kw">import</span> { <span class="fn">useState</span>, <span class="fn">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> <span class="str">'./App.css'</span>;
+
+<span class="cmt">// ─── CONSTANTES (en dehors du composant) ──────────</span>
+<span class="kw">const</span> <span class="var">LARGEUR</span> = <span class="num">20</span>;
+<span class="kw">const</span> <span class="var">HAUTEUR</span> = <span class="num">20</span>;
+<span class="kw">const</span> <span class="var">VITESSE</span> = <span class="num">150</span>;
+<span class="kw">const</span> <span class="var">DEPART</span>  = [
+  { <span class="var">x</span>: <span class="num">10</span>, <span class="var">y</span>: <span class="num">10</span> },
+  { <span class="var">x</span>: <span class="num">9</span>,  <span class="var">y</span>: <span class="num">10</span> },
+  { <span class="var">x</span>: <span class="num">8</span>,  <span class="var">y</span>: <span class="num">10</span> },
+];
+
+<span class="cmt">// ─── COMPOSANT PRINCIPAL ──────────────────────────</span>
+<span class="kw">function</span> <span class="fn">App</span>() {
+
+  <span class="cmt">// États</span>
+  <span class="kw">const</span> [<span class="var">serpent</span>,    <span class="fn">setSerpent</span>]    = <span class="fn">useState</span>(<span class="var">DEPART</span>);
+  <span class="kw">const</span> [<span class="var">direction</span>,  <span class="fn">setDirection</span>]  = <span class="fn">useState</span>({ <span class="var">x</span>: <span class="num">1</span>, <span class="var">y</span>: <span class="num">0</span> });
+  <span class="kw">const</span> [<span class="var">nourriture</span>, <span class="fn">setNourriture</span>] = <span class="fn">useState</span>({ <span class="var">x</span>: <span class="num">15</span>, <span class="var">y</span>: <span class="num">10</span> });
+  <span class="kw">const</span> [<span class="var">score</span>,      <span class="fn">setScore</span>]      = <span class="fn">useState</span>(<span class="num">0</span>);
+  <span class="kw">const</span> [<span class="var">gameOver</span>,   <span class="fn">setGameOver</span>]   = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [<span class="var">enJeu</span>,      <span class="fn">setEnJeu</span>]      = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="cmt">// ── Boucle de jeu ─────────────────────────────</span>
+  <span class="fn">useEffect</span>(() => {
+    <span class="kw">if</span> (!<span class="var">enJeu</span> || <span class="var">gameOver</span>) <span class="kw">return</span>;
+
+    <span class="kw">const</span> <span class="var">timer</span> = <span class="fn">setInterval</span>(() => {
+      <span class="fn">setSerpent</span>(<span class="var">ancien</span> => {
+        <span class="kw">const</span> <span class="var">nouvelleTete</span> = {
+          <span class="var">x</span>: <span class="var">ancien</span>[<span class="num">0</span>].<span class="var">x</span> + <span class="var">direction</span>.<span class="var">x</span>,
+          <span class="var">y</span>: <span class="var">ancien</span>[<span class="num">0</span>].<span class="var">y</span> + <span class="var">direction</span>.<span class="var">y</span>,
+        };
+        <span class="kw">const</span> <span class="var">horsMur</span> =
+          <span class="var">nouvelleTete</span>.<span class="var">x</span> < <span class="num">0</span> || <span class="var">nouvelleTete</span>.<span class="var">x</span> >= <span class="var">LARGEUR</span> ||
+          <span class="var">nouvelleTete</span>.<span class="var">y</span> < <span class="num">0</span> || <span class="var">nouvelleTete</span>.<span class="var">y</span> >= <span class="var">HAUTEUR</span>;
+        <span class="kw">const</span> <span class="var">toucheCorps</span> = <span class="var">ancien</span>.<span class="fn">some</span>(
+          <span class="var">s</span> => <span class="var">s</span>.<span class="var">x</span> === <span class="var">nouvelleTete</span>.<span class="var">x</span> && <span class="var">s</span>.<span class="var">y</span> === <span class="var">nouvelleTete</span>.<span class="var">y</span>
+        );
+        <span class="kw">if</span> (<span class="var">horsMur</span> || <span class="var">toucheCorps</span>) { <span class="fn">setGameOver</span>(<span class="kw">true</span>); <span class="kw">return</span> <span class="var">ancien</span>; }
+
+        <span class="kw">const</span> <span class="var">aMange</span> =
+          <span class="var">nouvelleTete</span>.<span class="var">x</span> === <span class="var">nourriture</span>.<span class="var">x</span> &&
+          <span class="var">nouvelleTete</span>.<span class="var">y</span> === <span class="var">nourriture</span>.<span class="var">y</span>;
+        <span class="kw">const</span> <span class="var">nouveau</span> = [<span class="var">nouvelleTete</span>, ...<span class="var">ancien</span>];
+        <span class="kw">if</span> (<span class="var">aMange</span>) {
+          <span class="fn">setScore</span>(<span class="var">s</span> => <span class="var">s</span> + <span class="num">10</span>);
+          <span class="fn">placerNourriture</span>();
+          <span class="kw">return</span> <span class="var">nouveau</span>;
+        }
+        <span class="kw">return</span> <span class="var">nouveau</span>.<span class="fn">slice</span>(<span class="num">0</span>, -<span class="num">1</span>);
+      });
+    }, <span class="var">VITESSE</span>);
+
+    <span class="kw">return</span> () => <span class="fn">clearInterval</span>(<span class="var">timer</span>);
+  }, [<span class="var">enJeu</span>, <span class="var">gameOver</span>, <span class="var">direction</span>, <span class="var">nourriture</span>]);
+
+  <span class="cmt">// ── Clavier ───────────────────────────────────</span>
+  <span class="fn">useEffect</span>(() => {
+    <span class="kw">const</span> <span class="fn">gererTouche</span> = (<span class="var">e</span>) => {
+      <span class="kw">if</span>      (<span class="var">e</span>.<span class="var">key</span> === <span class="str">'ArrowUp'</span>)    <span class="fn">setDirection</span>(<span class="var">d</span> => <span class="var">d</span>.<span class="var">y</span>===<span class="num">1</span>  ? <span class="var">d</span> : { <span class="var">x</span>:<span class="num">0</span>,  <span class="var">y</span>:-<span class="num">1</span> });
+      <span class="kw">else if</span> (<span class="var">e</span>.<span class="var">key</span> === <span class="str">'ArrowDown'</span>)  <span class="fn">setDirection</span>(<span class="var">d</span> => <span class="var">d</span>.<span class="var">y</span>===-<span class="num">1</span> ? <span class="var">d</span> : { <span class="var">x</span>:<span class="num">0</span>,  <span class="var">y</span>: <span class="num">1</span> });
+      <span class="kw">else if</span> (<span class="var">e</span>.<span class="var">key</span> === <span class="str">'ArrowLeft'</span>)  <span class="fn">setDirection</span>(<span class="var">d</span> => <span class="var">d</span>.<span class="var">x</span>===<span class="num">1</span>  ? <span class="var">d</span> : { <span class="var">x</span>:-<span class="num">1</span>, <span class="var">y</span>: <span class="num">0</span> });
+      <span class="kw">else if</span> (<span class="var">e</span>.<span class="var">key</span> === <span class="str">'ArrowRight'</span>) <span class="fn">setDirection</span>(<span class="var">d</span> => <span class="var">d</span>.<span class="var">x</span>===-<span class="num">1</span> ? <span class="var">d</span> : { <span class="var">x</span>: <span class="num">1</span>, <span class="var">y</span>: <span class="num">0</span> });
+    };
+    <span class="var">window</span>.<span class="fn">addEventListener</span>(<span class="str">'keydown'</span>, <span class="var">gererTouche</span>);
+    <span class="kw">return</span> () => <span class="var">window</span>.<span class="fn">removeEventListener</span>(<span class="str">'keydown'</span>, <span class="var">gererTouche</span>);
+  }, []);
+
+  <span class="cmt">// ── Fonctions utilitaires ─────────────────────</span>
+  <span class="kw">const</span> <span class="fn">placerNourriture</span> = () => {
+    <span class="kw">let</span> <span class="var">pos</span>;
+    <span class="kw">do</span> {
+      <span class="var">pos</span> = {
+        <span class="var">x</span>: <span class="var">Math</span>.<span class="fn">floor</span>(<span class="var">Math</span>.<span class="fn">random</span>() * <span class="var">LARGEUR</span>),
+        <span class="var">y</span>: <span class="var">Math</span>.<span class="fn">floor</span>(<span class="var">Math</span>.<span class="fn">random</span>() * <span class="var">HAUTEUR</span>),
+      };
+    } <span class="kw">while</span> (<span class="var">serpent</span>.<span class="fn">some</span>(<span class="var">s</span> => <span class="var">s</span>.<span class="var">x</span> === <span class="var">pos</span>.<span class="var">x</span> && <span class="var">s</span>.<span class="var">y</span> === <span class="var">pos</span>.<span class="var">y</span>));
+    <span class="fn">setNourriture</span>(<span class="var">pos</span>);
+  };
+
+  <span class="kw">const</span> <span class="fn">demarrer</span> = () => {
+    <span class="fn">setSerpent</span>(<span class="var">DEPART</span>);
+    <span class="fn">setDirection</span>({ <span class="var">x</span>: <span class="num">1</span>, <span class="var">y</span>: <span class="num">0</span> });
+    <span class="fn">setNourriture</span>({ <span class="var">x</span>: <span class="num">15</span>, <span class="var">y</span>: <span class="num">10</span> });
+    <span class="fn">setScore</span>(<span class="num">0</span>);
+    <span class="fn">setGameOver</span>(<span class="kw">false</span>);
+    <span class="fn">setEnJeu</span>(<span class="kw">true</span>);
+  };
+
+  <span class="cmt">// ── Rendu ─────────────────────────────────────</span>
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="fn">className</span>=<span class="str">"app"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>🐍 Snake<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;p</span> <span class="fn">className</span>=<span class="str">"score"</span><span class="tag">&gt;</span>Score : {<span class="var">score</span>}<span class="tag">&lt;/p&gt;</span>
+
+      <span class="tag">&lt;div</span> <span class="fn">className</span>=<span class="str">"conteneur"</span><span class="tag">&gt;</span>
+
+        {!<span class="var">enJeu</span> && !<span class="var">gameOver</span> && (
+          <span class="tag">&lt;div</span> <span class="fn">className</span>=<span class="str">"ecran"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;p&gt;</span>Utilisez les flèches du clavier<span class="tag">&lt;/p&gt;</span>
+            <span class="tag">&lt;button</span> <span class="fn">onClick</span>={<span class="var">demarrer</span>}<span class="tag">&gt;</span>▶ Jouer<span class="tag">&lt;/button&gt;</span>
+          <span class="tag">&lt;/div&gt;</span>
+        )}
+
+        {<span class="var">gameOver</span> && (
+          <span class="tag">&lt;div</span> <span class="fn">className</span>=<span class="str">"ecran"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;h2&gt;</span>Game Over<span class="tag">&lt;/h2&gt;</span>
+            <span class="tag">&lt;p&gt;</span>Score final : {<span class="var">score</span>}<span class="tag">&lt;/p&gt;</span>
+            <span class="tag">&lt;button</span> <span class="fn">onClick</span>={<span class="var">demarrer</span>}<span class="tag">&gt;</span>↺ Rejouer<span class="tag">&lt;/button&gt;</span>
+          <span class="tag">&lt;/div&gt;</span>
+        )}
+
+        <span class="tag">&lt;div</span> <span class="fn">className</span>=<span class="str">"grille"</span><span class="tag">&gt;</span>
+          {[...<span class="var">Array</span>(<span class="var">HAUTEUR</span>)].<span class="fn">map</span>((_, <span class="var">y</span>) =>
+            [...<span class="var">Array</span>(<span class="var">LARGEUR</span>)].<span class="fn">map</span>((_, <span class="var">x</span>) => {
+              <span class="kw">const</span> <span class="var">estTete</span>  = <span class="var">serpent</span>[<span class="num">0</span>].<span class="var">x</span>===<span class="var">x</span> && <span class="var">serpent</span>[<span class="num">0</span>].<span class="var">y</span>===<span class="var">y</span>;
+              <span class="kw">const</span> <span class="var">estCorps</span> = <span class="var">serpent</span>.<span class="fn">some</span>(<span class="var">s</span> => <span class="var">s</span>.<span class="var">x</span>===<span class="var">x</span> && <span class="var">s</span>.<span class="var">y</span>===<span class="var">y</span>);
+              <span class="kw">const</span> <span class="var">estPomme</span> = <span class="var">nourriture</span>.<span class="var">x</span>===<span class="var">x</span> && <span class="var">nourriture</span>.<span class="var">y</span>===<span class="var">y</span>;
+              <span class="kw">return</span> (
+                <span class="tag">&lt;div</span>
+                  <span class="fn">key</span>=<span class="str">{`</span>{<span class="var">x</span>}-{<span class="var">y</span>}<span class="str">`}</span>
+                  <span class="fn">className</span>={
+                    <span class="var">estTete</span>  ? <span class="str">'case tete'</span>  :
+                    <span class="var">estCorps</span> ? <span class="str">'case corps'</span> :
+                    <span class="var">estPomme</span> ? <span class="str">'case pomme'</span> : <span class="str">'case'</span>
+                  }
+                <span class="tag">/&gt;</span>
+              );
+            })
+          )}
+        <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> App;</div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>Le fichier App.css</h3>
+      <div class="code-block"><span class="cmt">/* App.css — styles du Snake */</span>
+
+<span class="fn">.app</span> {
+  display: flex; flex-direction: column; align-items: center;
+  min-height: 100vh; background: #07090f; color: #c8d8e8;
+  font-family: 'Exo 2', sans-serif; padding: 20px;
+}
+
+<span class="fn">h1</span> { font-size: 2rem; color: #00f5ff; margin-bottom: 8px; }
+
+<span class="fn">.score</span> { font-size: 1.2rem; margin-bottom: 16px; color: #ffe600; }
+
+<span class="fn">.conteneur</span> {
+  position: relative;  <span class="cmt">/* pour positionner l'écran par-dessus */</span>
+}
+
+<span class="fn">.grille</span> {
+  display: grid;
+  grid-template-columns: repeat(<span class="num">20</span>, <span class="num">20px</span>);  <span class="cmt">/* 20 colonnes de 20px */</span>
+  grid-template-rows:    repeat(<span class="num">20</span>, <span class="num">20px</span>);  <span class="cmt">/* 20 lignes de 20px */</span>
+  border: 2px solid rgba(<span class="num">0</span>,<span class="num">245</span>,<span class="num">255</span>,.<span class="num">3</span>);
+  border-radius: 4px;
+}
+
+<span class="fn">.case</span>       { width: 20px; height: 20px; background: #0d1117; }
+<span class="fn">.case.tete</span>  { background: #00ff88; border-radius: 4px; }
+<span class="fn">.case.corps</span> { background: #00c866; }
+<span class="fn">.case.pomme</span> { background: #ff4444; border-radius: 50%; }
+
+<span class="fn">.ecran</span> {
+  position: absolute; inset: 0; z-index: 10;
+  background: rgba(<span class="num">7</span>,<span class="num">9</span>,<span class="num">15</span>,.<span class="num">85</span>);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px;
+  border-radius: 4px;
+}
+
+<span class="fn">button</span> {
+  background: transparent; border: 2px solid #00f5ff;
+  color: #00f5ff; padding: 10px 28px; border-radius: 4px;
+  font-size: 1rem; cursor: pointer; transition: all .2s;
+}
+<span class="fn">button:hover</span> { background: #00f5ff; color: #07090f; }</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Exemple formateur — Snake en React &nbsp;|&nbsp; <span>Real Conseil</span> &nbsp;|&nbsp; Formation DWWM</p>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════
+     JEU REACT EMBARQUÉ (fonctionne directement dans la page)
+     ═══════════════════════════════════════════════════ -->
+<script type="text/babel">
+  const { useState, useEffect } = React;
+
+  const LARGEUR = 20;
+  const HAUTEUR = 20;
+  const VITESSE = 150;
+  const DEPART  = [
+    { x: 10, y: 10 },
+    { x: 9,  y: 10 },
+    { x: 8,  y: 10 },
+  ];
+
+  // ─── Calcule la taille d'une case selon la largeur d'écran ─────────────────
+  // On prend la place disponible (écran - marges), on divise par 20 cases,
+  // et on plafonne à 20px max (taille desktop).
+  function calculerTaille() {
+    const espaceDisponible = Math.min(window.innerWidth - 32, 400);
+    return Math.floor(espaceDisponible / LARGEUR);
+  }
+
+  function SnakeGame() {
+    const [serpent,    setSerpent]    = useState(DEPART);
+    const [direction,  setDirection]  = useState({ x: 1, y: 0 });
+    const [nourriture, setNourriture] = useState({ x: 15, y: 10 });
+    const [score,      setScore]      = useState(0);
+    const [meilleur,   setMeilleur]   = useState(0);
+    const [gameOver,   setGameOver]   = useState(false);
+    const [enJeu,      setEnJeu]      = useState(false);
+
+    // ─── Taille des cases : réactive au redimensionnement ──────────────────
+    const [taille, setTaille] = useState(calculerTaille);
+
+    useEffect(() => {
+      const onResize = () => setTaille(calculerTaille());
+      window.addEventListener('resize', onResize);
+      return () => window.removeEventListener('resize', onResize);
+    }, []);
+
+    const isMobile = taille < 20; // sous 400px de large = mobile
+
+    // ─── Boucle de jeu ─────────────────────────────────────────────────────
+    useEffect(() => {
+      if (!enJeu || gameOver) return;
+      const timer = setInterval(() => {
+        setSerpent(ancien => {
+          const nouvelleTete = {
+            x: ancien[0].x + direction.x,
+            y: ancien[0].y + direction.y,
+          };
+          const horsMur =
+            nouvelleTete.x < 0 || nouvelleTete.x >= LARGEUR ||
+            nouvelleTete.y < 0 || nouvelleTete.y >= HAUTEUR;
+          const toucheCorps = ancien.some(
+            s => s.x === nouvelleTete.x && s.y === nouvelleTete.y
+          );
+          if (horsMur || toucheCorps) {
+            setGameOver(true);
+            return ancien;
+          }
+          const aMange =
+            nouvelleTete.x === nourriture.x &&
+            nouvelleTete.y === nourriture.y;
+          const nouveau = [nouvelleTete, ...ancien];
+          if (aMange) {
+            setScore(s => {
+              const ns = s + 10;
+              setMeilleur(m => ns > m ? ns : m);
+              return ns;
+            });
+            placerNourriture(nouveau);
+            return nouveau;
+          }
+          return nouveau.slice(0, -1);
+        });
+      }, VITESSE);
+      return () => clearInterval(timer);
+    }, [enJeu, gameOver, direction, nourriture]);
+
+    // ─── Clavier ───────────────────────────────────────────────────────────
+    useEffect(() => {
+      const gererTouche = (e) => {
+        if      (e.key === 'ArrowUp')    { e.preventDefault(); setDirection(d => d.y === 1  ? d : { x: 0,  y: -1 }); }
+        else if (e.key === 'ArrowDown')  { e.preventDefault(); setDirection(d => d.y === -1 ? d : { x: 0,  y:  1 }); }
+        else if (e.key === 'ArrowLeft')  { e.preventDefault(); setDirection(d => d.x === 1  ? d : { x: -1, y:  0 }); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); setDirection(d => d.x === -1 ? d : { x:  1, y:  0 }); }
+      };
+      window.addEventListener('keydown', gererTouche);
+      return () => window.removeEventListener('keydown', gererTouche);
+    }, []);
+
+    // ─── Fonctions utilitaires ──────────────────────────────────────────────
+    const placerNourriture = (corps) => {
+      let pos;
+      const ref = corps || serpent;
+      do {
+        pos = {
+          x: Math.floor(Math.random() * LARGEUR),
+          y: Math.floor(Math.random() * HAUTEUR),
+        };
+      } while (ref.some(s => s.x === pos.x && s.y === pos.y));
+      setNourriture(pos);
+    };
+
+    const demarrer = () => {
+      setSerpent(DEPART);
+      setDirection({ x: 1, y: 0 });
+      setNourriture({ x: 15, y: 10 });
+      setScore(0);
+      setGameOver(false);
+      setEnJeu(true);
+    };
+
+    // ─── Bouton D-pad (mobile) ──────────────────────────────────────────────
+    const btnDir = (dx, dy, label) => {
+      const interdit = (dx === -direction.x && dy === 0) || (dy === -direction.y && dx === 0);
+      return (
+        <button
+          onPointerDown={e => { e.preventDefault(); if (!interdit) setDirection({ x: dx, y: dy }); }}
+          style={{
+            width: 52, height: 52,
+            background: 'rgba(0,245,255,.08)',
+            border: '2px solid rgba(0,245,255,.35)',
+            borderRadius: 8, color: '#00f5ff',
+            fontSize: '1.3rem', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            WebkitTapHighlightColor: 'transparent',
+            touchAction: 'none',
+            opacity: interdit ? 0.3 : 1,
+          }}
+        >{label}</button>
+      );
+    };
+
+    const grillePx = taille * LARGEUR;
+
+    return (
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
+
+        {/* ── Barre de score ── */}
+        <div style={{
+          display:'flex', gap: isMobile ? 16 : 32, alignItems:'center',
+          background:'#111827', border:'1px solid rgba(0,245,255,.2)',
+          borderRadius:8, padding: isMobile ? '8px 16px' : '10px 28px',
+          fontFamily:"'Share Tech Mono', monospace", width: grillePx + 4,
+          justifyContent: 'space-around',
+        }}>
+          {[['SCORE', score, '#ffe600'], ['MEILLEUR', meilleur, '#00ff88'], ['TAILLE', serpent.length, '#00f5ff']].map(([label, val, couleur]) => (
+            <div key={label} style={{ textAlign:'center' }}>
+              <div style={{ fontSize: isMobile ? '.6rem' : '.7rem', color:'#6b7a8d', letterSpacing:'.08em' }}>{label}</div>
+              <div style={{ fontSize: isMobile ? '1.1rem' : '1.4rem', color: couleur, fontFamily:"'Orbitron', sans-serif", fontWeight:700 }}>{val}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Zone de jeu ── */}
+        <div style={{ position:'relative', width: grillePx + 4, height: taille * HAUTEUR + 4 }}>
+
+          {/* Écran accueil */}
+          {!enJeu && !gameOver && (
+            <div style={{
+              position:'absolute', inset:0, zIndex:10, display:'flex',
+              flexDirection:'column', alignItems:'center', justifyContent:'center',
+              gap:10, background:'rgba(7,9,15,.9)', borderRadius:4,
+            }}>
+              <div style={{ fontSize:'2.2rem' }}></div>
+              <div style={{ fontFamily:"'Orbitron',sans-serif", fontSize: isMobile ? '1.1rem' : '1.4rem', color:'#fff', fontWeight:700 }}>SNAKE</div>
+              <div style={{ fontSize:'.8rem', color:'#6b7a8d', textAlign:'center', padding:'0 12px' }}>
+                {isMobile ? 'Utilisez le D-pad ci-dessous' : 'Utilisez les flèches du clavier'}
+              </div>
+              <button onClick={demarrer} style={btnStyle('#00f5ff')}>▶ JOUER</button>
+            </div>
+          )}
+
+          {/* Écran Game Over */}
+          {gameOver && (
+            <div style={{
+              position:'absolute', inset:0, zIndex:10, display:'flex',
+              flexDirection:'column', alignItems:'center', justifyContent:'center',
+              gap:8, background:'rgba(7,9,15,.9)', borderRadius:4,
+            }}>
+              <div style={{ fontSize:'2.2rem' }}></div>
+              <div style={{ fontFamily:"'Orbitron',sans-serif", fontSize: isMobile ? '1rem' : '1.2rem', color:'#ff00aa', fontWeight:700 }}>GAME OVER</div>
+              <div style={{ fontSize:'.88rem', color:'#c8d8e8' }}>Score : <span style={{ color:'#ffe600', fontWeight:700 }}>{score}</span></div>
+              <button onClick={demarrer} style={btnStyle('#00ff88')}>↺ REJOUER</button>
+            </div>
+          )}
+
+          {/* La grille — taille des cases calculée dynamiquement */}
+          <div style={{
+            display:'grid',
+            gridTemplateColumns:`repeat(${LARGEUR}, ${taille}px)`,
+            gridTemplateRows:`repeat(${HAUTEUR}, ${taille}px)`,
+            border:'2px solid rgba(0,245,255,.25)',
+            borderRadius:4,
+            background:'#0a0e17',
+          }}>
+            {[...Array(HAUTEUR)].map((_, y) =>
+              [...Array(LARGEUR)].map((_, x) => {
+                const estTete  = serpent[0].x === x && serpent[0].y === y;
+                const estCorps = serpent.some(s => s.x === x && s.y === y);
+                const estPomme = nourriture.x === x && nourriture.y === y;
+                let bg = 'transparent', rad = 0, shadow = 'none';
+                if (estTete)        { bg = '#00ff88'; rad = Math.max(2, taille/5); shadow = '0 0 6px #00ff88'; }
+                else if (estCorps)  { bg = '#007a41'; }
+                else if (estPomme)  { bg = '#ff4444'; rad = taille; shadow = '0 0 6px #ff4444'; }
+                return (
+                  <div key={`${x}-${y}`} style={{ width:taille, height:taille, background:bg, borderRadius:rad, boxShadow:shadow }} />
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* ── D-pad tactile (visible sur mobile) ── */}
+        {isMobile && (
+          <div style={{ display:'grid', gridTemplateColumns:'52px 52px 52px', gridTemplateRows:'52px 52px', gap:6, marginTop:8 }}>
+            <div />
+            {btnDir(0, -1, '▲')}
+            <div />
+            {btnDir(-1, 0, '◀')}
+            {btnDir(0,  1, '▼')}
+            {btnDir(1,  0, '▶')}
+          </div>
+        )}
+
+        <div style={{ fontSize:'.72rem', color:'#4a5568', fontFamily:"'Share Tech Mono',monospace", marginTop:2 }}>
+          {isMobile ? 'D-pad pour diriger le serpent' : '↑ ↓ ← → pour diriger le serpent'}
+        </div>
+      </div>
+    );
+  }
+
+  // Style partagé pour les boutons d'écran
+  function btnStyle(couleur) {
+    return {
+      marginTop: 4, background: 'transparent',
+      border: `2px solid ${couleur}`, color: couleur,
+      padding: '9px 28px', borderRadius: 4,
+      fontSize: '.95rem', cursor: 'pointer',
+      fontFamily: "'Orbitron', sans-serif", letterSpacing: '.1em',
+    };
+  }
+
+  const root = ReactDOM.createRoot(document.getElementById('snake-root'));
+  root.render(<SnakeGame />);
+</script>
+</body>
+</html>
