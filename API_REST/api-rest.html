@@ -1,0 +1,2256 @@
+@ -1,2255 +0,0 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consommer une API REST - Guide Complet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        header {
+          background-color: white;
+            color: var(--conseil);
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+           
+        }
+
+        header .subtitle {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        header .author {
+            font-size: 1.1em;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            color: var(--real);
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--conseil);
+        }
+
+        h3 {
+            color: var(--real);
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #404040;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight {
+            background-color: #D5E8F0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.95em;
+        }
+
+        .code-block {
+            background-color: #f4f4f4;
+            border-left: 4px solid #2E75B6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .result-block {
+            background-color: #D5E8F0;
+            border-left: 4px solid #2E75B6;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .result-block strong {
+            color: #2E75B6;
+        }
+
+        .diagram {
+            background-color: white;
+            border: 2px solid #2E75B6;
+            border-radius: 8px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .diagram-header {
+            background-color: #2E75B6;
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .diagram-step {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .diagram-step:last-child {
+            border-bottom: none;
+        }
+
+        .diagram-step:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .step-label {
+            color: #2E75B6;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .comparison-column {
+            border: 2px solid #2E75B6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-header {
+            background-color: #2E75B6;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .comparison-content {
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        ul {
+            margin: 15px 0 15px 40px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            background-color: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .error-box {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table thead,
+        table tbody {
+            display: table;
+            width: 100%;
+        }
+
+        table th {
+            background-color: #2E75B6;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        table td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .exercise {
+            background-color: #e8f4f8;
+            border: 2px solid #2E75B6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .exercise h4 {
+            color: #2E75B6;
+            margin-top: 0;
+        }
+
+        /* Menu Burger */
+        .burger-menu {
+            display: none;
+            background-color: #404040;
+            padding: 15px 20px;
+            cursor: pointer;
+            position: sticky;
+            top: 0;
+            z-index: 101;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .burger-text {
+            color: white;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .burger-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 30px;
+        }
+
+        .burger-icon span {
+            width: 100%;
+            height: 3px;
+            background-color: white;
+            transition: 0.3s;
+            display: block;
+        }
+
+        .burger-menu.active .burger-icon span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .burger-menu.active .burger-icon span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .burger-menu.active .burger-icon span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        .nav-menu {
+            background-color: #404040;
+            padding: 15px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            margin-right: 25px;
+            font-size: 0.95em;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: #D5E8F0;
+        }
+
+        .demo-container {
+            background-color: #f9f9f9;
+            border: 2px solid #2E75B6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .demo-container h4 {
+            color: #2E75B6;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .demo-controls {
+            margin-bottom: 15px;
+        }
+
+        .demo-controls button {
+            background-color: #2E75B6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .demo-controls button:hover {
+            background-color: #1e5a8e;
+        }
+
+        .demo-controls input {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+
+        .demo-result {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 50px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .demo-result pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .loading {
+            color: #2E75B6;
+            font-style: italic;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+
+        .badge-get {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge-post {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .badge-put {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .badge-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        @media print {
+            .nav-menu, .demo-container {
+                display: none;
+            }
+            
+            body {
+                background-color: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+                padding: 0 10px;
+            }
+
+            header .subtitle {
+                font-size: 1.2em;
+            }
+
+            header .author {
+                font-size: 1em;
+            }
+            
+            .comparison-table {
+                grid-template-columns: 1fr;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+
+            h2 {
+                font-size: 1.6em;
+            }
+
+            h3 {
+                font-size: 1.3em;
+            }
+
+            h4 {
+                font-size: 1.1em;
+            }
+
+            /* Afficher le burger menu sur mobile */
+            .burger-menu {
+                display: flex;
+            }
+            
+            /* Cacher/afficher la navigation */
+            .nav-menu {
+                display: none;
+                padding: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+
+            .nav-menu.active {
+                display: block;
+                max-height: 500px;
+                padding: 10px 0;
+            }
+            
+            .nav-menu a {
+                display: block;
+                margin: 0;
+                padding: 12px 20px;
+                font-size: 1em;
+                border-bottom: 1px solid #555;
+            }
+
+            .nav-menu a:hover {
+                background-color: #555;
+            }
+
+            .code-block {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+
+            .demo-controls {
+                flex-direction: column;
+            }
+
+            .demo-controls button,
+            .demo-controls input {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            table {
+                font-size: 0.85em;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            }
+
+            table th,
+            table td {
+                padding: 8px 10px;
+            }
+
+            /* Indicateur visuel pour le scroll horizontal */
+            table::after {
+                content: "← Faites défiler →";
+                display: block;
+                text-align: center;
+                padding: 8px;
+                background-color: #D5E8F0;
+                color: #2E75B6;
+                font-size: 0.85em;
+                font-style: italic;
+            }
+
+            .diagram-step {
+                padding: 12px 15px;
+                font-size: 0.95em;
+            }
+
+            .method-badge {
+                display: block;
+                margin: 5px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 40px 20px;
+            }
+
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            header .subtitle {
+                font-size: 1em;
+            }
+
+            .content {
+                padding: 15px 10px;
+            }
+
+            h2 {
+                font-size: 1.4em;
+            }
+
+            .nav-menu a {
+                font-size: 0.85em;
+                padding: 5px 8px;
+            }
+
+            .code-block pre {
+                font-size: 0.8em;
+            }
+
+            table {
+                font-size: 0.8em;
+            }
+        }
+
+        .page-break {
+            page-break-before: always;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .analogy-box {
+            background-color: var(--conseil);
+            color: rgb(243, 237, 237);
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            font-size: 1.1em;
+            border: solid 5px var(--real);
+        }
+
+        .analogy-box strong {
+            font-size: 1.3em;
+            display: block;
+            margin-bottom: 15px;
+        }
+          :root {
+           
+            --real:#A0866B;
+            --conseil:#2C3F77;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Consommer une API REST</h1>
+           <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png"  width="100">
+        </header>
+
+        <!-- Menu Burger (mobile) -->
+        <div class="burger-menu" onclick="toggleMenu()">
+            <span class="burger-text">Menu</span>
+            <div class="burger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <nav class="nav-menu" id="navMenu">
+            <a href="#section1" onclick="closeMenu()">Définition</a>
+            <a href="#section2" onclick="closeMenu()">Méthodes HTTP</a>
+            <a href="#section3" onclick="closeMenu()">Fetch API</a>
+            <a href="#section4" onclick="closeMenu()">Exemples Pratiques</a>
+            <a href="#section5" onclick="closeMenu()">TP Interactif</a>
+            <a href="#section6" onclick="closeMenu()">Gestion Erreurs</a>
+            <a href="#section7" onclick="closeMenu()">Exercices</a>
+            <a href="#section7-5" onclick="closeMenu()">APIs Gratuites</a>
+            <a href="#section8" onclick="closeMenu()">Récapitulatif</a>
+            <a href="#section9" onclick="closeMenu()">Schémas</a>
+        </nav>
+
+        <div class="content">
+            <!-- SECTION 1 : DÉFINITION -->
+            <section id="section1">
+                <h2>1. Qu'est-ce qu'une API REST ?</h2>
+                
+                <h3>1.1 Définitions</h3>
+
+                <p><strong>API</strong> = <span class="highlight">Application Programming Interface</span></p>
+                <p>Une interface qui permet à deux applications de communiquer entre elles.</p>
+
+                <p><strong>REST</strong> = <span class="highlight">Representational State Transfer</span></p>
+                <p>Un style d'architecture pour créer des services web basés sur le protocole HTTP.</p>
+
+                <div class="analogy-box">
+                    <strong>Analogie du Restaurant</strong>
+                    <p>Le <strong>menu</strong> = la documentation de l'API</p>
+                    <p>Le <strong>serveur</strong> = l'API REST (intermédiaire)</p>
+                    <p>La <strong>cuisine</strong> = le serveur/base de données</p>
+                    <p>Ta <strong>commande</strong> = ta requête HTTP</p>
+                    <p>Le <strong>plat servi</strong> = la réponse JSON</p>
+                </div>
+
+                <h3>1.2 Caractéristiques d'une API REST</h3>
+                
+                <ul>
+                    <li>Utilise les <strong>méthodes HTTP</strong> (GET, POST, PUT, DELETE)</li>
+                    <li>Retourne des données au format <strong>JSON</strong> (ou XML)</li>
+                    <li>Est <strong>stateless</strong> (sans état) : chaque requête est indépendante</li>
+                    <li>Utilise des <strong>URLs</strong> pour identifier les ressources</li>
+                    <li>Les données sont organisées en <strong>ressources</strong></li>
+                </ul>
+
+                <h3>1.3 Anatomie d'une requête API</h3>
+
+                <div class="diagram">
+                    <div class="diagram-header">Structure d'une URL d'API</div>
+                    <div class="diagram-step">
+                        <code>https://api.example.com/v1/users/123</code>
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">https://</span>
+                        Protocole sécurisé
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">api.example.com</span>
+                        Domaine de l'API
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">/v1</span>
+                        Version de l'API
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">/users</span>
+                        Ressource (collection)
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">/123</span>
+                        Identifiant unique de la ressource
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2 : MÉTHODES HTTP -->
+            <section id="section2" class="page-break">
+                <h2>2. Les Méthodes HTTP (Verbes REST)</h2>
+
+                <h3>2.1 Vue d'ensemble</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Méthode</th>
+                            <th>Action</th>
+                            <th>Exemple</th>
+                            <th>Idempotent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="method-badge badge-get">GET</span></td>
+                            <td>Lire des données</td>
+                            <td>Récupérer la liste des utilisateurs</td>
+                            <td>Oui</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method-badge badge-post">POST</span></td>
+                            <td>Créer des données</td>
+                            <td>Ajouter un nouvel utilisateur</td>
+                            <td>Non</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method-badge badge-put">PUT</span></td>
+                            <td>Modifier complètement</td>
+                            <td>Remplacer tous les champs d'un utilisateur</td>
+                            <td>Oui</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method-badge badge-put">PATCH</span></td>
+                            <td>Modifier partiellement</td>
+                            <td>Modifier uniquement l'email</td>
+                            <td>Non</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method-badge badge-delete">DELETE</span></td>
+                            <td>Supprimer</td>
+                            <td>Supprimer un utilisateur</td>
+                            <td>Oui</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box">
+                    <strong>Idempotent :</strong> Une opération est idempotente si elle produit le même résultat peu importe le nombre de fois qu'elle est exécutée.
+                </div>
+
+                <h3>2.2 Correspondance CRUD</h3>
+
+                <div class="diagram">
+                    <div class="diagram-header">CRUD et Méthodes HTTP</div>
+                    <div class="diagram-step">
+                        <span class="step-label">Create (Créer) :</span>
+                        <span class="method-badge badge-post">POST</span>
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Read (Lire) :</span>
+                        <span class="method-badge badge-get">GET</span>
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Update (Mettre à jour) :</span>
+                        <span class="method-badge badge-put">PUT</span> / <span class="method-badge badge-put">PATCH</span>
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Delete (Supprimer) :</span>
+                        <span class="method-badge badge-delete">DELETE</span>
+                    </div>
+                </div>
+
+                <h3>2.3 Codes de statut HTTP</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Signification</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>200</strong></td>
+                            <td>OK</td>
+                            <td>Requête réussie</td>
+                        </tr>
+                        <tr>
+                            <td><strong>201</strong></td>
+                            <td>Created</td>
+                            <td>Ressource créée avec succès</td>
+                        </tr>
+                        <tr>
+                            <td><strong>204</strong></td>
+                            <td>No Content</td>
+                            <td>Succès mais pas de contenu à retourner</td>
+                        </tr>
+                        <tr>
+                            <td><strong>400</strong></td>
+                            <td>Bad Request</td>
+                            <td>Requête invalide (erreur de syntaxe)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>401</strong></td>
+                            <td>Unauthorized</td>
+                            <td>Authentification requise</td>
+                        </tr>
+                        <tr>
+                            <td><strong>403</strong></td>
+                            <td>Forbidden</td>
+                            <td>Accès interdit (pas les droits)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>404</strong></td>
+                            <td>Not Found</td>
+                            <td>Ressource introuvable</td>
+                        </tr>
+                        <tr>
+                            <td><strong>500</strong></td>
+                            <td>Internal Server Error</td>
+                            <td>Erreur du serveur</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- SECTION 3 : FETCH API -->
+            <section id="section3" class="page-break">
+                <h2>3. L'API Fetch en JavaScript</h2>
+
+                <h3>3.1 Syntaxe de base</h3>
+
+                <div class="code-block">
+                    <pre>fetch(url, options)
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Erreur:', error));</pre>
+                </div>
+
+                <h3>3.2 Méthode GET (Récupérer des données)</h3>
+
+                <h4>Syntaxe simple</h4>
+                <div class="code-block">
+                    <pre>// GET est la méthode par défaut
+fetch('https://jsonplaceholder.typicode.com/users')
+  .then(response => response.json())
+  .then(users => {
+    console.log(users);
+  })
+  .catch(error => {
+    console.error('Erreur:', error);
+  });</pre>
+                </div>
+
+                <h4>Avec async/await (recommandé)</h4>
+                <div class="code-block">
+                    <pre>async function getUsers() {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/users');
+    
+    // Vérifier si la requête a réussi
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP: ${response.status}`);
+    }
+    
+    const users = await response.json();
+    console.log(users);
+  } catch (error) {
+    console.error('Erreur:', error);
+  }
+}
+
+getUsers();</pre>
+                </div>
+
+                <div class="diagram">
+                    <div class="diagram-header">Flux d'exécution de fetch()</div>
+                    <div class="diagram-step">
+                        <span class="step-label">1. Envoi :</span>
+                        fetch() envoie la requête HTTP au serveur
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">2. Réception :</span>
+                        Le serveur traite la requête et renvoie une réponse
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">3. Response :</span>
+                        fetch() retourne un objet Response
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">4. Conversion :</span>
+                        response.json() convertit les données en objet JavaScript
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">5. Utilisation :</span>
+                        Les données sont exploitables dans le code
+                    </div>
+                </div>
+
+                <h3>3.3 Méthode POST (Créer des données)</h3>
+
+                <div class="code-block">
+                    <pre>async function createUser() {
+  const newUser = {
+    name: 'Thomas',
+    email: '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87f3efe8eae6f4c7e2ffe6eaf7ebe2a9e4e8ea">[email&#160;protected]</a>',
+    phone: '0123456789'
+  };
+
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newUser)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Utilisateur créé:', data);
+  } catch (error) {
+    console.error('Erreur:', error);
+  }
+}
+
+createUser();</pre>
+                </div>
+
+                <div class="info-box">
+                    <strong>Important :</strong>
+                    <ul style="margin-top: 10px;">
+                        <li><code>headers</code> : Indique que nous envoyons du JSON</li>
+                        <li><code>JSON.stringify()</code> : Convertit l'objet JavaScript en chaîne JSON</li>
+                        <li><code>body</code> : Contient les données à envoyer</li>
+                    </ul>
+                </div>
+
+                <h3>3.4 Méthode PUT (Modifier complètement)</h3>
+
+                <div class="code-block">
+                    <pre>async function updateUser(userId) {
+  const updatedUser = {
+    name: 'Thomas Dupont',
+    email: '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="22564a4d4f43510c4657524d4c5662475a434f524e470c414d4f">[email&#160;protected]</a>',
+    phone: '0987654321'
+  };
+
+  try {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedUser)
+    });
+
+    const data = await response.json();
+    console.log('Utilisateur modifié:', data);
+  } catch (error) {
+    console.error('Erreur:', error);
+  }
+}
+
+updateUser(1);</pre>
+                </div>
+
+                <h3>3.5 Méthode PATCH (Modifier partiellement)</h3>
+
+                <div class="code-block">
+                    <pre>async function updateEmail(userId, newEmail) {
+  try {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: newEmail })
+    });
+
+    const data = await response.json();
+    console.log('Email modifié:', data);
+  } catch (error) {
+    console.error('Erreur:', error);
+  }
+}
+
+updateEmail(1, '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="523c3725373f333b3e12372a333f223e377c313d3f">[email&#160;protected]</a>');</pre>
+                </div>
+
+                <h3>3.6 Méthode DELETE (Supprimer)</h3>
+
+                <div class="code-block">
+                    <pre>async function deleteUser(userId) {
+  try {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`, {
+      method: 'DELETE'
+    });
+
+    if (response.ok) {
+      console.log('Utilisateur supprimé avec succès');
+    }
+  } catch (error) {
+    console.error('Erreur:', error);
+  }
+}
+
+deleteUser(1);</pre>
+                </div>
+            </section>
+
+            <!-- SECTION 4 : EXEMPLES PRATIQUES -->
+            <section id="section4" class="page-break">
+                <h2>4. Exemples Pratiques Complets</h2>
+
+                <h3>4.1 Exemple : Afficher une liste de posts</h3>
+
+                <div class="code-block">
+                    <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="fr"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Liste de Posts&lt;/title&gt;
+    &lt;style&gt;
+        .post {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .post h3 {
+            color: #2E75B6;
+            margin-top: 0;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Liste des Posts&lt;/h1&gt;
+    &lt;button onclick="loadPosts()"&gt;Charger les posts&lt;/button&gt;
+    &lt;div id="posts"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        async function loadPosts() {
+            const container = document.getElementById('posts');
+            container.innerHTML = '&lt;p&gt;Chargement...&lt;/p&gt;';
+
+            try {
+                const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=5');
+                
+                if (!response.ok) {
+                    throw new Error(`Erreur: ${response.status}`);
+                }
+                
+                const posts = await response.json();
+                
+                container.innerHTML = posts.map(post => `
+                    &lt;div class="post"&gt;
+                        &lt;h3&gt;${post.title}&lt;/h3&gt;
+                        &lt;p&gt;${post.body}&lt;/p&gt;
+                    &lt;/div&gt;
+                `).join('');
+                
+            } catch (error) {
+                container.innerHTML = `&lt;p style="color: red;"&gt;Erreur: ${error.message}&lt;/p&gt;`;
+            }
+        }
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+                </div>
+
+                <h3>4.2 Exemple : Formulaire de création</h3>
+
+                <div class="code-block">
+                    <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="fr"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Créer un utilisateur&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Créer un utilisateur&lt;/h1&gt;
+    
+    &lt;form id="userForm"&gt;
+        &lt;div&gt;
+            &lt;label&gt;Nom:&lt;/label&gt;
+            &lt;input type="text" id="name" required&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+            &lt;label&gt;Email:&lt;/label&gt;
+            &lt;input type="email" id="email" required&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+            &lt;label&gt;Téléphone:&lt;/label&gt;
+            &lt;input type="tel" id="phone" required&gt;
+        &lt;/div&gt;
+        &lt;button type="submit"&gt;Créer&lt;/button&gt;
+    &lt;/form&gt;
+    
+    &lt;div id="result"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const user = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value
+            };
+            
+            try {
+                const response = await fetch('https://jsonplaceholder.typicode.com/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(user)
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('result').innerHTML = `
+                    &lt;p style="color: green;"&gt;
+                        Utilisateur créé avec succès ! ID: ${data.id}
+                    &lt;/p&gt;
+                `;
+                
+                // Réinitialiser le formulaire
+                e.target.reset();
+                
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    &lt;p style="color: red;"&gt;Erreur: ${error.message}&lt;/p&gt;
+                `;
+            }
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+                </div>
+
+                <h3>4.3 Exemple : Recherche avec paramètres d'URL</h3>
+
+                <div class="code-block">
+                    <pre>async function searchUsers(searchTerm) {
+    // Paramètres d'URL
+    const params = new URLSearchParams({
+        q: searchTerm,
+        _limit: 10
+    });
+    
+    try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/users?${params}`);
+        const users = await response.json();
+        
+        console.log('Résultats:', users);
+    } catch (error) {
+        console.error('Erreur:', error);
+    }
+}
+
+searchUsers('Alice');</pre>
+                </div>
+            </section>
+
+            <!-- SECTION 5 : TP INTERACTIF -->
+            <section id="section5" class="page-break">
+                <h2>5. TP Interactif : Consommer une API</h2>
+
+                <div class="warning-box">
+                    <h4 style="margin-top: 0;">Important : Utiliser un serveur local</h4>
+                    <p><strong>Si vous obtenez une erreur "NetworkError" :</strong></p>
+                    <p>Les démos ci-dessous ne fonctionneront PAS si vous ouvrez le fichier directement avec <code>file:///</code>. Le navigateur bloque les requêtes API pour des raisons de sécurité (CORS).</p>
+                    
+                    <p><strong>Solution recommandée : Utiliser Live Server</strong></p>
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Installez l'extension <strong>Live Server</strong> dans VS Code</li>
+                        <li>Clic droit sur le fichier HTML → <strong>"Open with Live Server"</strong></li>
+                        <li>Le fichier s'ouvre sur <code>http://127.0.0.1:5500</code></li>
+                        <li>Les démos fonctionnent !</li>
+                    </ol>
+                    
+                    <p style="margin-top: 10px;"><strong>Alternative :</strong> Serveur Python : <code>python3 -m http.server 8000</code></p>
+                </div>
+
+                <div class="demo-container">
+                    <h4>Démo 1 : Récupérer des utilisateurs (GET)</h4>
+                    <div class="demo-controls">
+                        <button onclick="demoGetUsers()">GET - Charger les utilisateurs</button>
+                    </div>
+                    <div id="demo1-result" class="demo-result">
+                        Cliquez sur le bouton pour charger les données...
+                    </div>
+                </div>
+
+                <div class="demo-container">
+                    <h4>Démo 2 : Rechercher un utilisateur par ID (GET)</h4>
+                    <div class="demo-controls">
+                        <input type="number" id="userId" placeholder="ID utilisateur (1-10)" value="1" min="1" max="10">
+                        <button onclick="demoGetUser()">Rechercher</button>
+                    </div>
+                    <div id="demo2-result" class="demo-result">
+                        Entrez un ID et cliquez sur Rechercher...
+                    </div>
+                </div>
+
+                <div class="demo-container">
+                    <h4>Démo 3 : Créer un utilisateur (POST)</h4>
+                    <div class="demo-controls">
+                        <input type="text" id="userName" placeholder="Nom" value="Thomas">
+                        <input type="email" id="userEmail" placeholder="Email" value="thomas@test.fr">
+                        <button onclick="demoCreateUser()">POST - Créer</button>
+                    </div>
+                    <div id="demo3-result" class="demo-result">
+                        Remplissez les champs et cliquez sur Créer...
+                    </div>
+                </div>
+
+                <div class="demo-container">
+                    <h4>Démo 4 : Récupérer des Pokémon</h4>
+                    <div class="demo-controls">
+                        <input type="text" id="pokemonName" placeholder="Nom du Pokémon" value="pikachu">
+                        <button onclick="demoGetPokemon()">Rechercher Pokémon</button>
+                    </div>
+                    <div id="demo4-result" class="demo-result">
+                        Entrez un nom de Pokémon...
+                    </div>
+                </div>
+
+                <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+                    // Démo 1 : GET Users
+                    async function demoGetUsers() {
+                        const resultDiv = document.getElementById('demo1-result');
+                        resultDiv.innerHTML = '<p class="loading">Chargement...</p>';
+                        
+                        try {
+                            const response = await fetch('https://jsonplaceholder.typicode.com/users?_limit=3');
+                            
+                            if (!response.ok) {
+                                throw new Error(`Erreur HTTP: ${response.status}`);
+                            }
+                            
+                            const users = await response.json();
+                            
+                            resultDiv.innerHTML = '<pre>' + JSON.stringify(users, null, 2) + '</pre>';
+                        } catch (error) {
+                            resultDiv.innerHTML = `<p style="color: red;">Erreur: ${error.message}</p>`;
+                        }
+                    }
+
+                    // Démo 2 : GET User by ID
+                    async function demoGetUser() {
+                        const userId = document.getElementById('userId').value;
+                        const resultDiv = document.getElementById('demo2-result');
+                        resultDiv.innerHTML = '<p class="loading">Chargement...</p>';
+                        
+                        try {
+                            const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+                            
+                            if (!response.ok) {
+                                throw new Error(`Erreur HTTP: ${response.status}`);
+                            }
+                            
+                            const user = await response.json();
+                            
+                            resultDiv.innerHTML = `
+                                <h4>Utilisateur trouvé :</h4>
+                                <p><strong>ID:</strong> ${user.id}</p>
+                                <p><strong>Nom:</strong> ${user.name}</p>
+                                <p><strong>Email:</strong> ${user.email}</p>
+                                <p><strong>Téléphone:</strong> ${user.phone}</p>
+                            `;
+                        } catch (error) {
+                            resultDiv.innerHTML = `<p style="color: red;">Erreur: ${error.message}</p>`;
+                        }
+                    }
+
+                    // Démo 3 : POST Create User
+                    async function demoCreateUser() {
+                        const name = document.getElementById('userName').value;
+                        const email = document.getElementById('userEmail').value;
+                        const resultDiv = document.getElementById('demo3-result');
+                        
+                        if (!name || !email) {
+                            resultDiv.innerHTML = '<p style="color: red;">Veuillez remplir tous les champs</p>';
+                            return;
+                        }
+                        
+                        resultDiv.innerHTML = '<p class="loading">Création en cours...</p>';
+                        
+                        const newUser = {
+                            name: name,
+                            email: email,
+                            phone: '0123456789'
+                        };
+                        
+                        try {
+                            const response = await fetch('https://jsonplaceholder.typicode.com/users', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(newUser)
+                            });
+                            
+                            if (!response.ok) {
+                                throw new Error(`Erreur HTTP: ${response.status}`);
+                            }
+                            
+                            const data = await response.json();
+                            
+                            resultDiv.innerHTML = `
+                                <p style="color: green;"><strong>Utilisateur créé avec succès !</strong></p>
+                                <pre>${JSON.stringify(data, null, 2)}</pre>
+                            `;
+                        } catch (error) {
+                            resultDiv.innerHTML = `<p style="color: red;">Erreur: ${error.message}</p>`;
+                        }
+                    }
+
+                    // Démo 4 : GET Pokemon
+                    async function demoGetPokemon() {
+                        const pokemonName = document.getElementById('pokemonName').value.toLowerCase();
+                        const resultDiv = document.getElementById('demo4-result');
+                        resultDiv.innerHTML = '<p class="loading">Chargement...</p>';
+                        
+                        try {
+                            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+                            
+                            if (!response.ok) {
+                                throw new Error(`Pokémon non trouvé`);
+                            }
+                            
+                            const pokemon = await response.json();
+                            
+                            resultDiv.innerHTML = `
+                                <h4>${pokemon.name.toUpperCase()}</h4>
+                                <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
+                                <p><strong>Hauteur:</strong> ${pokemon.height / 10} m</p>
+                                <p><strong>Poids:</strong> ${pokemon.weight / 10} kg</p>
+                                <p><strong>Types:</strong> ${pokemon.types.map(t => t.type.name).join(', ')}</p>
+                            `;
+                        } catch (error) {
+                            resultDiv.innerHTML = `<p style="color: red;">Erreur: ${error.message}</p>`;
+                        }
+                    }
+                </script>
+            </section>
+
+            <!-- SECTION 6 : GESTION DES ERREURS -->
+            <section id="section6" class="page-break">
+                <h2>6. Gestion des Erreurs</h2>
+
+                <h3>6.1 Vérification du statut HTTP</h3>
+
+                <div class="code-block">
+                    <pre>async function fetchWithErrorHandling(url) {
+    try {
+        const response = await fetch(url);
+        
+        // Vérifier le statut HTTP
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status} - ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        return data;
+        
+    } catch (error) {
+        // Différents types d'erreurs
+        if (error.name === 'TypeError') {
+            console.error('Erreur réseau ou CORS:', error.message);
+        } else {
+            console.error('Erreur:', error.message);
+        }
+        throw error;
+    }
+}</pre>
+                </div>
+
+                <h3>6.2 Gestion des timeouts</h3>
+
+                <div class="code-block">
+                    <pre>async function fetchWithTimeout(url, timeout = 5000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+        const response = await fetch(url, {
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        
+        return await response.json();
+        
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw new Error('Délai d\'attente dépassé');
+        }
+        throw error;
+    }
+}</pre>
+                </div>
+
+                <h3>6.3 Pattern de gestion d'erreur complet</h3>
+
+                <div class="code-block">
+                    <pre>async function safeAPICall(url, options = {}) {
+    const defaultOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        timeout: 10000
+    };
+    
+    const finalOptions = { ...defaultOptions, ...options };
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), finalOptions.timeout);
+    
+    try {
+        const response = await fetch(url, {
+            ...finalOptions,
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        // Vérifier le statut
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Erreur HTTP: ${response.status}`);
+        }
+        
+        // Parser la réponse
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return await response.json();
+        } else {
+            return await response.text();
+        }
+        
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw new Error('Requête annulée : délai dépassé');
+        }
+        if (error.name === 'TypeError') {
+            throw new Error('Erreur réseau : impossible de contacter le serveur');
+        }
+        throw error;
+    }
+}
+
+// Utilisation
+try {
+    const data = await safeAPICall('https://api.example.com/data');
+    console.log(data);
+} catch (error) {
+    console.error('Erreur lors de l\'appel API:', error.message);
+}</pre>
+                </div>
+
+                <h3>6.4 Affichage des erreurs à l'utilisateur</h3>
+
+                <div class="code-block">
+                    <pre>function displayError(container, error) {
+    const errorMessages = {
+        400: 'Requête invalide. Vérifiez les données envoyées.',
+        401: 'Vous devez vous connecter pour accéder à cette ressource.',
+        403: 'Accès refusé. Vous n\'avez pas les droits nécessaires.',
+        404: 'Ressource introuvable.',
+        500: 'Erreur serveur. Réessayez plus tard.',
+        default: 'Une erreur est survenue. Veuillez réessayer.'
+    };
+    
+    const statusCode = parseInt(error.message.match(/\d{3}/)?.[0]);
+    const message = errorMessages[statusCode] || errorMessages.default;
+    
+    container.innerHTML = `
+        &lt;div style="background-color: #f8d7da; 
+                    border: 1px solid #dc3545; 
+                    padding: 15px; 
+                    border-radius: 5px; 
+                    color: #721c24;"&gt;
+            &lt;strong&gt;Erreur&lt;/strong&gt;
+            &lt;p&gt;${message}&lt;/p&gt;
+            &lt;p style="font-size: 0.9em; margin-top: 10px;"&gt;
+                Détails techniques : ${error.message}
+            &lt;/p&gt;
+        &lt;/div&gt;
+    `;
+}</pre>
+                </div>
+            </section>
+
+            <!-- SECTION 7 : EXERCICES -->
+            <section id="section7" class="page-break">
+                <h2>7. Exercices Pratiques</h2>
+
+                <div class="exercise">
+                    <h4>Exercice 1 : Liste de posts</h4>
+                    <p><strong>Consigne :</strong> Créez une page HTML qui affiche les 10 premiers posts de l'API JSONPlaceholder.</p>
+                    
+                    <p><strong>API :</strong> <code>https://jsonplaceholder.typicode.com/posts?_limit=10</code></p>
+                    
+                    <p><strong>Objectifs :</strong></p>
+                    <ul>
+                        <li>Utilisez <code>fetch()</code> avec <code>async/await</code></li>
+                        <li>Affichez le titre et le contenu de chaque post</li>
+                        <li>Ajoutez un bouton pour recharger les posts</li>
+                        <li>Gérez les erreurs proprement</li>
+                    </ul>
+                </div>
+
+                <div class="exercise">
+                    <h4>Exercice 2 : Recherche de Pokémon</h4>
+                    <p><strong>Consigne :</strong> Créez une application de recherche de Pokémon.</p>
+                    
+                    <p><strong>API :</strong> <code>https://pokeapi.co/api/v2/pokemon/{nom}</code></p>
+                    
+                    <p><strong>Objectifs :</strong></p>
+                    <ul>
+                        <li>Créez un champ de recherche</li>
+                        <li>Affichez : nom, image, types, taille, poids</li>
+                        <li>Gérez le cas où le Pokémon n'existe pas (404)</li>
+                        <li>Ajoutez un indicateur de chargement</li>
+                    </ul>
+                </div>
+
+                <div class="exercise">
+                    <h4>Exercice 3 : CRUD complet</h4>
+                    <p><strong>Consigne :</strong> Créez une application complète de gestion d'utilisateurs avec toutes les opérations CRUD.</p>
+                    
+                    <p><strong>API :</strong> <code>https://jsonplaceholder.typicode.com/users</code></p>
+                    
+                    <p><strong>Objectifs :</strong></p>
+                    <ul>
+                        <li><strong>GET</strong> : Afficher la liste des utilisateurs</li>
+                        <li><strong>POST</strong> : Formulaire pour créer un utilisateur</li>
+                        <li><strong>PUT</strong> : Modifier un utilisateur existant</li>
+                        <li><strong>DELETE</strong> : Supprimer un utilisateur avec confirmation</li>
+                    </ul>
+                </div>
+
+                <div class="exercise">
+                    <h4>Exercice 4 : Pagination</h4>
+                    <p><strong>Consigne :</strong> Créez une liste paginée de photos.</p>
+                    
+                    <p><strong>API :</strong> <code>https://jsonplaceholder.typicode.com/photos?_page=1&_limit=12</code></p>
+                    
+                    <p><strong>Objectifs :</strong></p>
+                    <ul>
+                        <li>Affichez 12 photos par page</li>
+                        <li>Boutons "Précédent" et "Suivant"</li>
+                        <li>Affichez le numéro de page actuelle</li>
+                        <li>Désactivez les boutons aux limites (page 1 et dernière page)</li>
+                    </ul>
+                </div>
+
+                <div class="exercise">
+                    <h4>Exercice 5 : Météo en temps réel</h4>
+                    <p><strong>Consigne :</strong> Créez une application météo.</p>
+                    
+                    <p><strong>API :</strong> OpenWeatherMap (nécessite une clé API gratuite)</p>
+                    <p><strong>Inscription :</strong> <code>https://openweathermap.org/api</code></p>
+                    
+                    <p><strong>Objectifs :</strong></p>
+                    <ul>
+                        <li>Recherche par ville</li>
+                        <li>Affichez : température, description, icône météo</li>
+                        <li>Gérez les erreurs (ville introuvable, problème réseau)</li>
+                        <li>Bonus : Sauvegardez la dernière ville recherchée dans localStorage</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SECTION 7.5 : LISTE DES APIs GRATUITES -->
+            <section id="section7-5" class="page-break">
+                <h2>7.5 Liste des APIs Gratuites pour Pratiquer</h2>
+
+                <h3>APIs sans authentification</h3>
+                <p>Ces APIs ne nécessitent aucune clé API et sont parfaites pour débuter.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>URL de base</th>
+                            <th>Exemple d'endpoint</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>JSONPlaceholder</strong></td>
+                            <td>Fausses données de test (posts, users, todos, comments)</td>
+                            <td><code>jsonplaceholder.typicode.com</code></td>
+                            <td><code>/users</code>, <code>/posts</code>, <code>/todos</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>PokéAPI</strong></td>
+                            <td>Données sur tous les Pokémon</td>
+                            <td><code>pokeapi.co/api/v2</code></td>
+                            <td><code>/pokemon/{name}</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>REST Countries</strong></td>
+                            <td>Informations sur tous les pays du monde</td>
+                            <td><code>restcountries.com/v3.1</code></td>
+                            <td><code>/all</code>, <code>/name/{country}</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>The Dog API</strong></td>
+                            <td>Images et informations sur les races de chiens</td>
+                            <td><code>dog.ceo/api</code></td>
+                            <td><code>/breeds/list/all</code>, <code>/breeds/image/random</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>The Cat API</strong></td>
+                            <td>Images aléatoires de chats</td>
+                            <td><code>api.thecatapi.com/v1</code></td>
+                            <td><code>/images/search</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rick and Morty API</strong></td>
+                            <td>Personnages, épisodes et lieux de Rick & Morty</td>
+                            <td><code>rickandmortyapi.com/api</code></td>
+                            <td><code>/character</code>, <code>/episode</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Advice Slip</strong></td>
+                            <td>Conseils aléatoires en anglais</td>
+                            <td><code>api.adviceslip.com</code></td>
+                            <td><code>/advice</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>JokeAPI</strong></td>
+                            <td>Blagues aléatoires (en anglais)</td>
+                            <td><code>v2.jokeapi.dev</code></td>
+                            <td><code>/joke/Any</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Public APIs</strong></td>
+                            <td>Liste d'APIs publiques</td>
+                            <td><code>api.publicapis.org</code></td>
+                            <td><code>/entries</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bored API</strong></td>
+                            <td>Suggestions d'activités contre l'ennui</td>
+                            <td><code>www.boredapi.com/api</code></td>
+                            <td><code>/activity</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>IP API</strong></td>
+                            <td>Géolocalisation par adresse IP</td>
+                            <td><code>ipapi.co</code></td>
+                            <td><code>/json</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Quotable</strong></td>
+                            <td>Citations célèbres</td>
+                            <td><code>api.quotable.io</code></td>
+                            <td><code>/random</code>, <code>/quotes</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>APIs avec clé gratuite (inscription requise)</h3>
+                <p>Ces APIs nécessitent une inscription gratuite pour obtenir une clé API.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>URL de base</th>
+                            <th>Inscription</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>OpenWeatherMap</strong></td>
+                            <td>Données météo en temps réel</td>
+                            <td><code>api.openweathermap.org</code></td>
+                            <td><code>openweathermap.org/api</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>TMDB</strong></td>
+                            <td>Base de données de films et séries</td>
+                            <td><code>api.themoviedb.org/3</code></td>
+                            <td><code>themoviedb.org/settings/api</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>NewsAPI</strong></td>
+                            <td>Articles de presse du monde entier</td>
+                            <td><code>newsapi.org/v2</code></td>
+                            <td><code>newsapi.org/register</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ExchangeRate API</strong></td>
+                            <td>Taux de change de devises</td>
+                            <td><code>api.exchangerate-api.com/v4</code></td>
+                            <td><code>exchangerate-api.com</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Unsplash API</strong></td>
+                            <td>Photos libres de droits haute qualité</td>
+                            <td><code>api.unsplash.com</code></td>
+                            <td><code>unsplash.com/developers</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Spoonacular</strong></td>
+                            <td>Recettes de cuisine et nutrition</td>
+                            <td><code>api.spoonacular.com</code></td>
+                            <td><code>spoonacular.com/food-api</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>YouTube Data API</strong></td>
+                            <td>Recherche et données YouTube</td>
+                            <td><code>googleapis.com/youtube/v3</code></td>
+                            <td><code>console.cloud.google.com</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Spotify API</strong></td>
+                            <td>Données musicales Spotify</td>
+                            <td><code>api.spotify.com/v1</code></td>
+                            <td><code>developer.spotify.com</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Exemples de code pour chaque API</h3>
+
+                <h4>JSONPlaceholder - Posts</h4>
+                <div class="code-block">
+                    <pre>// Récupérer tous les posts
+fetch('https://jsonplaceholder.typicode.com/posts')
+  .then(res => res.json())
+  .then(posts => console.log(posts));
+
+// Récupérer un post spécifique
+fetch('https://jsonplaceholder.typicode.com/posts/1')
+  .then(res => res.json())
+  .then(post => console.log(post));</pre>
+                </div>
+
+                <h4>PokéAPI - Pokémon</h4>
+                <div class="code-block">
+                    <pre>// Récupérer un Pokémon par nom
+fetch('https://pokeapi.co/api/v2/pokemon/pikachu')
+  .then(res => res.json())
+  .then(pokemon => {
+    console.log(pokemon.name);
+    console.log(pokemon.types);
+    console.log(pokemon.sprites.front_default); // Image
+  });</pre>
+                </div>
+
+                <h4>REST Countries - Pays</h4>
+                <div class="code-block">
+                    <pre>// Rechercher un pays par nom
+fetch('https://restcountries.com/v3.1/name/france')
+  .then(res => res.json())
+  .then(countries => {
+    const france = countries[0];
+    console.log(france.capital); // Paris
+    console.log(france.population);
+    console.log(france.flags.png); // Drapeau
+  });</pre>
+                </div>
+
+                <h4>The Dog API - Chiens</h4>
+                <div class="code-block">
+                    <pre>// Image aléatoire de chien
+fetch('https://dog.ceo/api/breeds/image/random')
+  .then(res => res.json())
+  .then(data => {
+    console.log(data.message); // URL de l'image
+  });</pre>
+                </div>
+
+                <h4>OpenWeatherMap - Météo (avec clé API)</h4>
+                <div class="code-block">
+                    <pre>// Météo d'une ville (remplacez YOUR_API_KEY)
+const apiKey = 'YOUR_API_KEY';
+fetch(`https://api.openweathermap.org/data/2.5/weather?q=Paris&appid=${apiKey}&units=metric&lang=fr`)
+  .then(res => res.json())
+  .then(data => {
+    console.log(data.main.temp); // Température
+    console.log(data.weather[0].description); // Description
+  });</pre>
+                </div>
+
+                <div class="info-box">
+                    <strong>Astuce :</strong> Pour tester ces APIs rapidement, copiez le code dans la console de votre navigateur (F12) ou utilisez Thunder Client dans VS Code.
+                </div>
+
+                <h3>Ressources utiles</h3>
+                <ul>
+                    <li><strong>GitHub - Public APIs :</strong> <code>github.com/public-apis/public-apis</code> (liste exhaustive d'APIs)</li>
+                    <li><strong>RapidAPI :</strong> <code>rapidapi.com</code> (marketplace d'APIs)</li>
+                    <li><strong>API List :</strong> <code>apilist.fun</code> (répertoire d'APIs gratuites)</li>
+                </ul>
+            </section>
+
+            <!-- SECTION 8 : RÉCAPITULATIF -->
+            <section id="section8" class="page-break">
+                <h2>8. Récapitulatif</h2>
+
+                <h3>Points clés à retenir</h3>
+                
+                <ul>
+                    <li>Une <strong>API REST</strong> permet la communication entre applications via HTTP</li>
+                    <li>Les <strong>méthodes HTTP</strong> correspondent aux opérations CRUD</li>
+                    <li><code>fetch()</code> est l'API native JavaScript pour consommer des APIs</li>
+                    <li>Toujours utiliser <strong>async/await</strong> pour un code plus lisible</li>
+                    <li>Toujours <strong>gérer les erreurs</strong> avec try/catch</li>
+                    <li>Vérifier le <strong>statut HTTP</strong> avec <code>response.ok</code></li>
+                    <li>Convertir la réponse avec <code>response.json()</code></li>
+                    <li>Utiliser <code>JSON.stringify()</code> pour envoyer des données</li>
+                </ul>
+
+                <h3>Template réutilisable</h3>
+
+                <div class="code-block">
+                    <pre>// Template générique pour consommer une API
+async function callAPI(url, method = 'GET', data = null) {
+    const options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+    
+    if (data && method !== 'GET') {
+        options.body = JSON.stringify(data);
+    }
+    
+    try {
+        const response = await fetch(url, options);
+        
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        
+        // Vérifier s'il y a un contenu (204 No Content)
+        if (response.status === 204) {
+            return null;
+        }
+        
+        return await response.json();
+        
+    } catch (error) {
+        console.error('Erreur API:', error);
+        throw error;
+    }
+}
+
+// Exemples d'utilisation
+const users = await callAPI('https://api.example.com/users');
+const newUser = await callAPI('https://api.example.com/users', 'POST', { name: 'Thomas' });
+const updatedUser = await callAPI('https://api.example.com/users/1', 'PUT', { name: 'Thomas D.' });
+await callAPI('https://api.example.com/users/1', 'DELETE');</pre>
+                </div>
+
+                <h3>APIs publiques pour pratiquer</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>API</th>
+                            <th>Description</th>
+                            <th>Auth requise</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>JSONPlaceholder</td>
+                            <td>Fausses données (users, posts, todos)</td>
+                            <td>Non</td>
+                        </tr>
+                        <tr>
+                            <td>PokéAPI</td>
+                            <td>Données Pokémon</td>
+                            <td>Non</td>
+                        </tr>
+                        <tr>
+                            <td>REST Countries</td>
+                            <td>Informations sur les pays</td>
+                            <td>Non</td>
+                        </tr>
+                        <tr>
+                            <td>The Dog API</td>
+                            <td>Images de chiens</td>
+                            <td>Non</td>
+                        </tr>
+                        <tr>
+                            <td>OpenWeatherMap</td>
+                            <td>Données météo</td>
+                            <td>Oui (gratuit)</td>
+                        </tr>
+                        <tr>
+                            <td>TMDB</td>
+                            <td>Base de données de films</td>
+                            <td>Oui (gratuit)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Outils recommandés</h3>
+
+                <ul>
+                    <li><strong>Thunder Client</strong> (Extension VS Code) - Tester les APIs</li>
+                    <li><strong>Postman</strong> - Client API professionnel</li>
+                    <li><strong>JSON Formatter</strong> (Extension Chrome) - Formatter le JSON</li>
+                    <li><strong>Console du navigateur</strong> (F12) - Déboguer les requêtes</li>
+                </ul>
+
+                <h3>Ressources complémentaires</h3>
+                
+                <ul>
+                    <li>Documentation MDN : <code>developer.mozilla.org/fr/docs/Web/API/Fetch_API</code></li>
+                    <li>Liste d'APIs publiques : <code>github.com/public-apis/public-apis</code></li>
+                    <li>JSONPlaceholder : <code>jsonplaceholder.typicode.com</code></li>
+                    <li>PokéAPI : <code>pokeapi.co</code></li>
+                </ul>
+
+                <div class="success-box" style="margin-top: 40px; text-align: center;">
+                    <strong>Bravo ! Vous savez maintenant consommer une API REST !</strong><br>
+                    Pratiquez avec les exercices et les APIs publiques pour perfectionner vos compétences.
+                </div>
+            </section>
+
+            <!-- SECTION 9 : SCHÉMAS FONCTIONNELS -->
+            <section id="section9" class="page-break">
+                <h2>9. Schémas Fonctionnels : Comprendre le Flux d'une API</h2>
+
+                <h3>9.1 Vue d'ensemble : De la requête à la réponse</h3>
+
+                <div class="diagram">
+                    <div class="diagram-header">Flux complet d'une requête API</div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 1 : CLIENT</span>
+                        L'utilisateur clique sur un bouton ou remplit un formulaire dans votre application web
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 2 : JAVASCRIPT</span>
+                        Votre code JavaScript utilise fetch() pour créer une requête HTTP
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 3 : NAVIGATEUR</span>
+                        Le navigateur envoie la requête HTTP à travers Internet vers le serveur API
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 4 : SERVEUR API</span>
+                        Le serveur reçoit la requête et l'analyse (méthode, URL, headers, body)
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 5 : TRAITEMENT</span>
+                        Le serveur traite la requête : vérifie les droits, accède à la base de données
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 6 : BASE DE DONNÉES</span>
+                        La base de données retourne les données demandées au serveur
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 7 : FORMATAGE</span>
+                        Le serveur formate les données en JSON et prépare la réponse HTTP
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 8 : RÉPONSE HTTP</span>
+                        Le serveur envoie la réponse (code statut + données JSON) au client
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 9 : RÉCEPTION</span>
+                        Le navigateur reçoit la réponse et la transmet à JavaScript
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 10 : PARSING</span>
+                        JavaScript convertit le JSON en objet JavaScript (.json())
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Étape 11 : AFFICHAGE</span>
+                        Votre code utilise les données pour mettre à jour l'interface utilisateur
+                    </div>
+                </div>
+
+                <h3>9.2 Exemple concret : Rechercher un utilisateur</h3>
+
+                <div class="code-block">
+                    <pre>// Code JavaScript côté client
+async function rechercherUtilisateur(id) {
+    // ÉTAPE 1-2 : Création de la requête
+    const response = await fetch(`https://api.example.com/users/${id}`);
+    
+    // ÉTAPES 3-9 : Traitement serveur (automatique)
+    // ...
+    
+    // ÉTAPE 10 : Conversion JSON
+    const utilisateur = await response.json();
+    
+    // ÉTAPE 11 : Affichage
+    document.getElementById('nom').textContent = utilisateur.name;
+    document.getElementById('email').textContent = utilisateur.email;
+}</pre>
+                </div>
+
+                <div class="diagram">
+                    <div class="diagram-header">Détail de la communication HTTP</div>
+                    <div class="diagram-step">
+                        <span class="step-label">REQUÊTE ENVOYÉE :</span>
+                        <pre style="margin: 10px 0 0 0;">GET /users/123 HTTP/1.1
+Host: api.example.com
+Accept: application/json
+User-Agent: Mozilla/5.0</pre>
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">RÉPONSE REÇUE :</span>
+                        <pre style="margin: 10px 0 0 0;">HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 156
+
+{
+  "id": 123,
+  "name": "Thomas",
+  "email": "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="22564a4d4f435162475a434f524e470c414d4f">[email&#160;protected]</a>"
+}</pre>
+                    </div>
+                </div>
+
+                <h3>9.3 Schéma : Méthodes HTTP et leurs actions</h3>
+
+                <div class="diagram">
+                    <div class="diagram-header">Cycle de vie d'une ressource avec les méthodes HTTP</div>
+                    <div class="diagram-step">
+                        <span class="step-label">CRÉATION (POST) :</span>
+                        Client envoie des données → Serveur crée une ressource → Retourne statut 201 + nouvelle ressource
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">LECTURE (GET) :</span>
+                        Client demande une ressource → Serveur cherche dans la BDD → Retourne statut 200 + ressource
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">MODIFICATION (PUT/PATCH) :</span>
+                        Client envoie modifications → Serveur met à jour la BDD → Retourne statut 200 + ressource modifiée
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">SUPPRESSION (DELETE) :</span>
+                        Client demande suppression → Serveur supprime de la BDD → Retourne statut 204 (pas de contenu)
+                    </div>
+                </div>
+
+                <h3>9.4 Schéma : Gestion des erreurs</h3>
+
+                <div class="diagram">
+                    <div class="diagram-header">Parcours d'une requête avec gestion d'erreurs</div>
+                    <div class="diagram-step">
+                        <span class="step-label">Point de départ :</span>
+                        fetch() est appelé avec une URL
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Vérification 1 :</span>
+                        Le serveur est-il accessible ? NON → Erreur réseau (TypeError)
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Vérification 2 :</span>
+                        Le serveur répond ? OUI → On reçoit un objet Response
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Vérification 3 :</span>
+                        Le statut HTTP est-il OK (200-299) ? NON → Erreur métier (400, 404, 500...)
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Vérification 4 :</span>
+                        Le contenu est-il du JSON valide ? NON → Erreur de parsing
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Succès :</span>
+                        Toutes les vérifications passent → Données utilisables
+                    </div>
+                </div>
+
+                <h3>9.5 Schéma : Anatomie d'une requête POST</h3>
+
+                <div class="code-block">
+                    <pre>fetch('https://api.example.com/users', {
+    method: 'POST',           // Indique qu'on CRÉE
+    headers: {                // Métadonnées de la requête
+        'Content-Type': 'application/json'  // Format des données
+    },
+    body: JSON.stringify({    // Données à envoyer (converties en JSON)
+        name: 'Thomas',
+        email: '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f4b5750525e4c7f4b5a4c4b11594d">[email&#160;protected]</a>'
+    })
+})</pre>
+                </div>
+
+                <div class="diagram">
+                    <div class="diagram-header">Décomposition d'une requête POST</div>
+                    <div class="diagram-step">
+                        <span class="step-label">URL :</span>
+                        Identifie la ressource (collection /users)
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Méthode (POST) :</span>
+                        Indique l'action à effectuer (créer)
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Headers :</span>
+                        Informations sur la requête (type de contenu, authentification)
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Body :</span>
+                        Les données à envoyer au serveur (objet JavaScript converti en JSON)
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Serveur traite :</span>
+                        Validation → Sauvegarde en BDD → Génération d'un ID
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Réponse :</span>
+                        Statut 201 Created + objet créé avec son nouvel ID
+                    </div>
+                </div>
+
+                <h3>9.6 Schéma : Authentification avec API</h3>
+
+                <div class="diagram">
+                    <div class="diagram-header">Flux d'authentification typique</div>
+                    <div class="diagram-step">
+                        <span class="step-label">1. Inscription/Connexion :</span>
+                        L'utilisateur s'authentifie avec email/mot de passe
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">2. Génération du token :</span>
+                        Le serveur valide les identifiants et génère un JWT (token)
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">3. Stockage client :</span>
+                        Le client stocke le token (localStorage, sessionStorage, cookie)
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">4. Requêtes sécurisées :</span>
+                        Chaque requête inclut le token dans le header Authorization
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">5. Vérification serveur :</span>
+                        Le serveur vérifie le token avant de traiter la requête
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">6. Réponse :</span>
+                        Si token valide → Données, sinon → Erreur 401 Unauthorized
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <pre>// Exemple de requête avec authentification
+const token = localStorage.getItem('authToken');
+
+fetch('https://api.example.com/profile', {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    }
+})</pre>
+                </div>
+
+                <h3>9.7 Schéma : Cycle complet d'une application CRUD</h3>
+
+                <div class="diagram">
+                    <div class="diagram-header">Application de gestion d'utilisateurs - Cycle complet</div>
+                    <div class="diagram-step">
+                        <span class="step-label">Chargement initial :</span>
+                        GET /users → Affiche liste des utilisateurs
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Action : Créer :</span>
+                        Utilisateur remplit formulaire → POST /users → Nouvel utilisateur ajouté → Rafraîchir liste
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Action : Consulter :</span>
+                        Utilisateur clique sur un nom → GET /users/123 → Affiche détails
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Action : Modifier :</span>
+                        Utilisateur édite formulaire → PUT /users/123 → Utilisateur modifié → Rafraîchir affichage
+                    </div>
+                    <div class="diagram-step">
+                        <span class="step-label">Action : Supprimer :</span>
+                        Utilisateur confirme suppression → DELETE /users/123 → Utilisateur supprimé → Rafraîchir liste
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>À retenir :</strong> Chaque action de l'utilisateur déclenche une requête HTTP appropriée, le serveur traite la requête, modifie la base de données si nécessaire, et renvoie une réponse. Votre JavaScript met ensuite à jour l'interface en fonction de cette réponse.
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour toggle le menu burger
+        function toggleMenu() {
+            const burgerMenu = document.querySelector('.burger-menu');
+            const navMenu = document.getElementById('navMenu');
+            
+            burgerMenu.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        }
+
+        // Fonction pour fermer le menu après un clic sur un lien
+        function closeMenu() {
+            const burgerMenu = document.querySelector('.burger-menu');
+            const navMenu = document.getElementById('navMenu');
+            
+            burgerMenu.classList.remove('active');
+            navMenu.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
