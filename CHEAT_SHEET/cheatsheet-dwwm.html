@@ -42,11 +42,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
   position:sticky;top:0;z-index:100;gap:12px;flex-wrap:wrap;
 }
 .brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.brand-icon{
-  width:36px;height:36px;border-radius:9px;
-  background:linear-gradient(135deg,var(--accent),#f97316);
-  display:flex;align-items:center;justify-content:center;font-size:17px;
-}
+
 .brand-text{line-height:1.2}
 .brand-title{font-size:.88rem;font-weight:700}
 .brand-sub{font-size:.6rem;color:var(--muted);letter-spacing:.05em}
@@ -249,10 +245,10 @@ pre{white-space:pre;tab-size:2}
 
 <header class="header">
   <div class="brand">
-    <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="40" alt="">
+    <div class="brand-icon"><img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="30" alt=""></div>
     <div class="brand-text">
       <div class="brand-title">Cheatsheet DWWM</div>
-      <div class="brand-sub">Real Conseil · Référence complète</div>
+      <div class="brand-sub">Real Conseil</div>
     </div>
   </div>
   <div class="search-wrap">
@@ -604,7 +600,7 @@ function render() {
             + '</div>';
       if (d.desc) {
         html += '<div class="card-desc">'
-              + '<span class="card-desc-icon">💡</span>'
+              + '<span class="card-desc-icon"></span>'
               + esc(d.desc)
               + '</div>';
       }

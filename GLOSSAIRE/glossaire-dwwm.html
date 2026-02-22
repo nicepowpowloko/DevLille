@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Glossaire DWWM — Real Conseil</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:        #f5f5f7;
+  --surface:   #ffffff;
+  --surface2:  #f5f5f7;
+  --border:    rgba(0,0,0,.08);
+  --border2:   rgba(0,0,0,.14);
+  --text:      #1d1d1f;
+  --text2:     #424245;
+  --muted:     #86868b;
+  --muted2:    #a1a1a6;
+  --accent:    #0071e3;
+  --accent-bg: rgba(0,113,227,.08);
+
+  /* Catégories — palette épurée Apple-like */
+  --web:      #0071e3;
+  --html:     #e8572a;
+  --css:      #2997ff;
+  --js:       #e8e114;
+  --php:      #7d4fc7;
+  --bdd:      #28b560;
+  --git:      #d63f53;
+  --devops:   #00878a;
+  --securite: #c93535;
+  --algo:     #8040bf;
+  --react:    #0ea5e9;
+}
+
+/* ── TYPOGRAPHIE ── */
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── NAVBAR ── */
+.nav{
+  height:52px;
+  background:rgba(245,245,247,.85);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;
+  position:sticky;top:0;z-index:200;
+}
+.nav-brand{
+  font-size:.82rem;font-weight:600;letter-spacing:-.01em;
+  color:var(--text);display:flex;align-items:center;gap:8px;
+}
+.nav-dot{
+  width:22px;height:22px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:#fff;
+}
+.nav-right{
+  display:flex;align-items:center;gap:12px;
+}
+.nav-count{
+  font-size:.72rem;color:var(--muted);
+  background:var(--surface2);
+  border:1px solid var(--border);
+  padding:3px 10px;border-radius:20px;
+}
+
+/* ── HERO ── */
+.hero{
+  text-align:center;
+  padding:64px 24px 48px;
+  max-width:700px;margin:0 auto;
+}
+.hero-eyebrow{
+  font-size:.7rem;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);
+  margin-bottom:14px;
+}
+.hero-title{
+  font-size:clamp(2.4rem,5vw,3.8rem);
+  font-weight:700;letter-spacing:-.04em;
+  line-height:1.05;color:var(--text);
+  margin-bottom:14px;
+}
+.hero-sub{
+  font-size:1.05rem;color:var(--muted);line-height:1.6;
+  margin-bottom:36px;font-weight:400;
+}
+
+/* ── SEARCH ── */
+.search-container{
+  max-width:580px;margin:0 auto;position:relative;
+}
+.search-wrap{
+  position:relative;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:14px;
+  display:flex;align-items:center;
+  box-shadow:0 2px 12px rgba(0,0,0,.06),0 0 0 0 var(--accent);
+  transition:box-shadow .2s;
+  overflow:hidden;
+}
+.search-wrap:focus-within{
+  box-shadow:0 2px 12px rgba(0,0,0,.06),0 0 0 4px rgba(0,113,227,.2);
+  border-color:var(--accent);
+}
+.search-icon{
+  padding:0 14px;color:var(--muted);flex-shrink:0;
+}
+.search-input{
+  flex:1;padding:13px 0;
+  background:transparent;border:none;outline:none;
+  font-family:inherit;font-size:.95rem;color:var(--text);
+}
+.search-input::placeholder{color:var(--muted2)}
+.search-kbd{
+  display:flex;align-items:center;gap:4px;
+  padding-right:14px;flex-shrink:0;
+}
+.kbd{
+  font-family:inherit;font-size:.62rem;
+  background:var(--surface2);border:1px solid var(--border2);
+  color:var(--muted);padding:2px 6px;border-radius:4px;
+  font-weight:500;
+}
+.clear-btn{
+  display:none;padding:0 14px;cursor:pointer;
+  color:var(--muted);background:none;border:none;
+  font-size:.8rem;
+}
+.clear-btn.visible{display:flex;align-items:center}
+
+.search-meta{
+  text-align:center;margin-top:12px;
+  font-size:.78rem;color:var(--muted);min-height:1.2em;
+}
+.search-meta strong{color:var(--text);font-weight:600}
+
+/* ── ACTIONS BAR ── */
+.actions-bar{
+  max-width:580px;margin:16px auto 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.random-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surface);border:1px solid var(--border2);
+  color:var(--text2);padding:7px 16px;border-radius:980px;
+  font-family:inherit;font-size:.78rem;font-weight:500;
+  cursor:pointer;transition:all .15s;
+}
+.random-btn:hover{background:var(--text);color:#fff;border-color:var(--text)}
+
+/* ── FILTRES ── */
+.filters-section{
+  padding:24px 24px 0;
+  max-width:1160px;margin:0 auto;
+}
+.filters-scroll{
+  display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;
+  scrollbar-width:none;
+}
+.filters-scroll::-webkit-scrollbar{display:none}
+.filter-pill{
+  flex-shrink:0;
+  padding:6px 16px;border-radius:980px;
+  border:1.5px solid var(--border2);
+  background:var(--surface);
+  font-family:inherit;font-size:.75rem;font-weight:500;
+  color:var(--muted);cursor:pointer;
+  transition:all .15s;white-space:nowrap;
+  display:flex;align-items:center;gap:6px;
+}
+.filter-pill .pill-dot{
+  width:6px;height:6px;border-radius:50%;
+}
+.filter-pill:hover{color:var(--text);border-color:var(--border2);background:var(--surface2)}
+.filter-pill.active{
+  color:#fff !important;border-color:transparent !important;
+  font-weight:600;
+}
+.filter-pill[data-cat="all"].active   {background:var(--text)}
+.filter-pill[data-cat="web"].active   {background:var(--web)}
+.filter-pill[data-cat="html"].active  {background:var(--html)}
+.filter-pill[data-cat="css"].active   {background:var(--css)}
+.filter-pill[data-cat="js"].active    {background:var(--js)}
+.filter-pill[data-cat="php"].active   {background:var(--php)}
+.filter-pill[data-cat="bdd"].active   {background:var(--bdd)}
+.filter-pill[data-cat="git"].active   {background:var(--git)}
+.filter-pill[data-cat="devops"].active{background:var(--devops)}
+.filter-pill[data-cat="securite"].active{background:var(--securite)}
+.filter-pill[data-cat="algo"].active  {background:var(--algo)}
+.filter-pill[data-cat="react"].active {background:var(--react)}
+
+/* ── RÉCEMMENT VUS ── */
+.recent-section{
+  max-width:1160px;margin:16px auto 0;padding:0 24px;
+}
+.recent-label{
+  font-size:.68rem;font-weight:500;color:var(--muted2);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;
+}
+.recent-row{display:flex;gap:6px;flex-wrap:wrap}
+.recent-chip{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:980px;padding:4px 12px;
+  font-size:.72rem;color:var(--muted);font-weight:500;
+  cursor:pointer;transition:all .12s;
+}
+.recent-chip:hover{color:var(--accent);border-color:var(--accent)}
+
+/* ── GRILLE PRINCIPALE ── */
+.main{
+  max-width:1160px;margin:0 auto;
+  padding:24px 24px 60px;
+}
+
+.section-group{margin-bottom:32px}
+
+.section-header{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:12px;padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+.section-color-bar{
+  width:4px;height:18px;border-radius:2px;flex-shrink:0;
+}
+.section-name{
+  font-size:.82rem;font-weight:600;color:var(--text);
+  letter-spacing:-.01em;
+}
+.section-count{
+  font-size:.72rem;color:var(--muted);margin-left:4px;
+}
+
+/* ── CARD ── */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:10px;
+}
+
+.term-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px 20px;
+  cursor:pointer;
+  transition:
+    border-color .15s,
+    box-shadow .15s,
+    transform .12s;
+  position:relative;
+  overflow:hidden;
+}
+.term-card::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0) 50%,rgba(0,0,0,.015));
+  pointer-events:none;
+}
+.term-card:hover{
+  border-color:var(--border2);
+  box-shadow:0 4px 20px rgba(0,0,0,.08);
+  transform:translateY(-1px);
+}
+.term-card.expanded{
+  border-color:var(--border2);
+  box-shadow:0 4px 24px rgba(0,0,0,.09);
+}
+
+/* Barre colorée gauche visible sur expanded */
+.term-card .card-stripe{
+  position:absolute;left:0;top:0;bottom:0;width:3px;
+  border-radius:16px 0 0 16px;
+  opacity:0;transition:opacity .15s;
+}
+.term-card.expanded .card-stripe{opacity:1}
+
+/* Header carte */
+.card-top{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;gap:10px;
+  margin-bottom:8px;
+}
+.term-name{
+  font-size:.98rem;font-weight:600;
+  letter-spacing:-.01em;color:var(--text);
+  line-height:1.3;
+}
+.badge-row{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.cat-chip{
+  font-size:.58rem;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;padding:3px 8px;border-radius:980px;
+}
+
+
+/* Définition courte */
+.term-short{
+  font-size:.82rem;line-height:1.55;color:var(--muted);
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.term-card.expanded .term-short{
+  display:block;
+  -webkit-line-clamp:unset;
+}
+
+/* ── DÉTAIL EXPANDÉ ── */
+.term-detail{
+  display:none;
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px solid var(--border);
+}
+.term-card.expanded .term-detail{display:block}
+
+.detail-section{margin-bottom:12px}
+.detail-section:last-child{margin-bottom:0}
+.detail-label{
+  font-size:.62rem;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted2);
+  margin-bottom:5px;
+}
+.detail-text{
+  font-size:.82rem;line-height:1.65;color:var(--text2);
+}
+
+.code-block{
+  margin-top:6px;
+  background:#1d1d1f;
+  border-radius:10px;
+  padding:12px 14px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;line-height:1.7;
+  color:#e8e8ed;
+  white-space:pre;
+  overflow-x:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,.15) transparent;
+}
+.code-block::-webkit-scrollbar{height:4px}
+.code-block::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+
+.interview-box{
+  background:rgba(191,135,0,.06);
+  border:1px solid rgba(191,135,0,.15);
+  border-radius:10px;
+  padding:10px 13px;
+}
+.interview-box .detail-text{
+  color:#7a5500;font-style:italic;font-size:.8rem;
+}
+
+/* Pied de carte */
+.card-footer{
+  display:flex;align-items:center;justify-content:flex-end;
+  margin-top:12px;
+}
+.expand-btn{
+  font-size:.7rem;color:var(--muted);font-weight:500;
+  display:flex;align-items:center;gap:3px;
+}
+.chevron{
+  transition:transform .2s cubic-bezier(.4,0,.2,1);
+  display:inline-flex;
+}
+.term-card.expanded .chevron{transform:rotate(180deg)}
+
+/* ── EMPTY STATE ── */
+.empty{
+  grid-column:1/-1;
+  text-align:center;padding:60px 20px;
+  color:var(--muted);
+}
+.empty-icon{font-size:48px;margin-bottom:12px;opacity:.3}
+.empty-text{font-size:.95rem}
+
+/* ── HIGHLIGHT SEARCH ── */
+mark{
+  background:rgba(0,113,227,.12);
+  color:var(--accent);
+  border-radius:3px;
+  padding:0 1px;
+  font-weight:inherit;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:680px){
+  .hero{padding:40px 20px 32px}
+  .hero-title{font-size:2.2rem}
+  .main,.filters-section,.recent-section{padding-left:16px;padding-right:16px}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-dot"><img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="30" alt="" srcset=""></div>
+    Glossaire DWWM
+  </div>
+  <div class="nav-right">
+    <div class="nav-count" id="nav-count">132 termes</div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-eyebrow">Real Conseil · Formation DWWM</div>
+  <h1 class="hero-title">Glossaire<br/>Développeur web</h1>
+   <img src="https://www.creads.com/wp-content/uploads/2021/05/500px-apple_computer_logo_rainbow_svg.png" width="50" alt="">
+  <p class="hero-sub">Termes techniques expliqués.</p>
+ 
+
+  <div class="search-container">
+    <div class="search-wrap">
+      <span class="search-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </span>
+      <input class="search-input" id="search"
+             type="text" placeholder="Rechercher… API, closure, JOIN, Docker"
+             oninput="doSearch()" autocomplete="off" spellcheck="false"/>
+      <div class="search-kbd">
+        <span class="kbd">/</span>
+      </div>
+      <button class="clear-btn" id="clear-btn" onclick="clearSearch()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="search-meta" id="search-meta"></div>
+
+    <div class="actions-bar">
+    
+      <span style="font-size:.72rem;color:var(--muted)">
+        <kbd style="font-family:inherit;background:var(--surface2);border:1px solid var(--border2);
+             color:var(--muted);padding:2px 6px;border-radius:4px;font-size:.65rem">/</kbd>
+        pour chercher &nbsp;
+       
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- ── FILTRES ── -->
+<div class="filters-section">
+  <div class="filters-scroll">
+    <button class="filter-pill active" data-cat="all"      onclick="setFilter('all',this)">
+      <span class="pill-dot" style="background:var(--text)"></span>Tout
+    </button>
+    <button class="filter-pill" data-cat="web"      onclick="setFilter('web',this)">
+      <span class="pill-dot" style="background:var(--web)"></span>Web général
+    </button>
+    <button class="filter-pill" data-cat="html"     onclick="setFilter('html',this)">
+      <span class="pill-dot" style="background:var(--html)"></span>HTML
+    </button>
+    <button class="filter-pill" data-cat="css"      onclick="setFilter('css',this)">
+      <span class="pill-dot" style="background:var(--css)"></span>CSS
+    </button>
+    <button class="filter-pill" data-cat="js"       onclick="setFilter('js',this)">
+      <span class="pill-dot" style="background:var(--js)"></span>JavaScript
+    </button>
+    <button class="filter-pill" data-cat="php"      onclick="setFilter('php',this)">
+      <span class="pill-dot" style="background:var(--php)"></span>PHP
+    </button>
+    <button class="filter-pill" data-cat="bdd"      onclick="setFilter('bdd',this)">
+      <span class="pill-dot" style="background:var(--bdd)"></span>Base de données
+    </button>
+    <button class="filter-pill" data-cat="git"      onclick="setFilter('git',this)">
+      <span class="pill-dot" style="background:var(--git)"></span>Git
+    </button>
+    <button class="filter-pill" data-cat="devops"   onclick="setFilter('devops',this)">
+      <span class="pill-dot" style="background:var(--devops)"></span>DevOps
+    </button>
+    <button class="filter-pill" data-cat="securite" onclick="setFilter('securite',this)">
+      <span class="pill-dot" style="background:var(--securite)"></span>Sécurité
+    </button>
+    <button class="filter-pill" data-cat="algo"     onclick="setFilter('algo',this)">
+      <span class="pill-dot" style="background:var(--algo)"></span>Algorithmique
+    </button>
+    <button class="filter-pill" data-cat="react"     onclick="setFilter('react',this)">
+      <span class="pill-dot" style="background:var(--react)"></span>React
+    </button>
+  </div>
+</div>
+
+<!-- ── RÉCENTS ── -->
+<div class="recent-section" id="recent-section" style="display:none">
+  <div class="recent-label">Récemment consultés</div>
+  <div class="recent-row" id="recent-row"></div>
+</div>
+
+<!-- ── GRILLE ── -->
+<main class="main" id="main"></main>
+
+<script>
+
+const GLOSSARY = [
+  { cat:'web', term:'HTTP / HTTPS', interview:true,
+    short:'Protocoles de communication entre un navigateur et un serveur.',
+    full:'HTTP (HyperText Transfer Protocol) permet l\'échange de données sur le web. HTTPS est la version sécurisée : les données sont chiffrées via TLS. Toujours utiliser HTTPS en production.',
+    example:'http://  → non chiffré, visible sur le réseau\nhttps:// → chiffré, cadenas dans la barre d\'adresse',
+    interview_tip:'On dit que HTTPS chiffre les données en transit grâce au protocole TLS. Le navigateur vérifie le certificat SSL du serveur avant d\'établir la connexion.' },
+  { cat:'web', term:'Client / Serveur', interview:true,
+    short:'Le client envoie des requêtes, le serveur répond. Modèle fondamental du web.',
+    full:'Le client (navigateur, app mobile) initie toujours la communication. Le serveur écoute et répond. Le serveur ne peut pas "pousser" de données sans que le client le demande — sauf avec WebSocket.',
+    example:'Navigateur → GET /index.html → Serveur\nServeur   → 200 OK + HTML → Navigateur',
+    interview_tip:'Le client est ce que l\'utilisateur utilise. Le serveur héberge l\'application. La communication suit toujours le modèle requête/réponse.' },
+  { cat:'web', term:'API', interview:true,
+    short:'Interface permettant à deux applications de communiquer entre elles.',
+    full:'Application Programming Interface. Ensemble de règles définissant comment deux logiciels interagissent. Sur le web, une API REST permet à un frontend de recevoir des données depuis un backend.',
+    example:'Frontend React → fetch("/api/users") → Backend PHP\nBackend PHP → JSON [{id:1, nom:"Alice"}] → Frontend',
+    interview_tip:'Une API est un contrat entre deux parties. Elle expose des endpoints (URLs) qu\'on appelle avec les bons paramètres pour obtenir ou modifier des données.' },
+  { cat:'web', term:'REST / RESTful', interview:true,
+    short:'Style d\'architecture pour concevoir des APIs web lisibles et cohérentes.',
+    full:'Representational State Transfer. Conventions pour structurer une API : verbes HTTP (GET, POST, PUT, DELETE), URLs représentant des ressources, réponses en JSON. Une API qui suit ces conventions est dite RESTful.',
+    example:'GET    /api/users       → liste les utilisateurs\nPOST   /api/users       → crée un utilisateur\nGET    /api/users/42    → récupère l\'user 42\nDELETE /api/users/42    → supprime l\'user 42',
+    interview_tip:'REST n\'est pas un protocole mais un ensemble de conventions. Points clés : stateless, ressources identifiées par URL, verbes HTTP pour les actions.' },
+  { cat:'web', term:'JSON', interview:true,
+    short:'Format de données texte léger, lisible par les humains et les machines.',
+    full:'JavaScript Object Notation. Format d\'échange de données universel, utilisé par toutes les APIs modernes. Les clés doivent être entre guillemets doubles.',
+    example:'{\n  "id": 42,\n  "nom": "Alice",\n  "actif": true,\n  "roles": ["admin", "editor"]\n}',
+    interview_tip:'JSON est du texte formaté. En JS : JSON.stringify() pour créer, JSON.parse() pour lire. En PHP : json_encode() et json_decode().' },
+  { cat:'web', term:'URL', interview:false,
+    short:'Adresse unique identifiant une ressource sur le web.',
+    full:'Uniform Resource Locator. Composée de : protocole, domaine, port, chemin, paramètres (query string), ancre. Chaque ressource web a une URL unique.',
+    example:'https://monsite.fr:443/produits?page=2#section\n│        │           │   │        │      │\nprotocole domaine  port chemin  query  ancre',
+    interview_tip:'' },
+  { cat:'web', term:'DNS', interview:false,
+    short:'Système qui traduit un nom de domaine en adresse IP.',
+    full:'Domain Name System. Comme un annuaire : on cherche "google.com" et le DNS retourne l\'IP. Sans DNS, il faudrait mémoriser des adresses IP pour chaque site.',
+    example:'google.com  → DNS → 142.250.74.46\nmonsite.fr  → DNS → 51.178.49.232',
+    interview_tip:'' },
+  { cat:'web', term:'Cookie', interview:true,
+    short:'Petit fichier texte stocké par le navigateur, envoyé automatiquement au serveur.',
+    full:'Permettent de maintenir un état entre les requêtes (connexion, préférences). Attributs importants : HttpOnly, Secure, SameSite, Expires.',
+    example:'Set-Cookie: session=abc123;\n  HttpOnly; Secure;\n  SameSite=Lax;\n  Max-Age=86400',
+    interview_tip:'La différence avec localStorage : les cookies sont automatiquement envoyés au serveur à chaque requête. localStorage reste côté client.' },
+  { cat:'web', term:'Session', interview:true,
+    short:'Mécanisme serveur pour maintenir des données entre plusieurs requêtes.',
+    full:'Le serveur crée un identifiant unique stocké dans un cookie. Les données de session sont côté serveur. Plus sécurisé que de tout stocker en cookie.',
+    example:'// PHP\nsession_start();\n$_SESSION["user_id"] = 42;\n$_SESSION["role"]    = "admin";',
+    interview_tip:'HTTP est stateless. Les sessions permettent de conserver des données côté serveur liées à un identifiant de session.' },
+  { cat:'web', term:'Cache', interview:false,
+    short:'Copie temporaire de données pour éviter de les recalculer ou retélécharger.',
+    full:'Stocke des données fréquemment utilisées pour accélérer les accès suivants. Existe à plusieurs niveaux : navigateur, serveur, CDN.',
+    example:'Cache-Control: max-age=86400\n→ Le navigateur garde cette ressource 24h\n→ Pas de requête réseau pendant ce temps',
+    interview_tip:'' },
+  { cat:'web', term:'CORS', interview:true,
+    short:'Mécanisme de sécurité contrôlant les requêtes entre domaines différents.',
+    full:'Cross-Origin Resource Sharing. Par défaut, un script sur domaine-a.fr ne peut pas appeler l\'API de domaine-b.fr. Le serveur doit autoriser les domaines avec des headers CORS.',
+    example:'// PHP — autoriser le frontend\nheader("Access-Control-Allow-Origin: https://monfrontend.fr");\nheader("Access-Control-Allow-Methods: GET, POST");\nheader("Access-Control-Allow-Headers: Authorization");',
+    interview_tip:'Le CORS est une protection côté navigateur uniquement. On configure les headers côté serveur.' },
+  { cat:'web', term:'Stateless', interview:true,
+    short:'Sans état : chaque requête est indépendante et contient toutes les infos nécessaires.',
+    full:'HTTP est stateless par nature. Chaque requête doit contenir toutes les informations nécessaires. Le serveur ne "se souvient" pas des requêtes précédentes.',
+    example:'Requête 1 : GET /api/users  (+ token JWT)\nRequête 2 : GET /api/orders (+ token JWT)\n→ Pas de mémoire entre les deux requêtes',
+    interview_tip:'' },
+  { cat:'web', term:'Frontend / Backend', interview:true,
+    short:'Frontend = ce que l\'utilisateur voit. Backend = le serveur et la logique métier.',
+    full:'Frontend : HTML, CSS, JS dans le navigateur. Backend : serveur, BDD, logique métier. Un développeur DWWM maîtrise les deux.',
+    example:'Frontend : React   → affiche les données, gère l\'UI\nBackend  : PHP     → valide, stocke, sécurise\nLien     : API REST (JSON)',
+    interview_tip:'Le frontend est responsable de l\'expérience utilisateur, le backend de la sécurité et la persistance des données.' },
+  { cat:'web', term:'CDN', interview:false,
+    short:'Réseau de serveurs distribuant le contenu au plus proche de l\'utilisateur.',
+    full:'Content Delivery Network. Les fichiers statiques (images, CSS, JS) sont copiés sur des serveurs dans le monde entier. L\'utilisateur reçoit les fichiers depuis le serveur le plus proche.',
+    example:'Sans CDN : Paris → serveur New York (100ms)\nAvec CDN : Paris → serveur Paris (5ms)',
+    interview_tip:'' },
+  { cat:'web', term:'WebSocket', interview:false,
+    short:'Protocole de communication bidirectionnelle et persistante entre client et serveur.',
+    full:'Contrairement à HTTP, le serveur peut envoyer des données au client sans qu\'il les demande. Idéal pour les chats, jeux en ligne, tableaux de bord en temps réel.',
+    example:'// JS côté client\nconst ws = new WebSocket("wss://monsite.fr/ws");\nws.onmessage = (event) =\\u003e console.log(event.data);\nws.send("Bonjour serveur !");',
+    interview_tip:'' },
+  { cat:'web', term:'Hébergement web', interview:false,
+    short:'Service permettant de rendre un site accessible sur Internet.',
+    full:'Mettre un site en ligne = le déposer sur un serveur connecté à Internet. Types : mutualisé (économique), VPS (flexible), cloud (scalable).',
+    example:'Hébergeurs courants :\n→ OVH, LWS (mutualisé)\n→ DigitalOcean, Scaleway (VPS)\n→ Vercel, Netlify (frontend)',
+    interview_tip:'' },
+  { cat:'web', term:'MVC', interview:true,
+    short:'Patron d\'architecture séparant une application en 3 couches.',
+    full:'Model-View-Controller. Model : données et logique métier. View : affichage (HTML). Controller : reçoit les requêtes, coordonne Model et View. Utilisé par Laravel, Symfony, Ruby on Rails.',
+    example:'Requête → Controller → Model (BDD) → View (HTML)\n\n// Exemple Laravel\nRoute → UserController@index\n  → User::all()   (Model)\n  → view("users.index", $users) (View)',
+    interview_tip:'MVC rend le code plus maintenable en séparant les responsabilités. Chaque couche a un rôle unique.' },
+  { cat:'web', term:'Query String', interview:false,
+    short:'Paramètres passés dans une URL après le point d\'interrogation.',
+    full:'Permettent de transmettre des données via l\'URL (filtres, pagination, recherche). Accessibles en PHP via $_GET. Jamais utiliser pour des données sensibles.',
+    example:'https://shop.fr/produits?categorie=livres&page=2&tri=prix\n\n// PHP\n$cat  = $_GET["categorie"] ?? "tous";\n$page = (int)($_GET["page"] ?? 1);',
+    interview_tip:'' },
+  { cat:'html', term:'DOM', interview:true,
+    short:'Représentation en arbre de la page HTML manipulable par JavaScript.',
+    full:'Document Object Model. Quand le navigateur charge une page HTML, il crée une représentation en objets que JS peut modifier. Chaque balise HTML devient un noeud DOM.',
+    example:'document.querySelector("h1")\n.textContent = "Nouveau titre"\n.classList.add("active")\n.setAttribute("aria-expanded", "true")',
+    interview_tip:'Le DOM n\'est pas le code HTML source. C\'est la représentation vivante de la page en mémoire. Quand JS modifie le DOM, la page change visuellement.' },
+  { cat:'html', term:'Balise sémantique', interview:true,
+    short:'Balise HTML décrivant le sens du contenu, pas juste sa présentation.',
+    full:'Au lieu de tout mettre dans des div, on utilise des balises qui donnent du sens : header, nav, main, section, article, aside, footer. Meilleur SEO, meilleure accessibilité.',
+    example:'Mauvais : div class="header" → aucun sens\nBon     : header            → navigation/logo\n\nmain    → contenu principal\narticle → contenu autonome\nnav     → liens de navigation',
+    interview_tip:'Les balises sémantiques améliorent le référencement et l\'accessibilité. Google comprend mieux la structure.' },
+  { cat:'html', term:'Attribut alt', interview:false,
+    short:'Texte alternatif décrivant une image pour l\'accessibilité et le SEO.',
+    full:'Obligatoire sur toutes les images. Lu par les lecteurs d\'écran, indexé par Google, affiché si l\'image ne charge pas. Si décorative : alt="" (vide).',
+    example:'img src="chat.jpg" alt="Chat roux dormant sur un canapé"\n\n// Décoratif\nimg src="deco.png" alt=""',
+    interview_tip:'' },
+  { cat:'html', term:'Formulaire & validation', interview:true,
+    short:'Moyen de collecter des données utilisateur à envoyer au serveur.',
+    full:'La validation côté navigateur (required, type, pattern) donne un retour rapide. Mais la validation côté serveur est obligatoire — le navigateur peut être contourné.',
+    example:'input type="email" required\n      pattern="[a-z]+@[a-z]+\\.[a-z]{2,}"\n      minlength="5"',
+    interview_tip:'Toujours valider côté serveur même si on valide côté client. Un attaquant peut envoyer des données directement au serveur.' },
+  { cat:'html', term:'Accessibilité (a11y)', interview:true,
+    short:'Conception inclusive permettant aux personnes handicapées d\'utiliser un site.',
+    full:'11 lettres entre le "a" et le "y" de "accessibility". Inclut : balises sémantiques, ARIA, contraste, navigation clavier, textes alternatifs.',
+    example:'button aria-label="Fermer la modal"\nnav    aria-label="Navigation principale"\ninput  aria-describedby="aide-email"',
+    interview_tip:'L\'accessibilité n\'est pas optionnelle. En France, les sites publics ont une obligation légale (RGAA). Mentionner les WCAG 2.1 en entretien.' },
+  { cat:'html', term:'Viewport', interview:false,
+    short:'Zone visible de la page dans le navigateur.',
+    full:'La balise meta viewport est indispensable pour le responsive : elle dit au navigateur d\'utiliser la vraie largeur de l\'écran.',
+    example:'meta name="viewport"\n     content="width=device-width, initial-scale=1.0"\n// Sans ça → le mobile affiche une version\n// miniaturisée de la page desktop',
+    interview_tip:'' },
+  { cat:'html', term:'SEO', interview:true,
+    short:'Optimisation pour apparaître en haut des résultats de recherche.',
+    full:'Search Engine Optimization. Côté HTML : balises meta, structure sémantique, Open Graph, performance, alt des images.',
+    example:'title → Titre accrocheur (50-60 chars)\nmeta name="description" content="150-160 chars"\nlink rel="canonical" href="https://monsite.fr/page"',
+    interview_tip:'' },
+  { cat:'html', term:'Open Graph', interview:false,
+    short:'Protocole contrôlant l\'aperçu d\'une page lors du partage sur les réseaux sociaux.',
+    full:'Les balises Open Graph (og:) définissent le titre, la description et l\'image affichés quand on partage un lien sur Facebook, LinkedIn, Twitter.',
+    example:'meta property="og:title"       content="Mon super article"\nmeta property="og:description" content="Description…"\nmeta property="og:image"       content="https://…/image.jpg"\nmeta property="og:type"        content="article"',
+    interview_tip:'' },
+  { cat:'html', term:'Balise script', interview:true,
+    short:'Balise intégrant du JavaScript dans une page HTML.',
+    full:'Placement : idéalement avant /body ou avec defer/async dans le head. defer = exécuté après le parsing HTML. async = exécuté dès le chargement, sans ordre garanti.',
+    example:'// Recommandé\nscript src="app.js" defer\n\n// Bloquant (déconseillé dans le head)\nscript src="app.js"\n\n// async (indépendant du DOM)\nscript src="analytics.js" async',
+    interview_tip:'' },
+  { cat:'html', term:'Entité HTML', interview:false,
+    short:'Séquence de caractères représentant des caractères spéciaux en HTML.',
+    full:'Permettent d\'afficher des caractères réservés HTML sans qu\'ils soient interprétés comme du code. Essentiels pour afficher \\u003c, \\u003e ou & dans du contenu.',
+    example:'&lt;   → \\u003c\n&gt;   → \\u003e\n&amp;  → &\n&quot; → "\n&nbsp; → espace insécable\n&copy; → ©',
+    interview_tip:'' },
+  { cat:'html', term:'Data attributes', interview:false,
+    short:'Attributs personnalisés stockant des données dans le HTML, accessibles en JS.',
+    full:'Préfixés data-. Permettent d\'attacher des données à un élément sans variables JS supplémentaires. Accessibles via element.dataset en JS.',
+    example:'button data-user-id="42"\n       data-confirm="Supprimer ?"\n       class="btn-delete"\n\n// JS\nbtn.dataset.userId   // "42"\nbtn.dataset.confirm  // "Supprimer ?"',
+    interview_tip:'' },
+  { cat:'html', term:'iframe', interview:false,
+    short:'Balise intégrant une autre page web ou ressource dans la page courante.',
+    full:'Permet d\'intégrer des vidéos YouTube, cartes Google Maps, formulaires externes. Toujours ajouter title pour l\'accessibilité. loading=lazy pour les performances.',
+    example:'iframe\n  src="https://www.youtube.com/embed/VIDEO_ID"\n  title="Présentation du produit"\n  width="560" height="315"\n  allowfullscreen loading="lazy"',
+    interview_tip:'' },
+  { cat:'html', term:'ARIA', interview:true,
+    short:'Ensemble d\'attributs améliorant l\'accessibilité pour les technologies d\'assistance.',
+    full:'Accessible Rich Internet Applications. Quand le HTML sémantique ne suffit pas, ARIA ajoute du sens : rôles, états, propriétés. Règle : toujours préférer le HTML natif à ARIA.',
+    example:'button aria-expanded="false"\n       aria-controls="menu"\nul role="menu"\nli role="menuitem"\ndiv aria-live="polite"\n    aria-label="Résultats"',
+    interview_tip:'La règle d\'or : si un élément HTML natif exprime déjà le sens (button, nav, main), ne pas ajouter de rôle ARIA. ARIA en dernier recours.' },
+  { cat:'css', term:'Box Model', interview:true,
+    short:'Modèle décrivant comment l\'espace est calculé autour d\'un élément HTML.',
+    full:'De l\'intérieur vers l\'extérieur : content, padding, border, margin. Avec box-sizing: border-box, padding et border sont inclus dans width.',
+    example:'// content-box (défaut — surprenant)\nwidth: 300px + padding: 20px = 340px réels\n\n// border-box (recommandé)\nwidth: 300px + padding: 20px = 300px réels\n* { box-sizing: border-box; }',
+    interview_tip:'Toujours appliquer box-sizing: border-box universellement. C\'est le comportement intuitif.' },
+  { cat:'css', term:'Spécificité', interview:true,
+    short:'Règle déterminant quelle déclaration CSS l\'emporte en cas de conflit.',
+    full:'Points : style inline (1000) \\u003e ID (100) \\u003e classe (10) \\u003e élément (1). !important écrase tout (à éviter).',
+    example:'p { color: red; }         // 1 pt\n.texte { color: blue; }  // 10 pts\n#titre { color: green; } // 100 pts\n→ #titre gagne : texte vert',
+    interview_tip:'En cas de conflit CSS, chercher d\'abord la spécificité avant d\'ajouter !important. !important rend le code très difficile à maintenir.' },
+  { cat:'css', term:'Flexbox', interview:true,
+    short:'Système de mise en page CSS pour aligner des éléments sur un axe.',
+    full:'S\'applique sur le parent (display: flex). Aligne les enfants sur un axe principal (justify-content) et secondaire (align-items).',
+    example:'// Centrage parfait\n.parent {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-height: 100vh;\n}',
+    interview_tip:'Flexbox = 1 dimension (ligne OU colonne). Pour les mises en page 2D complexes, utiliser CSS Grid.' },
+  { cat:'css', term:'CSS Grid', interview:true,
+    short:'Système de mise en page CSS en deux dimensions.',
+    full:'Lignes ET colonnes. Plus puissant que Flexbox pour les layouts globaux. L\'unité fr distribue l\'espace disponible.',
+    example:'// Grille responsive sans media query\n.grid {\n  display: grid;\n  grid-template-columns:\n    repeat(auto-fill, minmax(280px, 1fr));\n  gap: 1rem;\n}',
+    interview_tip:'Grid pour la mise en page globale (2D), Flexbox pour les composants internes (1D).' },
+  { cat:'css', term:'Responsive Design', interview:true,
+    short:'Conception d\'interfaces s\'adaptant à toutes les tailles d\'écran.',
+    full:'Approche Mobile First : écrire les styles pour mobile en premier, puis élargir avec min-width. Plus logique et performant.',
+    example:'// Mobile First\n.nav { flex-direction: column; }\n\n@media (min-width: 768px) {\n  .nav { flex-direction: row; }\n}\n\n@media (min-width: 1024px) {\n  .container { max-width: 1200px; }\n}',
+    interview_tip:'Mobile First est meilleur pour les performances : le mobile charge les styles de base sans media query.' },
+  { cat:'css', term:'Variable CSS', interview:false,
+    short:'Variable réutilisable définie en CSS, modifiable dynamiquement.',
+    full:'Déclarées avec -- dans :root, utilisées avec var(). Héritées dans le DOM. Modifiables par JS. Idéales pour les thèmes.',
+    example:':root {\n  --color-primary: #3b82f6;\n  --space-4: 16px;\n  --radius: 8px;\n}\n.btn {\n  background: var(--color-primary);\n  padding: var(--space-4);\n  border-radius: var(--radius);\n}',
+    interview_tip:'' },
+  { cat:'css', term:'Pseudo-classe', interview:false,
+    short:'Sélecteur ciblant un état particulier d\'un élément.',
+    full:':hover, :focus, :active, :nth-child(), :not(), :is(), :has(). Permettent de cibler des états sans JS.',
+    example:'.btn:hover  { background: darkblue; }\ninput:focus { border-color: blue; }\nli:nth-child(2n) { background: #f0f0f0; }\n.card:has(img) { grid-row: span 2; }',
+    interview_tip:'' },
+  { cat:'css', term:'Media Query', interview:true,
+    short:'Règle CSS conditionnelle appliquée selon les caractéristiques de l\'écran.',
+    full:'La base du responsive design. Permet d\'adapter les styles selon la largeur, l\'orientation, les préférences utilisateur.',
+    example:'@media (min-width: 1024px)              { /* desktop */ }\n@media (prefers-color-scheme: dark)     { /* sombre */ }\n@media (prefers-reduced-motion: reduce) { /* moins d\'animation */ }\n@media print                            { /* impression */ }',
+    interview_tip:'' },
+  { cat:'css', term:'Pseudo-élément', interview:false,
+    short:'Sélecteur ciblant une partie virtuelle d\'un élément.',
+    full:'::before et ::after créent des éléments graphiques sans HTML. ::selection, ::placeholder, ::first-line. content est obligatoire sur ::before et ::after.',
+    example:'.titre::after {\n  content: "";\n  display: block;\n  width: 100%;\n  height: 3px;\n  background: var(--color-primary);\n}',
+    interview_tip:'' },
+  { cat:'css', term:'Transform', interview:false,
+    short:'Propriété CSS permettant de déplacer, tourner, redimensionner un élément.',
+    full:'translate, rotate, scale, skew. N\'affecte pas le flux du document. Combinables dans la même déclaration.',
+    example:'.card:hover {\n  transform: translateY(-4px) scale(1.02);\n  transition: transform 0.2s ease;\n}\n\n// Centrage absolu\n.modal {\n  position: absolute;\n  top: 50%; left: 50%;\n  transform: translate(-50%, -50%);\n}',
+    interview_tip:'' },
+  { cat:'css', term:'Transition', interview:false,
+    short:'Animation CSS déclenchée lors d\'un changement d\'état.',
+    full:'Anime le passage d\'un état à un autre (hover, focus, classe ajoutée par JS). Plus simple qu\'une @keyframe animation.',
+    example:'.btn {\n  transition:\n    background 0.2s ease,\n    transform  0.15s ease,\n    box-shadow 0.2s;\n}\n.btn:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 8px 25px rgba(0,0,0,.2);\n}',
+    interview_tip:'' },
+  { cat:'css', term:'Animation @keyframes', interview:false,
+    short:'Animation CSS autonome et répétable définie étape par étape.',
+    full:'Définit les étapes d\'une animation. Plus puissant que transition pour des animations complexes ou en boucle.',
+    example:'@keyframes fadeUp {\n  from { opacity: 0; transform: translateY(20px); }\n  to   { opacity: 1; transform: translateY(0); }\n}\n.element {\n  animation: fadeUp 0.4s ease forwards;\n}',
+    interview_tip:'' },
+  { cat:'css', term:'Position', interview:true,
+    short:'Propriété contrôlant comment un élément est positionné dans la page.',
+    full:'static (défaut), relative (décalé par rapport à lui-même), absolute (par rapport au parent positionné), fixed (par rapport au viewport), sticky (hybride).',
+    example:'// Sticky header\n.header {\n  position: sticky;\n  top: 0;\n  z-index: 100;\n}\n// Centrage absolu\n.child {\n  position: absolute;\n  top: 50%; left: 50%;\n  transform: translate(-50%, -50%);\n}',
+    interview_tip:'' },
+  { cat:'css', term:'z-index', interview:false,
+    short:'Propriété contrôlant l\'ordre d\'empilement des éléments.',
+    full:'Fonctionne uniquement sur les éléments positionnés (pas static). Plus la valeur est haute, plus l\'élément est devant. Créer des contextes d\'empilement avec position: relative.',
+    example:'// Convention\n.modal   { z-index: 1000; }\n.overlay { z-index: 999; }\n.header  { z-index: 100; }\n.tooltip { z-index: 50; }',
+    interview_tip:'' },
+  { cat:'css', term:'Cascade', interview:true,
+    short:'Mécanisme déterminant quelle règle CSS s\'applique en cas de conflit.',
+    full:'Ordre de priorité : 1. Importance (!important), 2. Spécificité (id \\u003e classe \\u003e élément), 3. Ordre d\'apparition (la dernière l\'emporte). D\'où le nom "Cascading" Style Sheets.',
+    example:'// 3 règles sur le même élément\na { color: blue; }        // ordre 1\na { color: red; }         // ordre 2 → gagne\n.lien { color: green; }  // spécificité 10 → gagne',
+    interview_tip:'' },
+  { cat:'css', term:'Unités CSS', interview:false,
+    short:'Mesures utilisées pour définir tailles, espacements et positions.',
+    full:'Absolues : px. Relatives : em (parent), rem (root), vw/vh (viewport), % (parent). clamp() pour une valeur fluide entre un min et un max.',
+    example:'// Recommandé\nfont-size: 1rem;           // relatif au root\npading: 1.5em;            // relatif au parent\nwidth: clamp(300px, 50vw, 800px); // fluide\n\n// Fixe\nborder: 1px solid;        // toujours 1px',
+    interview_tip:'' },
+  { cat:'css', term:'Overflow', interview:false,
+    short:'Propriété contrôlant ce qui se passe quand le contenu dépasse son conteneur.',
+    full:'visible (défaut, déborde), hidden (coupe), scroll (barre toujours visible), auto (barre si nécessaire). Également overflow-x et overflow-y séparément.',
+    example:'.box {\n  width: 200px;\n  overflow: hidden;        // coupe le contenu\n}\n// Troncature sur 1 ligne\n.truncate {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}',
+    interview_tip:'' },
+  { cat:'js', term:'Closure', interview:true,
+    short:'Fonction qui mémorise les variables de son environnement parent.',
+    full:'Quand une fonction retourne une autre fonction, la fonction interne "capture" les variables du scope parent. Elles restent accessibles même après la fin d\'exécution de la fonction parent.',
+    example:'function compteur() {\n  let n = 0;\n  return () =\\u003e ++n; // capture n\n}\nconst c = compteur();\nc(); // 1\nc(); // 2\nc(); // 3',
+    interview_tip:'Les closures permettent de créer des variables "privées" en JS. Très utilisées dans les modules et les callbacks.' },
+  { cat:'js', term:'Hoisting', interview:true,
+    short:'Mécanisme déplaçant les déclarations au sommet de leur scope avant exécution.',
+    full:'Les déclarations function sont entièrement hoistées. var est hoistée mais initialisée à undefined. let et const ne sont pas utilisables avant leur déclaration (temporal dead zone).',
+    example:'// Fonctionne grâce au hoisting\nbonjour();\nfunction bonjour() { console.log("Bonjour !"); }\n\n// Erreur avec const/let\nhi(); // ReferenceError\nconst hi = () =\\u003e "Hi";',
+    interview_tip:'Préférer const et let à var pour éviter les comportements inattendus. Déclarer les fonctions avant de les utiliser.' },
+  { cat:'js', term:'Callback', interview:true,
+    short:'Fonction passée en argument à une autre fonction, appelée plus tard.',
+    full:'Patron fondamental pour gérer l\'asynchrone. Aujourd\'hui souvent remplacé par les Promises et async/await.',
+    example:'// Callback simple\nsetTimeout(() =\\u003e console.log("Après 2s"), 2000);\n[1,2,3].forEach(n =\\u003e console.log(n));\n\n// Callback hell (à éviter)\naStep(function() {\n  bStep(function() {\n    cStep(function() { /* ... */ })\n  })\n})',
+    interview_tip:'Le callback hell a conduit à la création des Promises puis async/await. En pratique, utiliser async/await.' },
+  { cat:'js', term:'Promise', interview:true,
+    short:'Objet représentant le résultat futur d\'une opération asynchrone.',
+    full:'3 états : pending, fulfilled, rejected. On consomme avec .then()/.catch() ou async/await.',
+    example:'const p = fetch("/api/data")\n  .then(res =\\u003e res.json())\n  .catch(err =\\u003e console.error(err));\n\n// Parallèle\nconst [users, posts] = await Promise.all([\n  fetch("/api/users").then(r =\\u003e r.json()),\n  fetch("/api/posts").then(r =\\u003e r.json())\n]);',
+    interview_tip:'Promise.all() = parallèle. Promise.race() = premier arrivé. Promise.allSettled() = attend tout même en cas d\'erreur.' },
+  { cat:'js', term:'Event Loop', interview:true,
+    short:'Mécanisme permettant à JavaScript mono-thread de gérer l\'asynchrone.',
+    full:'L\'event loop surveille la Call Stack et la Queue. Quand la stack est vide, elle déplace un callback de la queue vers la stack.',
+    example:'console.log("1");\nsetTimeout(() =\\u003e console.log("2"), 0);\nconsole.log("3");\n// Affiche : 1, 3, 2\n// setTimeout va dans la queue\n// Exécuté après le code synchrone',
+    interview_tip:'JavaScript ne bloque jamais : les opérations longues sont déléguées au navigateur, le callback est mis en queue quand elles terminent.' },
+  { cat:'js', term:'Scope (portée)', interview:true,
+    short:'Zone du code où une variable est accessible.',
+    full:'3 types : global, de fonction, de bloc (let/const). var ignore la portée de bloc. La portée lexicale : une fonction accède aux variables de ses parents.',
+    example:'let global = "partout";\nfunction fn() {\n  let local = "dans fn";\n  if (true) {\n    let bloc = "dans le if";\n    // global OK, local OK, bloc OK\n  }\n  // bloc → ReferenceError\n}',
+    interview_tip:'' },
+  { cat:'js', term:'this', interview:true,
+    short:'Référence à l\'objet courant, dont la valeur dépend du contexte d\'appel.',
+    full:'En fonction classique, this dépend de comment la fonction est appelée. En arrow function → this du contexte parent (lexical).',
+    example:'const obj = {\n  nom: "Alice",\n  // Méthode classique\n  dire()  { return this.nom; },  // "Alice"\n  // Arrow : this du parent\n  arrow: () =\\u003e this.nom,         // undefined\n};\nconst fn = obj.dire;\nfn(); // undefined — contexte perdu',
+    interview_tip:'Les arrow functions n\'ont pas leur propre this. C\'est pourquoi on les utilise souvent dans les méthodes de classe React.' },
+  { cat:'js', term:'Destructuring', interview:false,
+    short:'Syntaxe extrayant des valeurs d\'objets ou tableaux en une seule ligne.',
+    full:'Permet d\'extraire plusieurs propriétés en une ligne, avec renommage et valeur par défaut possibles.',
+    example:'// Objet\nconst { nom, age = 18, ville: city } = user;\n\n// Tableau\nconst [premier, , troisième] = tableau;\n\n// Dans les paramètres de fonction\nconst greet = ({ nom, age }) =\\u003e\n  `${nom} a ${age} ans`;',
+    interview_tip:'' },
+  { cat:'js', term:'Spread / Rest', interview:false,
+    short:'... qui étale (spread) ou rassemble (rest) des éléments.',
+    full:'Même syntaxe, deux usages : Spread étale un itérable. Rest collecte les arguments restants en tableau.',
+    example:'// Spread : copier et fusionner\nconst copy   = [...arr];\nconst merged = { ...obj1, ...obj2 };\nMath.max(...[1,2,3]); // 3\n\n// Rest : collecter\nconst sum = (...nums) =\\u003e\n  nums.reduce((a,b) =\\u003e a+b, 0);\nsum(1,2,3,4); // 10',
+    interview_tip:'' },
+  { cat:'js', term:'async / await', interview:true,
+    short:'Syntaxe moderne pour écrire du code asynchrone lisiblement.',
+    full:'async rend une fonction retournant une Promise. await attend la résolution. Toujours utiliser try/catch.',
+    example:'const fetchUser = async (id) =\\u003e {\n  try {\n    const res  = await fetch(`/api/users/${id}`);\n    if (!res.ok) throw new Error("HTTP " + res.status);\n    return await res.json();\n  } catch (err) {\n    console.error(err.message);\n  }\n};',
+    interview_tip:'await ne bloque pas le thread JS. Il suspend la fonction courante et laisse l\'event loop continuer.' },
+  { cat:'js', term:'Module ES6', interview:true,
+    short:'Système de fichiers isolés avec import/export pour organiser le code.',
+    full:'Chaque fichier est un module avec son propre scope. On exporte ce qu\'on veut partager et on importe ce dont on a besoin.',
+    example:'// math.js\nexport const add = (a, b) =\\u003e a + b;\nexport default class Calc { }\n\n// app.js\nimport Calc      from "./math.js";\nimport { add }   from "./math.js";\nimport * as math from "./math.js";',
+    interview_tip:'' },
+  { cat:'js', term:'localStorage', interview:false,
+    short:'API de stockage côté navigateur persistant après fermeture.',
+    full:'Stocke des paires clé/valeur en texte. Persiste après fermeture. Limité à 5-10 Mo. Synchrone.',
+    example:'localStorage.setItem("token", "abc");\nlocalStorage.getItem("token");     // "abc"\n\n// Objets → sérialiser en JSON\nlocalStorage.setItem("user",\n  JSON.stringify(user));\nconst u =\n  JSON.parse(localStorage.getItem("user"));',
+    interview_tip:'' },
+  { cat:'js', term:'Prototype', interview:true,
+    short:'Mécanisme d\'héritage de JavaScript basé sur des chaînes d\'objets.',
+    full:'Chaque objet JS a un prototype (objet parent). Les méthodes et propriétés sont cherchées dans l\'objet, puis dans son prototype, puis dans le prototype du prototype… jusqu\'à null.',
+    example:'// La classe ES6 est du sucre syntaxique\n// sur les prototypes\nfunction Animal(nom) { this.nom = nom; }\nAnimal.prototype.parler = function() {\n  return this.nom + " fait un bruit";\n};\n\n// Équivalent moderne\nclass Animal {\n  parler() { return this.nom + " fait un bruit"; }\n}',
+    interview_tip:'Les classes ES6 sont une syntaxe plus claire sur les prototypes. Sous le capot, c\'est toujours des prototypes.' },
+  { cat:'js', term:'Map / Set', interview:false,
+    short:'Structures de données modernes pour les collections en JavaScript.',
+    full:'Map : clés de tout type, ordre garanti. Set : valeurs uniques. Meilleures performances que les objets pour les collections dynamiques.',
+    example:'// Set — valeurs uniques\nconst unique = [...new Set([1,2,2,3])]; // [1,2,3]\n\n// Map — clés de tout type\nconst cache = new Map();\ncache.set(userId, userData);\ncache.get(userId);\ncache.has(userId);',
+    interview_tip:'' },
+  { cat:'js', term:'try/catch/finally', interview:false,
+    short:'Mécanisme de gestion d\'erreurs en JavaScript.',
+    full:'try : code qui peut échouer. catch : attrape l\'erreur. finally : exécuté quoi qu\'il arrive (nettoyage).',
+    example:'try {\n  const data = await fetchUser(id);\n  display(data);\n} catch (err) {\n  if (err instanceof NotFoundError)\n    showMessage("Introuvable");\n  else\n    throw err; // re-lancer\n} finally {\n  setLoading(false); // toujours\n}',
+    interview_tip:'' },
+  { cat:'js', term:'Optional Chaining (?.) ', interview:true,
+    short:'Opérateur accédant à une propriété sans planter si l\'objet est null/undefined.',
+    full:'Renvoie undefined au lieu de lancer une TypeError si une propriété intermédiaire est null ou undefined.',
+    example:'// Sans ?.  → TypeError si user est null\nuser.adresse.cp\n\n// Avec ?. → undefined proprement\nuser?.adresse?.cp\nobj?.methode?.()\narr?.[0]',
+    interview_tip:'Très utile avec les données d\'API : on ne sait jamais si toutes les propriétés sont présentes.' },
+  { cat:'js', term:'Nullish Coalescing (??)', interview:false,
+    short:'Opérateur retournant la valeur de droite si celle de gauche est null ou undefined.',
+    full:'Contrairement à ||, ?? ne considère pas 0, "", false comme des valeurs "vides".',
+    example:'// || → falsy (0, "", false déclenchent)\nconst a = 0 || "défaut"; // "défaut" (bug!)\n\n// ?? → null/undefined seulement\nconst b = 0 ?? "défaut"; // 0 (correct)\nconst c = null ?? "défaut"; // "défaut"',
+    interview_tip:'' },
+  { cat:'js', term:'Immutabilité', interview:false,
+    short:'Principe où les données ne sont jamais modifiées, on crée de nouvelles copies.',
+    full:'Clé de React et de la programmation fonctionnelle. Rend le code plus prévisible.',
+    example:'// Mauvais — mute l\'original\narr.push(4); obj.age = 26;\n\n// Bon — crée de nouvelles données\nconst newArr = [...arr, 4];\nconst newObj = { ...obj, age: 26 };\n\n// React\nsetItems(prev =\\u003e [...prev, item]);\nsetUser(prev =\\u003e ({ ...prev, age: 26 }));',
+    interview_tip:'' },
+  { cat:'js', term:'Event Delegation', interview:true,
+    short:'Technique écoutant les événements sur un parent au lieu de chaque enfant.',
+    full:'Un seul écouteur sur le parent gère les événements de tous les enfants, y compris ceux ajoutés dynamiquement.',
+    example:'// Efficace pour les listes dynamiques\nlist.addEventListener("click", (e) =\\u003e {\n  const item = e.target.closest("li");\n  if (!item) return;\n  console.log(item.dataset.id);\n});\n\n// Au lieu de :\nlistItems.forEach(item =\\u003e\n  item.addEventListener("click", handler));',
+    interview_tip:'La délégation fonctionne grâce au bubbling : les événements remontent du cible vers le document.' },
+  { cat:'php', term:'Superglobales', interview:true,
+    short:'Variables prédéfinies accessibles partout dans PHP.',
+    full:'$_GET, $_POST, $_SESSION, $_COOKIE, $_FILES, $_SERVER. Ne jamais utiliser sans validation préalable.',
+    example:'// TOUJOURS valider avant utilisation\n$id    = filter_input(INPUT_GET, "id",\n                      FILTER_VALIDATE_INT);\n$email = filter_input(INPUT_POST, "email",\n                      FILTER_VALIDATE_EMAIL);\n// Jamais :\n// "SELECT * WHERE id=" . $_GET["id"]',
+    interview_tip:'Les superglobales ne doivent jamais être utilisées directement dans une requête SQL.' },
+  { cat:'php', term:'PDO', interview:true,
+    short:'Interface PHP pour accéder aux bases de données de façon sécurisée.',
+    full:'PHP Data Objects. Couche d\'abstraction unifiée. Les requêtes préparées séparent SQL et données → protection contre les injections SQL.',
+    example:'$stmt = $pdo-\\u003eprepare(\n  "SELECT * FROM users WHERE email = :email"\n);\n$stmt-\\u003eexecute(["email" =\\u003e $email]);\n$user = $stmt-\\u003efetch(PDO::FETCH_ASSOC);',
+    interview_tip:'PDO avec requêtes préparées est la seule façon correcte d\'accéder à une BDD en PHP.' },
+  { cat:'php', term:'POO', interview:true,
+    short:'Paradigme organisant le code autour de classes et objets.',
+    full:'Concepts : Classe, Objet, Héritage (extends), Encapsulation (public/protected/private), Interface, Trait.',
+    example:'class Animal {\n  public function __construct(\n    protected string $nom\n  ) {}\n  public function parler(): string {\n    return "$this-\\u003enom fait un bruit";\n  }\n}\nclass Chien extends Animal {\n  public function parler(): string {\n    return "$this-\\u003enom aboie !";\n  }\n}',
+    interview_tip:'Les 4 piliers : Encapsulation, Héritage, Polymorphisme, Abstraction.' },
+  { cat:'php', term:'Namespace', interview:false,
+    short:'Espace de noms évitant les conflits entre classes du même nom.',
+    full:'Comme des dossiers pour les classes PHP. Standard PSR-4 : namespace App\\Models correspond au dossier src/Models/',
+    example:'namespace App\\Models;\nuse App\\Contracts\\Identifiable;\nuse DateTime;\n\nclass User implements Identifiable { }',
+    interview_tip:'' },
+  { cat:'php', term:'Composer', interview:true,
+    short:'Gestionnaire de dépendances PHP, équivalent de npm pour JavaScript.',
+    full:'Installe et gère les bibliothèques tierces. Lit composer.json, installe dans vendor/. L\'autoload PSR-4 évite les require manuels.',
+    example:'// Installer une lib\ncomposer require firebase/php-jwt\ncomposer require --dev phpunit/phpunit\n\n// Dans le code\nrequire "vendor/autoload.php";\nuse Firebase\\JWT\\JWT;',
+    interview_tip:'' },
+  { cat:'php', term:'Interface vs Classe abstraite', interview:true,
+    short:'Interface = contrat pur. Classe abstraite = base partielle avec implémentation.',
+    full:'Interface : méthodes sans corps, multiple autorisé. Classe abstraite : peut avoir des méthodes implémentées, héritage simple.',
+    example:'interface Payable {\n  public function payer(float $montant): bool;\n}\nabstract class Produit {\n  abstract public function calculerPrix(): float;\n  public function afficher(): string {\n    return $this-\\u003enom . ": " .\n           $this-\\u003ecalculerPrix();\n  }\n}',
+    interview_tip:'' },
+  { cat:'php', term:'Trait', interview:false,
+    short:'Mécanisme de réutilisation de code entre classes sans héritage.',
+    full:'PHP ne supporte pas l\'héritage multiple. Les traits partagent des méthodes entre classes non liées.',
+    example:'trait Timestampable {\n  public function touch(): void {\n    $this-\\u003eupdatedAt = new DateTime();\n  }\n}\n\nclass User    { use Timestampable; }\nclass Article { use Timestampable; }',
+    interview_tip:'' },
+  { cat:'php', term:'Enum', interview:true,
+    short:'Type de données représentant un ensemble fixe de valeurs possibles (PHP 8.1).',
+    full:'Remplace les constantes de classe. Backed enum = chaque cas a une valeur string/int.',
+    example:'enum Role: string {\n  case Admin  = "admin";\n  case Editor = "editor";\n  case User   = "user";\n\n  public function label(): string {\n    return match($this) {\n      Role::Admin  =\\u003e "Administrateur",\n      Role::Editor =\\u003e "Editeur",\n      Role::User   =\\u003e "Utilisateur",\n    };\n  }\n}\nRole::Admin-\\u003evalue; // "admin"\nRole::from("editor"); // Role::Editor',
+    interview_tip:'' },
+  { cat:'php', term:'match', interview:true,
+    short:'Expression PHP 8 améliorée remplaçant switch avec retour de valeur.',
+    full:'Strict (===), sans fallthrough, retourne une valeur, lève une erreur si aucun cas ne correspond.',
+    example:'// Switch (PHP 7)\nswitch ($code) {\n  case 200: $msg = "OK"; break;\n  case 404: $msg = "Non trouvé"; break;\n}\n\n// Match (PHP 8) — meilleur\n$msg = match($code) {\n  200     =\\u003e "OK",\n  404     =\\u003e "Non trouvé",\n  401,403 =\\u003e "Non autorisé",\n  default =\\u003e "Erreur",\n};',
+    interview_tip:'' },
+  { cat:'php', term:'Arrow function (fn)', interview:false,
+    short:'Fonction anonyme courte avec capture automatique du scope parent (PHP 7.4).',
+    full:'Contrairement à function avec use, fn capture automatiquement les variables du scope parent.',
+    example:'$taux = 0.20;\n\n// Ancienne syntaxe\n$ttc = array_map(\n  function($p) use ($taux) { return $p * (1 + $taux); },\n  $prix\n);\n\n// Arrow function (PHP 7.4)\n$ttc = array_map(\n  fn($p) =\\u003e $p * (1 + $taux),\n  $prix\n);',
+    interview_tip:'' },
+  { cat:'php', term:'Gestion des erreurs', interview:true,
+    short:'Système pour capturer et traiter les erreurs et exceptions en PHP.',
+    full:'try/catch/finally. Créer des classes d\'exceptions personnalisées pour différencier les erreurs.',
+    example:'class ValidationException extends RuntimeException {\n  public function __construct(\n    private array $errors,\n    string $message = "Validation échouée"\n  ) { parent::__construct($message); }\n  public function getErrors(): array {\n    return $this-\\u003eerrors;\n  }\n}\ntry {\n  validate($data);\n} catch (ValidationException $e) {\n  http_response_code(422);\n  echo json_encode(["errors" =\\u003e $e-\\u003egetErrors()]);\n} catch (PDOException $e) {\n  error_log($e-\\u003egetMessage());\n  http_response_code(500);\n}',
+    interview_tip:'' },
+  { cat:'php', term:'Sessions sécurisées', interview:true,
+    short:'Bonnes pratiques pour sécuriser les sessions PHP.',
+    full:'Régénérer l\'ID après connexion (anti-fixation), détruire proprement, configurer les paramètres.',
+    example:'session_start();\n\n// Après connexion réussie\nsession_regenerate_id(true); // Empêche la fixation\n$_SESSION["user_id"] = $user["id"];\n$_SESSION["role"]    = $user["role"];\n\n// Déconnexion propre\n$_SESSION = [];\nsession_destroy();\nsetcookie(session_name(), "", time() - 1);',
+    interview_tip:'' },
+  { cat:'php', term:'Fonctions tableaux', interview:false,
+    short:'Fonctions natives PHP pour manipuler les tableaux.',
+    full:'PHP offre une centaine de fonctions array_*. Les plus utilisées : array_map, array_filter, array_reduce, array_column, usort.',
+    example:'$noms = array_map(fn($u) =\\u003e $u["nom"], $users);\n$admins = array_filter($users,\n  fn($u) =\\u003e $u["role"] === "admin");\n$total = array_reduce($prix,\n  fn($acc, $p) =\\u003e $acc + $p, 0);\n$noms = array_column($users, "nom", "id");\nusort($users, fn($a,$b) =\\u003e $a["age"] \\u003c=\\u003e $b["age"]);',
+    interview_tip:'' },
+  { cat:'bdd', term:'Clé primaire', interview:true,
+    short:'Identifiant unique pour chaque ligne d\'une table.',
+    full:'Ne peut pas être NULL. Généralement un entier auto-incrémenté (AUTO_INCREMENT). Base des relations entre tables.',
+    example:'CREATE TABLE users (\n  id    INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\n  email VARCHAR(255) NOT NULL UNIQUE,\n  nom   VARCHAR(100) NOT NULL\n);',
+    interview_tip:'La clé primaire garantit l\'unicité et l\'identité de chaque ligne. C\'est la base des relations.' },
+  { cat:'bdd', term:'Clé étrangère (FK)', interview:true,
+    short:'Colonne référençant la clé primaire d\'une autre table.',
+    full:'Garantit l\'intégrité référentielle. ON DELETE CASCADE supprime automatiquement les enregistrements liés.',
+    example:'CREATE TABLE articles (\n  id      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\n  user_id INT UNSIGNED NOT NULL,\n  FOREIGN KEY (user_id)\n    REFERENCES users(id)\n    ON DELETE CASCADE\n);',
+    interview_tip:'Les FK assurent la cohérence des données. Sans elles, on peut avoir des articles pointant vers des utilisateurs supprimés.' },
+  { cat:'bdd', term:'JOIN', interview:true,
+    short:'Opération combinant des données de plusieurs tables.',
+    full:'INNER JOIN = intersection. LEFT JOIN = toutes les lignes de gauche + correspondances droite. Préférer les JOINs aux sous-requêtes.',
+    example:'-- INNER JOIN\nSELECT a.titre, u.nom\nFROM articles a\nINNER JOIN users u ON u.id = a.user_id;\n\n-- LEFT JOIN : tous les users même sans article\nSELECT u.nom, COUNT(a.id) AS nb\nFROM users u\nLEFT JOIN articles a ON a.user_id = u.id\nGROUP BY u.id;',
+    interview_tip:'INNER JOIN = intersection. LEFT JOIN = tout à gauche même sans correspondance à droite.' },
+  { cat:'bdd', term:'Index', interview:true,
+    short:'Structure accélérant la recherche dans une table.',
+    full:'Sans index : MySQL parcourt toute la table. Avec : accès direct. Accélèrent SELECT mais ralentissent INSERT/UPDATE.',
+    example:'CREATE INDEX idx_email ON users (email);\n-- Avant : 500ms (full scan)\n-- Après : 0.001ms (index)\n\n-- Vérifier\nEXPLAIN SELECT * FROM users\nWHERE email = "a@b.fr";',
+    interview_tip:'Trop d\'index = mauvaise performance en écriture. Créer seulement sur les colonnes utilisées fréquemment dans WHERE/JOIN.' },
+  { cat:'bdd', term:'Injection SQL', interview:true,
+    short:'Attaque insérant du code SQL malveillant via les entrées utilisateur.',
+    full:'Si on concatène des données dans une requête SQL, un attaquant peut modifier la logique. Protection : requêtes préparées uniquement.',
+    example:'// VULNÉRABLE\n$sql = "SELECT * FROM users WHERE email = \'".\n       $_POST["email"]."\'"; // DANGER\n// Attaque : \' OR 1=1 --\n\n// SÉCURISÉ\n$stmt = $pdo-\\u003eprepare(\n  "SELECT * FROM users WHERE email = ?");\n$stmt-\\u003eexecute([$_POST["email"]]);',
+    interview_tip:'L\'injection SQL est la faille la plus courante. Toujours les requêtes préparées, sans exception.' },
+  { cat:'bdd', term:'Transaction', interview:true,
+    short:'Groupe d\'opérations SQL exécutées en tout-ou-rien.',
+    full:'COMMIT valide, ROLLBACK annule. Garantit la cohérence pour les opérations liées (ex: débit + crédit bancaire).',
+    example:'$pdo-\\u003ebeginTransaction();\ntry {\n  $pdo-\\u003eexec(\n    "UPDATE comptes SET solde = solde - 100 WHERE id = 1");\n  $pdo-\\u003eexec(\n    "UPDATE comptes SET solde = solde + 100 WHERE id = 2");\n  $pdo-\\u003ecommit();\n} catch (Exception $e) {\n  $pdo-\\u003erollBack();\n}',
+    interview_tip:'Les 4 propriétés ACID : Atomicité, Cohérence, Isolation, Durabilité.' },
+  { cat:'bdd', term:'Normalisation', interview:true,
+    short:'Organisation des données pour éviter la redondance.',
+    full:'1NF, 2NF, 3NF. En pratique : ne pas stocker la même info à plusieurs endroits, utiliser des relations.',
+    example:'// Mauvais (dénormalisé)\narticles : id, titre, auteur_nom, auteur_email\n// Si l\'email change → tout mettre à jour\n\n// Bon (normalisé)\nusers    : id, nom, email\narticles : id, titre, user_id (FK)',
+    interview_tip:'' },
+  { cat:'bdd', term:'Requête préparée', interview:true,
+    short:'Requête SQL compilée une fois, exécutée avec des paramètres sécurisés.',
+    full:'SQL et données envoyés séparément. Impossible d\'injecter du SQL. Plus performant pour les requêtes répétées.',
+    example:'// Les ? = paramètres — jamais exécutés comme SQL\n$stmt = $pdo-\\u003eprepare(\n  "INSERT INTO users (nom, email) VALUES (?, ?)");\n$stmt-\\u003eexecute(["Alice", "alice@ex.fr"]);\n$stmt-\\u003eexecute(["Bob",   "bob@ex.fr"]);',
+    interview_tip:'' },
+  { cat:'bdd', term:'GROUP BY / HAVING', interview:true,
+    short:'Regroupement de lignes et filtrage sur les groupes.',
+    full:'GROUP BY regroupe les lignes selon une ou plusieurs colonnes. HAVING filtre les groupes APRÈS regroupement (contrairement à WHERE).',
+    example:'SELECT   role,\n         COUNT(*) AS nb,\n         AVG(age)  AS age_moyen\nFROM     users\nWHERE    actif = 1          -- avant regroupement\nGROUP BY role\nHAVING   nb \\u003e 5             -- après regroupement\nORDER BY nb DESC;',
+    interview_tip:'' },
+  { cat:'bdd', term:'Fonctions d\'agrégation', interview:false,
+    short:'Fonctions calculant une valeur sur un ensemble de lignes.',
+    full:'COUNT(), SUM(), AVG(), MIN(), MAX(), GROUP_CONCAT(). S\'utilisent souvent avec GROUP BY.',
+    example:'SELECT\n  COUNT(*)            AS total,\n  COUNT(DISTINCT role) AS nb_roles,\n  AVG(prix)            AS prix_moyen,\n  SUM(prix * qte)      AS chiffre,\n  MAX(prix)            AS prix_max\nFROM produits\nWHERE actif = 1;',
+    interview_tip:'' },
+  { cat:'bdd', term:'ACID', interview:true,
+    short:'Propriétés garantissant la fiabilité des transactions en base de données.',
+    full:'Atomicité (tout ou rien), Cohérence (état valide avant/après), Isolation (transactions indépendantes), Durabilité (données persistées).',
+    example:'-- Exemple : virement bancaire\nSTART TRANSACTION;\n  UPDATE comptes SET solde = solde - 100 WHERE id = 1;\n  UPDATE comptes SET solde = solde + 100 WHERE id = 2;\nCOMMIT; -- ou ROLLBACK si erreur\n\n-- Les 4 propriétés ACID garantissent\n-- qu\'aucun état incohérent ne persiste',
+    interview_tip:'' },
+  { cat:'bdd', term:'Schéma / Modèle de données', interview:false,
+    short:'Structure définissant l\'organisation des tables et leurs relations.',
+    full:'Définit les tables, colonnes, types, contraintes et relations. MCD (Merise) pour la conception, SQL DDL pour l\'implémentation.',
+    example:'-- DDL (Data Definition Language)\nCREATE TABLE produits (\n  id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\n  nom          VARCHAR(255) NOT NULL,\n  prix         DECIMAL(10,2) NOT NULL CHECK (prix \\u003e= 0),\n  stock        INT DEFAULT 0,\n  categorie_id INT UNSIGNED,\n  created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);',
+    interview_tip:'' },
+  { cat:'bdd', term:'Sous-requête', interview:false,
+    short:'Requête SQL imbriquée dans une autre requête.',
+    full:'Permet de filtrer selon le résultat d\'une autre requête. EXISTS est souvent plus performant que IN sur les grandes tables.',
+    example:'-- IN\nSELECT * FROM users\nWHERE id IN (\n  SELECT DISTINCT user_id FROM commandes\n  WHERE date \\u003e= "2024-01-01"\n);\n\n-- EXISTS (plus performant)\nSELECT * FROM users u\nWHERE EXISTS (\n  SELECT 1 FROM commandes c\n  WHERE c.user_id = u.id\n);',
+    interview_tip:'' },
+  { cat:'bdd', term:'Vue (VIEW)', interview:false,
+    short:'Requête SQL sauvegardée et réutilisable comme une table virtuelle.',
+    full:'Une vue simplifie les requêtes complexes fréquentes. Elle est recalculée à chaque appel.',
+    example:'CREATE OR REPLACE VIEW v_users_actifs AS\n  SELECT id, nom, email, role\n  FROM users\n  WHERE actif = 1\n    AND deleted_at IS NULL;\n\n-- Utilisation comme une table normale\nSELECT * FROM v_users_actifs\nWHERE role = "admin";',
+    interview_tip:'' },
+  { cat:'git', term:'Commit', interview:true,
+    short:'Instantané de l\'état du projet à un moment donné.',
+    full:'Enregistre les changements stagés avec un hash unique, un auteur, une date et un message. La brique de base de l\'historique Git.',
+    example:'git add fichier.js\ngit commit -m "feat(auth): ajout validation email"\n\n// Historique\n// a1b2c3d feat(auth): validation email\n// 9f8e7d6 fix(ui): correction bouton',
+    interview_tip:'Un bon message : type(scope): description courte. Convention Commits est le standard.' },
+  { cat:'git', term:'Branch (branche)', interview:true,
+    short:'Ligne de développement indépendante.',
+    full:'Un pointeur vers un commit. Créer une branche par fonctionnalité ou correction. Main = branche principale.',
+    example:'git switch -c feature/login  // créer + basculer\n// développer...\ngit switch main\ngit merge feature/login\ngit branch -d feature/login',
+    interview_tip:'En équipe : ne jamais développer directement sur main. Toujours créer une branche, faire une PR, faire relire.' },
+  { cat:'git', term:'Merge vs Rebase', interview:true,
+    short:'Merge fusionne les historiques, Rebase réécrit linéairement.',
+    full:'Merge crée un commit de fusion, conserve tout l\'historique. Rebase déplace les commits sur la branche cible. Ne jamais rebase une branche partagée.',
+    example:'// Merge : conserve l\'historique\ngit merge feature/login\n\n// Rebase : historique linéaire\ngit rebase main\n\n// Interactif : réécrire les commits\ngit rebase -i HEAD~3',
+    interview_tip:'Préférer le merge pour les branches partagées. Le rebase pour nettoyer son historique local.' },
+  { cat:'git', term:'Pull Request (PR)', interview:true,
+    short:'Demande de fusion permettant la revue de code avant intégration.',
+    full:'Sur GitHub/GitLab. Permet à l\'équipe de relire, commenter, suggérer avant de merger. Inclut souvent des checks automatiques.',
+    example:'1. git push origin feature/ma-feature\n2. Créer une PR sur GitHub\n3. Collègues relisent et approuvent\n4. Merge dans main\n5. Supprimer la branche\n\n// Checks automatiques :\n// → Tests passent\n// → Linting OK\n// → Review approuvée',
+    interview_tip:'Les PR sont le coeur du travail en équipe. Montrer qu\'on comprend l\'importance de la revue de code.' },
+  { cat:'git', term:'.gitignore', interview:false,
+    short:'Fichier listant les fichiers que Git doit ignorer.',
+    full:'Évite de committer des fichiers sensibles (.env), volumineux (node_modules) ou générés (dist). Créer avant le premier commit.',
+    example:'node_modules/\n.env\n.env.local\ndist/   build/\n.DS_Store\n*.log\n\n// Exception\n!.env.example\n!.gitkeep',
+    interview_tip:'' },
+  { cat:'git', term:'Git Flow', interview:false,
+    short:'Modèle de branches structuré pour les équipes.',
+    full:'Branches : main (prod), develop (intégration), feature/*, release/*, hotfix/*.',
+    example:'// Feature\ngit switch -c feature/paiement develop\n// Développer...\ngit switch develop\ngit merge --no-ff feature/paiement\n\n// Hotfix urgent\ngit switch -c hotfix/bug main\n// Corriger...\ngit switch main && git merge hotfix/bug\ngit switch develop && git merge hotfix/bug',
+    interview_tip:'' },
+  { cat:'git', term:'git stash', interview:false,
+    short:'Mise de côté temporaire des modifications non commitées.',
+    full:'Permet de basculer de branche sans perdre ses modifications en cours.',
+    example:'git stash                    // mettre de côté\ngit stash push -m "wip: login"\ngit stash list               // voir les stash\ngit stash pop                // réappliquer\ngit stash apply stash@{1}    // sans supprimer\ngit stash drop stash@{0}     // supprimer',
+    interview_tip:'' },
+  { cat:'git', term:'Conventional Commits', interview:true,
+    short:'Convention de messages de commit standardisés.',
+    full:'Format : type(scope): description. Permet de générer des CHANGELOG et de versionner automatiquement (SemVer).',
+    example:'feat:     // nouvelle fonctionnalité → MINOR\nfix:      // correction de bug → PATCH\ndocs:     // documentation\nrefactor: // ni fix ni feat\ntest:     // ajout de tests\nchore:    // maintenance\n\n// Exemples\ngit commit -m "feat(auth): ajout JWT"\ngit commit -m "fix(ui): bouton submit"\ngit commit -m "feat!: v2 API" // BREAKING',
+    interview_tip:'Les commits conventionnels permettent de générer des CHANGELOG automatiquement et de déterminer la prochaine version.' },
+  { cat:'git', term:'git reset vs git revert', interview:true,
+    short:'Deux façons d\'annuler des commits avec des implications différentes.',
+    full:'reset modifie l\'historique (dangereux si partagé). revert crée un nouveau commit d\'annulation (sûr).',
+    example:'// SÉCURISÉ — crée un commit d\'annulation\ngit revert HEAD           // annuler le dernier\ngit revert abc1234        // annuler un commit précis\n\n// DANGEREUX si déjà pushé\ngit reset --soft HEAD~1   // défait → staged\ngit reset --mixed HEAD~1  // défait → untracked\ngit reset --hard HEAD~1   // défait TOUT',
+    interview_tip:'Toujours préférer revert sur les branches partagées. reset uniquement sur des branches locales non partagées.' },
+  { cat:'git', term:'git cherry-pick', interview:false,
+    short:'Application d\'un commit spécifique sur la branche courante.',
+    full:'Permet de copier un commit depuis une branche vers une autre sans tout merger.',
+    example:'// Récupérer un commit spécifique\ngit log --oneline feature/paiement\n// a1b2c3d fix(api): correction calcul TVA\n\ngit switch main\ngit cherry-pick a1b2c3d   // applique juste ce commit',
+    interview_tip:'' },
+  { cat:'devops', term:'Docker', interview:true,
+    short:'Outil de conteneurisation empaquetant application et dépendances.',
+    full:'Un container inclut tout pour faire tourner l\'app. Garantit "ça marche partout". Léger (pas une VM complète).',
+    example:'docker run -d -p 8080:80 --name mon-app nginx\ndocker exec -it mon-app bash\ndocker logs -f mon-app\ndocker ps\ndocker stop mon-app',
+    interview_tip:'Docker résout "ça marche chez moi". L\'image est identique partout : dev, staging, production.' },
+  { cat:'devops', term:'Container vs Image', interview:true,
+    short:'L\'image est le modèle, le container est l\'instance en cours.',
+    full:'Image : modèle figé, en lecture seule. Container : instance en cours d\'exécution avec son propre filesystem temporaire.',
+    example:'// Analogie\nImage → Classe\nContainer → Objet (instance)\n\ndocker build -t mon-app .  // créer l\'image\ndocker run mon-app          // créer UN container\ndocker run mon-app          // UN AUTRE container',
+    interview_tip:'' },
+  { cat:'devops', term:'Dockerfile', interview:false,
+    short:'Fichier de recette pour construire une image Docker.',
+    full:'Chaque instruction crée une couche. Ordonner du moins au plus changeant pour optimiser le cache.',
+    example:'FROM node:20-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --only=production\nCOPY . .\nEXPOSE 3000\nUSER node\nCMD ["node", "server.js"]',
+    interview_tip:'' },
+  { cat:'devops', term:'docker-compose', interview:false,
+    short:'Outil orchestrant plusieurs containers depuis un seul fichier YAML.',
+    full:'Définit et gère un ensemble de services. Une commande pour tout démarrer.',
+    example:'// docker-compose.yml\nservices:\n  app:\n    build: .\n    ports: ["8080:80"]\n    depends_on: [db]\n  db:\n    image: mysql:8.0\n    volumes:\n      - mysql_data:/var/lib/mysql\nvolumes:\n  mysql_data:\n\ndocker-compose up -d\ndocker-compose down',
+    interview_tip:'' },
+  { cat:'devops', term:'CI/CD', interview:true,
+    short:'Intégration et déploiement continus : automatisation des tests et du déploiement.',
+    full:'CI : tests automatiques à chaque push. CD : déploiement automatique si tests OK. GitHub Actions, GitLab CI.',
+    example:'// .github/workflows/deploy.yml\non: [push]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - run: npm install && npm test\n  deploy:\n    needs: test\n    steps:\n      - run: ./deploy.sh',
+    interview_tip:'CI/CD est un standard en entreprise. Une pipeline simple (tests + déploiement) montre une bonne pratique DevOps.' },
+  { cat:'devops', term:'Variable d\'environnement', interview:true,
+    short:'Variable de configuration externe au code, différente selon l\'environnement.',
+    full:'Évite de coder en dur les mots de passe et clés API. Stockées dans .env (jamais commité).',
+    example:'// .env (dans .gitignore !)\nDB_HOST=localhost\nDB_PASS=supersecret\nJWT_SECRET=cle_longue_aleatoire\n\n// PHP\n$pass = $_ENV["DB_PASS"];\n\n// JavaScript\nconst pass = process.env.DB_PASS;',
+    interview_tip:'Ne JAMAIS commiter un .env avec de vraies valeurs. Commiter un .env.example avec des valeurs factices.' },
+  { cat:'devops', term:'SSH', interview:false,
+    short:'Protocole de connexion sécurisée à un serveur distant.',
+    full:'Secure Shell. Contrôle un serveur distant via une ligne de commande chiffrée. Authentification par clé SSH (recommandé).',
+    example:'ssh user@192.168.1.100\nssh -i ~/.ssh/ma_cle user@ip\n\n// Générer une clé SSH\nssh-keygen -t ed25519 -C "mon@email.fr"\n\n// Copier la clé publique sur le serveur\nssh-copy-id user@ip',
+    interview_tip:'' },
+  { cat:'devops', term:'VPS', interview:false,
+    short:'Serveur privé virtuel : ressources dédiées sur un serveur mutualisé physique.',
+    full:'Virtual Private Server. Plus puissant qu\'un hébergement mutualisé. Accès root. Configuration complète. Communs : DigitalOcean, Scaleway, OVH.',
+    example:'// Stack typique sur un VPS\n// Nginx  → serveur web / reverse proxy\n// PHP-FPM → exécution PHP\n// MySQL  → base de données\n// Let\'s Encrypt → certificat HTTPS gratuit\n// UFW    → firewall\n// Fail2ban → protection brute force',
+    interview_tip:'' },
+  { cat:'devops', term:'Reverse Proxy', interview:false,
+    short:'Serveur intermédiaire distribuant les requêtes vers plusieurs serveurs applicatifs.',
+    full:'Nginx ou Apache en reverse proxy : reçoit les requêtes, les redirige vers l\'application (Node.js, PHP-FPM). Gère le HTTPS, la compression, le cache.',
+    example:'// Nginx → application Node sur port 3000\nserver {\n  listen 80;\n  server_name monsite.fr;\n  location / {\n    proxy_pass http://localhost:3000;\n    proxy_set_header Host $host;\n  }\n}',
+    interview_tip:'' },
+  { cat:'securite', term:'XSS', interview:true,
+    short:'Attaque injectant du JavaScript malveillant dans une page web.',
+    full:'Si on affiche des données utilisateur sans les échapper, un attaquant peut injecter du JS exécuté chez les visiteurs.',
+    example:'// VULNÉRABLE\necho $nom; // Danger si nom = script malveillant\n\n// SÉCURISÉ PHP\necho htmlspecialchars($nom, ENT_QUOTES | ENT_HTML5, "UTF-8");\n\n// SÉCURISÉ JS\nel.textContent = nom; // Pas innerHTML !',
+    interview_tip:'XSS est une des attaques les plus courantes. Toujours échapper les données avant affichage.' },
+  { cat:'securite', term:'CSRF', interview:true,
+    short:'Attaque forçant un utilisateur connecté à effectuer une action non désirée.',
+    full:'Cross-Site Request Forgery. Un site malveillant force le navigateur à envoyer une requête là où la victime est connectée.',
+    example:'// Token dans le formulaire\ninput type="hidden" name="csrf"\n      value="...token_session..."\n\n// Vérification PHP\nif (!hash_equals(\n  $_SESSION["csrf"],\n  $_POST["csrf"] ?? "")) {\n  die("CSRF invalide");\n}',
+    interview_tip:'SameSite=Lax ou Strict sur les cookies protège aussi contre le CSRF.' },
+  { cat:'securite', term:'Hachage de mot de passe', interview:true,
+    short:'Transformation irréversible d\'un mot de passe pour le stocker sans connaître l\'original.',
+    full:'Ne jamais stocker en clair. Utiliser bcrypt ou Argon2 : intentionnellement lents contre le brute force.',
+    example:'// PHP — stocker\n$hash = password_hash($mdp,\n  PASSWORD_BCRYPT,\n  ["cost" =\\u003e 12]);\n\n// PHP — vérifier\nif (password_verify($mdpSaisi, $hashBDD)) {\n  // Connexion OK\n}',
+    interview_tip:'MD5 et SHA1 sont trop rapides pour les mots de passe → rainbow tables. Toujours bcrypt ou Argon2.' },
+  { cat:'securite', term:'JWT', interview:true,
+    short:'Token signé contenant des informations utilisateur pour l\'authentification sans session.',
+    full:'Structure : header.payload.signature en Base64. Non chiffré mais signé → impossible de falsifier sans la clé.',
+    example:'eyJhbGciOiJIUzI1NiJ9    // header\n.eyJ1c2VySWQiOjQyfQ      // payload (lisible !)\n.xyzSignature             // signature\n\n// Dans les requêtes\nAuthorization: Bearer eyJ...',
+    interview_tip:'Access token : durée courte (1h). Refresh token : durée longue (30j), en httpOnly cookie. Jamais le mot de passe dans le payload.' },
+  { cat:'securite', term:'HTTPS / TLS', interview:true,
+    short:'Version sécurisée de HTTP : données chiffrées entre client et serveur.',
+    full:'TLS chiffre les données en transit. Nécessite un certificat. Let\'s Encrypt : certificats gratuits.',
+    example:'// Header de sécurité\nStrict-Transport-Security: max-age=31536000\n// Force HTTPS même si l\'user tape http://\n\n// Certificat gratuit\n// certbot --nginx -d monsite.fr',
+    interview_tip:'HTTPS protège la confidentialité et l\'intégrité. Obligatoire pour les formulaires et APIs.' },
+  { cat:'securite', term:'Principe du moindre privilège', interview:false,
+    short:'Donner le minimum de droits nécessaires à chaque utilisateur ou processus.',
+    full:'Un utilisateur BDD applicatif ne devrait pas avoir les droits DROP TABLE. Limiter la casse en cas de compromission.',
+    example:'-- Utilisateur BDD applicatif\nGRANT SELECT, INSERT, UPDATE, DELETE\nON mabase.*\nTO "app_user"@"localhost";\n-- Pas DROP, pas SUPER\n\n// PHP : vérifier les droits\nif ($user["role"] !== "admin")\n  http_response_code(403);',
+    interview_tip:'' },
+  { cat:'securite', term:'Validation des entrées', interview:true,
+    short:'Vérification systématique de toutes les données reçues.',
+    full:'Côté serveur obligatoire. Vérifier : type, format, longueur, valeur attendue. Rejeter ce qui ne correspond pas.',
+    example:'// PHP\n$id = filter_input(INPUT_GET, "id",\n  FILTER_VALIDATE_INT,\n  ["options" =\\u003e ["min_range" =\\u003e 1]]);\nif (!$id) {\n  http_response_code(400);\n  die(json_encode(["error" =\\u003e "ID invalide"]));\n}',
+    interview_tip:'' },
+  { cat:'securite', term:'Headers de sécurité HTTP', interview:false,
+    short:'En-têtes HTTP protégeant contre diverses attaques côté navigateur.',
+    full:'X-Content-Type-Options, X-Frame-Options, Content-Security-Policy, Referrer-Policy. Configurés côté serveur.',
+    example:'// PHP\nheader("X-Content-Type-Options: nosniff");\nheader("X-Frame-Options: DENY");\nheader("Content-Security-Policy: default-src \'self\'");\nheader("Referrer-Policy: strict-origin-when-cross-origin");\n\n// Vérifier : securityheaders.com',
+    interview_tip:'' },
+  { cat:'securite', term:'Rate Limiting', interview:false,
+    short:'Limitation du nombre de requêtes qu\'un client peut envoyer sur une période.',
+    full:'Protection contre le brute force et les abus. Surtout sur les endpoints de login et les APIs publiques.',
+    example:'// Exemple : max 5 tentatives de login par IP\n$ip      = $_SERVER["REMOTE_ADDR"];\n$key     = "login_attempts_$ip";\n$attempts = apcu_fetch($key) ?: 0;\n\nif ($attempts \\u003e= 5) {\n  http_response_code(429);\n  die("Trop de tentatives");\n}\napcu_store($key, $attempts + 1, 900);',
+    interview_tip:'' },
+  { cat:'algo', term:'Algorithme', interview:true,
+    short:'Suite d\'instructions précises et finies pour résoudre un problème.',
+    full:'Prend des données en entrée, applique des étapes définies, produit un résultat. Critères : correct, efficace, lisible.',
+    example:'// Trouver le max d\'un tableau\nfunction trouverMax(arr) {\n  let max = arr[0];\n  for (const n of arr) {\n    if (n \\u003e max) max = n;\n  }\n  return max;\n}\n// Complexité : O(n) — parcourt 1 fois',
+    interview_tip:'' },
+  { cat:'algo', term:'Complexité (Big O)', interview:true,
+    short:'Mesure de la performance d\'un algorithme selon la taille des données.',
+    full:'O(1) constant, O(log n) logarithmique, O(n) linéaire, O(n²) quadratique. Plus le n est petit, mieux c\'est.',
+    example:'O(1)   → arr[42]           // accès direct\nO(log n) → binary search  // divise par 2\nO(n)   → boucle simple     // parcourt tout\nO(n log n) → tri efficace  // quicksort\nO(n²)  → boucles imbriquées // à éviter',
+    interview_tip:'En entretien : "cette solution est O(n²), on pourrait l\'optimiser à O(n) avec un Set."' },
+  { cat:'algo', term:'Récursivité', interview:true,
+    short:'Technique où une fonction s\'appelle elle-même pour des sous-problèmes.',
+    full:'Toujours : un cas de base (arrêt) + un cas récursif. Élégante pour les arbres et les structures hiérarchiques.',
+    example:'// Factorielle\nfunction fact(n) {\n  if (n \\u003c= 1) return 1;     // cas de base\n  return n * fact(n - 1);   // cas récursif\n}\nfact(5); // 5*4*3*2*1 = 120\n\n// Parcourir un arbre DOM\nfunction parcourir(node) {\n  console.log(node.tagName);\n  node.children.forEach(parcourir);\n}',
+    interview_tip:'' },
+  { cat:'algo', term:'Structure de données', interview:true,
+    short:'Façon d\'organiser les données en mémoire pour faciliter certaines opérations.',
+    full:'Tableau (accès O(1)), Objet/Map (clé→valeur O(1)), Set (unicité O(1)), File (FIFO), Pile (LIFO).',
+    example:'// Tableau → accès par index\narr[42]; // O(1)\n\n// Set → vérifier existence rapidement\nconst seen = new Set();\nseen.has("alice"); // O(1)\n\n// Map → clé de tout type\nconst cache = new Map();\ncache.set(userId, userData); // O(1)',
+    interview_tip:'' },
+  { cat:'algo', term:'Tri', interview:false,
+    short:'Algorithmes pour ordonner une collection de données.',
+    full:'Bubble Sort O(n²), Quick Sort O(n log n), Merge Sort O(n log n). JS sort() utilise TimSort.',
+    example:'// Tri natif JS\narr.sort((a, b) =\\u003e a - b);         // croissant\narr.sort((a, b) =\\u003e b - a);         // décroissant\narr.sort((a, b) =\\u003e\n  a.nom.localeCompare(b.nom, "fr")); // alphabétique\n\n// Par propriété\nusers.sort((a, b) =\\u003e a.age - b.age);',
+    interview_tip:'' },
+  { cat:'algo', term:'Recherche', interview:false,
+    short:'Algorithmes pour trouver un élément dans une collection.',
+    full:'Linéaire O(n) : parcourir tout. Binaire O(log n) : diviser par 2 à chaque étape (nécessite un tableau trié).',
+    example:'// Recherche linéaire O(n)\nconst found = arr.find(x =\\u003e x.id === 42);\n\n// Recherche binaire O(log n)\nfunction binarySearch(arr, target) {\n  let lo = 0, hi = arr.length - 1;\n  while (lo \\u003c= hi) {\n    const mid = Math.floor((lo + hi) / 2);\n    if (arr[mid] === target) return mid;\n    arr[mid] \\u003c target ? lo = mid+1 : hi = mid-1;\n  }\n  return -1;\n}',
+    interview_tip:'' },
+  { cat:'algo', term:'Programmation fonctionnelle', interview:true,
+    short:'Style utilisant des fonctions pures sans effets de bord.',
+    full:'Fonctions pures (même entrée → même sortie), immutabilité, composition. map/filter/reduce sont fonctionnels.',
+    example:'// Impératif\nconst result = [];\nfor (const p of produits)\n  if (p.prix \\u003c 100) result.push(p.nom);\n\n// Fonctionnel\nconst result = produits\n  .filter(p =\\u003e p.prix \\u003c 100)\n  .map(p =\\u003e p.nom);\n\n// Composition de fonctions\nconst process = x =\\u003e format(validate(parse(x)));',
+    interview_tip:'' },
+  { cat:'algo', term:'DRY / SOLID', interview:true,
+    short:'Principes de conception pour un code maintenable et évolutif.',
+    full:'DRY : Don\'t Repeat Yourself — factoriser le code dupliqué. SOLID : 5 principes POO (Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion).',
+    example:'// DRY — mauvais\nfunction validerEmail() { /* ... */ }\nfunction validerEmailAdmin() { /* ... */ }\n// → même logique dupliquée\n\n// DRY — bon\nfunction validerEmail(email, options = {}) {\n  // logique unique, paramétrable\n}',
+    interview_tip:'' },
+  { cat:'algo', term:'Pattern MVC', interview:true,
+    short:'Patron d\'architecture séparant données, affichage et logique de contrôle.',
+    full:'Model (données/BDD), View (HTML/UI), Controller (reçoit requêtes, coordonne). Utilisé par Laravel, Symfony.',
+    example:'// Requête HTTP\nGET /users/42\n\n// Routing\n→ UserController::show(42)\n\n// Controller\npublic function show(int $id): Response {\n  $user = User::find($id);  // Model\n  return view("user.show",  // View\n              ["user" =\\u003e $user]);\n}',
+    interview_tip:'' },
+  { cat:'algo', term:'Récursion vs Itération', interview:false,
+    short:'Deux approches pour répéter des opérations.',
+    full:'L\'itération (boucles) est généralement plus performante et sans risque de stack overflow. La récursion est plus élégante pour les structures arborescentes.',
+    example:'// Itératif — somme tableau\nfunction sum(arr) {\n  let total = 0;\n  for (const n of arr) total += n;\n  return total;\n}\n\n// Récursif — même résultat\nfunction sum(arr) {\n  if (!arr.length) return 0;\n  return arr[0] + sum(arr.slice(1));\n}',
+    interview_tip:'' },
+  { cat:'react', term:'JSX', interview:true,
+    short:'Syntaxe permettant d\'écrire du HTML dans du JavaScript.',
+    full:'JavaScript XML. Extension syntaxique de JS compilée par Babel en appels React.createElement(). Ressemble à du HTML mais c\'est du JS : les attributs sont en camelCase, class devient className, for devient htmlFor.',
+    example:'// JSX\nconst el = \u003cdiv className="card"\u003e\u003ch1\u003e{titre}\u003c/h1\u003e\u003c/div\u003e;\n\n// Ce que Babel génère\nconst el = React.createElement("div",\n  { className: "card" },\n  React.createElement("h1", null, titre)\n);',
+    interview_tip:'JSX n\'est pas du HTML. C\'est du sucre syntaxique compilé en JS. C\'est pourquoi on écrit className au lieu de class.' },
+
+  { cat:'react', term:'Composant', interview:true,
+    short:'Brique réutilisable encapsulant UI et logique.',
+    full:'En React, tout est composant. Un composant est une fonction qui reçoit des props et retourne du JSX. Les composants se composent entre eux pour former l\'interface. Convention : nom en PascalCase.',
+    example:'// Composant fonctionnel\nfunction Card({ titre, description, image }) {\n  return (\n    \u003cdiv className="card"\u003e\n      \u003cimg src={image} alt={titre} /\u003e\n      \u003ch2\u003e{titre}\u003c/h2\u003e\n      \u003cp\u003e{description}\u003c/p\u003e\n    \u003c/div\u003e\n  );\n}\n\n// Utilisation\n\u003cCard titre="React" description="Une lib JS" image="/react.png" /\u003e',
+    interview_tip:'Un composant = une responsabilité. Si un composant fait trop de choses, le diviser en sous-composants.' },
+
+  { cat:'react', term:'Props', interview:true,
+    short:'Paramètres passés d\'un composant parent à un composant enfant.',
+    full:'Properties. Les props sont en lecture seule dans l\'enfant : un composant ne doit jamais modifier ses propres props. Pour communiquer de l\'enfant vers le parent, on passe une fonction callback en prop.',
+    example:'// Parent passe les props\n\u003cBouton\n  label="Valider"\n  couleur="bleu"\n  onClick={() =\u003e handleSubmit()}\n/\u003e\n\n// Enfant reçoit et utilise\nfunction Bouton({ label, couleur, onClick }) {\n  return \u003cbutton className={couleur} onClick={onClick}\u003e{label}\u003c/button\u003e;\n}',
+    interview_tip:'Les données vont toujours du parent vers l\'enfant (unidirectionnel). Pour remonter, on passe une fonction.' },
+
+  { cat:'react', term:'useState', interview:true,
+    short:'Hook gérant l\'état local d\'un composant.',
+    full:'Retourne un tableau [valeur, setter]. Chaque appel du setter déclenche un re-render du composant. Ne jamais muter l\'état directement — toujours utiliser le setter. Pour les objets/tableaux : créer une copie.',
+    example:'const [count, setCount] = useState(0);\nconst [user, setUser] = useState(null);\n\n// Correct\nsetCount(prev =\u003e prev + 1);\nsetUser(prev =\u003e ({ ...prev, nom: "Alice" }));\n\n// MAUVAIS — mute directement\ncount++; // rien ne se passe\nuser.nom = "Alice"; // pas de re-render',
+    interview_tip:'Quand le nouvel état dépend de l\'ancien, toujours utiliser la forme fonctionnelle : setState(prev => ...).' },
+
+  { cat:'react', term:'useEffect', interview:true,
+    short:'Hook gérant les effets de bord (fetch, abonnements, DOM).',
+    full:'S\'exécute après chaque render. Le tableau de dépendances contrôle quand il se relance. Retourner une fonction = cleanup (évite les fuites mémoire). Règle : ne jamais mentir sur les dépendances.',
+    example:'// Au montage seulement\nuseEffect(() =\u003e {\n  fetchUser(id).then(setUser);\n}, []);\n\n// À chaque changement de id\nuseEffect(() =\u003e {\n  fetchUser(id).then(setUser);\n}, [id]);\n\n// Avec cleanup\nuseEffect(() =\u003e {\n  const timer = setInterval(tick, 1000);\n  return () =\u003e clearInterval(timer); // cleanup\n}, []);',
+    interview_tip:'[] = au montage. [dep] = quand dep change. Pas de tableau = à chaque render. Le cleanup évite les fuites mémoire.' },
+
+  { cat:'react', term:'useContext', interview:true,
+    short:'Hook accédant à un contexte global sans passer les props manuellement.',
+    full:'Évite le "prop drilling" (passer des props à travers de nombreux composants intermédiaires). Créer un contexte avec createContext(), fournir la valeur avec Provider, consommer avec useContext.',
+    example:'// Créer\nconst ThemeCtx = createContext("light");\n\n// Fournir (haut de l\'arbre)\nfunction App() {\n  return (\n    \u003cThemeCtx.Provider value="dark"\u003e\n      \u003cPage /\u003e\n    \u003c/ThemeCtx.Provider\u003e\n  );\n}\n\n// Consommer (n\'importe où dans l\'arbre)\nfunction Bouton() {\n  const theme = useContext(ThemeCtx);\n  return \u003cbutton className={theme}\u003eClic\u003c/button\u003e;\n}',
+    interview_tip:'Context n\'est pas un remplaçant de Redux. Pour un état global complexe avec beaucoup de mises à jour, préférer Zustand ou Redux Toolkit.' },
+
+  { cat:'react', term:'useRef', interview:true,
+    short:'Hook créant une référence persistante sans déclencher de re-render.',
+    full:'Deux usages principaux : 1) Accéder directement à un élément DOM (focus, lecture vidéo). 2) Stocker une valeur persistante entre renders sans déclencher de re-render (timer ID, valeur précédente).',
+    example:'// Accès DOM\nconst inputRef = useRef(null);\n\u003cinput ref={inputRef} /\u003e\nbutton onClick={() =\u003e inputRef.current.focus()}\n\n// Valeur persistante sans re-render\nconst timerRef = useRef(null);\ntimerRef.current = setInterval(tick, 1000);\n// Plus tard\nclearInterval(timerRef.current);',
+    interview_tip:'useRef ne déclenche pas de re-render quand .current change. C\'est la différence clé avec useState.' },
+
+  { cat:'react', term:'useMemo / useCallback', interview:true,
+    short:'Hooks mémorisant une valeur ou une fonction pour éviter des recalculs coûteux.',
+    full:'useMemo : mémorise le résultat d\'un calcul. useCallback : mémorise une fonction. N\'utiliser que si la performance est vraiment un problème — ils ont un coût. La règle : profiler d\'abord, optimiser ensuite.',
+    example:'// useMemo — calcul coûteux\nconst total = useMemo(() =\u003e\n  items.reduce((acc, i) =\u003e acc + i.prix, 0),\n  [items] // recalcule si items change\n);\n\n// useCallback — fonction stable\nconst handleClick = useCallback(() =\u003e {\n  setCount(c =\u003e c + 1);\n}, []); // jamais recrée',
+    interview_tip:'La plupart du temps inutile. Utile si la valeur est passée à un composant enfant mémoïsé (React.memo) ou dans un useEffect.' },
+
+  { cat:'react', term:'Rendu conditionnel', interview:true,
+    short:'Affichage conditionnel d\'éléments JSX selon l\'état ou les props.',
+    full:'Plusieurs patterns : opérateur ternaire pour choisir entre deux éléments, && pour afficher ou rien, variable JSX pour une logique plus complexe.',
+    example:'// Ternaire\n{isLoading ? \u003cSpinner /\u003e : \u003cContent /\u003e}\n\n// && (attention aux 0 !)\n{items.length \u003e 0 \u0026\u0026 \u003cListe items={items} /\u003e}\n\n// Variable JSX\nlet contenu;\nif (erreur) contenu = \u003cErreur /\u003e;\nelse if (loading) contenu = \u003cSpinner /\u003e;\nelse contenu = \u003cData /\u003e;\nreturn \u003cdiv\u003e{contenu}\u003c/div\u003e;',
+    interview_tip:'Piège classique : {0 \u0026\u0026 \u003cComposant /\u003e} affiche "0" ! Toujours convertir en booléen : {!!items.length \u0026\u0026 ...} ou {items.length \u003e 0 \u0026\u0026 ...}.' },
+
+  { cat:'react', term:'Listes et clés (key)', interview:true,
+    short:'Rendu de listes avec map() et attribut key obligatoire.',
+    full:'React utilise les key pour identifier les éléments lors du re-render et optimiser les mises à jour du DOM. La key doit être unique parmi les frères, stable (pas l\'index si la liste peut changer d\'ordre).',
+    example:'// Correct : key stable et unique\n{users.map(user =\u003e (\n  \u003cli key={user.id}\u003e{user.nom}\u003c/li\u003e\n))}\n\n// Mauvais : index comme key\n{users.map((user, index) =\u003e (\n  \u003cli key={index}\u003e{user.nom}\u003c/li\u003e // problème si tri/suppression\n))}',
+    interview_tip:'La key ne doit jamais être l\'index d\'un tableau susceptible d\'être réordonné ou filtré. Utiliser un identifiant unique stable (id BDD).' },
+
+  { cat:'react', term:'React Router', interview:true,
+    short:'Bibliothèque gérant la navigation entre pages dans une SPA React.',
+    full:'Single Page Application : une seule page HTML, le JS simule la navigation. React Router intercepte les changements d\'URL et affiche le bon composant sans recharger la page.',
+    example:'// App.jsx\n\u003cBrowserRouter\u003e\n  \u003cRoutes\u003e\n    \u003cRoute path="/" element={\u003cAccueil /\u003e} /\u003e\n    \u003cRoute path="/users" element={\u003cUsers /\u003e} /\u003e\n    \u003cRoute path="/users/:id" element={\u003cUserDetail /\u003e} /\u003e\n    \u003cRoute path="*" element={\u003cNotFound /\u003e} /\u003e\n  \u003c/Routes\u003e\n\u003c/BrowserRouter\u003e\n\n// Récupérer un paramètre\nconst { id } = useParams();',
+    interview_tip:'useNavigate() pour naviguer programmatiquement. useParams() pour les paramètres d\'URL. Link au lieu de a pour éviter le rechargement.' },
+
+  { cat:'react', term:'Cycle de vie (hooks)', interview:true,
+    short:'Équivalents des méthodes de cycle de vie de classe avec les hooks.',
+    full:'Avec les composants fonctionnels et les hooks, les anciennes méthodes de cycle de vie (componentDidMount, etc.) sont remplacées par useEffect.',
+    example:'// componentDidMount → montage\nuseEffect(() =\u003e { fetchData(); }, []);\n\n// componentDidUpdate → mise à jour\nuseEffect(() =\u003e { fetchData(id); }, [id]);\n\n// componentWillUnmount → démontage\nuseEffect(() =\u003e {\n  return () =\u003e cleanup();\n}, []);\n\n// getDerivedStateFromProps → useMemo ou useEffect',
+    interview_tip:'Savoir mapper les anciennes méthodes de classe aux hooks montre une bonne compréhension de React.' },
+
+  { cat:'react', term:'Formulaire contrôlé', interview:true,
+    short:'Formulaire dont l\'état est entièrement géré par React via useState.',
+    full:'La valeur de chaque champ est stockée dans le state React. À chaque frappe, onChange met à jour le state, React re-render et affiche la nouvelle valeur. React est la "source de vérité".',
+    example:'const [form, setForm] = useState({ email: "", mdp: "" });\n\nconst handleChange = (e) =\u003e {\n  setForm(prev =\u003e ({\n    ...prev,\n    [e.target.name]: e.target.value\n  }));\n};\n\n\u003cinput\n  name="email"\n  value={form.email}\n  onChange={handleChange}\n/\u003e',
+    interview_tip:'Formulaire contrôlé = React contrôle la valeur. Non-contrôlé = le DOM gère la valeur (via useRef). Préférer les contrôlés pour la validation.' },
+
+  { cat:'react', term:'Custom Hook', interview:true,
+    short:'Fonction réutilisable encapsulant de la logique avec des hooks React.',
+    full:'Un custom hook est une fonction dont le nom commence par "use" et qui peut appeler d\'autres hooks. Permet de partager de la logique (pas de l\'UI) entre plusieurs composants.',
+    example:'// useFetch.js\nfunction useFetch(url) {\n  const [data, setData] = useState(null);\n  const [loading, setLoading] = useState(true);\n  const [error, setError] = useState(null);\n\n  useEffect(() =\u003e {\n    fetch(url)\n      .then(r =\u003e r.json())\n      .then(setData)\n      .catch(setError)\n      .finally(() =\u003e setLoading(false));\n  }, [url]);\n\n  return { data, loading, error };\n}\n\n// Utilisation\nconst { data, loading } = useFetch("/api/users");',
+    interview_tip:'Les custom hooks permettent de tester la logique indépendamment de l\'UI. C\'est la meilleure façon de réutiliser de la logique stateful.' },
+];
+
+// ══════════════════════════════════════════════════════════════
+//  MÉTADONNÉES DES CATÉGORIES
+// ══════════════════════════════════════════════════════════════
+const CAT_META = {
+  web:      { label:'Web général',     color:'var(--web)',      tc:'#0071e3', bg:'rgba(0,113,227,.07)'     },
+  html:     { label:'HTML',            color:'var(--html)',     tc:'#e8572a', bg:'rgba(232,87,42,.07)'     },
+  css:      { label:'CSS',             color:'var(--css)',      tc:'#2997ff', bg:'rgba(41,151,255,.07)'    },
+  js:       { label:'JavaScript',      color:'var(--js)',       tc:'#bf8700', bg:'rgba(191,135,0,.08)'     },
+  php:      { label:'PHP',             color:'var(--php)',      tc:'#7d4fc7', bg:'rgba(125,79,199,.07)'    },
+  bdd:      { label:'Base de données', color:'var(--bdd)',      tc:'#28b560', bg:'rgba(40,181,96,.07)'     },
+  git:      { label:'Git',             color:'var(--git)',      tc:'#d63f53', bg:'rgba(214,63,83,.07)'     },
+  devops:   { label:'DevOps',          color:'var(--devops)',   tc:'#00878a', bg:'rgba(0,135,138,.07)'     },
+  securite: { label:'Sécurité',        color:'var(--securite)', tc:'#c93535', bg:'rgba(201,53,53,.07)'     },
+  algo:     { label:'Algorithmique',   color:'var(--algo)',     tc:'#8040bf', bg:'rgba(128,64,191,.07)'    },
+  react:    { label:'React',            color:'var(--react)',    tc:'#0ea5e9', bg:'rgba(14,165,233,.07)'    },
+};
+
+// ══════════════════════════════════════════════════════════════
+//  ÉTAT
+// ══════════════════════════════════════════════════════════════
+let currentFilter = 'all';
+let currentSearch = '';
+let expandedId    = null;
+let recentTerms   = [];
+
+// ══════════════════════════════════════════════════════════════
+//  RECHERCHE & FILTRES
+// ══════════════════════════════════════════════════════════════
+function setFilter(cat, btn) {
+  currentFilter = cat;
+  expandedId    = null;
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function doSearch() {
+  const val = document.getElementById('search').value;
+  currentSearch = val.toLowerCase().trim();
+  document.getElementById('clear-btn').classList.toggle('visible', currentSearch.length > 0);
+  expandedId = null;
+  render();
+}
+
+function clearSearch() {
+  document.getElementById('search').value = '';
+  currentSearch = '';
+  document.getElementById('clear-btn').classList.remove('visible');
+  render();
+  document.getElementById('search').focus();
+}
+
+function showRandom() {
+  const pool = getFiltered();
+  if (!pool.length) return;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  // Reset tout
+  currentSearch = '';
+  currentFilter = 'all';
+  document.getElementById('search').value = '';
+  document.getElementById('clear-btn').classList.remove('visible');
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  document.querySelector('.filter-pill[data-cat="all"]').classList.add('active');
+  expandedId = pick.term;
+  render();
+  setTimeout(() => {
+    const el = document.querySelector('.term-card.expanded');
+    if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 80);
+}
+
+function getFiltered() {
+  return GLOSSARY.filter(t => {
+    if (currentFilter !== 'all' && t.cat !== currentFilter) return false;
+    if (!currentSearch) return true;
+    const s = currentSearch;
+    return t.term.toLowerCase().includes(s)
+        || t.short.toLowerCase().includes(s)
+        || (t.full||'').toLowerCase().includes(s)
+        || (t.example||'').toLowerCase().includes(s);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  RENDU
+// ══════════════════════════════════════════════════════════════
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlight(text, q) {
+  if (!q || !text) return esc(text||'');
+  const escaped = esc(text);
+  const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+  return escaped.replace(re, '<mark>$1</mark>');
+}
+
+function render() {
+  const main     = document.getElementById('main');
+  const metaEl   = document.getElementById('search-meta');
+  const navCount = document.getElementById('nav-count');
+  const filtered = getFiltered();
+
+  // Méta
+  navCount.textContent = GLOSSARY.length + ' termes';
+  if (currentSearch) {
+    metaEl.innerHTML = filtered.length
+      ? `<strong>${filtered.length}</strong> résultat${filtered.length>1?'s':''} pour « <strong>${esc(currentSearch)}</strong> »`
+      : `Aucun résultat pour « <strong>${esc(currentSearch)}</strong> »`;
+  } else {
+    metaEl.innerHTML = currentFilter === 'all'
+      ? `<strong>${filtered.length}</strong> termes`
+      : `<strong>${filtered.length}</strong> termes · ${CAT_META[currentFilter]?.label||''}`;
+  }
+
+  if (!filtered.length) {
+    main.innerHTML = `<div class="empty">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-text">Aucun terme trouvé pour « ${esc(currentSearch)} »</div>
+    </div>`;
+    return;
+  }
+
+  // Grouper par catégorie
+  const groups = {};
+  filtered.forEach(t => { (groups[t.cat] = groups[t.cat]||[]).push(t); });
+
+  let html = '';
+  for (const [cat, terms] of Object.entries(groups)) {
+    const m = CAT_META[cat] || { label: cat, color:'#86868b', tc:'#86868b', bg:'rgba(134,134,139,.07)' };
+    html += `<div class="section-group">
+      <div class="section-header">
+        <div class="section-color-bar" style="background:${m.color}"></div>
+        <span class="section-name">${m.label}</span>
+        <span class="section-count">· ${terms.length} terme${terms.length>1?'s':''}</span>
+      </div>
+      <div class="grid">`;
+
+    for (const t of terms) {
+      const exp = expandedId === t.term;
+      const m2  = CAT_META[t.cat] || { tc:'#86868b', bg:'rgba(0,0,0,.04)', label: t.cat };
+
+      html += `<div class="term-card${exp?' expanded':''}"
+               onclick="toggleCard(this)"
+               data-term="${t.term.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">
+
+        <div class="card-stripe" style="background:${m2.tc}"></div>
+
+        <div class="card-top">
+          <div class="term-name">${highlight(t.term, currentSearch)}</div>
+          <div class="badge-row">
+            ${t.interview ? '<span class="interview-chip"></span>' : ''}
+            <span class="cat-chip"
+              style="background:${m2.bg};color:${m2.tc}">${m2.label}</span>
+          </div>
+        </div>
+
+        <div class="term-short">${highlight(t.short, currentSearch)}</div>
+
+        <div class="term-detail">
+          <div class="detail-section">
+            <div class="detail-label">Explication</div>
+            <div class="detail-text">${esc(t.full||'').replace(/\n/g,'<br>')}</div>
+          </div>
+
+          ${t.example ? `<div class="detail-section">
+            <div class="detail-label">Exemple</div>
+            <div class="code-block">${esc(t.example)}</div>
+          </div>` : ''}
+
+          ${t.interview && t.interview_tip ? `<div class="detail-section">
+            <div class="detail-label">💼 En entretien</div>
+            <div class="interview-box">
+              <div class="detail-text">${esc(t.interview_tip).replace(/\n/g,'<br>')}</div>
+            </div>
+          </div>` : ''}
+        </div>
+
+        <div class="card-footer">
+          <span class="expand-btn">
+            ${exp ? 'Réduire' : 'Voir plus'}
+            <span class="chevron">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </span>
+          </span>
+        </div>
+      </div>`;
+    }
+    html += '</div></div>';
+  }
+  main.innerHTML = html;
+}
+
+function toggleCard(el) {
+  const termName = el.dataset.term;
+  if (expandedId === termName) {
+    expandedId = null;
+  } else {
+    expandedId = termName;
+    addRecent(termName);
+  }
+  render();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  RÉCENTS
+// ══════════════════════════════════════════════════════════════
+async function addRecent(name) {
+  recentTerms = [name, ...recentTerms.filter(t => t !== name)].slice(0, 8);
+  renderRecent();
+  try { await window.storage.set('glossaire-recent', JSON.stringify(recentTerms)); } catch {}
+}
+
+function renderRecent() {
+  const section = document.getElementById('recent-section');
+  const row     = document.getElementById('recent-row');
+  if (!recentTerms.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  row.innerHTML = recentTerms.map(t =>
+    `<span class="recent-chip" onclick="jumpTo(this)" data-term="${t.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${esc(t)}</span>`
+  ).join('');
+}
+
+function jumpTo(el) {
+  const termName = el.dataset.term;
+  currentSearch = '';
+  currentFilter = 'all';
+  expandedId    = termName;
+  document.getElementById('search').value = '';
+  document.getElementById('clear-btn').classList.remove('visible');
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  document.querySelector('.filter-pill[data-cat="all"]').classList.add('active');
+  render();
+  setTimeout(() => {
+    const el = document.querySelector('.term-card.expanded');
+    if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 80);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CLAVIER
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  const src = e.target;
+  if (e.key === '/' && src.tagName !== 'INPUT') {
+    e.preventDefault();
+    document.getElementById('search').focus();
+  }
+  if (e.key === 'Escape') {
+    if (document.activeElement.id === 'search') {
+      clearSearch();
+      document.getElementById('search').blur();
+    } else {
+      expandedId = null;
+      render();
+    }
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════
+async function init() {
+  try {
+    const saved = await window.storage.get('glossaire-recent');
+    if (saved?.value) { recentTerms = JSON.parse(saved.value); renderRecent(); }
+  } catch {}
+  render();
+}
+init();
+</script>
+</body>
+</html>
