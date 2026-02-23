@@ -192,14 +192,11 @@
     }
 
 
+window.addEventListener('beforeunload', () => {});
 
 
-window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-        // Page restaurée depuis le bfcache → on recharge proprement
-        window.location.reload();
-        return;
-    }
+
+window.addEventListener('pageshow', () => {
     const c = document.getElementById('mainContainer');
     c.style.transition = 'none';
     c.style.transform  = 'scale(0.96) translateY(10px)';
