@@ -191,21 +191,15 @@
         setTimeout(() => t.classList.remove('show'), 2600);
     }
 
-window.addEventListener('pagehide', () => {
-    const overlay = document.getElementById('overlay');
-    overlay.classList.remove('active');
-    overlay.style.cssText = '';
-});
 
 
-  window.addEventListener('pageshow', () => {
-    const overlay = document.getElementById('overlay');
-    overlay.style.display = 'none';      // ← cache instantanément
-    overlay.classList.remove('active');
-    setTimeout(() => {
-        overlay.style.display = '';      // ← remet normal après
-    }, 200);
 
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        // Page restaurée depuis le bfcache → on recharge proprement
+        window.location.reload();
+        return;
+    }
     const c = document.getElementById('mainContainer');
     c.style.transition = 'none';
     c.style.transform  = 'scale(0.96) translateY(10px)';
