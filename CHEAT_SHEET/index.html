@@ -30,8 +30,7 @@
         .orb-1 { width:500px;height:500px; background:radial-gradient(circle,#44D62C,transparent); top:-150px;left:-150px; animation:orbFloat 18s ease-in-out infinite; }
         .orb-2 { width:400px;height:400px; background:radial-gradient(circle,#00b4d8,transparent); bottom:-100px;right:-100px; animation:orbFloat 22s ease-in-out infinite reverse; }
         @keyframes orbFloat { 0%,100%{transform:translate(0,0)} 33%{transform:translate(20px,-20px)} 66%{transform:translate(-15px,15px)} }
-        .overlay { position:fixed; inset:0; background:var(--bg-deep); z-index:9999; opacity:0; pointer-events:none; transition:opacity .35s ease; }
-        .overlay.active { opacity:1; pointer-events:all; }
+        .overlay { display:none; }
         .container { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:60px 24px 80px; transition:transform .35s cubic-bezier(.4,0,.2,1), opacity .35s ease; }
         .header { text-align:center; margin-bottom:52px; animation:fadeDown .55s ease both; }
         @keyframes fadeDown { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
@@ -151,13 +150,13 @@
     <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil">
     <p><strong style="color:var(--text-primary)">Formation Real Conseil — DWWM</strong></p>
     <p>&copy; DARRAS Thomas</p>
-    <a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a>
+    <a href="/cdn-cgi/l/email-protection#b1c59fd5d0c3c3d0c2f1c3d4d0ddd2dedfc2d4d8dd9fd2dedc"><span class="__cf_email__" data-cfemail="760258121704041705360413171a15191805131f1a5815191b">[email&#160;protected]</span></a>
     <p class="mono">// Supports mis à jour régulièrement via GitHub &nbsp;·&nbsp;
         <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo</a>
     </p>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     function goBack(event) {
         event.stopPropagation();
         if (window.history.length > 1) {
@@ -176,12 +175,10 @@
         pageOut(() => { window.location.href = url; });
     }
     function pageOut(cb) {
-        const overlay   = document.getElementById('overlay');
-        const container = document.getElementById('mainContainer');
-        container.style.transition = 'transform .32s ease, opacity .32s ease';
-        container.style.transform  = 'scale(0.96) translateY(8px)';
-        container.style.opacity    = '0';
-        overlay.classList.add('active');
+        const c = document.getElementById('mainContainer');
+        c.style.transition = 'transform .32s ease, opacity .32s ease';
+        c.style.transform  = 'scale(0.96) translateY(8px)';
+        c.style.opacity    = '0';
         setTimeout(cb, 340);
     }
     function showToast(msg) {
@@ -191,22 +188,14 @@
         setTimeout(() => t.classList.remove('show'), 2600);
     }
 
-
-window.addEventListener('beforeunload', () => {});
-
-
-
-window.addEventListener('pageshow', () => {
-    const c = document.getElementById('mainContainer');
-    c.style.transition = 'none';
-    c.style.transform  = 'scale(0.96) translateY(10px)';
-    c.style.opacity    = '0';
-    requestAnimationFrame(() => {
-        c.style.transition = 'transform .45s cubic-bezier(.34,1.2,.64,1), opacity .4s ease';
-        c.style.transform  = 'scale(1) translateY(0)';
-        c.style.opacity    = '1';
+    window.addEventListener('pageshow', () => {
+        const c = document.getElementById('mainContainer');
+        c.style.transition = 'none';
+        c.style.transform  = 'scale(0.96) translateY(10px)';
+        c.style.opacity    = '0';
+        requestAnimationFrame(() => {
+            c.style.transition = 'transform .45s cubic-bezier(.34,1.2,.64,1), opacity .4s ease';
+            c.style.transform  = 'scale(1) translateY(0)';
+            c.style.opacity    = '1';
+        });
     });
-});
-</script>
-</body>
-</html>
