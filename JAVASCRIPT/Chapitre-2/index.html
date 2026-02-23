@@ -292,6 +292,7 @@
         setTimeout(() => t.classList.remove('show'), 2600);
     }
     window.addEventListener('pageshow', () => {
+         document.getElementById('overlay').classList.remove('active');
         const c = document.getElementById('mainContainer');
         c.style.transition = 'none';
         c.style.transform  = 'scale(0.96) translateY(10px)';

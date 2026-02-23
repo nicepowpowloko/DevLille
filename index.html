@@ -750,6 +750,7 @@
 
     /* ── Animation d'entrée (retour en arrière) ── */
     window.addEventListener('pageshow', () => {
+         document.getElementById('overlay').classList.remove('active');
         const container = document.getElementById('mainContainer');
         container.style.transition = 'none';
         container.style.transform = 'scale(0.96) translateY(8px)';
