@@ -190,12 +190,13 @@
         t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 2600);
     }
-    window.addEventListener('pageshow', () => {
-    // Force reset overlay sans transition
+  window.addEventListener('pageshow', () => {
     const overlay = document.getElementById('overlay');
-    overlay.style.transition = 'none';
-    overlay.style.opacity = '0';
+    overlay.style.display = 'none';      // ← cache instantanément
     overlay.classList.remove('active');
+    setTimeout(() => {
+        overlay.style.display = '';      // ← remet normal après
+    }, 200);
 
     const c = document.getElementById('mainContainer');
     c.style.transition = 'none';
