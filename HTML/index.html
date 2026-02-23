@@ -50,8 +50,7 @@
         @keyframes orbFloat { 0%,100%{transform:translate(0,0)} 33%{transform:translate(20px,-20px)} 66%{transform:translate(-15px,15px)} }
 
         /* Overlay transition */
-        .overlay { position:fixed; inset:0; background:var(--bg-deep); z-index:9999; opacity:0; pointer-events:none; transition:opacity .35s ease; }
-        .overlay.active { opacity:1; pointer-events:all; }
+        .overlay { display:none; }
 
         /* Container */
         .container { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:60px 24px 80px; transition:transform .35s cubic-bezier(.4,0,.2,1), opacity .35s ease; }
@@ -234,7 +233,7 @@
     <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil">
     <p><strong style="color:var(--text-primary)">Formation Real Conseil — DWWM</strong></p>
     <p>&copy; DARRAS Thomas</p>
-    <a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a>
+    <a href="/cdn-cgi/l/email-protection#d9adf7bdb8ababb8aa99abbcb8b5bab6b7aabcb0b5f7bab6b4"><span class="__cf_email__" data-cfemail="e397cd878291918290a39186828f808c8d90868a8fcd808c8e">[email&#160;protected]</span></a>
     <p class="mono">// Supports mis à jour régulièrement via GitHub &nbsp;·&nbsp;
         <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo</a>
     </p>
@@ -249,66 +248,39 @@
         './Rcr_VSCODE.pdf'
     ];
 
-    /** ROUGE — retour arrière */
     function goBack(event) {
         event.stopPropagation();
         if (window.history.length > 1) {
-            pageOut(() => window.history.back());
+            window.history.back();
         } else {
-            showToast('⬅ Pas d\'historique de navigation');
+            window.location.href = '../index.html';
         }
     }
-
-    /** ORANGE — nouvel onglet */
     function openTab(event, url) {
         event.stopPropagation();
         window.open(url, '_blank');
         showToast('🟠 Ouvert dans un nouvel onglet !');
     }
-
-    /** ORANGE sur la carte PDF — ouvre tous les PDFs */
     function openAllPdfs(event) {
         event.stopPropagation();
         PDF_LIST.forEach((p, i) => setTimeout(() => window.open(p, '_blank'), i * 100));
         showToast('🟠 ' + PDF_LIST.length + ' PDFs ouverts dans de nouveaux onglets !');
     }
-
-    /** VERT — naviguer avec transition macOS */
     function goTo(event, url) {
         event.stopPropagation();
-        pageOut(() => { window.location.href = url; });
+        window.location.href = url;
     }
-
-    /* Transition de sortie façon macOS */
-    function pageOut(cb) {
-        const overlay   = document.getElementById('overlay');
-        const container = document.getElementById('mainContainer');
-        container.style.transition = 'transform .32s ease, opacity .32s ease';
-        container.style.transform  = 'scale(0.96) translateY(8px)';
-        container.style.opacity    = '0';
-        overlay.classList.add('active');
-        setTimeout(cb, 340);
-    }
-
-    /* Toast */
     function showToast(msg) {
         const t = document.getElementById('toast');
         t.textContent = msg;
         t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 2600);
     }
-
-    /* Animation d'entrée */
     window.addEventListener('pageshow', () => {
         const c = document.getElementById('mainContainer');
         c.style.transition = 'none';
-        c.style.transform  = 'scale(0.96) translateY(10px)';
-        c.style.opacity    = '0';
-        requestAnimationFrame(() => {
-            c.style.transition = 'transform .45s cubic-bezier(.34,1.2,.64,1), opacity .4s ease';
-            c.style.transform  = 'scale(1) translateY(0)';
-            c.style.opacity    = '1';
-        });
+        c.style.opacity = '1';
+        c.style.transform = 'none';
     });
 </script>
 </body>
