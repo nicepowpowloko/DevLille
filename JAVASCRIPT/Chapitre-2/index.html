@@ -6,457 +6,302 @@
     <link rel="icon" href="../../favicon-32x32.png" type="image/png">
     <title>Chapitre 2 - JavaScript - Formation DWWM</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-deep:      #080b0f;
+            --bg-card:      #0d1117;
+            --titlebar:     #161b22;
+            --border:       #1e2d3d;
+            --accent-neon:  #44D62C;
+            --accent-blue:  #00b4d8;
+            --text-primary: #e6edf3;
+            --text-muted:   #7d8590;
+            --text-dim:     #3d444d;
+            --red-btn:      #ff5f57;
+            --orange-btn:   #febc2e;
+            --green-btn:    #28c840;
+            --font-mono:    'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;
+            --font-ui:      -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
         }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body { font-family:var(--font-ui); background:var(--bg-deep); min-height:100vh; color:var(--text-primary); overflow-x:hidden; }
+        body::before { content:''; position:fixed; inset:0; background-image: linear-gradient(rgba(68,214,44,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(68,214,44,.025) 1px, transparent 1px); background-size:40px 40px; pointer-events:none; z-index:0; }
+        .orb { position:fixed; border-radius:50%; filter:blur(120px); pointer-events:none; z-index:0; opacity:.15; }
+        .orb-1 { width:500px;height:500px; background:radial-gradient(circle,#44D62C,transparent); top:-150px;left:-150px; animation:orbFloat 18s ease-in-out infinite; }
+        .orb-2 { width:400px;height:400px; background:radial-gradient(circle,#00b4d8,transparent); bottom:-100px;right:-100px; animation:orbFloat 22s ease-in-out infinite reverse; }
+        @keyframes orbFloat { 0%,100%{transform:translate(0,0)} 33%{transform:translate(20px,-20px)} 66%{transform:translate(-15px,15px)} }
+        .overlay { position:fixed; inset:0; background:var(--bg-deep); z-index:9999; opacity:0; pointer-events:none; transition:opacity .35s ease; }
+        .overlay.active { opacity:1; pointer-events:all; }
+        .container { position:relative; z-index:1; max-width:900px; margin:0 auto; padding:60px 24px 80px; transition:transform .35s cubic-bezier(.4,0,.2,1), opacity .35s ease; }
 
-        body {
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            background-attachment: fixed;
-            position: relative;
-            overflow-x: hidden;
-        }
+        .header { text-align:center; margin-bottom:52px; animation:fadeDown .55s ease both; }
+        @keyframes fadeDown { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
+        .logo-wrap { display:inline-block; margin-bottom:20px; position:relative; }
+        .logo-wrap::before { content:''; position:absolute; inset:-8px; border-radius:20px; background:linear-gradient(135deg,var(--accent-neon),var(--accent-blue)); opacity:.25; filter:blur(16px); animation:logoPulse 3s ease-in-out infinite; }
+        @keyframes logoPulse { 0%,100%{opacity:.15} 50%{opacity:.45} }
+        .logo-wrap img { position:relative; width:72px; background:#fff; padding:9px; border-radius:13px; display:block; }
+        .header h1 { font-size:clamp(1.7rem,4vw,2.6rem); font-weight:700; letter-spacing:-.02em; background:linear-gradient(135deg,#fff 0%,var(--accent-neon) 45%,var(--accent-blue) 90%); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradShift 6s linear infinite; margin-bottom:10px; }
+        @keyframes gradShift { 0%{background-position:0% center} 100%{background-position:200% center} }
+        .breadcrumb { font-family:var(--font-mono); font-size:.78rem; color:var(--text-muted); }
+        .breadcrumb span { color:var(--accent-neon); }
 
-        /* Icônes technologiques flottantes */
-        .floating-icons {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
+        .legend { display:flex; justify-content:center; gap:24px; flex-wrap:wrap; margin-bottom:44px; animation:fadeDown .55s ease .1s both; }
+        .legend-item { display:flex; align-items:center; gap:7px; font-size:.75rem; color:var(--text-muted); font-family:var(--font-mono); }
+        .leg-dot { width:11px;height:11px;border-radius:50%; flex-shrink:0; }
+        .leg-dot.r{background:var(--red-btn)} .leg-dot.o{background:var(--orange-btn)} .leg-dot.g{background:var(--green-btn)}
 
-        .tech-icon {
-            position: absolute;
-            opacity: 0.15;
-            animation: float 20s infinite ease-in-out;
-        }
+        .mac-card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:20px; transition:transform .3s cubic-bezier(.34,1.56,.64,1), border-color .3s, box-shadow .3s; animation:fadeUp .5s ease both; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+        .mac-card:nth-child(1){animation-delay:.05s}
+        .mac-card:nth-child(2){animation-delay:.12s}
+        .mac-card:nth-child(3){animation-delay:.19s}
+        .mac-card:nth-child(4){animation-delay:.26s}
+        .mac-card:nth-child(5){animation-delay:.33s}
+        .mac-card:hover { transform:translateY(-5px) scale(1.005); border-color:rgba(68,214,44,.3); box-shadow:0 20px 50px rgba(0,0,0,.55), 0 0 0 1px rgba(68,214,44,.12); }
 
-        .tech-icon:nth-child(1) {
-            top: 10%;
-            left: 5%;
-            animation-delay: 0s;
-            animation-duration: 25s;
-        }
+        .titlebar { background:var(--titlebar); padding:10px 14px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); }
+        .dots { display:flex; gap:7px; align-items:center; }
+        .dot { width:13px;height:13px; border-radius:50%; cursor:pointer; border:none; outline:none; position:relative; transition:filter .15s, transform .15s; flex-shrink:0; }
+        .dot:hover { filter:brightness(1.25); transform:scale(1.15); }
+        .dot:active { transform:scale(.88); }
+        .dot-r { background:var(--red-btn); box-shadow:0 0 6px rgba(255,95,87,.4); }
+        .dot-o { background:var(--orange-btn); box-shadow:0 0 6px rgba(254,188,46,.4); }
+        .dot-g { background:var(--green-btn); box-shadow:0 0 8px rgba(40,200,64,.5); }
+        .dot-icon { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:900; color:rgba(0,0,0,.65); opacity:0; transition:opacity .15s; }
+        .titlebar:hover .dot-icon { opacity:1; }
+        .titlebar-name { flex:1; text-align:center; font-family:var(--font-mono); font-size:.77rem; color:var(--text-muted); letter-spacing:.04em; margin-right:39px; }
 
-        .tech-icon:nth-child(2) {
-            top: 20%;
-            right: 8%;
-            animation-delay: 3s;
-            animation-duration: 20s;
-        }
+        .card-body { padding:22px 22px 24px; }
+        .card-tag { display:inline-flex; align-items:center; gap:6px; background:rgba(68,214,44,.07); border:1px solid rgba(68,214,44,.18); border-radius:6px; padding:3px 10px; font-family:var(--font-mono); font-size:.68rem; color:var(--accent-neon); letter-spacing:.08em; text-transform:uppercase; margin-bottom:16px; }
+        .card-tag::before { content:'▸'; font-size:.62rem; }
+        .card-section-title { font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:14px; padding-left:10px; border-left:3px solid var(--accent-neon); }
 
-        .tech-icon:nth-child(3) {
-            top: 60%;
-            left: 10%;
-            animation-delay: 5s;
-            animation-duration: 30s;
-        }
+        .link-list { display:flex; flex-direction:column; gap:4px; }
+        .link-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:4px; }
+        .link-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; border:1px solid transparent; text-decoration:none; color:var(--text-muted); font-size:.88rem; font-family:var(--font-mono); transition:all .2s ease; cursor:pointer; }
+        .link-item:hover { background:rgba(68,214,44,.06); border-color:rgba(68,214,44,.2); color:var(--text-primary); padding-left:18px; }
+        .li-icon { font-size:.8rem; color:var(--accent-neon); opacity:.7; flex-shrink:0; transition:opacity .2s; }
+        .link-item:hover .li-icon { opacity:1; }
+        .li-ext { margin-left:auto; font-size:.65rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em; flex-shrink:0; }
 
-        .tech-icon:nth-child(4) {
-            top: 70%;
-            right: 15%;
-            animation-delay: 2s;
-            animation-duration: 22s;
-        }
+        .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(70px); background:var(--titlebar); border:1px solid var(--border); border-radius:10px; padding:10px 20px; font-family:var(--font-mono); font-size:.8rem; color:var(--orange-btn); box-shadow:0 8px 30px rgba(0,0,0,.5); z-index:1000; transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s ease; opacity:0; white-space:nowrap; }
+        .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
-        .tech-icon:nth-child(5) {
-            top: 40%;
-            left: 15%;
-            animation-delay: 7s;
-            animation-duration: 28s;
-        }
+        footer { position:relative; z-index:1; text-align:center; padding:36px 24px 60px; border-top:1px solid var(--border); margin-top:40px; }
+        footer img { width:54px; background:#fff; padding:7px; border-radius:10px; margin-bottom:14px; opacity:.75; }
+        footer p { color:var(--text-muted); font-size:.8rem; margin:4px 0; }
+        footer a { color:var(--accent-blue); text-decoration:none; font-size:.8rem; }
+        footer a:hover { text-decoration:underline; }
+        .mono { font-family:var(--font-mono); color:var(--text-dim); font-size:.7rem; margin-top:14px; }
 
-        .tech-icon:nth-child(6) {
-            top: 50%;
-            right: 5%;
-            animation-delay: 4s;
-            animation-duration: 26s;
-        }
-
-        .tech-icon:nth-child(7) {
-            top: 85%;
-            left: 20%;
-            animation-delay: 6s;
-            animation-duration: 24s;
-        }
-
-        .tech-icon:nth-child(8) {
-            top: 30%;
-            right: 20%;
-            animation-delay: 1s;
-            animation-duration: 27s;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            25% {
-                transform: translateY(-20px) rotate(5deg);
-            }
-            50% {
-                transform: translateY(0) rotate(0deg);
-            }
-            75% {
-                transform: translateY(20px) rotate(-5deg);
-            }
-        }
-
-        .tech-icon svg {
-            width: 80px;
-            height: 80px;
-            fill: white;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
-        }
-
-        /* Container principal */
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 50px 20px;
-        }
-
-        /* Logo avec animation pulse */
-        .logo-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .logo-container img {
-            width: 120px;
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            animation: logoPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes logoPulse {
-            0%, 100% {
-                box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            }
-            50% {
-                box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6),
-                            0 0 40px rgba(118, 75, 162, 0.4),
-                            0 0 60px rgba(240, 147, 251, 0.3);
-            }
-        }
-
-        /* Titre avec dégradé animé + effet 3D au hover */
-        h1 {
-            color: white;
-            text-align: center;
-            padding-bottom: 10px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 40px;
-            
-            /* Dégradé animé */
-            background: linear-gradient(90deg, 
-                #ffffff 0%, 
-                #a8b5ff 25%, 
-                   #2C3F77 50%, 
-            #ffd4ff 75%, 
-            #A0866B 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 10s ease infinite;
-            
-            transition: all 0.3s ease;
-            cursor: default;
-        }
-
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% center;
-            }
-            50% {
-                background-position: 100% center;
-            }
-            100% {
-                background-position: 0% center;
-            }
-        }
-
-        /* Effet 3D au hover sur le titre */
-        h1:hover {
-            transform: translateY(-5px);
-            text-shadow: 
-                0 10px 20px rgba(0,0,0,0.3),
-                0 15px 30px rgba(102, 126, 234, 0.4),
-                0 20px 40px rgba(118, 75, 162, 0.3);
-        }
-
-        h3 {
-            color: #A0866B;
-            margin-top: 0;
-            border-left: 4px solid #A0866B;
-            padding-left: 10px;
-            font-size: 1.3em;
-            margin-bottom: 15px;
-        }
-
-        /* Sections/Cartes avec effet glow */
-        .section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 25px;
-            margin: 20px 0;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            transition: all 0.4s ease;
-            border: 2px solid transparent;
-        }
-
-        .section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.3),
-                        0 0 40px rgba(102, 126, 234, 0.5),
-                        0 0 60px rgba(118, 75, 162, 0.3),
-                        inset 0 0 20px rgba(102, 126, 234, 0.1);
-            border: 2px solid rgba(102, 126, 234, 0.3);
-        }
-
-        /* Liens */
-        a {
-            color: #2C3F77;
-            text-decoration: none;
-            font-size: 16px;
-            display: block;
-            padding: 12px;
-            margin: 8px 0;
-            border-left: 3px solid #2C3F77;
-            padding-left: 15px;
-            transition: all 0.3s ease;
-            border-radius: 5px;
-        }
-
-        a:hover {
-            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent);
-            border-left-color: #667eea;
-            padding-left: 20px;
-        }
-
-        /* Bouton */
-        .btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white !important;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            display: inline-block;
-            text-align: center;
-            border-left: none !important;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-            background: linear-gradient(135deg, #764ba2, #667eea);
-            padding-left: 30px !important;
-        }
-
-        /* Footer */
-        footer {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            text-align: center;
-            margin-top: 50px;
-            padding: 30px 20px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            color: #666;
-        }
-
-        footer p {
-            margin: 10px 0;
-        }
-
-        footer a {
-            display: inline;
-            border: none;
-            padding: 0;
-            color: #667eea;
-        }
-
-        footer a:hover {
-            background: none;
-            text-decoration: underline;
-            padding-left: 0;
-        }
-
-        footer img {
-            max-width: 100px;
-            margin-bottom: 15px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .tech-icon svg {
-                width: 60px;
-                height: 60px;
-            }
-
-            .container {
-                padding: 30px 15px;
-            }
-        }
+        @media(max-width:600px) { .legend{gap:14px} .header h1{font-size:1.6rem} .link-grid{grid-template-columns:1fr} }
     </style>
 </head>
 <body>
-    <!-- Icônes flottantes -->
-    <div class="floating-icons">
-        <!-- HTML5 -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 5L15 70L40 78L65 70L70 5H10ZM57 22H28L29 32H56L53 58L40 62L27 58L26 48H34L35 52L40 54L45 52L46 44H26L23 16H57V22Z"/>
-            </svg>
-        </div>
 
-        <!-- CSS3 -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 5L15 70L40 78L65 70L70 5H10ZM57 22H32L33 32H56L53 58L40 62L27 58L26 48H34L35 52L40 54L45 52L46 44H26L23 16H57V22Z"/>
-                <circle cx="25" cy="35" r="3"/>
-                <circle cx="35" cy="35" r="3"/>
-                <circle cx="45" cy="35" r="3"/>
-            </svg>
-        </div>
+<div class="overlay" id="overlay"></div>
+<div class="toast" id="toast"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
 
-        <!-- JavaScript -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <rect x="5" y="5" width="70" height="70" rx="5"/>
-                <text x="40" y="60" font-size="50" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-weight="bold">JS</text>
-            </svg>
-        </div>
+<div class="container" id="mainContainer">
 
-        <!-- React -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3"/>
-                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3" transform="rotate(60 40 40)"/>
-                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3" transform="rotate(120 40 40)"/>
-                <circle cx="40" cy="40" r="5"/>
-            </svg>
+    <header class="header">
+        <div class="logo-wrap">
+            <img src="../../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil">
         </div>
+        <h1>Chapitre 2 — Approfondissement JavaScript</h1>
+        <p class="breadcrumb">Formation DWWM <span>/</span> JAVASCRIPT <span>/</span> Chapitre-2 <span>// 2025-2026</span></p>
+    </header>
 
-        <!-- Git -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M75 35L45 5L40 10L35 5L5 35L10 40L5 45L35 75L40 70L45 75L75 45L70 40L75 35Z"/>
-                <circle cx="25" cy="40" r="6"/>
-                <circle cx="55" cy="40" r="6"/>
-                <line x1="31" y1="40" x2="49" y2="40" stroke="white" stroke-width="4"/>
-            </svg>
-        </div>
-
-        <!-- Node.js -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 5L70 22.5V57.5L40 75L10 57.5V22.5L40 5Z"/>
-                <text x="40" y="50" font-size="20" text-anchor="middle" fill="white" font-family="monospace">NODE</text>
-            </svg>
-        </div>
-
-        <!-- Database -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="40" cy="20" rx="30" ry="10"/>
-                <path d="M10 20V60C10 65.5 23.4 70 40 70C56.6 70 70 65.5 70 60V20"/>
-                <ellipse cx="40" cy="40" rx="30" ry="10" fill="none" stroke="white" stroke-width="2"/>
-            </svg>
-        </div>
-
-        <!-- Code brackets -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M25 15L10 40L25 65" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
-                <path d="M55 15L70 40L55 65" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
-                <line x1="45" y1="20" x2="35" y2="60" stroke="white" stroke-width="5" stroke-linecap="round"/>
-            </svg>
-        </div>
+    <div class="legend">
+        <div class="legend-item"><div class="leg-dot r"></div>Retour arrière</div>
+        <div class="legend-item"><div class="leg-dot o"></div>Nouvel onglet</div>
+        <div class="legend-item"><div class="leg-dot g"></div>Ouvrir le fichier</div>
     </div>
 
-    <!-- Contenu principal -->
-    <div class="container">
-        <!-- Logo Real Conseil -->
-        <div class="logo-container">
-            <img src="../../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
-        </div>
-
-        <h1>Chapitre 2 - Approfondissement JavaScript</h1>
-
-        <!-- Boucles -->
-        <div class="section">
-            <h3>Boucles</h3>
-            <a href="1-Boucles/boucles.html">Boucles (HTML)</a>
-            <a href="1-Boucles/boucles.js">Boucles (JS)</a>
-            <a href="1-Boucles/panier.html">Exercice : Panier</a>
-        </div>
-
-        <!-- Application To-Do Simple -->
-        <div class="section">
-            <h3>Application To-Do Simple</h3>
-            <a href="Exo1-to-do-app-simple/age.html">Age</a>
-            <a href="Exo1-to-do-app-simple/boucle-choix.html">Boucle choix</a>
-            <a href="Exo1-to-do-app-simple/boucle-deux.html">Boucle deux</a>
-            <a href="Exo1-to-do-app-simple/budget.html">Budget</a>
-            <a href="Exo1-to-do-app-simple/departement.html">Département</a>
-            <a href="Exo1-to-do-app-simple/index.html">To-Do App</a>
-            <a href="Exo1-to-do-app-simple/moyenne.html">Moyenne</a>
-            <a href="Exo1-to-do-app-simple/table.html">Table</a>
-            <a href="Exo1-to-do-app-simple/tva.html">TVA</a>
-            <a href="Exo1-to-do-app-simple/valeur-2.html">Valeur 2</a>
-            <a href="Exo1-to-do-app-simple/variable.html">Variable</a>
-        </div>
-
-        <!-- Boîtes de dialogue -->
-        <div class="section">
-            <h3>Boîtes de dialogue</h3>
-            <a href="boite.alerte/alert.html">Alert</a>
-            <a href="boite.alerte/prompt.html">Prompt</a>
-        </div>
-
-        <!-- Bouton retour -->
-        <div style="text-align: center; margin-top: 30px;">
-            <a href="../" class="btn">← Retour JavaScript</a>
-        </div>
-
-        <!-- Footer -->
-        <footer>
-            <p><strong>Formation Real Conseil - DWWM 2025-2026</strong></p>
-            <p>&copy; DARRAS Thomas</p>
-            <a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a>
-            <p style="font-size: 14px; margin-top: 15px;">
-                Les supports sont mis à jour régulièrement via GitHub
-            </p>
-            <div style="text-align: center; margin-top: 20px;">
-                <img src="../../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
-                <p style="font-size: 12px; color: #999;">
-                    <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo GitHub</a>
-                </p>
+    <!-- BOUCLES -->
+    <div class="mac-card">
+        <div class="titlebar">
+            <div class="dots">
+                <button class="dot dot-r" onclick="goBack(event)" title="Retour arrière"><span class="dot-icon">✕</span></button>
+                <button class="dot dot-o" onclick="openTab(event,'./1-Boucles/boucles.html')" title="Nouvel onglet"><span class="dot-icon">⊞</span></button>
+                <button class="dot dot-g" onclick="goTo(event,'./1-Boucles/boucles.html')" title="Ouvrir"><span class="dot-icon">↗</span></button>
             </div>
-        </footer>
+            <span class="titlebar-name">boucles.js</span>
+        </div>
+        <div class="card-body">
+            <div class="card-tag">Boucles</div>
+            <p class="card-section-title">for, while, forEach, for...of</p>
+            <div class="link-list">
+                <a class="link-item" onclick="goTo(event,'./1-Boucles/boucles.html')">
+                    <span class="li-icon">▸</span> Boucles (HTML) <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./1-Boucles/boucles.js')">
+                    <span class="li-icon">▸</span> Boucles (JS) <span class="li-ext">.js</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./1-Boucles/panier.html')">
+                    <span class="li-icon">▸</span> Exercice : Panier <span class="li-ext">.html</span>
+                </a>
+            </div>
+        </div>
     </div>
+
+    <!-- TO-DO APP -->
+    <div class="mac-card">
+        <div class="titlebar">
+            <div class="dots">
+                <button class="dot dot-r" onclick="goBack(event)" title="Retour arrière"><span class="dot-icon">✕</span></button>
+                <button class="dot dot-o" onclick="openTab(event,'./Exo1-to-do-app-simple/index.html')" title="Nouvel onglet"><span class="dot-icon">⊞</span></button>
+                <button class="dot dot-g" onclick="goTo(event,'./Exo1-to-do-app-simple/index.html')" title="Ouvrir To-Do App"><span class="dot-icon">↗</span></button>
+            </div>
+            <span class="titlebar-name">to-do-app.js</span>
+        </div>
+        <div class="card-body">
+            <div class="card-tag">Application To-Do Simple</div>
+            <p class="card-section-title">Exercices pratiques</p>
+            <div class="link-grid">
+                <a class="link-item" onclick="goTo(event,'./Exo1-to-do-app-simple/index.html')">
+                    <span class="li-icon">▸</span> To-Do App <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./Exo1-to-do-app-simple/age.html')">
+                    <span class="li-icon">▸</span> Age <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./Exo1-to-do-app-simple/boucle-choix.html')">
+                    <span class="li-icon">▸</span> Boucle choix <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./Exo1-to-do-app-simple/boucle-deux.html')">
+                    <span class="li-icon">▸</span> Boucle deux <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./Exo1-to-do-app-simple/budget.html')">
+                    <span class="li-icon">▸</span> Budget <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./Exo1-to-do-app-simple/departement.html')">
+                    <span class="li-icon">▸</span> Département <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./Exo1-to-do-app-simple/moyenne.html')">
+                    <span class="li-icon">▸</span> Moyenne <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./Exo1-to-do-app-simple/table.html')">
+                    <span class="li-icon">▸</span> Table <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./Exo1-to-do-app-simple/tva.html')">
+                    <span class="li-icon">▸</span> TVA <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./Exo1-to-do-app-simple/valeur-2.html')">
+                    <span class="li-icon">▸</span> Valeur 2 <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./Exo1-to-do-app-simple/variable.html')">
+                    <span class="li-icon">▸</span> Variable <span class="li-ext">.html</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOÎTES DE DIALOGUE -->
+    <div class="mac-card">
+        <div class="titlebar">
+            <div class="dots">
+                <button class="dot dot-r" onclick="goBack(event)" title="Retour arrière"><span class="dot-icon">✕</span></button>
+                <button class="dot dot-o" onclick="openTab(event,'./boite.alerte/alert.html')" title="Nouvel onglet"><span class="dot-icon">⊞</span></button>
+                <button class="dot dot-g" onclick="goTo(event,'./boite.alerte/alert.html')" title="Ouvrir Alert"><span class="dot-icon">↗</span></button>
+            </div>
+            <span class="titlebar-name">boites-dialogue.js</span>
+        </div>
+        <div class="card-body">
+            <div class="card-tag">Boîtes de dialogue</div>
+            <p class="card-section-title">alert(), confirm(), prompt()</p>
+            <div class="link-list">
+                <a class="link-item" onclick="goTo(event,'./boite.alerte/alert.html')">
+                    <span class="li-icon">▸</span> Alert <span class="li-ext">.html</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'./boite.alerte/prompt.html')">
+                    <span class="li-icon">▸</span> Prompt <span class="li-ext">.html</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <div class="mac-card">
+        <div class="titlebar">
+            <div class="dots">
+                <button class="dot dot-r" onclick="goBack(event)" title="Retour arrière"><span class="dot-icon">✕</span></button>
+                <button class="dot dot-o" onclick="openTab(event,'../index.html')" title="JavaScript dans nouvel onglet"><span class="dot-icon">⊞</span></button>
+                <button class="dot dot-g" onclick="goTo(event,'../index.html')" title="Retour JavaScript"><span class="dot-icon">↗</span></button>
+            </div>
+            <span class="titlebar-name">navigation.js</span>
+        </div>
+        <div class="card-body">
+            <div class="card-tag">Navigation</div>
+            <p class="card-section-title">Retour</p>
+            <div class="link-list">
+                <a class="link-item" onclick="goTo(event,'../index.html')">
+                    <span class="li-icon">←</span> Retour JavaScript <span class="li-ext">index</span>
+                </a>
+                <a class="link-item" onclick="goTo(event,'../../index.html')">
+                    <span class="li-icon">←</span> Retour à l'accueil Formation DWWM <span class="li-ext">index</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <img src="../../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil">
+    <p><strong style="color:var(--text-primary)">Formation Real Conseil — DWWM</strong></p>
+    <p>&copy; DARRAS Thomas</p>
+    <a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a>
+    <p class="mono">// Supports mis à jour régulièrement via GitHub &nbsp;·&nbsp;
+        <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo</a>
+    </p>
+</footer>
+
+<script>
+    function goBack(event) {
+        event.stopPropagation();
+        if (window.history.length > 1) {
+            pageOut(() => window.history.back());
+        } else {
+            showToast('⬅ Pas d\'historique de navigation');
+        }
+    }
+    function openTab(event, url) {
+        event.stopPropagation();
+        window.open(url, '_blank');
+        showToast('🟠 Ouvert dans un nouvel onglet !');
+    }
+    function goTo(event, url) {
+        event.stopPropagation();
+        pageOut(() => { window.location.href = url; });
+    }
+    function pageOut(cb) {
+        const overlay   = document.getElementById('overlay');
+        const container = document.getElementById('mainContainer');
+        container.style.transition = 'transform .32s ease, opacity .32s ease';
+        container.style.transform  = 'scale(0.96) translateY(8px)';
+        container.style.opacity    = '0';
+        overlay.classList.add('active');
+        setTimeout(cb, 340);
+    }
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2600);
+    }
+    window.addEventListener('pageshow', () => {
+        const c = document.getElementById('mainContainer');
+        c.style.transition = 'none';
+        c.style.transform  = 'scale(0.96) translateY(10px)';
+        c.style.opacity    = '0';
+        requestAnimationFrame(() => {
+            c.style.transition = 'transform .45s cubic-bezier(.34,1.2,.64,1), opacity .4s ease';
+            c.style.transform  = 'scale(1) translateY(0)';
+            c.style.opacity    = '1';
+        });
+    });
+</script>
 </body>
 </html>

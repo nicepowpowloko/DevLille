@@ -282,9 +282,9 @@ pre{white-space:pre;tab-size:2}
 <script>
 const RAW = JSON.parse(document.getElementById('D').textContent);
 
-// ════════════════════════════════════════════════════
+
 //  SYNTAX HIGHLIGHTING ENGINE
-// ════════════════════════════════════════════════════
+
 
 function esc(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -493,9 +493,9 @@ function hlAPI(line) {
   return hlJS(line);
 }
 
-// ════════════════════════════════════════════════════
+
 //  HIGHLIGHT UN BLOC DE CODE
-// ════════════════════════════════════════════════════
+
 
 function highlight(code, lang) {
   const escaped = esc(code);
@@ -503,9 +503,9 @@ function highlight(code, lang) {
   return lines.map(l => wrapLine(l, lang)).join('\n');
 }
 
-// ════════════════════════════════════════════════════
+
 //  RENDER
-// ════════════════════════════════════════════════════
+
 
 const LC = {
   html:'var(--html)',css:'var(--css)',js:'var(--js)',

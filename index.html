@@ -4,529 +4,762 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="./favicon-32x32.png" type="image/png">
-    <title>Formation DWWM - Devlille</title>
+    <title>Formation DWWM - Real Conseil</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-deep:       #080b0f;
+            --bg-card:       #0d1117;
+            --bg-card-hover: #111820;
+            --border:        #1e2d3d;
+            --border-glow:   #44D62C;
+            --accent-green:  #44D62C;
+            --accent-blue:   #00b4d8;
+            --accent-orange: #ff6b00;
+            --text-primary:  #e6edf3;
+            --text-muted:    #7d8590;
+            --text-dim:      #3d444d;
+            --red-btn:       #ff5f57;
+            --orange-btn:    #febc2e;
+            --green-btn:     #28c840;
+            --titlebar:      #161b22;
+            --font-mono:     'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+            --font-ui:       -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: var(--font-ui);
+            background: var(--bg-deep);
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            background-attachment: fixed;
-            position: relative;
+            color: var(--text-primary);
             overflow-x: hidden;
+            position: relative;
         }
-            
-        /* Icônes technologiques flottantes */
-        .floating-icons {
+
+        /* ── BACKGROUND GRID ── */
+        body::before {
+            content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(68,214,44,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(68,214,44,.03) 1px, transparent 1px);
+            background-size: 40px 40px;
             pointer-events: none;
             z-index: 0;
         }
 
-        .tech-icon {
-            position: absolute;
-            opacity: 0.15;
-            animation: float 20s infinite ease-in-out;
+        /* ── GLOW ORBS ── */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.18;
+        }
+        .orb-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, #44D62C, transparent);
+            top: -200px; left: -200px;
+            animation: orbFloat 18s ease-in-out infinite;
+        }
+        .orb-2 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, #00b4d8, transparent);
+            bottom: -150px; right: -150px;
+            animation: orbFloat 22s ease-in-out infinite reverse;
+        }
+        .orb-3 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, #ff6b00, transparent);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation: orbFloat 15s ease-in-out infinite 5s;
+            opacity: 0.08;
         }
 
-        /* Différentes icônes avec positions variées */
-        .tech-icon:nth-child(1) {
-            top: 10%;
-            left: 5%;
-            animation-delay: 0s;
-            animation-duration: 25s;
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33%       { transform: translate(30px, -30px) scale(1.05); }
+            66%       { transform: translate(-20px, 20px) scale(.95); }
         }
 
-        .tech-icon:nth-child(2) {
-            top: 20%;
-            right: 8%;
-            animation-delay: 3s;
-            animation-duration: 20s;
+        /* ── PAGE TRANSITION ── */
+        .page-transition-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-deep);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s cubic-bezier(.4,0,.2,1);
+        }
+        .page-transition-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        body.page-out .container {
+            transform: scale(0.96) translateY(10px);
+            opacity: 0;
         }
 
-        .tech-icon:nth-child(3) {
-            top: 60%;
-            left: 10%;
-            animation-delay: 5s;
-            animation-duration: 30s;
-        }
-
-        .tech-icon:nth-child(4) {
-            top: 70%;
-            right: 15%;
-            animation-delay: 2s;
-            animation-duration: 22s;
-        }
-
-        .tech-icon:nth-child(5) {
-            top: 40%;
-            left: 15%;
-            animation-delay: 7s;
-            animation-duration: 28s;
-        }
-
-        .tech-icon:nth-child(6) {
-            top: 50%;
-            right: 5%;
-            animation-delay: 4s;
-            animation-duration: 26s;
-        }
-
-        .tech-icon:nth-child(7) {
-            top: 85%;
-            left: 20%;
-            animation-delay: 6s;
-            animation-duration: 24s;
-        }
-
-        .tech-icon:nth-child(8) {
-            top: 30%;
-            right: 20%;
-            animation-delay: 1s;
-            animation-duration: 27s;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            25% {
-                transform: translateY(-20px) rotate(5deg);
-            }
-            50% {
-                transform: translateY(0) rotate(0deg);
-            }
-            75% {
-                transform: translateY(20px) rotate(-5deg);
-            }
-        }
-
-        .tech-icon svg {
-            width: 80px;
-            height: 80px;
-            fill: white;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
-        }
-
-        /* Container principal */
+        /* ── CONTAINER ── */
         .container {
             position: relative;
             z-index: 1;
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 50px 20px;
+            padding: 60px 24px 80px;
+            transition: transform 0.35s cubic-bezier(.4,0,.2,1), opacity 0.35s cubic-bezier(.4,0,.2,1);
         }
 
-        /* Animation du titre h1 - Dégradé animé + effet 3D au hover */
-        h1 {
-            color: white;
+        /* ── HEADER ── */
+        .header {
             text-align: center;
-            padding-bottom: 10px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-            
-            /* Dégradé animé */
-            background: linear-gradient(90deg, 
-                #ffffff 0%, 
-                #a8b5ff 25%, 
-                #2C3F77 50%, 
-                #ffd4ff 75%, 
-                #A0866B 100%);
+            margin-bottom: 60px;
+            animation: fadeDown .6s ease both;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-wrap {
+            display: inline-block;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .logo-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+            opacity: 0.3;
+            filter: blur(16px);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+        @keyframes logoPulse {
+            0%, 100% { opacity: 0.2; }
+            50%       { opacity: 0.5; }
+        }
+        .logo-wrap img {
+            position: relative;
+            width: 80px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 14px;
+            display: block;
+        }
+
+        .header h1 {
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-green) 40%, var(--accent-blue) 80%);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: gradientShift 10s ease infinite;
-            
-            /* Préparation pour l'effet 3D */
-            transition: all 0.3s ease;
-            cursor: default;
-        }
-
-        /* Animation du dégradé */
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% center;
-            }
-            50% {
-                background-position: 100% center;
-            }
-            100% {
-                background-position: 0% center;
-            }
-        }
-
-        /* Effet 3D au hover */
-        h1:hover {
-            transform: translateY(-5px);
-            text-shadow: 
-                0 10px 20px rgba(0,0,0,0.3),
-                0 15px 30px rgba(102, 126, 234, 0.4),
-                0 20px 40px rgba(118, 75, 162, 0.3);
-        }
-
-        .logo-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .logo-container img {
-            width: 120px;
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            animation: logoPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes logoPulse {
-            0%, 100% {
-                box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            }
-            50% {
-                box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6),
-                            0 0 40px rgba(118, 75, 162, 0.4),
-                            0 0 50px rgba(240, 147, 251, 0.3);
-            }
-        }
-
-        .subtitle {
-            text-align: center;
-            font-size: 18px;
-            color: white;
-            margin-bottom: 40px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-
-        /* Grille pour afficher les dossiers en 2 colonnes */
-        .dossiers-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .dossier {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            transition: all 0.4s ease;
-            border: 2px solid transparent;
-        }
-
-        .dossier:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.3),
-                        0 0 40px rgba(102, 126, 234, 0.5),
-                        0 0 60px rgba(118, 75, 162, 0.3),
-                        inset 0 0 20px rgba(102, 126, 234, 0.1);
-            border: 3px solid #A0866B;
-        }
-
-        .dossier h3 {
-            color: #A0866B;
-            margin-top: 0;
-            border-left: 4px solid #A0866B;
-            padding-left: 10px;
-            font-size: 1.3em;
+            animation: gradientShift 6s linear infinite;
             margin-bottom: 10px;
         }
-
-        a {
-            color: #2C3F77;
-            text-decoration: none;
-            font-size: 16px;
-            display: block;
-            padding: 10px;
-            margin: 5px 0;
-            border-left: 3px solid #2C3F77;
-            padding-left: 15px;
-            transition: all 0.3s ease;
+        @keyframes gradientShift {
+            0%   { background-position: 0% center; }
+            100% { background-position: 200% center; }
         }
 
-        a:hover {
-            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent);
-            border-left-color: #667eea;
-            padding-left: 20px;
+        .header p {
+            color: var(--text-muted);
+            font-size: .95rem;
+            font-family: var(--font-mono);
+            letter-spacing: .05em;
+        }
+        .header p span {
+            color: var(--accent-green);
         }
 
-        footer {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            text-align: center;
-            margin-top: 50px;
-            padding: 30px 20px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            color: #666;
+        /* ── LEGEND ── */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+            animation: fadeDown .6s ease .1s both;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .8rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+        .legend-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+        }
+        .legend-dot.red    { background: var(--red-btn); }
+        .legend-dot.orange { background: var(--orange-btn); }
+        .legend-dot.green  { background: var(--green-btn); }
+
+        /* ── GRID ── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
         }
 
-        footer p {
-            margin: 10px 0;
+        /* ── MAC WINDOW CARD ── */
+        .mac-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform .3s cubic-bezier(.34,1.56,.64,1),
+                        border-color .3s ease,
+                        box-shadow .3s ease;
+            animation: fadeUp .5s ease both;
+            position: relative;
         }
 
-        footer a {
-            display: inline;
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .mac-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: rgba(68,214,44,.35);
+            box-shadow:
+                0 20px 60px rgba(0,0,0,.6),
+                0 0 0 1px rgba(68,214,44,.15),
+                inset 0 0 40px rgba(68,214,44,.03);
+        }
+
+        /* Stagger animation delays */
+        .mac-card:nth-child(1)  { animation-delay: .05s; }
+        .mac-card:nth-child(2)  { animation-delay: .10s; }
+        .mac-card:nth-child(3)  { animation-delay: .15s; }
+        .mac-card:nth-child(4)  { animation-delay: .20s; }
+        .mac-card:nth-child(5)  { animation-delay: .25s; }
+        .mac-card:nth-child(6)  { animation-delay: .30s; }
+        .mac-card:nth-child(7)  { animation-delay: .35s; }
+        .mac-card:nth-child(8)  { animation-delay: .40s; }
+        .mac-card:nth-child(9)  { animation-delay: .45s; }
+        .mac-card:nth-child(10) { animation-delay: .50s; }
+        .mac-card:nth-child(11) { animation-delay: .55s; }
+        .mac-card:nth-child(12) { animation-delay: .60s; }
+        .mac-card:nth-child(13) { animation-delay: .65s; }
+        .mac-card:nth-child(14) { animation-delay: .70s; }
+        .mac-card:nth-child(15) { animation-delay: .75s; }
+        .mac-card:nth-child(16) { animation-delay: .80s; }
+        .mac-card:nth-child(17) { animation-delay: .85s; }
+
+        /* ── TITLEBAR ── */
+        .titlebar {
+            background: var(--titlebar);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .dots {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            transition: filter .15s ease, transform .15s ease;
+            flex-shrink: 0;
             border: none;
-            padding: 0;
-            color: #667eea;
+            outline: none;
+        }
+        .dot:hover  { filter: brightness(1.2); transform: scale(1.15); }
+        .dot:active { transform: scale(.9); }
+
+        .dot-red    { background: var(--red-btn); box-shadow: 0 0 6px rgba(255,95,87,.4); }
+        .dot-orange { background: var(--orange-btn); box-shadow: 0 0 6px rgba(254,188,46,.4); }
+        .dot-green  { background: var(--green-btn); box-shadow: 0 0 6px rgba(40,200,64,.6); }
+
+        .dot .dot-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            font-size: 9px;
+            font-weight: 900;
+            color: rgba(0,0,0,.7);
+            transition: opacity .15s ease;
+            line-height: 1;
+        }
+        .titlebar:hover .dot .dot-icon { opacity: 1; }
+
+        .titlebar-name {
+            flex: 1;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            color: var(--text-muted);
+            letter-spacing: .04em;
+            margin-right: 39px; /* compensate dots width */
         }
 
-        footer a:hover {
-            background: none;
-            text-decoration: underline;
-            padding-left: 0;
+        /* ── CARD BODY ── */
+        .card-body {
+            padding: 20px 20px 22px;
         }
 
-        footer img {
-            max-width: 100px;
-            margin-bottom: 15px;
+        .card-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(68,214,44,.08);
+            border: 1px solid rgba(68,214,44,.2);
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            color: var(--accent-green);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .card-badge::before {
+            content: '▸';
+            font-size: .65rem;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .dossiers-grid {
-                grid-template-columns: 1fr;
-            }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -.01em;
+        }
 
-            h1 {
-                font-size: 1.8em;
-            }
+        .card-desc {
+            font-size: .83rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+            margin-bottom: 18px;
+            min-height: 38px;
+        }
 
-            .tech-icon svg {
-                width: 60px;
-                height: 60px;
-            }
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+            padding-top: 14px;
+        }
 
-            .container {
-                padding: 30px 15px;
-            }
+        .card-path {
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            color: var(--text-dim);
+        }
+
+        .card-arrow {
+            width: 28px; height: 28px;
+            border-radius: 7px;
+            background: rgba(68,214,44,.1);
+            border: 1px solid rgba(68,214,44,.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-green);
+            font-size: .9rem;
+            cursor: pointer;
+            transition: background .2s, transform .2s;
+        }
+        .card-arrow:hover {
+            background: rgba(68,214,44,.25);
+            transform: translateX(3px);
+        }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--titlebar);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-family: var(--font-mono);
+            font-size: .82rem;
+            color: var(--accent-orange);
+            box-shadow: 0 8px 30px rgba(0,0,0,.5);
+            z-index: 1000;
+            transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+            opacity: 0;
+            white-space: nowrap;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 40px 24px 60px;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+        footer .footer-logo img {
+            width: 60px;
+            background: #fff;
+            padding: 8px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            opacity: .8;
+        }
+        footer p {
+            color: var(--text-muted);
+            font-size: .82rem;
+            margin: 4px 0;
+        }
+        footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: .82rem;
+        }
+        footer a:hover { text-decoration: underline; }
+        footer .year {
+            font-family: var(--font-mono);
+            color: var(--text-dim);
+            font-size: .72rem;
+            margin-top: 16px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .grid { grid-template-columns: 1fr; }
+            .legend { gap: 16px; }
         }
     </style>
 </head>
 <body>
-    <!-- Icônes technologiques flottantes -->
-    <div class="floating-icons">
-        <!-- HTML5 -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 5L15 70L40 78L65 70L70 5H10ZM57 22H28L29 32H56L53 58L40 62L27 58L26 48H34L35 52L40 54L45 52L46 44H26L23 16H57V22Z"/>
-            </svg>
-        </div>
 
-        <!-- CSS3 -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 5L15 70L40 78L65 70L70 5H10ZM57 22H32L33 32H56L53 58L40 62L27 58L26 48H34L35 52L40 54L45 52L46 44H26L23 16H57V22Z"/>
-                <circle cx="25" cy="35" r="3"/>
-                <circle cx="35" cy="35" r="3"/>
-                <circle cx="45" cy="35" r="3"/>
-            </svg>
-        </div>
+<!-- Overlay de transition page -->
+<div class="page-transition-overlay" id="transitionOverlay"></div>
 
-        <!-- JavaScript -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <rect x="5" y="5" width="70" height="70" rx="5"/>
-                <text x="40" y="60" font-size="50" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-weight="bold">JS</text>
-            </svg>
-        </div>
+<!-- Toast notification -->
+<div class="toast" id="toast">Lien copié dans le presse-papier !</div>
 
-        <!-- React -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3"/>
-                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3" transform="rotate(60 40 40)"/>
-                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3" transform="rotate(120 40 40)"/>
-                <circle cx="40" cy="40" r="5"/>
-            </svg>
-        </div>
+<!-- Orbs décoratifs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
 
-        <!-- Git -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M75 35L45 5L40 10L35 5L5 35L10 40L5 45L35 75L40 70L45 75L75 45L70 40L75 35Z"/>
-                <circle cx="25" cy="40" r="6"/>
-                <circle cx="55" cy="40" r="6"/>
-                <line x1="31" y1="40" x2="49" y2="40" stroke="white" stroke-width="4"/>
-            </svg>
-        </div>
+<div class="container" id="mainContainer">
 
-        <!-- Node.js -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 5L70 22.5V57.5L40 75L10 57.5V22.5L40 5Z"/>
-                <text x="40" y="50" font-size="20" text-anchor="middle" fill="white" font-family="monospace">NODE</text>
-            </svg>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-wrap">
+            <img src="./JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil">
         </div>
+        <h1>Formation DWWM — Real Conseil</h1>
+        <p>Supports de cours &amp; exercices <span>// 2025-2026</span></p>
+    </header>
 
-        <!-- Database -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="40" cy="20" rx="30" ry="10"/>
-                <path d="M10 20V60C10 65.5 23.4 70 40 70C56.6 70 70 65.5 70 60V20"/>
-                <ellipse cx="40" cy="40" rx="30" ry="10" fill="none" stroke="white" stroke-width="2"/>
-            </svg>
+    <!-- Légende boutons -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-dot red"></div>
+            <span>Retour arrière</span>
         </div>
-
-        <!-- Code brackets -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M25 15L10 40L25 65" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
-                <path d="M55 15L70 40L55 65" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
-                <line x1="45" y1="20" x2="35" y2="60" stroke="white" stroke-width="5" stroke-linecap="round"/>
-            </svg>
+        <div class="legend-item">
+            <div class="legend-dot orange"></div>
+            <span>Ouvrir dans un nouvel onglet</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot green"></div>
+            <span>Accéder au cours</span>
         </div>
     </div>
 
-    <!-- Contenu principal -->
-    <div class="container">
-        <h1>Formation DWWM - Real Conseil</h1>
-        
-        <div class="logo-container">
-            <img src="./JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
-        </div>
-        
-        <p class="subtitle">Supports de cours et exercices</p>
+    <!-- Grille des cours -->
+    <div class="grid" id="coursesGrid">
 
-        <!-- Grille des dossiers en 2 colonnes -->
-        <div class="dossiers-grid">
-            <!-- HTML -->
-            <div class="dossier">
-                <h3>HTML</h3>
-                <a href="./HTML/">Accéder au dossier HTML</a>
-            </div>
+        <!-- Les cartes sont générées par JS ci-dessous -->
 
-            <!-- CSS -->
-            <div class="dossier">
-                <h3>CSS</h3>
-                <a href="./CSS/">Accéder au dossier CSS</a>
-            </div>
-
-            <!-- RESPONSIVE -->
-            <div class="dossier">
-                <h3>RESPONSIVE</h3>
-                <a href="./RESPONSIVE/">Accéder au dossier Responsive</a>
-            </div>
-            
-            <!-- JavaScript -->
-            <div class="dossier">
-                <h3>JAVASCRIPT</h3>
-                <a href="./JAVASCRIPT/">Accéder au dossier JavaScript</a>
-            </div>
-
-               <!-- Glossaire -->
-            <div class="dossier">
-                <h3>GLOSSAIRE</h3>
-                <a href="./GLOSSAIRE/">Accéder au dossier Glossaire</a>
-            </div>
-
-             <!-- Cheat Sheet -->
-            <div class="dossier">
-                <h3>CHEAT SHEET</h3>
-                <a href="./CHEAT_SHEET/">Accéder au dossier Cheat Sheet</a>
-            </div>
-
-            <!-- Révision JavaScript -->
-            <div class="dossier">
-                <h3>RÉVISION JAVASCRIPT</h3>
-                <a href="./RÉVISION/">Accéder au dossier Révision</a>
-            </div>
-
-             <!-- Api Rest -->
-            <div class="dossier">
-                <h3>API REST</h3>
-                <a href="./API_REST/">Accéder au dossier API REST</a>
-            </div>
-
-            <!-- Storage JavaScript -->
-            <div class="dossier">
-                <h3>STORAGE</h3>
-                <a href="./STORAGE/">Accéder au dossier Storage</a>
-            </div>
-
-                <!-- PAGINATION -->
-            <div class="dossier">
-                <h3>PAGINATION</h3>
-                <a href="./PAGINATION/">Accéder au dossier Pagination</a>
-            </div>
-
-
-            <!-- PHP -->
-            <div class="dossier">
-                <h3>PHP</h3>
-                <a href="./PHP/">Accéder au dossier PHP</a>
-            </div>
-
-             <!-- REACT -->
-            <div class="dossier">
-                <h3>REACT</h3>
-                <a href="./REACT/">Accéder au dossier React</a>
-            </div>
-
-                <!-- ENVIRONNEMENT -->
-            <div class="dossier">
-                <h3>ENVIRONNEMENT</h3>
-                <a href="./ENVIRONEMENT/">Accéder au dossier Environnement Mac, Windows, Linux</a>
-            </div>
-
-            <!-- Code -->
-            <div class="dossier">
-                <h3>CODE</h3>
-                <a href="CODE/">Accéder aux exemples</a>
-            </div>
-
-            <!-- Docker -->
-            <div class="dossier">
-                <h3>DOCKER</h3>
-                <a href="DOCKER/">Accéder au dossier Docker</a>
-            </div>
-
-            <!-- Réseaux -->
-            <div class="dossier">
-                <h3>RÉSEAUX</h3>
-                <a href="RESEAUX/">Accéder au dossier Réseaux</a>
-            </div>
-
-            <!-- Sécurité -->
-            <div class="dossier">
-                <h3>SÉCURITÉ</h3>
-                <a href="SECURITE/">Accéder au dossier Sécurité</a>
-            </div>
-
-            <!-- UI/UX -->
-            <div class="dossier">
-                <h3>UI/UX</h3>
-                <a href="UI_UX/">Accéder au dossier UI/UX</a>
-            </div>
-        </div>
-
-        <footer>
-            <p><strong>Formation Real Conseil - DWWM 2025-2026</strong></p>
-            <p>&copy; DARRAS Thomas</p>
-            <a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a>
-            <p style="font-size: 14px; margin-top: 15px;">
-                Les supports sont mis à jour régulièrement via GitHub
-            </p>
-            <div style="text-align: center; margin-top: 20px;">
-                <img src="./JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
-                <p style="font-size: 12px; color: #999;">
-                    <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo GitHub</a>
-                </p>
-            </div>
-        </footer>
     </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-logo">
+        <img src="./JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil">
+    </div>
+    <p><strong style="color:var(--text-primary)">Formation Real Conseil — DWWM</strong></p>
+    <p>&copy; DARRAS Thomas</p>
+    <a href="mailto:thomas.darras@realconseil.fr">thomas.darras@realconseil.fr</a>
+    <p class="year">// Les supports sont mis à jour régulièrement via GitHub</p>
+     <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo GitHub</a>
+</footer>
+
+<script>
+    /* 
+       DONNÉES DES COURS
+       Ajoute / modifie ici pour mettre à jour
+     */
+    const courses = [
+        {
+            title: 'HTML',
+            desc: 'Structure sémantique, balises, formulaires et accessibilité.',
+            path: './HTML/',
+            file: 'index.html'
+        },
+        {
+            title: 'CSS',
+            desc: 'Flexbox, Grid, variables CSS et animations.',
+            path: './CSS/',
+            file: 'index.html'
+        },
+        {
+            title: 'Responsive',
+            desc: 'Media queries, mobile-first et design adaptatif.',
+            path: './RESPONSIVE/',
+            file: 'index.html'
+        },
+        {
+            title: 'JavaScript',
+            desc: 'ES6+, DOM, async/await, fetch et modules.',
+            path: './JAVASCRIPT/',
+            file: 'index.html'
+        },
+         {
+            title: 'Glossaire',
+            desc: 'Définitions des termes techniques utilisés dans la formation.',
+            path: './GLOSSAIRE/glossaire-dwwm.html',
+            file: ''
+        },
+        {
+            title: 'Cheat Sheet',
+            desc: 'Références rapides pour toutes les technos.',
+            path: './CHEAT_SHEET/cheatsheet-dwwm.html',
+            file: ''
+        },
+        {
+            title: 'Révision JS',
+            desc: 'Exercices de révision JavaScript et corrections.',
+            path: './RÉVISION/',
+            file: 'index.html'
+        },
+        {
+            title: 'API REST',
+            desc: 'Fetch, Axios, méthodes HTTP et gestion des erreurs.',
+            path: './API_REST/',
+            file: 'index.html'
+        },
+        {
+            title: 'Storage',
+            desc: 'localStorage, sessionStorage et cookies.',
+            path: './STORAGE/',
+            file: 'index.html'
+        },
+        {
+            title: 'Pagination',
+            desc: 'Implémentation côté client et serveur.',
+            path: './PAGINATION/',
+            file: 'index.html'
+        },
+          {
+            title: 'React',
+            desc: 'Composants, hooks, state, props et routing.',
+            path: './REACT/',
+            file: 'index.html'
+        },
+          {
+            title: 'Environnement',
+            desc: 'Setup Mac, Windows, Linux, VS Code et Terminal.',
+            path: './ENVIRONEMENT/',
+            file: 'index.html'
+        },
+        {
+            title: 'PHP',
+            desc: 'Bases PHP, POO, sessions et connexion BDD.',
+            path: './PHP/',
+            file: 'index.html'
+        },
+         {
+            title: 'Docker',
+            desc: 'Conteneurs, images, docker-compose et déploiement.',
+            path: './DOCKER/',
+            file: 'index.html'
+        },
+        {
+            title: 'Code',
+            desc: 'Exemples de code et snippets réutilisables.',
+            path: './CODE/',
+            file: 'index.html'
+        },
+        {
+            title: 'Réseaux',
+            desc: 'Protocoles, adressage IP, DNS et HTTP/HTTPS.',
+            path: './RESEAUX/',
+            file: 'index.html'
+        },
+        {
+            title: 'Sécurité',
+            desc: 'XSS, CSRF, SQL injection et bonnes pratiques.',
+            path: './SECURITE/',
+            file: 'index.html'
+        },
+        {
+            title: 'UI/UX',
+            desc: 'Principes de design, accessibilité et prototypage.',
+            path: './UI_UX/',
+            file: 'index.html'
+        },
+    ];
+
+    /* 
+       GÉNÉRATION DES CARTES
+     */
+    const grid = document.getElementById('coursesGrid');
+
+    courses.forEach((course, i) => {
+        const url = course.path;
+        const label = course.title.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+        const card = document.createElement('div');
+        card.className = 'mac-card';
+        card.innerHTML = `
+            <div class="titlebar">
+                <div class="dots">
+                    <!-- ROUGE → retour arrière -->
+                    <button
+                        class="dot dot-red"
+                        title="Retour arrière"
+                        onclick="goBack(event)"
+                        aria-label="Retour arrière">
+                        <span class="dot-icon">✕</span>
+                    </button>
+                    <!-- ORANGE → nouvel onglet -->
+                    <button
+                        class="dot dot-orange"
+                        title="Ouvrir dans un nouvel onglet"
+                        onclick="openNewTab(event, '${url}')"
+                        aria-label="Ouvrir dans un nouvel onglet">
+                        <span class="dot-icon">⊞</span>
+                    </button>
+                    <!-- VERT → accéder au cours -->
+                    <button
+                        class="dot dot-green"
+                        title="Accéder au cours"
+                        onclick="navigateTo(event, '${url}')"
+                        aria-label="Accéder au cours">
+                        <span class="dot-icon">↗</span>
+                    </button>
+                </div>
+                <span class="titlebar-name">${label}.dev</span>
+            </div>
+            <div class="card-body">
+                <div class="card-badge">${course.title}</div>
+                <h2 class="card-title">${course.title}</h2>
+                <p class="card-desc">${course.desc}</p>
+                <div class="card-footer">
+                    <span class="card-path">${course.path}${course.file}</span>
+                    <div class="card-arrow" onclick="navigateTo(event, '${url}')" title="Accéder">→</div>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    /* 
+       FONCTIONS DES BOUTONS
+    */
+
+    /**
+     * ROUGE — Retour arrière
+     * Si pas d'historique, reste sur la page
+     */
+    function goBack(event) {
+        event.stopPropagation();
+        if (window.history.length > 1) {
+            pageTransitionOut(() => window.history.back());
+        } else {
+            showToast('⬅ Pas d\'historique de navigation');
+        }
+    }
+
+    /**
+     * ORANGE — Ouvrir dans un nouvel onglet
+     * Ouvre le cours sans quitter la page actuelle
+     */
+    function openNewTab(event, url) {
+        event.stopPropagation();
+        window.open(url, '_blank');
+        showToast('🟠 Ouvert dans un nouvel onglet !');
+    }
+
+    /**
+     * VERT — Naviguer vers le cours avec transition Mac
+     */
+    function navigateTo(event, url) {
+        event.stopPropagation();
+        pageTransitionOut(() => { window.location.href = url; });
+    }
+
+    /* ── Transition de page façon macOS ── */
+    function pageTransitionOut(callback) {
+        const overlay = document.getElementById('transitionOverlay');
+        const container = document.getElementById('mainContainer');
+
+        // Fade + scale out
+        container.style.transition = 'transform .35s cubic-bezier(.4,0,.2,1), opacity .35s ease';
+        container.style.transform = 'scale(0.96) translateY(8px)';
+        container.style.opacity = '0';
+        overlay.classList.add('active');
+
+        setTimeout(callback, 360);
+    }
+
+    /* ── Toast notification ── */
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    /* ── Animation d'entrée (retour en arrière) ── */
+    window.addEventListener('pageshow', () => {
+        const container = document.getElementById('mainContainer');
+        container.style.transition = 'none';
+        container.style.transform = 'scale(0.96) translateY(8px)';
+        container.style.opacity = '0';
+        requestAnimationFrame(() => {
+            container.style.transition = 'transform .45s cubic-bezier(.34,1.2,.64,1), opacity .4s ease';
+            container.style.transform = 'scale(1) translateY(0)';
+            container.style.opacity = '1';
+        });
+    });
+</script>
 </body>
 </html>
