@@ -516,16 +516,12 @@
     </div>
     <p><strong style="color:var(--text-primary)">Formation Real Conseil — DWWM</strong></p>
     <p>&copy; DARRAS Thomas</p>
-    <a href="mailto:thomas.darras@realconseil.fr">thomas.darras@realconseil.fr</a>
+    <a href="/cdn-cgi/l/email-protection#780c101715190b561c190a0a190b380a1d19141b17160b1d1114561e0a"><span class="__cf_email__" data-cfemail="394d515654584a175d584b4b584a794b5c58555a56574a5c5055175f4b">[email&#160;protected]</span></a>
     <p class="year">// Les supports sont mis à jour régulièrement via GitHub</p>
      <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo GitHub</a>
 </footer>
 
 <script>
-    /* 
-       DONNÉES DES COURS
-       Ajoute / modifie ici pour mettre à jour
-     */
     const courses = [
         {
             title: 'HTML',
@@ -637,9 +633,7 @@
         },
     ];
 
-    /* 
-       GÉNÉRATION DES CARTES
-     */
+    /* GÉNÉRATION DES CARTES */
     const grid = document.getElementById('coursesGrid');
 
     courses.forEach((course, i) => {
@@ -651,28 +645,13 @@
         card.innerHTML = `
             <div class="titlebar">
                 <div class="dots">
-                    <!-- ROUGE → retour arrière -->
-                    <button
-                        class="dot dot-red"
-                        title="Retour arrière"
-                        onclick="goBack(event)"
-                        aria-label="Retour arrière">
+                    <button class="dot dot-red" title="Retour arrière" onclick="goBack(event)" aria-label="Retour arrière">
                         <span class="dot-icon">✕</span>
                     </button>
-                    <!-- ORANGE → nouvel onglet -->
-                    <button
-                        class="dot dot-orange"
-                        title="Ouvrir dans un nouvel onglet"
-                        onclick="openNewTab(event, '${url}')"
-                        aria-label="Ouvrir dans un nouvel onglet">
+                    <button class="dot dot-orange" title="Ouvrir dans un nouvel onglet" onclick="openNewTab(event, '${url}')" aria-label="Ouvrir dans un nouvel onglet">
                         <span class="dot-icon">⊞</span>
                     </button>
-                    <!-- VERT → accéder au cours -->
-                    <button
-                        class="dot dot-green"
-                        title="Accéder au cours"
-                        onclick="navigateTo(event, '${url}')"
-                        aria-label="Accéder au cours">
+                    <button class="dot dot-green" title="Accéder au cours" onclick="navigateTo(event, '${url}')" aria-label="Accéder au cours">
                         <span class="dot-icon">↗</span>
                     </button>
                 </div>
@@ -691,56 +670,26 @@
         grid.appendChild(card);
     });
 
-    /* 
-       FONCTIONS DES BOUTONS
-    */
-
-    /**
-     * ROUGE — Retour arrière
-     * Si pas d'historique, reste sur la page
-     */
     function goBack(event) {
         event.stopPropagation();
         if (window.history.length > 1) {
-            pageTransitionOut(() => window.history.back());
+            window.history.back();
         } else {
             showToast('⬅ Pas d\'historique de navigation');
         }
     }
 
-    /**
-     * ORANGE — Ouvrir dans un nouvel onglet
-     * Ouvre le cours sans quitter la page actuelle
-     */
     function openNewTab(event, url) {
         event.stopPropagation();
         window.open(url, '_blank');
         showToast('🟠 Ouvert dans un nouvel onglet !');
     }
 
-    /**
-     * VERT — Naviguer vers le cours avec transition Mac
-     */
     function navigateTo(event, url) {
         event.stopPropagation();
-        pageTransitionOut(() => { window.location.href = url; });
+        window.location.href = url;
     }
 
-    /* ── Transition de page façon macOS ── */
-    function pageTransitionOut(callback) {
-        const overlay = document.getElementById('transitionOverlay');
-        const container = document.getElementById('mainContainer');
-
-        // Fade + scale out
-        container.style.transition = 'transform .35s cubic-bezier(.4,0,.2,1), opacity .35s ease';
-        container.style.transform = 'scale(0.96) translateY(8px)';
-        container.style.opacity = '0';
-        overlay.classList.add('active');
-
-        setTimeout(callback, 360);
-    }
-
-    /* ── Toast notification ── */
     function showToast(msg) {
         const toast = document.getElementById('toast');
         toast.textContent = msg;
@@ -748,18 +697,11 @@
         setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    /* ── Animation d'entrée (retour en arrière) ── */
     window.addEventListener('pageshow', () => {
-        
-        const container = document.getElementById('mainContainer');
-        container.style.transition = 'none';
-        container.style.transform = 'scale(0.96) translateY(8px)';
-        container.style.opacity = '0';
-        requestAnimationFrame(() => {
-            container.style.transition = 'transform .45s cubic-bezier(.34,1.2,.64,1), opacity .4s ease';
-            container.style.transform = 'scale(1) translateY(0)';
-            container.style.opacity = '1';
-        });
+        const c = document.getElementById('mainContainer');
+        c.style.transition = 'none';
+        c.style.opacity = '1';
+        c.style.transform = 'none';
     });
 </script>
 </body>
