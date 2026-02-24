@@ -55,6 +55,45 @@ body{
   padding:0 22px;
   position:sticky;top:0;z-index:200;
 }
+
+/* ── MAC DOTS dans la nav ── */
+.nav-mac-dots{
+  display:flex;align-items:center;gap:7px;
+  margin-right:14px;flex-shrink:0;
+}
+.nav-mac-dot{
+  width:13px;height:13px;border-radius:50%;
+  border:none;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  position:relative;
+  transition:filter .15s;
+  flex-shrink:0;
+}
+.nav-mac-dot:hover{ filter:brightness(1.15); }
+.nav-mac-dot.red   { background:#ff5f57; }
+.nav-mac-dot.orange{ background:#febc2e; }
+.nav-mac-dot.green { background:#28c840; }
+.nav-mac-dot .dot-icon{
+  display:none;
+  font-size:8px;line-height:1;
+  color:rgba(0,0,0,.55);font-weight:700;
+}
+.nav-mac-dots:hover .dot-icon{ display:flex;align-items:center;justify-content:center; }
+
+/* Tooltip */
+.nav-mac-dot::after{
+  content:attr(data-tip);
+  position:absolute;
+  top:calc(100% + 7px);left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.75);color:#fff;
+  font-size:.62rem;font-weight:500;white-space:nowrap;
+  padding:3px 8px;border-radius:5px;
+  opacity:0;pointer-events:none;
+  transition:opacity .15s;
+}
+.nav-mac-dot:hover::after{ opacity:1; }
+
 .nav-brand{
   font-size:.82rem;font-weight:600;letter-spacing:-.01em;
   color:var(--text);display:flex;align-items:center;gap:8px;
@@ -409,6 +448,24 @@ mark{
 
 <!-- ── NAVBAR ── -->
 <nav class="nav">
+  <!-- Dots Mac style -->
+  <div class="nav-mac-dots">
+    <button class="nav-mac-dot red"
+            data-tip="Retour à l'accueil"
+            onclick="macGoBack()">
+      <span class="dot-icon">✕</span>
+    </button>
+    <button class="nav-mac-dot orange"
+            data-tip="Ouvrir dans un nouvel onglet"
+            onclick="window.open(window.location.href,'_blank')">
+      <span class="dot-icon">⊞</span>
+    </button>
+    <button class="nav-mac-dot green"
+            data-tip="Haut de page"
+            onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <span class="dot-icon">↑</span>
+    </button>
+  </div>
   <div class="nav-brand">
     <div class="nav-dot"><img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="30" alt="" srcset=""></div>
     Glossaire DWWM
@@ -1260,9 +1317,9 @@ const GLOSSARY = [
     interview_tip:'Les custom hooks permettent de tester la logique indépendamment de l\'UI. C\'est la meilleure façon de réutiliser de la logique stateful.' },
 ];
 
-// ══════════════════════════════════════════════════════════════
+
 //  MÉTADONNÉES DES CATÉGORIES
-// ══════════════════════════════════════════════════════════════
+
 const CAT_META = {
   web:      { label:'Web général',     color:'var(--web)',      tc:'#0071e3', bg:'rgba(0,113,227,.07)'     },
   html:     { label:'HTML',            color:'var(--html)',     tc:'#e8572a', bg:'rgba(232,87,42,.07)'     },
@@ -1277,17 +1334,17 @@ const CAT_META = {
   react:    { label:'React',            color:'var(--react)',    tc:'#0ea5e9', bg:'rgba(14,165,233,.07)'    },
 };
 
-// ══════════════════════════════════════════════════════════════
+
 //  ÉTAT
-// ══════════════════════════════════════════════════════════════
+
 let currentFilter = 'all';
 let currentSearch = '';
 let expandedId    = null;
 let recentTerms   = [];
 
-// ══════════════════════════════════════════════════════════════
+
 //  RECHERCHE & FILTRES
-// ══════════════════════════════════════════════════════════════
+
 function setFilter(cat, btn) {
   currentFilter = cat;
   expandedId    = null;
@@ -1343,9 +1400,9 @@ function getFiltered() {
   });
 }
 
-// ══════════════════════════════════════════════════════════════
+
 //  RENDU
-// ══════════════════════════════════════════════════════════════
+
 function esc(s) {
   return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
@@ -1467,9 +1524,9 @@ function toggleCard(el) {
   render();
 }
 
-// ══════════════════════════════════════════════════════════════
+
 //  RÉCENTS
-// ══════════════════════════════════════════════════════════════
+
 async function addRecent(name) {
   recentTerms = [name, ...recentTerms.filter(t => t !== name)].slice(0, 8);
   renderRecent();
@@ -1502,9 +1559,9 @@ function jumpTo(el) {
   }, 80);
 }
 
-// ══════════════════════════════════════════════════════════════
+
 //  CLAVIER
-// ══════════════════════════════════════════════════════════════
+
 document.addEventListener('keydown', e => {
   const src = e.target;
   if (e.key === '/' && src.tagName !== 'INPUT') {
@@ -1522,9 +1579,27 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ══════════════════════════════════════════════════════════════
+
+//  NAVIGATION MAC
+
+function macGoBack() {
+  // Transition douce avant de partir
+  document.body.style.transition = 'opacity .25s ease';
+  document.body.style.opacity    = '0';
+  setTimeout(() => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      // Remonte d'un niveau si pas d'historique
+      const parts = window.location.pathname.split('/');
+      parts.splice(-2, 2); // retire /GLOSSAIRE/glossaire-dwwm.html
+      window.location.href = parts.join('/') + '/index.html';
+    }
+  }, 220);
+}
+
 //  INIT
-// ══════════════════════════════════════════════════════════════
+
 async function init() {
   try {
     const saved = await window.storage.get('glossaire-recent');
@@ -1534,5 +1609,6 @@ async function init() {
 }
 init();
 </script>
+<script src="/Cursor.js"></script>
 </body>
 </html>

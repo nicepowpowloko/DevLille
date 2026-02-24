@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JS Asynchrone — Support de cours</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #13161e;
+      --surface2: #1a1e2a;
+      --border: #252a38;
+      --accent: #f7c948;
+      --accent2: #5de4c7;
+      --accent3: #e96a6a;
+      --accent4: #a78bfa;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --code-bg: #0a0c10;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    header {
+      padding: 3rem 2rem 2rem;
+      text-align: center;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #0f1320 0%, var(--bg) 100%);
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+    }
+
+    h1 span { color: var(--accent); }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 400;
+    }
+
+    /* TABS NAV */
+    .tabs-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .tabs-nav {
+      display: flex;
+      gap: 0.25rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tabs-nav::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      padding: 0.75rem 1.25rem;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .tab-btn:hover { color: var(--text); }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.6;
+    }
+
+    /* TAB PANELS */
+    .tab-panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-panel.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* SECTIONS */
+    .section {
+      margin-top: 2.5rem;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tag-yellow { background: rgba(247,201,72,0.12); color: var(--accent); border: 1px solid rgba(247,201,72,0.3); }
+    .tag-teal   { background: rgba(93,228,199,0.1);  color: var(--accent2); border: 1px solid rgba(93,228,199,0.25); }
+    .tag-red    { background: rgba(233,106,106,0.1); color: var(--accent3); border: 1px solid rgba(233,106,106,0.25); }
+    .tag-purple { background: rgba(167,139,250,0.1); color: var(--accent4); border: 1px solid rgba(167,139,250,0.25); }
+
+    /* CONCEPT CARD */
+    .concept-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .concept-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .concept-card p {
+      color: #94a3b8;
+      font-size: 0.92rem;
+      line-height: 1.7;
+      margin-bottom: 0.75rem;
+    }
+
+    .concept-card p:last-child { margin-bottom: 0; }
+
+    /* ALERT BOXES */
+    .alert {
+      border-left: 3px solid;
+      padding: 1rem 1.25rem;
+      border-radius: 0 4px 4px 0;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .alert-warning {
+      border-color: var(--accent);
+      background: rgba(247,201,72,0.06);
+      color: #d4b84a;
+    }
+
+    .alert-info {
+      border-color: var(--accent2);
+      background: rgba(93,228,199,0.06);
+      color: #5de4c7;
+    }
+
+    .alert-danger {
+      border-color: var(--accent3);
+      background: rgba(233,106,106,0.06);
+      color: #e96a6a;
+    }
+
+    .alert strong { display: block; margin-bottom: 0.3rem; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.8; }
+
+    /* CODE BLOCKS */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .code-header {
+      background: var(--surface2);
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-header span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .dots { display: flex; gap: 5px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+
+    pre {
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: #cdd9e5;
+    }
+
+    /* Syntax colors */
+    .kw  { color: #c792ea; }   /* keywords */
+    .fn  { color: #82aaff; }   /* functions */
+    .str { color: #c3e88d; }   /* strings */
+    .num { color: #f78c6c; }   /* numbers */
+    .cm  { color: #546e7a; font-style: italic; }  /* comments */
+    .obj { color: #ffcb6b; }   /* objects/vars */
+    .op  { color: #89ddff; }   /* operators */
+    .acc { color: var(--accent2); }  /* special accent */
+
+    /* GRID & LAYOUT */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 1rem 0;
+    }
+
+    @media (max-width: 700px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .mini-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.25rem;
+    }
+
+    .mini-card h4 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    /* STATES VISUAL */
+    .states {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 0.75rem 0;
+    }
+
+    .state-pill {
+      padding: 0.35rem 0.9rem;
+      border-radius: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .state-pending  { background: rgba(100,116,139,0.2); color: #94a3b8; border: 1px solid #334155; }
+    .state-resolved { background: rgba(93,228,199,0.15); color: var(--accent2); border: 1px solid rgba(93,228,199,0.3); }
+    .state-rejected { background: rgba(233,106,106,0.15); color: var(--accent3); border: 1px solid rgba(233,106,106,0.3); }
+
+    .arrow { color: var(--muted); font-size: 1.1rem; }
+
+    /* COMPARISON */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    @media (max-width: 700px) {
+      .compare-grid { grid-template-columns: 1fr; }
+    }
+
+    .compare-col h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+      padding: 0.4rem 0.75rem;
+      background: var(--surface2);
+      border-radius: 4px 4px 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+    }
+
+    .compare-col .code-block { margin: 0; border-radius: 0 4px 4px 4px; }
+
+    /* QUIZ / CHECKLIST */
+    .checklist { list-style: none; }
+    .checklist li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+    .checklist li::before { content: '▸'; color: var(--accent); flex-shrink: 0; margin-top: 0.1rem; }
+    .checklist li:last-child { border-bottom: none; }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Support de cours — Étape 1</div>
+  <h1>JS <span>Asynchrone</span></h1>
+  <p class="subtitle">Promises · async/await · fetch · API calls</p>
+</header>
+
+<div class="tabs-wrapper">
+
+  <!-- NAV -->
+  <nav class="tabs-nav">
+    <button class="tab-btn active" onclick="showTab('promises', this)">
+      <span class="tab-dot"></span> Promises
+    </button>
+    <button class="tab-btn" onclick="showTab('async', this)">
+      <span class="tab-dot"></span> async / await
+    </button>
+    <button class="tab-btn" onclick="showTab('fetch', this)">
+      <span class="tab-dot"></span> fetch
+    </button>
+    <button class="tab-btn" onclick="showTab('api', this)">
+      <span class="tab-dot"></span> Appel API complet
+    </button>
+    <button class="tab-btn" onclick="showTab('erreurs', this)">
+      <span class="tab-dot"></span> Erreurs classiques
+    </button>
+    <button class="tab-btn" onclick="showTab('exercice', this)">
+      <span class="tab-dot"></span> Exercice
+    </button>
+  </nav>
+
+  <!-- ===== TAB 1 : PROMISES ===== -->
+  <div id="tab-promises" class="tab-panel active">
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-yellow">01</span> Pourquoi l'asynchrone ?</h2>
+      <div class="concept-card">
+        <p>JavaScript est <strong>mono-thread</strong> : il ne peut exécuter qu'une instruction à la fois. Sans asynchrone, si ton app attend une réponse d'un serveur, <strong>toute la page se fige</strong>.</p>
+        <p>L'asynchrone permet de dire : <em>"Lance cette opération longue, préviens-moi quand c'est fini, et continue le reste en attendant."</em></p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-yellow">02</span> C'est quoi une Promise ?</h2>
+      <div class="concept-card">
+        <p>Une <strong>Promise</strong> est un objet qui représente une valeur <em>future</em> : quelque chose qui n'est pas encore arrivé mais arrivera (ou échouera).</p>
+        <div class="states">
+          <span class="state-pill state-pending">pending</span>
+          <span class="arrow">→</span>
+          <span class="state-pill state-resolved">fulfilled</span>
+          <span class="arrow">ou</span>
+          <span class="state-pill state-rejected">rejected</span>
+        </div>
+        <p>Une Promise ne peut changer d'état qu'<strong>une seule fois</strong>. Une fois résolue ou rejetée, c'est définitif.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-yellow">03</span> Créer une Promise</h2>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <span>exemple-promise.js</span>
+        </div>
+        <pre><span class="cm">// Le constructeur prend une fonction avec deux paramètres</span>
+<span class="cm">// resolve → on appelle ça si tout va bien</span>
+<span class="cm">// reject  → on appelle ça si ça plante</span>
+<span class="kw">const</span> <span class="obj">maPromesse</span> = <span class="kw">new</span> <span class="fn">Promise</span>((<span class="obj">resolve</span>, <span class="obj">reject</span>) => {
+  <span class="kw">const</span> <span class="obj">succes</span> = <span class="kw">true</span>;
+
+  <span class="kw">if</span> (<span class="obj">succes</span>) {
+    <span class="fn">resolve</span>(<span class="str">"Opération réussie !"</span>);
+  } <span class="kw">else</span> {
+    <span class="fn">reject</span>(<span class="str">"Une erreur est survenue"</span>);
+  }
+});</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-yellow">04</span> Consommer une Promise</h2>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <span>then-catch-finally.js</span>
+        </div>
+        <pre><span class="obj">maPromesse</span>
+  <span class="cm">// .then() → reçoit la valeur passée à resolve()</span>
+  <span class="op">.</span><span class="fn">then</span>((<span class="obj">resultat</span>) => {
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="obj">resultat</span>); <span class="cm">// "Opération réussie !"</span>
+  })
+
+  <span class="cm">// .catch() → reçoit la valeur passée à reject()</span>
+  <span class="op">.</span><span class="fn">catch</span>((<span class="obj">erreur</span>) => {
+    <span class="obj">console</span><span class="op">.</span><span class="fn">error</span>(<span class="obj">erreur</span>); <span class="cm">// jamais appelé ici car succes = true</span>
+  })
+
+  <span class="cm">// .finally() → s'exécute TOUJOURS, succès ou échec</span>
+  <span class="op">.</span><span class="fn">finally</span>(() => {
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">"Terminé, quoi qu'il arrive"</span>);
+  });</pre>
+      </div>
+
+      <div class="alert alert-info">
+        <strong>💡 Bon à savoir</strong>
+        Tu peux chaîner les <code>.then()</code> : chaque <code>.then()</code> reçoit ce que retourne le précédent. Un seul <code>.catch()</code> à la fin suffit pour attraper toutes les erreurs de la chaîne.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-yellow">05</span> Exemple concret — simuler un serveur</h2>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <span>simuler-api.js</span>
+        </div>
+        <pre><span class="cm">// On simule un appel à une base de données qui prend 2 secondes</span>
+<span class="kw">function</span> <span class="fn">getUtilisateur</span>(<span class="obj">id</span>) {
+  <span class="kw">return new</span> <span class="fn">Promise</span>((<span class="obj">resolve</span>, <span class="obj">reject</span>) => {
+
+    <span class="fn">setTimeout</span>(() => {
+      <span class="kw">if</span> (<span class="obj">id</span> === <span class="num">1</span>) {
+        <span class="fn">resolve</span>({ <span class="obj">nom</span>: <span class="str">"Alice"</span>, <span class="obj">role</span>: <span class="str">"admin"</span> });
+      } <span class="kw">else</span> {
+        <span class="fn">reject</span>(<span class="kw">new</span> <span class="fn">Error</span>(<span class="str">"Utilisateur introuvable"</span>));
+      }
+    }, <span class="num">2000</span>); <span class="cm">// simule 2s de latence réseau</span>
+
+  });
+}
+
+<span class="cm">// Utilisation</span>
+<span class="fn">getUtilisateur</span>(<span class="num">1</span>)
+  <span class="op">.</span><span class="fn">then</span>((<span class="obj">user</span>) => <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">"Connecté :"</span>, <span class="obj">user</span><span class="op">.</span><span class="obj">nom</span>))
+  <span class="op">.</span><span class="fn">catch</span>((<span class="obj">err</span>) => <span class="obj">console</span><span class="op">.</span><span class="fn">error</span>(<span class="obj">err</span><span class="op">.</span><span class="obj">message</span>));</pre>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB 2 : ASYNC/AWAIT ===== -->
+  <div id="tab-async" class="tab-panel">
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-teal">01</span> C'est quoi async/await ?</h2>
+      <div class="concept-card">
+        <p><code>async/await</code> n'est <strong>pas une nouvelle technologie</strong>. C'est juste une <em>syntaxe plus agréable</em> pour écrire du code qui utilise des Promises. Sous le capot, c'est exactement pareil.</p>
+        <p>Ça permet d'écrire du code asynchrone qui <strong>ressemble à du code synchrone</strong>, beaucoup plus facile à lire et débugger.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-teal">02</span> Comparaison directe</h2>
+
+      <div class="compare-grid">
+        <div class="compare-col">
+          <h4>Avec .then() — difficile à lire</h4>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span>avant.js</span></div>
+            <pre><span class="fn">fetch</span>(<span class="str">"https://api.github.com/users/monpseudo"</span>)
+  <span class="op">.</span><span class="fn">then</span>((<span class="obj">res</span>) => <span class="obj">res</span><span class="op">.</span><span class="fn">json</span>())
+  <span class="op">.</span><span class="fn">then</span>((<span class="obj">data</span>) => {
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="obj">data</span><span class="op">.</span><span class="obj">name</span>);
+  })
+  <span class="op">.</span><span class="fn">catch</span>((<span class="obj">err</span>) => {
+    <span class="obj">console</span><span class="op">.</span><span class="fn">error</span>(<span class="obj">err</span>);
+  });</pre>
+          </div>
+        </div>
+        <div class="compare-col">
+          <h4>Avec async/await — clair et lisible</h4>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span>après.js</span></div>
+            <pre><span class="kw">async function</span> <span class="fn">getUser</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> <span class="obj">res</span>  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://api.github.com/users/monpseudo"</span>);
+    <span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="obj">res</span><span class="op">.</span><span class="fn">json</span>();
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="obj">data</span><span class="op">.</span><span class="obj">name</span>);
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="obj">console</span><span class="op">.</span><span class="fn">error</span>(<span class="obj">err</span>);
+  }
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-teal">03</span> Les règles fondamentales</h2>
+
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>Règle 1 — <code>async</code> devant la fonction</h4>
+          <p style="color:#94a3b8;font-size:0.88rem;line-height:1.6">Une fonction <code>async</code> <strong>retourne toujours une Promise</strong>, même si tu retournes une valeur simple. Ça veut dire que tu peux utiliser <code>.then()</code> dessus si tu veux.</p>
+        </div>
+        <div class="mini-card">
+          <h4>Règle 2 — <code>await</code> dans la fonction</h4>
+          <p style="color:#94a3b8;font-size:0.88rem;line-height:1.6"><code>await</code> <strong>ne peut s'utiliser qu'à l'intérieur</strong> d'une fonction <code>async</code>. Il met la fonction en pause jusqu'à ce que la Promise soit résolue.</p>
+        </div>
+        <div class="mini-card">
+          <h4>Règle 3 — try/catch remplace .catch()</h4>
+          <p style="color:#94a3b8;font-size:0.88rem;line-height:1.6">Avec <code>async/await</code>, on gère les erreurs avec un bloc <code>try/catch</code> classique, comme en synchrone. C'est l'un des gros avantages.</p>
+        </div>
+        <div class="mini-card">
+          <h4>Règle 4 — await = pause locale</h4>
+          <p style="color:#94a3b8;font-size:0.88rem;line-height:1.6"><code>await</code> ne bloque <strong>que la fonction courante</strong>, pas tout le programme. Le reste de ton app continue à tourner pendant l'attente.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-teal">04</span> Exemple complet annoté</h2>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <span>async-await-annote.js</span>
+        </div>
+        <pre><span class="cm">// ① Le mot-clé async rend la fonction asynchrone</span>
+<span class="kw">async function</span> <span class="fn">afficherProfil</span>(<span class="obj">username</span>) {
+
+  <span class="kw">try</span> {
+
+    <span class="cm">// ② await : on attend que fetch() retourne la réponse HTTP</span>
+    <span class="cm">//    pendant ce temps, le reste du programme continue</span>
+    <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://api.github.com/users/<span class="acc">${username}</span>`</span>);
+
+    <span class="cm">// ③ await encore : on attend que le JSON soit entièrement lu</span>
+    <span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="obj">response</span><span class="op">.</span><span class="fn">json</span>();
+
+    <span class="cm">// ④ on utilise les données comme en code normal</span>
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">"Nom :"</span>, <span class="obj">data</span><span class="op">.</span><span class="obj">name</span>);
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">"Followers :"</span>, <span class="obj">data</span><span class="op">.</span><span class="obj">followers</span>);
+
+  } <span class="kw">catch</span> (<span class="obj">erreur</span>) {
+
+    <span class="cm">// ⑤ si n'importe quel await plante, on arrive ici</span>
+    <span class="obj">console</span><span class="op">.</span><span class="fn">error</span>(<span class="str">"Erreur :"</span>, <span class="obj">erreur</span><span class="op">.</span><span class="obj">message</span>);
+
+  }
+}
+
+<span class="cm">// Appel de la fonction</span>
+<span class="fn">afficherProfil</span>(<span class="str">"torvalds"</span>);</pre>
+      </div>
+
+      <div class="alert alert-warning">
+        <strong>Piège fréquent</strong>
+        Oublier <code>await</code> devant un appel qui retourne une Promise. Sans <code>await</code>, tu obtiens un objet <code>Promise {pending}</code> au lieu de la valeur réelle. Ça arrive souvent aux débutants !
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB 3 : FETCH ===== -->
+  <div id="tab-fetch" class="tab-panel">
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-purple">01</span> fetch() — l'essentiel</h2>
+      <div class="concept-card">
+        <p><code>fetch()</code> est la fonction native de JS pour faire des requêtes HTTP. Elle retourne <strong>une Promise</strong>. Il faut donc l'utiliser avec <code>await</code> ou <code>.then()</code>.</p>
+        <p>La particularité de fetch : il y a <strong>deux niveaux d'attente</strong> que beaucoup de gens oublient.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-purple">02</span> Les deux await obligatoires</h2>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <span>deux-await.js</span>
+        </div>
+        <pre><span class="kw">async function</span> <span class="fn">getData</span>() {
+
+  <span class="cm">// ① Premier await : attend que le SERVEUR réponde</span>
+  <span class="cm">//    On reçoit les headers HTTP mais PAS encore le contenu</span>
+  <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://api.github.com/users/torvalds"</span>);
+
+  <span class="cm">// ② Deuxième await : attend que le CORPS soit reçu et converti en JS</span>
+  <span class="cm">//    response.json() retourne aussi une Promise !</span>
+  <span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="obj">response</span><span class="op">.</span><span class="fn">json</span>();
+
+  <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="obj">data</span>); <span class="cm">// objet JS utilisable</span>
+}</pre>
+      </div>
+
+      <div class="alert alert-danger">
+        <strong>Erreur classique</strong>
+        Faire <code>const data = await fetch(...).json()</code> sur une seule ligne sans le deuxième await. <code>response.json()</code> retourne une Promise, il faut l'attendre aussi !
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-purple">03</span> Vérifier le statut HTTP</h2>
+
+      <div class="concept-card">
+        <p>Attention : <code>fetch()</code> ne rejette <strong>pas</strong> sa Promise en cas d'erreur HTTP (404, 500…). Il ne la rejette que si le réseau est coupé. Pour une réponse 404, la Promise est <em>fulfilled</em> mais avec <code>response.ok === false</code>.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <span>verifier-status.js</span>
+        </div>
+        <pre><span class="kw">async function</span> <span class="fn">getUser</span>(<span class="obj">username</span>) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://api.github.com/users/<span class="acc">${username}</span>`</span>);
+
+    <span class="cm">// response.ok = true si statut HTTP entre 200 et 299</span>
+    <span class="kw">if</span> (<span class="op">!</span><span class="obj">response</span><span class="op">.</span><span class="obj">ok</span>) {
+      <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`Erreur HTTP : <span class="acc">${response.status}</span>`</span>);
+      <span class="cm">// → va dans le catch directement</span>
+    }
+
+    <span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="obj">response</span><span class="op">.</span><span class="fn">json</span>();
+    <span class="kw">return</span> <span class="obj">data</span>;
+
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="obj">console</span><span class="op">.</span><span class="fn">error</span>(<span class="obj">err</span><span class="op">.</span><span class="obj">message</span>);
+  }
+}
+
+<span class="cm">// Pseudo qui n'existe pas → statut 404 → erreur catchée</span>
+<span class="fn">getUser</span>(<span class="str">"utilisateur-qui-nexiste-pas-xyz"</span>);</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-purple">04</span> Méthodes disponibles</h2>
+
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4 style="color:var(--accent2)">response.json()</h4>
+          <p style="color:#94a3b8;font-size:0.85rem;line-height:1.6">Parse le corps en objet JavaScript. À utiliser quand l'API retourne du JSON (99% du temps).</p>
+        </div>
+        <div class="mini-card">
+          <h4 style="color:var(--accent2)">response.text()</h4>
+          <p style="color:#94a3b8;font-size:0.85rem;line-height:1.6">Retourne le corps en texte brut. Utile pour du HTML, du CSV, ou du texte simple.</p>
+        </div>
+        <div class="mini-card">
+          <h4 style="color:var(--accent2)">response.ok</h4>
+          <p style="color:#94a3b8;font-size:0.85rem;line-height:1.6">Booléen. <code>true</code> si le statut HTTP est entre 200 et 299. À toujours vérifier !</p>
+        </div>
+        <div class="mini-card">
+          <h4 style="color:var(--accent2)">response.status</h4>
+          <p style="color:#94a3b8;font-size:0.85rem;line-height:1.6">Le code HTTP exact : 200, 201, 404, 500… Utile pour afficher des messages d'erreur précis.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB 4 : APPEL API COMPLET ===== -->
+  <div id="tab-api" class="tab-panel">
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-yellow">01</span> Exemple complet — API GitHub</h2>
+      <div class="concept-card">
+        <p>On va utiliser l'API GitHub publique (sans clé API) pour afficher des infos sur un utilisateur. C'est un cas réel, directement testable dans ta console.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <span>github-api.js</span>
+        </div>
+        <pre><span class="cm">// Fonction principale — tout est géré proprement ici</span>
+<span class="kw">async function</span> <span class="fn">afficherProfilGithub</span>(<span class="obj">username</span>) {
+
+  <span class="kw">try</span> {
+    <span class="cm">// 1. Appel API</span>
+    <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://api.github.com/users/<span class="acc">${username}</span>`</span>);
+
+    <span class="cm">// 2. Vérification du statut</span>
+    <span class="kw">if</span> (<span class="op">!</span><span class="obj">response</span><span class="op">.</span><span class="obj">ok</span>) {
+      <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`Utilisateur "<span class="acc">${username}</span>" introuvable (statut <span class="acc">${response.status}</span>)`</span>);
+    }
+
+    <span class="cm">// 3. Conversion en JSON</span>
+    <span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="obj">response</span><span class="op">.</span><span class="fn">json</span>();
+
+    <span class="cm">// 4. Utilisation des données</span>
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">""</span>);
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">"Nom        :"</span>, <span class="obj">data</span><span class="op">.</span><span class="obj">name</span>);
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">"Bio        :"</span>, <span class="obj">data</span><span class="op">.</span><span class="obj">bio</span>);
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">"Repos      :"</span>, <span class="obj">data</span><span class="op">.</span><span class="obj">public_repos</span>);
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">"Followers  :"</span>, <span class="obj">data</span><span class="op">.</span><span class="obj">followers</span>);
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">"Entreprise :"</span>, <span class="obj">data</span><span class="op">.</span><span class="obj">company</span>);
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">""</span>);
+
+    <span class="cm">// 5. On retourne les données pour pouvoir les réutiliser ailleurs</span>
+    <span class="kw">return</span> <span class="obj">data</span>;
+
+  } <span class="kw">catch</span> (<span class="obj">erreur</span>) {
+    <span class="obj">console</span><span class="op">.</span><span class="fn">error</span>(<span class="str">"Erreur :"</span>, <span class="obj">erreur</span><span class="op">.</span><span class="obj">message</span>);
+  }
+}
+
+<span class="cm">// Test avec différents pseudos</span>
+<span class="fn">afficherProfilGithub</span>(<span class="str">"torvalds"</span>);
+<span class="fn">afficherProfilGithub</span>(<span class="str">"pseudo-inexistant-xyz"</span>); <span class="cm">// → erreur catchée proprement</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-yellow">02</span> Exemple avec affichage DOM</h2>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <span>github-dom.js</span>
+        </div>
+        <pre><span class="cm">// HTML attendu : &lt;div id="profil"&gt;&lt;/div&gt;</span>
+<span class="kw">async function</span> <span class="fn">afficherDansPage</span>(<span class="obj">username</span>) {
+  <span class="kw">const</span> <span class="obj">container</span> = <span class="obj">document</span><span class="op">.</span><span class="fn">getElementById</span>(<span class="str">"profil"</span>);
+
+  <span class="cm">// Afficher un état de chargement pendant la requête</span>
+  <span class="obj">container</span><span class="op">.</span><span class="obj">innerHTML</span> = <span class="str">"&lt;p&gt;Chargement...&lt;/p&gt;"</span>;
+
+  <span class="kw">try</span> {
+    <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://api.github.com/users/<span class="acc">${username}</span>`</span>);
+
+    <span class="kw">if</span> (<span class="op">!</span><span class="obj">response</span><span class="op">.</span><span class="obj">ok</span>) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">"Utilisateur introuvable"</span>);
+
+    <span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="obj">response</span><span class="op">.</span><span class="fn">json</span>();
+
+    <span class="cm">// Injection dans le DOM</span>
+    <span class="obj">container</span><span class="op">.</span><span class="obj">innerHTML</span> = <span class="str">`
+      &lt;img src="<span class="acc">${data.avatar_url}</span>" width="100" /&gt;
+      &lt;h2&gt;<span class="acc">${data.name}</span>&lt;/h2&gt;
+      &lt;p&gt;<span class="acc">${data.bio}</span>&lt;/p&gt;
+      &lt;p&gt;⭐ <span class="acc">${data.public_repos}</span> repos · <span class="acc">${data.followers}</span> followers&lt;/p&gt;
+    `</span>;
+
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="obj">container</span><span class="op">.</span><span class="obj">innerHTML</span> = <span class="str">`&lt;p style="color:red"&gt;<span class="acc">${err.message}</span>&lt;/p&gt;`</span>;
+  }
+}
+
+<span class="fn">afficherDansPage</span>(<span class="str">"torvalds"</span>);</pre>
+      </div>
+    </div>
+
+  </div>
+
+  
+  <div id="tab-erreurs" class="tab-panel">
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-red">Les pièges fréquents</span></h2>
+
+      <div class="concept-card">
+        <h3>Erreur 1 — Oublier await</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span>piege-1.js</span></div>
+          <pre><span class="kw">async function</span> <span class="fn">getData</span>() {
+  <span class="cm">// SANS await → data = Promise {pending} et non les données !</span>
+  <span class="kw">const</span> <span class="obj">data</span> = <span class="fn">fetch</span>(<span class="str">"https://api.github.com/users/torvalds"</span>);
+  <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="obj">data</span>); <span class="cm">// Promise { &lt;pending&gt; } ← pas ce qu'on veut</span>
+
+  <span class="cm">// AVEC await → on attend la vraie réponse</span>
+  <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://api.github.com/users/torvalds"</span>);
+  <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="obj">response</span>); <span class="cm">// Response { ok: true, status: 200... }</span>
+}</pre>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <h3>Erreur 2 — Oublier le deuxième await</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span>piege-2.js</span></div>
+          <pre><span class="kw">async function</span> <span class="fn">getData</span>() {
+  <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"..."</span>);
+
+  <span class="cm">// Sans await → json est une Promise, pas l'objet</span>
+  <span class="kw">const</span> <span class="obj">json</span> = <span class="obj">response</span><span class="op">.</span><span class="fn">json</span>();
+  <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="obj">json</span>); <span class="cm">// Promise { &lt;pending&gt; }</span>
+
+  <span class="cm">// Avec await → on attend le parsing complet du JSON</span>
+  <span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="obj">response</span><span class="op">.</span><span class="fn">json</span>();
+  <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="obj">data</span>); <span class="cm">// { name: "Linus Torvalds", ... }</span>
+}</pre>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <h3>Erreur 3 — Ne pas vérifier response.ok</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span>piege-3.js</span></div>
+          <pre><span class="kw">async function</span> <span class="fn">getData</span>() {
+  <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://api.github.com/users/xxxxxxxxxxx"</span>);
+
+  <span class="cm">// fetch() ne rejette PAS sa Promise en cas de 404 ou 500</span>
+  <span class="cm">//    Sans vérification, tu continues avec une réponse d'erreur</span>
+  <span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="obj">response</span><span class="op">.</span><span class="fn">json</span>();
+  <span class="cm">// data = { message: "Not Found" } ... et tu t'en rends pas compte</span>
+
+  <span class="cm">// Toujours vérifier response.ok avant d'aller plus loin</span>
+  <span class="kw">if</span> (<span class="op">!</span><span class="obj">response</span><span class="op">.</span><span class="obj">ok</span>) {
+    <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`HTTP <span class="acc">${response.status}</span> : utilisateur introuvable`</span>);
+  }
+}</pre>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <h3>Erreur 4 — Utiliser await en dehors d'une fonction async</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span>piege-4.js</span></div>
+          <pre><span class="cm">// Interdit ! await ne peut pas être en dehors d'une fonction async</span>
+<span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"..."</span>); <span class="cm">// SyntaxError</span>
+
+<span class="cm">// On l'enveloppe dans une fonction async (IIFE ou fonction nommée)</span>
+(<span class="kw">async</span> () => {
+  <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"..."</span>);
+  <span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="obj">response</span><span class="op">.</span><span class="fn">json</span>();
+  <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="obj">data</span>);
+})();</pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!--  TAB 6 : EXERCICE -->
+  <div id="tab-exercice" class="tab-panel">
+
+    <div class="section">
+      <h2 class="section-title"><span class="tag tag-teal">Exercice pratique</span></h2>
+
+      <div class="concept-card">
+        <h3 style="margin-bottom:1rem">Objectif</h3>
+        <p>Créer une fonction qui interroge l'API <strong>JSONPlaceholder</strong> (une fausse API de test, toujours disponible) et affiche des données dans la console.</p>
+      </div>
+
+      <div class="alert alert-info">
+        <strong>API disponible</strong>
+        JSONPlaceholder est gratuit et sans clé API.<br>
+        <code>https://jsonplaceholder.typicode.com/users</code> → liste de 10 utilisateurs<br>
+        <code>https://jsonplaceholder.typicode.com/users/1</code> → utilisateur avec l'id 1
+      </div>
+
+      <div class="concept-card">
+        <h3 style="margin-bottom:1rem">Consignes</h3>
+        <ul class="checklist">
+          <li>Créer une fonction <code>getUser(id)</code> qui prend un ID en paramètre</li>
+          <li>Appeler l'API JSONPlaceholder avec l'id reçu</li>
+          <li>Vérifier que la réponse est OK (response.ok)</li>
+          <li>Afficher le nom, l'email et la ville de l'utilisateur</li>
+          <li>Gérer le cas où l'ID n'existe pas (ex: id = 999)</li>
+          <li>Bonus : faire une boucle pour afficher les 10 utilisateurs</li>
+        </ul>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <span>exercice-starter.js — complète le code !</span>
+        </div>
+        <pre><span class="kw">async function</span> <span class="fn">getUser</span>(<span class="obj">id</span>) {
+  <span class="kw">try</span> {
+
+    <span class="cm">// TODO 1 : faire l'appel fetch vers l'API avec l'id</span>
+    <span class="kw">const</span> <span class="obj">response</span> = <span class="cm">/* ... */</span>
+
+    <span class="cm">// TODO 2 : vérifier response.ok et lancer une erreur si nécessaire</span>
+
+    <span class="cm">// TODO 3 : convertir la réponse en JSON</span>
+    <span class="kw">const</span> <span class="obj">data</span> = <span class="cm">/* ... */</span>
+
+    <span class="cm">// TODO 4 : afficher nom, email, et city (data.address.city)</span>
+
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="cm">// TODO 5 : afficher l'erreur proprement</span>
+  }
+}
+
+<span class="cm">// Tester avec différents IDs</span>
+<span class="fn">getUser</span>(<span class="num">1</span>);   <span class="cm">// doit fonctionner</span>
+<span class="fn">getUser</span>(<span class="num">999</span>); <span class="cm">// doit déclencher l'erreur</span></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+          <span>correction.js — regarde seulement après avoir essayé !</span>
+        </div>
+        <pre><span class="kw">async function</span> <span class="fn">getUser</span>(<span class="obj">id</span>) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://jsonplaceholder.typicode.com/users/<span class="acc">${id}</span>`</span>);
+
+    <span class="kw">if</span> (<span class="op">!</span><span class="obj">response</span><span class="op">.</span><span class="obj">ok</span>) {
+      <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`Utilisateur id=<span class="acc">${id}</span> non trouvé (statut <span class="acc">${response.status}</span>)`</span>);
+    }
+
+    <span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="obj">response</span><span class="op">.</span><span class="fn">json</span>();
+
+    <span class="obj">console</span><span class="op">.</span><span class="fn">log</span>(<span class="str">`<span class="acc">${data.name}</span> | <span class="acc">${data.email}</span> |  <span class="acc">${data.address.city}</span>`</span>);
+
+    <span class="kw">return</span> <span class="obj">data</span>;
+
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="obj">console</span><span class="op">.</span><span class="fn">error</span>(<span class="str">"Erreur :"</span>, <span class="obj">err</span><span class="op">.</span><span class="obj">message</span>);
+  }
+}
+
+<span class="cm">// BONUS : afficher les 10 utilisateurs en parallèle</span>
+<span class="kw">async function</span> <span class="fn">tousLesUsers</span>() {
+  <span class="kw">const</span> <span class="obj">ids</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>, <span class="num">7</span>, <span class="num">8</span>, <span class="num">9</span>, <span class="num">10</span>];
+
+  <span class="cm">// Promise.all → lance tous les fetch en même temps (plus rapide !)</span>
+  <span class="kw">const</span> <span class="obj">promesses</span> = <span class="obj">ids</span><span class="op">.</span><span class="fn">map</span>((<span class="obj">id</span>) => <span class="fn">getUser</span>(<span class="obj">id</span>));
+  <span class="kw">await</span> <span class="obj">Promise</span><span class="op">.</span><span class="fn">all</span>(<span class="obj">promesses</span>);
+}
+
+<span class="fn">tousLesUsers</span>();</pre>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /.tabs-wrapper -->
+
+<footer>
+  Real Conseil · Support JS Asynchrone · Étape 1/5
+</footer>
+
+<script>
+  function showTab(name, btn) {
+    // Masquer tous les panels
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    // Afficher le panel cible
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

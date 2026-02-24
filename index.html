@@ -6,6 +6,17 @@
     <link rel="icon" href="./favicon-32x32.png" type="image/png">
     <title>Formation DWWM - Real Conseil</title>
     <style>
+
+/* Curseur personnalisé { } */
+* {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d1117'/%3E%3Crect width='32' height='32' rx='7' fill='none' stroke='%2344D62C' stroke-width='1.5' opacity='0.4'/%3E%3Ctext x='3' y='23' font-family='monospace' font-size='20' font-weight='700' fill='%2344D62C'%3E%7B%3C/text%3E%3Ctext x='18' y='23' font-family='monospace' font-size='20' font-weight='700' fill='%2344D62C'%3E%7D%3C/text%3E%3C/svg%3E") 16 16, auto;
+}
+
+/* Curseur pointer sur les éléments cliquables */
+button, a, .dot, .link-item, .mac-card .card-arrow {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d1117'/%3E%3Crect width='32' height='32' rx='7' fill='none' stroke='%2344D62C' stroke-width='1.5'/%3E%3Ctext x='3' y='23' font-family='monospace' font-size='20' font-weight='700' fill='%2344D62C'%3E%7B%3C/text%3E%3Ctext x='18' y='23' font-family='monospace' font-size='20' font-weight='700' fill='%2344D62C'%3E%7D%3C/text%3E%3C/svg%3E") 16 16, pointer;
+}
+
         :root {
             --bg-deep:       #080b0f;
             --bg-card:       #0d1117;
@@ -568,8 +579,14 @@
         {
             title: 'API REST',
             desc: 'Fetch, Axios, méthodes HTTP et gestion des erreurs.',
-            path: './API_REST/',
-            file: 'index.html'
+            path: './API_REST/api-rest.html',
+            file: ''
+        },
+          {
+            title: 'ASYNC',
+            desc: 'Fonctions asynchrones, Promises, async/await et gestion des erreurs.',
+            path: './ASYNC/support-async-js.html',
+            file: ''
         },
         {
             title: 'Storage',
@@ -704,5 +721,6 @@
         c.style.transform = 'none';
     });
 </script>
+<script src="./cursor.js"></script>
 </body>
 </html>
