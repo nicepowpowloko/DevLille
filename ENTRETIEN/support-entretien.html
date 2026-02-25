@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Faux Entretien JS — Support de cours</title>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:           #070708;
+      --surface:      #0e0e10;
+      --surface2:     #131316;
+      --surface3:     #191920;
+      --border:       #1f1f28;
+      --border2:      #282835;
+      --gold:         #f0a500;
+      --gold-dim:     #8a5f00;
+      --gold-glow:    rgba(240,165,0,0.12);
+      --gold-glow2:   rgba(240,165,0,0.05);
+      --gold-light:   #ffc840;
+      --silver:       #a0aab8;
+      --text:         #dde0ea;
+      --muted:        #48485a;
+      --muted2:       #7878a0;
+      --code-bg:      #060607;
+      --green:        #00d97e;
+      --red:          #ff4455;
+      --blue:         #4499ff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Exo 2', sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    header {
+      position: relative;
+      padding: 4.5rem 2rem 3rem;
+      text-align: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% -5%, rgba(240,165,0,0.10) 0%, transparent 65%),
+        radial-gradient(ellipse 20% 30% at 15% 90%, rgba(240,165,0,0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 20% 30% at 85% 90%, rgba(240,165,0,0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
+    }
+
+    .header-inner { position: relative; z-index: 1; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--gold-dim);
+      padding: 0.35rem 1.2rem;
+      margin-bottom: 1.75rem;
+      background: var(--gold-glow2);
+    }
+
+    .eyebrow::before, .eyebrow::after {
+      content: '';
+      width: 18px; height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+
+    h1 {
+      font-family: 'Exo 2', sans-serif;
+      font-size: clamp(2.2rem, 6vw, 4.8rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      line-height: 1.0;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    h1 .acc { color: var(--gold); text-shadow: 0 0 50px rgba(240,165,0,0.55); }
+
+    .subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted2);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    /*  STEP TRACKER  */
+    .step-tracker {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(7,7,8,0.96);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border2);
+      padding: 0.55rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.63rem; color: var(--muted);
+    }
+
+    .st-prog { color: var(--gold); font-weight: 700; }
+    .step-pills { display: flex; gap: 0.4rem; margin-left: auto; flex-wrap: wrap; }
+    .step-pill {
+      padding: 0.18rem 0.55rem; font-size: 0.57rem;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      border: 1px solid var(--border2); color: var(--muted); border-radius: 2px;
+    }
+    .step-pill.done    { border-color: rgba(0,217,126,0.3); color: var(--green); background: rgba(0,217,126,0.04); }
+    .step-pill.current { border-color: var(--gold-dim); color: var(--gold); background: var(--gold-glow2); }
+
+    @media (max-width: 600px) { .step-tracker { display: none; } }
+
+    /*  LAYOUT  */
+    .wrapper { max-width: 1060px; margin: 0 auto; padding: 0 1.5rem 5rem; }
+
+    /* TABS NAV */
+    .tabs-nav {
+      display: flex;
+      border-bottom: 1px solid var(--border2);
+      margin-top: 2.5rem;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .tabs-nav::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      background: none; border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-family: 'Exo 2', sans-serif;
+      font-size: 0.85rem; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 0.9rem 1.35rem; cursor: pointer;
+      white-space: nowrap; margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.02); }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); background: var(--gold-glow2); }
+    .tab-num { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--gold-dim); margin-right: 0.4rem; }
+
+    /*  PANELS */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; animation: fadeUp 0.25s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /*  SECTION TITLES  */
+    .section { margin-top: 2.75rem; }
+    .section-label { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+    .section-label h2 {
+      font-size: 1.1rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: #fff; white-space: nowrap;
+    }
+    .s-num {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.6rem;
+      background: var(--gold-glow); border: 1px solid var(--gold-dim);
+      color: var(--gold); padding: 0.2rem 0.6rem; border-radius: 2px; white-space: nowrap;
+    }
+    .s-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--border2), transparent); }
+
+    /*  MAC CODE BLOCKS */
+    .code-block {
+      background: var(--code-bg); border: 1px solid var(--border2);
+      border-radius: 8px; overflow: hidden; margin: 1rem 0; position: relative;
+    }
+    .code-block::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim) 40%, transparent);
+      opacity: 0.6;
+    }
+    .code-header {
+      background: #0b0b0c; border-bottom: 1px solid var(--border);
+      padding: 0.55rem 1rem; display: flex; align-items: center; justify-content: space-between;
+    }
+    .mac-dots { display: flex; gap: 6px; align-items: center; }
+    .mac-dot  { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+    .code-filename { font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; color: var(--muted); }
+    pre {
+      padding: 1.2rem 1.5rem; overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.79rem; line-height: 1.82; color: #b0b8d0;
+    }
+
+    /* Syntax */
+    .kw  { color: #c792ea; }
+    .fn  { color: #82aaff; }
+    .str { color: #c3e88d; }
+    .num { color: #f78c6c; }
+    .cm  { color: #2a2a3a; font-style: italic; }
+    .obj { color: #ffcb6b; }
+    .op  { color: #89ddff; }
+    .gld { color: var(--gold); font-weight: 700; }
+    .gn  { color: var(--green); }
+    .rd  { color: var(--red); }
+
+    /*  QUESTION CARDS  */
+    .q-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .q-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .q-card.revealed::before { opacity: 1; }
+
+    .q-header {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      cursor: default;
+    }
+
+    .q-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--bg);
+      background: var(--gold);
+      padding: 0.2rem 0.55rem;
+      border-radius: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .q-badge.trap {
+      background: var(--red);
+    }
+
+    .q-badge.code-q {
+      background: var(--blue);
+    }
+
+    .q-text {
+      font-size: 0.97rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .q-diff {
+      display: flex;
+      gap: 3px;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    .diff-pip {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--border2);
+    }
+
+    .diff-pip.on { background: var(--gold); }
+
+    /* Reveal button */
+    .reveal-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      border-top: 1px solid var(--border2);
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-align: left;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .reveal-btn::before {
+      content: '▶';
+      font-size: 0.55rem;
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .reveal-btn:hover { background: var(--gold-glow2); color: var(--gold); }
+    .reveal-btn:hover::before { color: var(--gold); }
+
+    .q-card.revealed .reveal-btn::before { transform: rotate(90deg); color: var(--gold); }
+    .q-card.revealed .reveal-btn { color: var(--gold); }
+
+    /* Answer panel */
+    .q-answer {
+      display: none;
+      border-top: 1px solid var(--border2);
+      background: var(--surface2);
+      padding: 1.25rem 1.5rem;
+      animation: fadeUp 0.2s ease;
+    }
+
+    .q-card.revealed .q-answer { display: block; }
+
+    .answer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .answer-label::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: var(--border2);
+    }
+
+    .answer-text {
+      color: var(--muted2);
+      font-size: 0.92rem;
+      line-height: 1.75;
+    }
+
+    .answer-text strong { color: #fff; }
+    .answer-text .highlight { color: var(--gold); font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
+
+    /* Correct / Wrong pills inside answer */
+    .verdict {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.25rem 0.7rem;
+      border-radius: 3px;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .verdict.wrong  { background: rgba(255,68,85,0.12); color: var(--red);   border: 1px solid rgba(255,68,85,0.3); }
+    .verdict.right  { background: rgba(0,217,126,0.1);  color: var(--green); border: 1px solid rgba(0,217,126,0.25); }
+    .verdict.piege  { background: rgba(240,165,0,0.12); color: var(--gold);  border: 1px solid var(--gold-dim); }
+
+    /*  SCORE TRACKER  */
+    .score-bar {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 1.25rem 1.5rem;
+      margin-top: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .score-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .score-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .score-total { font-size: 0.9rem; color: var(--muted2); }
+
+    .score-progress {
+      flex: 1;
+      min-width: 120px;
+      height: 6px;
+      background: var(--border2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+      border-radius: 3px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .reveal-all-btn {
+      background: var(--gold-glow);
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.5rem 1.1rem;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: background 0.2s, border-color 0.2s;
+      margin-left: auto;
+    }
+
+    .reveal-all-btn:hover { background: rgba(240,165,0,0.2); border-color: var(--gold); }
+
+    /*  CARDS + ALERTS  */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 1.4rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(180deg, var(--gold), transparent);
+    }
+    .card p { color: var(--muted2); font-size: 0.92rem; line-height: 1.75; }
+    .card p + p { margin-top: 0.6rem; }
+
+    .alert {
+      padding: 1rem 1.25rem; margin: 1.25rem 0;
+      border-left: 3px solid; font-size: 0.86rem; line-height: 1.7;
+      border-radius: 0 4px 4px 0;
+    }
+    .alert-tag {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 0.4rem; font-weight: 700;
+    }
+    .alert-gold  { border-color: var(--gold);  background: var(--gold-glow2);         color: #d4b870; }
+    .alert-gold .alert-tag { color: var(--gold); }
+    .alert-red   { border-color: var(--red);   background: rgba(255,68,85,0.05);      color: #e89098; }
+    .alert-red .alert-tag { color: var(--red); }
+    .alert-green { border-color: var(--green); background: rgba(0,217,126,0.05);      color: #80d8b0; }
+    .alert-green .alert-tag { color: var(--green); }
+    .alert-blue  { border-color: var(--blue);  background: rgba(68,153,255,0.05);     color: #80b8e8; }
+    .alert-blue .alert-tag { color: var(--blue); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.25rem 0; }
+    @media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82em; color: var(--gold);
+      background: var(--gold-glow2); padding: 0.1em 0.4em;
+      border-radius: 2px; border: 1px solid rgba(240,165,0,0.15);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem; text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.63rem; color: var(--muted);
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 2.5rem 1rem 2rem; }
+      .wrapper { padding: 0 1rem 3rem; }
+      .tab-btn { padding: 0.7rem 0.85rem; font-size: 0.78rem; }
+      pre { font-size: 0.72rem; padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- STEP TRACKER -->
+<div class="step-tracker">
+  <span class="st-prog">ETAPE 5 / 5</span>
+  <span style="color:var(--border2)">—</span>
+  <span>Faux Entretien</span>
+  <div class="step-pills">
+    <span class="step-pill done">01 · Promises</span>
+    <span class="step-pill done">02 · Destructuration</span>
+    <span class="step-pill done">03 · ?. / ??</span>
+    <span class="step-pill done">04 · Set / Map</span>
+    <span class="step-pill current">05 · Entretien</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="eyebrow">Support de cours — Etape 5 finale</div>
+    <h1>Faux <span class="acc">Entretien</span></h1>
+    <p class="subtitle">Questions pieges · Code a analyser · Cas limites · Explications</p>
+  </div>
+</header>
+
+<div class="wrapper">
+
+  <!-- TABS NAV -->
+  <nav class="tabs-nav">
+    <button class="tab-btn active" onclick="showTab('regles', this)"><span class="tab-num">00</span> Regles du jeu</button>
+    <button class="tab-btn" onclick="showTab('async',  this)"><span class="tab-num">01</span> Async / Promises</button>
+    <button class="tab-btn" onclick="showTab('destr',  this)"><span class="tab-num">02</span> Destructuration</button>
+    <button class="tab-btn" onclick="showTab('nullopt',this)"><span class="tab-num">03</span> ?. et ??</button>
+    <button class="tab-btn" onclick="showTab('setmap', this)"><span class="tab-num">04</span> Set et Map</button>
+    <button class="tab-btn" onclick="showTab('global', this)"><span class="tab-num">05</span> Questions globales</button>
+    <button class="tab-btn" onclick="showTab('code',   this)"><span class="tab-num">06</span> Code a la loupe</button>
+  </nav>
+
+
+
+  <div id="tab-regles" class="tab-panel active">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">Mode</span><h2>Comment ca fonctionne</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>Chaque onglet correspond aux notions vues dans les etapes precedentes. Pour chaque question, <strong style="color:#fff">reflechis d'abord par toi-meme</strong> — prends le temps de formuler ta reponse mentalement ou sur papier. Ensuite clique sur le bouton pour voir la reponse officielle avec les explications.</p>
+        <p>Les questions sont classees par niveau de difficulte : 1 pastille = facile, 2 = moyen, 3 = piege redoutable.</p>
+      </div>
+
+      <div class="grid-2">
+        <div style="background:var(--surface); border:1px solid var(--border2); border-radius:4px; padding:1.2rem;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--gold); margin-bottom:0.75rem; text-transform:uppercase; letter-spacing:0.1em;">Types de questions</div>
+          <div style="display:flex; flex-direction:column; gap:0.6rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem; font-size:0.88rem; color:var(--muted2);">
+              <span style="background:var(--gold); color:var(--bg); font-family:'JetBrains Mono',monospace; font-size:0.62rem; padding:0.15rem 0.5rem; border-radius:3px; white-space:nowrap;">CONCEPT</span>
+              Question theorique sur le fonctionnement
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem; font-size:0.88rem; color:var(--muted2);">
+              <span style="background:var(--blue); color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.62rem; padding:0.15rem 0.5rem; border-radius:3px; white-space:nowrap;">CODE</span>
+              Qu'affiche ce code dans la console ?
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem; font-size:0.88rem; color:var(--muted2);">
+              <span style="background:var(--red); color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.62rem; padding:0.15rem 0.5rem; border-radius:3px; white-space:nowrap;">PIEGE</span>
+              Question concue pour te faire trébucher
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--surface); border:1px solid var(--border2); border-radius:4px; padding:1.2rem;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--gold); margin-bottom:0.75rem; text-transform:uppercase; letter-spacing:0.1em;">Niveaux de difficulte</div>
+          <div style="display:flex; flex-direction:column; gap:0.6rem; font-size:0.88rem; color:var(--muted2);">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <div style="display:flex; gap:3px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--gold)"></div><div style="width:7px;height:7px;border-radius:50%;background:var(--border2)"></div><div style="width:7px;height:7px;border-radius:50%;background:var(--border2)"></div></div>
+              Tu dois le savoir
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <div style="display:flex; gap:3px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--gold)"></div><div style="width:7px;height:7px;border-radius:50%;background:var(--gold)"></div><div style="width:7px;height:7px;border-radius:50%;background:var(--border2)"></div></div>
+              Question d'entretien classique
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <div style="display:flex; gap:3px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--gold)"></div><div style="width:7px;height:7px;border-radius:50%;background:var(--gold)"></div><div style="width:7px;height:7px;border-radius:50%;background:var(--gold)"></div></div>
+              Piege — la plupart des devs se trompent
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-gold">
+        <div class="alert-tag">Conseil</div>
+        Avant de cliquer sur "Voir la reponse", essaie de dire ta reponse a voix haute. En entretien, ce qui compte c'est que tu <strong>articules ton raisonnement</strong>, pas seulement que tu donnes le bon resultat.
+      </div>
+    </div>
+
+  </div>
+
+
+
+  <div id="tab-async" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Async / Promises</h2><span class="s-line"></span></div>
+
+      <!-- Q1 -->
+      <div class="q-card" id="qA1">
+        <div class="q-header">
+          <span class="q-badge">CONCEPT</span>
+          <span class="q-text">Quelle est la difference entre une fonction <code>async</code> et une fonction normale ? Que retourne une fonction async qui fait <code>return 42</code> ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip"></div><div class="diff-pip"></div></div>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qA1')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict right">Reponse attendue</div>
+            Une fonction <code>async</code> <strong>retourne toujours une Promise</strong>, meme si tu retournes une valeur simple. <code>return 42</code> dans une fonction async est equivalent a <code>return Promise.resolve(42)</code>. Pour recuperer la valeur 42, tu dois utiliser <code>await</code> ou <code>.then()</code> sur l'appel de la fonction.<br><br>
+            Une fonction normale retourne la valeur directement, sans enveloppe. C'est la difference fondamentale.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 CODE -->
+      <div class="q-card" id="qA2">
+        <div class="q-header">
+          <span class="q-badge code-q">CODE</span>
+          <span class="q-text">Qu'affiche ce code dans la console ? Dans quel ordre ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">ordre-execution.js</span>
+          </div>
+          <pre><span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"A"</span>);
+
+<span class="kw">async function</span> <span class="fn">maFonction</span>() {
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"B"</span>);
+  <span class="kw">await</span> <span class="obj">Promise</span>.<span class="fn">resolve</span>();
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"C"</span>);
+}
+
+<span class="fn">maFonction</span>();
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"D"</span>);</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qA2')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict piege">Piege d'execution</div>
+            L'ordre est : <strong>A → B → D → C</strong><br><br>
+            Pourquoi ? <code>console.log("A")</code> s'execute en premier, c'est du code synchrone. Ensuite <code>maFonction()</code> est appelee : elle execute <code>console.log("B")</code> de facon synchrone jusqu'au premier <code>await</code>. Le <code>await</code> <strong>suspend la fonction et rend le controle</strong> au code appelant. Donc <code>console.log("D")</code> s'execute. Une fois la microtache resolue, la fonction reprend et <code>console.log("C")</code> s'execute en dernier.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 PIEGE -->
+      <div class="q-card" id="qA3">
+        <div class="q-header">
+          <span class="q-badge trap">PIEGE</span>
+          <span class="q-text">Ce code a un bug. Lequel ? Que va-t-il se passer a l'execution ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip on"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">bug-fetch.js</span>
+          </div>
+          <pre><span class="kw">async function</span> <span class="fn">getData</span>() {
+  <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://api.github.com/users/torvalds"</span>);
+  <span class="kw">const</span> <span class="obj">data</span> = <span class="obj">response</span>.<span class="fn">json</span>();
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">data</span>.<span class="obj">name</span>);
+}
+
+<span class="fn">getData</span>();</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qA3')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict wrong">Bug : await manquant</div>
+            Le <code>await</code> est absent devant <code>response.json()</code>. <code>.json()</code> retourne une <strong>Promise</strong>, pas directement l'objet. Sans <code>await</code>, <span class="highlight">data</span> est un objet <code>Promise {pending}</code> et non les donnees JSON. Donc <code>data.name</code> retourne <code>undefined</code>.<br><br>
+            Correction : <code>const data = <strong>await</strong> response.json();</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 CONCEPT -->
+      <div class="q-card" id="qA4">
+        <div class="q-header">
+          <span class="q-badge">CONCEPT</span>
+          <span class="q-text">Quelle est la difference entre <code>Promise.all()</code> et plusieurs <code>await</code> sequentiels ? Quand utiliser l'un ou l'autre ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qA4')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict right">Reponse cle</div>
+            Plusieurs <code>await</code> sequentiels executent les Promises <strong>l'une apres l'autre</strong> : si chacune prend 1 seconde, le total est 3 secondes. C'est necessaire quand la deuxieme depend du resultat de la premiere.<br><br>
+            <code>Promise.all()</code> lance <strong>toutes les Promises en parallele</strong> et attend que toutes soient resolues. Meme exemple : 1 seconde au total. A utiliser quand les requetes sont independantes. Attention : si une seule echoue, tout le <code>Promise.all()</code> est rejete.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q5 PIEGE -->
+      <div class="q-card" id="qA5">
+        <div class="q-header">
+          <span class="q-badge trap">PIEGE</span>
+          <span class="q-text"><code>fetch()</code> rejette-t-il sa Promise quand le serveur repond avec un code 404 ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip on"></div></div>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qA5')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict wrong">Non — piege classique</div>
+            <strong>Non.</strong> C'est l'un des pieges les plus frequents avec <code>fetch()</code>. La Promise est <strong>rejetee uniquement en cas d'erreur reseau</strong> (pas de connexion, timeout, CORS). Pour un 404 ou un 500, la Promise est <strong>fulfilled</strong> — mais avec <code>response.ok === false</code> et <code>response.status === 404</code>.<br><br>
+            C'est pourquoi il faut toujours faire <code>if (!response.ok) throw new Error(...)</code> apres le premier <code>await fetch()</code>.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+ 
+  <div id="tab-destr" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Destructuration</h2><span class="s-line"></span></div>
+
+      <!-- Q1 CODE -->
+      <div class="q-card" id="qD1">
+        <div class="q-header">
+          <span class="q-badge code-q">CODE</span>
+          <span class="q-text">Qu'affiche ce code ? Explique chaque ligne.</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip"></div><div class="diff-pip"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">destr-quiz.js</span>
+          </div>
+          <pre><span class="kw">const</span> [<span class="obj">a</span>, <span class="obj">b</span>, <span class="obj">c</span> = <span class="num">99</span>] = [<span class="num">1</span>, <span class="num">2</span>];
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">a</span>, <span class="obj">b</span>, <span class="obj">c</span>);
+
+<span class="kw">const</span> { <span class="obj">x</span>, <span class="obj">y</span> = <span class="num">10</span>, <span class="obj">z</span> = <span class="num">20</span> } = { x: <span class="num">5</span>, y: <span class="kw">null</span> };
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">x</span>, <span class="obj">y</span>, <span class="obj">z</span>);</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qD1')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict piege">Piege sur null</div>
+            Ligne 1 affiche : <strong>1 2 99</strong> — <code>c</code> vaut 99 car l'index 2 est <code>undefined</code> dans le tableau source.<br><br>
+            Ligne 2 affiche : <strong>5 null 20</strong> — et c'est le piege ! <code>y</code> vaut <code>null</code> et <strong>non</strong> 10. La valeur par defaut ne s'applique que si la valeur est <code>undefined</code>. <code>null</code> est une valeur explicite et ne declenche pas la valeur par defaut.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 PIEGE -->
+      <div class="q-card" id="qD2">
+        <div class="q-header">
+          <span class="q-badge trap">PIEGE</span>
+          <span class="q-text">Apres cette ligne, peut-on acceder a la variable <code>adresse</code> ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip on"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">destr-nested.js</span>
+          </div>
+          <pre><span class="kw">const</span> { <span class="obj">nom</span>, <span class="obj">adresse</span>: { <span class="obj">ville</span>, <span class="obj">pays</span> } } = <span class="obj">user</span>;</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qD2')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict wrong">Non — variable inexistante</div>
+            <strong>Non.</strong> Dans une destructuration imbriquee <code>{ adresse: { ville, pays } }</code>, le mot <code>adresse</code> est un <strong>chemin d'acces</strong>, pas une variable declaree. Seules <span class="highlight">ville</span> et <span class="highlight">pays</span> existent comme variables apres cette ligne. Essayer d'acceder a <code>adresse</code> provoque une <code>ReferenceError</code>.<br><br>
+            Pour garder aussi l'objet complet : <code>const { nom, adresse, adresse: { ville, pays } } = user;</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 CODE -->
+      <div class="q-card" id="qD3">
+        <div class="q-header">
+          <span class="q-badge code-q">CODE</span>
+          <span class="q-text">Que valent <code>a</code> et <code>b</code> apres cette ligne ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip"></div><div class="diff-pip"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">swap.js</span>
+          </div>
+          <pre><span class="kw">let</span> <span class="obj">a</span> = <span class="num">10</span>, <span class="obj">b</span> = <span class="num">20</span>;
+[<span class="obj">a</span>, <span class="obj">b</span>] = [<span class="obj">b</span>, <span class="obj">a</span>];
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">a</span>, <span class="obj">b</span>);</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qD3')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict right">20 10</div>
+            C'est le pattern classique pour echanger deux variables sans variable temporaire. Le tableau <code>[b, a]</code> est cree d'abord avec les valeurs actuelles (<code>[20, 10]</code>), puis destructure dans <code>[a, b]</code>. Resultat : <code>a = 20</code> et <code>b = 10</code>.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 CONCEPT -->
+      <div class="q-card" id="qD4">
+        <div class="q-header">
+          <span class="q-badge">CONCEPT</span>
+          <span class="q-text">Quelle est la syntaxe pour renommer <code>user_name</code> en <code>username</code> tout en lui donnant une valeur par defaut de <code>"anonyme"</code> si absent ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qD4')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict right">Syntaxe combinee</div>
+            <code>const { user_name: username = "anonyme" } = obj;</code><br><br>
+            La syntaxe est : <span class="highlight">propriete : nouveauNom = valeurParDefaut</span>. Les deux-points permettent le renommage, le signe egal donne la valeur par defaut. L'ordre est important : d'abord le renommage, ensuite la valeur par defaut.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+ 
+  <div id="tab-nullopt" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">03</span><h2>Optional Chaining et Nullish</h2><span class="s-line"></span></div>
+
+      <!-- Q1 CODE -->
+      <div class="q-card" id="qN1">
+        <div class="q-header">
+          <span class="q-badge code-q">CODE</span>
+          <span class="q-text">Qu'affichent ces quatre lignes ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">nullish-quiz.js</span>
+          </div>
+          <pre><span class="obj">console</span>.<span class="fn">log</span>(<span class="num">0</span>         <span class="op">??</span> <span class="str">"defaut"</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="str">""</span>        <span class="op">??</span> <span class="str">"defaut"</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="kw">null</span>      <span class="op">??</span> <span class="str">"defaut"</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="kw">undefined</span> <span class="op">??</span> <span class="str">"defaut"</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="kw">false</span>     <span class="op">||</span> <span class="str">"defaut"</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="kw">false</span>     <span class="op">??</span> <span class="str">"defaut"</span>);</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qN1')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict piege">Piege ?? vs ||</div>
+            <strong>0</strong> — <code>??</code> ne reagit pas a 0<br>
+            <strong>""</strong> — <code>??</code> ne reagit pas a la chaine vide<br>
+            <strong>"defaut"</strong> — null est nullish<br>
+            <strong>"defaut"</strong> — undefined est nullish<br>
+            <strong>"defaut"</strong> — <code>||</code> reagit a false (valeur falsy)<br>
+            <strong>false</strong> — <code>??</code> ne reagit pas a false
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 PIEGE -->
+      <div class="q-card" id="qN2">
+        <div class="q-header">
+          <span class="q-badge trap">PIEGE</span>
+          <span class="q-text">Ce code va-t-il planter ? Si oui, pourquoi ? Comment le corriger ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip on"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">chain-piege.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="obj">data</span> = { user: <span class="kw">null</span> };
+<span class="kw">const</span> <span class="obj">ville</span> = <span class="obj">data</span><span class="op">?.</span><span class="obj">user</span>.<span class="obj">address</span>.<span class="obj">city</span>;</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qN2')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict wrong">Oui ca plante</div>
+            <code>data?.user</code> retourne <code>null</code>. Mais il n'y a plus de <code>?.</code> apres — donc <code>null.address</code> provoque une <strong>TypeError</strong>. Le <code>?.</code> court-circuite uniquement le niveau ou il est place.<br><br>
+            Correction : <code>data?.user?.address?.city</code> — chaque niveau potentiellement absent doit avoir son propre <code>?.</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 CONCEPT -->
+      <div class="q-card" id="qN3">
+        <div class="q-header">
+          <span class="q-badge">CONCEPT</span>
+          <span class="q-text">Explique en une phrase quand utiliser <code>??</code> plutot que <code>||</code>.</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qN3')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict right">Regle d'or</div>
+            Utilise <code>??</code> quand tu veux une valeur de secours <strong>uniquement si la valeur est absente</strong> (<code>null</code>/<code>undefined</code>), pas quand elle est simplement "falsy" — car <code>0</code>, <code>""</code> et <code>false</code> sont des valeurs intentionnelles valides que <code>||</code> ecraserait a tort.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 CODE PIEGE -->
+      <div class="q-card" id="qN4">
+        <div class="q-header">
+          <span class="q-badge trap">PIEGE</span>
+          <span class="q-text">Ce code provoque une SyntaxError. Pourquoi et comment le corriger ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip on"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">syntax-error.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="obj">val</span> = <span class="kw">null</span> <span class="op">||</span> <span class="str">"fallback"</span> <span class="op">??</span> <span class="str">"autre"</span>;</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qN4')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict wrong">SyntaxError intentionnelle</div>
+            JS <strong>interdit de melanger</strong> <code>||</code> ou <code>&amp;&amp;</code> avec <code>??</code> sans parentheses explicites. C'est une protection pour eviter les ambiguites de priorite d'operateurs. La correction est d'ajouter des parentheses :<br><br>
+            <code>const val = (null || "fallback") ?? "autre";</code><br>
+            ou : <code>const val = null || ("fallback" ?? "autre");</code>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div id="tab-setmap" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">04</span><h2>Set et Map</h2><span class="s-line"></span></div>
+
+      <!-- Q1 CODE -->
+      <div class="q-card" id="qS1">
+        <div class="q-header">
+          <span class="q-badge code-q">CODE</span>
+          <span class="q-text">Qu'affiche ce code ? Explique.</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip"></div><div class="diff-pip"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">set-quiz.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="obj">s</span> = <span class="kw">new</span> <span class="obj">Set</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">3</span>, <span class="num">3</span>]);
+<span class="obj">s</span>.<span class="fn">add</span>(<span class="num">2</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">s</span>.<span class="obj">size</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">s</span>.<span class="obj">length</span>);</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qS1')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict piege">Deux pieges en un</div>
+            <code>s.size</code> affiche <strong>3</strong> — le Set contient seulement {1, 2, 3}, les doublons sont ignores a la creation, et <code>.add(2)</code> est aussi ignore puisque 2 existe deja.<br><br>
+            <code>s.length</code> affiche <strong>undefined</strong> — Set n'a pas de propriete <code>.length</code>, seulement <code>.size</code>. C'est un piege classique, ne pas confondre avec les tableaux.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 PIEGE -->
+      <div class="q-card" id="qS2">
+        <div class="q-header">
+          <span class="q-badge trap">PIEGE</span>
+          <span class="q-text">Ce Set contient-il deux elements ou un seul ? Pourquoi ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip on"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">set-reference.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="obj">s</span> = <span class="kw">new</span> <span class="obj">Set</span>();
+<span class="obj">s</span>.<span class="fn">add</span>({ <span class="obj">nom</span>: <span class="str">"Alice"</span> });
+<span class="obj">s</span>.<span class="fn">add</span>({ <span class="obj">nom</span>: <span class="str">"Alice"</span> });
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">s</span>.<span class="obj">size</span>);</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qS2')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict wrong">2 — pas de deduplication</div>
+            <strong>2 elements.</strong> Set utilise l'egalite de reference (<code>===</code>) pour comparer les valeurs. Les deux objets <code>{ nom: "Alice" }</code> sont syntaxiquement identiques mais ce sont <strong>deux objets differents en memoire</strong> — deux references distinctes. Set les considere donc comme deux valeurs differentes.<br><br>
+            La deduplication ne fonctionne nativement qu'avec les primitives (numbers, strings, booleans).
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 CODE -->
+      <div class="q-card" id="qS3">
+        <div class="q-header">
+          <span class="q-badge code-q">CODE</span>
+          <span class="q-text">Qu'affiche ce code ? Attention au parametre du forEach.</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">map-foreach.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="obj">map</span> = <span class="kw">new</span> <span class="obj">Map</span>([[<span class="str">"a"</span>, <span class="num">1</span>], [<span class="str">"b"</span>, <span class="num">2</span>]]);
+
+<span class="obj">map</span>.<span class="fn">forEach</span>((<span class="obj">cle</span>, <span class="obj">valeur</span>) => {
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">cle</span>, <span class="obj">valeur</span>);
+});</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qS3')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict piege">Ordre inverse des parametres</div>
+            Affiche : <strong>1 "a"</strong> puis <strong>2 "b"</strong> — alors qu'on s'attendrait au contraire.<br><br>
+            Dans le <code>.forEach()</code> d'une Map, le premier parametre est la <strong>valeur</strong> et le deuxieme est la <strong>cle</strong>. C'est l'inverse de l'intuition. Dans l'exemple, les variables sont nommees <code>cle</code> et <code>valeur</code> mais dans les faits <code>cle</code> recoit la valeur et <code>valeur</code> recoit la cle.<br><br>
+            Pour eviter la confusion, prefere <code>for (const [cle, valeur] of map)</code> ou nomme correctement : <code>.forEach((value, key) => ...)</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 CONCEPT -->
+      <div class="q-card" id="qS4">
+        <div class="q-header">
+          <span class="q-badge">CONCEPT</span>
+          <span class="q-text">Quand choisirais-tu un <code>Map</code> plutot qu'un objet pour stocker des donnees cle/valeur ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qS4')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict right">3 criteres a citer</div>
+            <strong>1. Les cles ne sont pas des strings</strong> — un objet ne peut avoir que des strings ou Symbols comme cles. Map accepte n'importe quel type, y compris des objets ou des fonctions.<br><br>
+            <strong>2. L'ordre d'insertion est important</strong> — Map garantit l'ordre d'insertion, les objets ont un ordre partiel et impredictible pour les cles non-numeriques.<br><br>
+            <strong>3. Beaucoup d'ajouts/suppressions frequents</strong> — Map est optimise pour ca, et <code>.size</code> est direct contrairement a <code>Object.keys(obj).length</code>.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div id="tab-global" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">05</span><h2>Questions transversales</h2><span class="s-line"></span></div>
+
+      <!-- Q1 -->
+      <div class="q-card" id="qG1">
+        <div class="q-header">
+          <span class="q-badge">CONCEPT</span>
+          <span class="q-text">En trois phrases maximum, explique ce qu'est le modele asynchrone de JavaScript et pourquoi il est necessaire.</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qG1')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict right">Reponse de reference</div>
+            JavaScript est <strong>mono-thread</strong> : il ne peut executer qu'une instruction a la fois. Sans asynchrone, toute operation longue (appel reseau, acces disque) bloquerait le thread principal et figerait l'interface. L'asynchrone permet de lancer ces operations et d'etre notifie quand elles se terminent, sans bloquer l'execution du reste du code.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="q-card" id="qG2">
+        <div class="q-header">
+          <span class="q-badge trap">PIEGE</span>
+          <span class="q-text">Quelle est la difference entre <code>==</code> et <code>===</code> ? Pourquoi faut-il toujours utiliser <code>===</code> ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip"></div><div class="diff-pip"></div></div>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qG2')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict right">Egalite stricte vs laxiste</div>
+            <code>==</code> fait une <strong>coercition de type</strong> avant la comparaison : il convertit les valeurs pour les rendre comparables. Cela cree des surprises : <code>0 == false</code> est <code>true</code>, <code>"" == false</code> est <code>true</code>, <code>null == undefined</code> est <code>true</code>.<br><br>
+            <code>===</code> compare le <strong>type ET la valeur</strong> sans aucune conversion. C'est predictible et explicite. En JS moderne, on utilise toujours <code>===</code> sauf cas tres specifique.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="q-card" id="qG3">
+        <div class="q-header">
+          <span class="q-badge">CONCEPT</span>
+          <span class="q-text">Quelle est la difference entre <code>let</code>, <code>const</code> et <code>var</code> ? Lequel utiliser et pourquoi ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qG3')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict right">Reponse attendue en entretien</div>
+            <code>var</code> a une portee de <strong>fonction</strong> (ou globale) et est hissee (hoisting) en haut de la fonction. Ca cree des comportements surprenants dans les boucles et les blocs. A eviter.<br><br>
+            <code>let</code> a une portee de <strong>bloc</strong> (<code>{ }</code>), n'est pas hissee de la meme facon. A utiliser pour les variables qui peuvent changer.<br><br>
+            <code>const</code> a une portee de bloc et <strong>ne peut pas etre reassignee</strong>. Attention : pour les objets et tableaux, le contenu peut changer, seule la reference est constante. A utiliser par defaut — ca documente l'intention.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 PIEGE -->
+      <div class="q-card" id="qG4">
+        <div class="q-header">
+          <span class="q-badge trap">PIEGE</span>
+          <span class="q-text"><code>const arr = [1, 2, 3]</code>. Peut-on faire <code>arr.push(4)</code> ? Et <code>arr = [1, 2, 3, 4]</code> ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qG4')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict piege">const ne protege pas le contenu</div>
+            <code>arr.push(4)</code> : <strong>oui, ca fonctionne.</strong> <code>const</code> empeche la reassignation de la <strong>variable elle-meme</strong>, pas la modification du contenu de l'objet ou tableau pointe. La reference reste la meme.<br><br>
+            <code>arr = [1, 2, 3, 4]</code> : <strong>non, TypeError.</strong> Ici on essaie de reassigner la variable <code>arr</code> vers un nouveau tableau — c'est interdit avec <code>const</code>.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="q-card" id="qG5">
+        <div class="q-header">
+          <span class="q-badge">CONCEPT</span>
+          <span class="q-text">C'est quoi le principe du <code>try/catch</code> et pourquoi est-il important dans le contexte des appels API ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip"></div><div class="diff-pip"></div></div>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qG5')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict right">Gestion d'erreur</div>
+            <code>try/catch</code> permet d'<strong>intercepter les erreurs</strong> qui se produisent dans le bloc <code>try</code> pour les gerer dans le bloc <code>catch</code> sans que l'application plante. Sans lui, une erreur non geree stoppe l'execution et peut casser toute l'interface.<br><br>
+            Pour les appels API c'est critique : le reseau peut etre coupe, le serveur peut etre en erreur, les donnees peuvent etre malformees. Tout appel <code>await fetch()</code> doit etre dans un <code>try/catch</code>.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div id="tab-code" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">06</span><h2>Analyse de code complete</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>Pour chacun des blocs suivants, lis le code attentivement et dis ce qu'il fait, identifie les bugs eventuels, et propose une version corrigee si necessaire. Prends le temps d'analyser avant de cliquer.</p>
+      </div>
+
+      <!-- Bloc 1 -->
+      <div class="q-card" id="qC1">
+        <div class="q-header">
+          <span class="q-badge code-q">ANALYSE</span>
+          <span class="q-text">Identifie le ou les problemes dans ce code. Qu'est-ce qui ne va pas ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip on"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">analyse-1.js</span>
+          </div>
+          <pre><span class="kw">async function</span> <span class="fn">chargerUsers</span>() {
+  <span class="kw">const</span> <span class="obj">users</span> = [];
+
+  <span class="kw">const</span> <span class="obj">ids</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+  <span class="obj">ids</span>.<span class="fn">forEach</span>(<span class="kw">async</span> (<span class="obj">id</span>) => {
+    <span class="kw">const</span> <span class="obj">res</span>  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://jsonplaceholder.typicode.com/users/<span class="obj">${id}</span>`</span>);
+    <span class="kw">const</span> <span class="obj">user</span> = <span class="kw">await</span> <span class="obj">res</span>.<span class="fn">json</span>();
+    <span class="obj">users</span>.<span class="fn">push</span>(<span class="obj">user</span>);
+  });
+
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">users</span>.<span class="obj">length</span>); <span class="cm">// Attendu : 3</span>
+  <span class="kw">return</span> <span class="obj">users</span>;
+}
+
+<span class="fn">chargerUsers</span>();</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qC1')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict wrong">Bug : await dans forEach ne fonctionne pas comme attendu</div>
+            <code>forEach</code> n'attend pas les callbacks async. Chaque iteration lance les fetches mais <code>forEach</code> ne retourne pas de Promise et ne peut pas etre <code>await</code>ed. Le <code>console.log</code> s'execute avant que les fetches soient termines. <code>users.length</code> affichera probablement <strong>0</strong>.<br><br>
+            <strong>Correction — deux options :</strong><br>
+            1. <code>for...of</code> sequentiel :<br>
+            <code>for (const id of ids) { const res = await fetch(...); ... }</code><br><br>
+            2. <code>Promise.all</code> en parallele (meilleur) :<br>
+            <code>const users = await Promise.all(ids.map(async (id) => { ... }));</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloc 2 -->
+      <div class="q-card" id="qC2">
+        <div class="q-header">
+          <span class="q-badge code-q">ANALYSE</span>
+          <span class="q-text">Ce code fonctionne-t-il ? Si non, trouve les deux problemes.</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">analyse-2.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="obj">config</span> = {
+  host:   <span class="str">"localhost"</span>,
+  port:   <span class="num">3000</span>,
+  debug:  <span class="kw">false</span>,
+  retries: <span class="num">0</span>
+};
+
+<span class="kw">const</span> {
+  <span class="obj">host</span>,
+  <span class="obj">port</span>    = <span class="num">8080</span>,
+  <span class="obj">debug</span>   = <span class="kw">true</span>,
+  <span class="obj">retries</span> = <span class="num">3</span>,
+  <span class="obj">timeout</span> = <span class="num">5000</span>
+} = <span class="obj">config</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">port</span>, <span class="obj">debug</span>, <span class="obj">retries</span>, <span class="obj">timeout</span>);</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qC2')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict piege">Piege sur valeurs par defaut</div>
+            Le code ne plante pas mais les valeurs ne sont pas celles attendues :<br><br>
+            <code>port</code> = <strong>3000</strong> (pas 8080 — la valeur existe dans config)<br>
+            <code>debug</code> = <strong>false</strong> (pas true — false est une valeur valide, pas undefined)<br>
+            <code>retries</code> = <strong>0</strong> (pas 3 — 0 est une valeur valide, pas undefined)<br>
+            <code>timeout</code> = <strong>5000</strong> (correct — absent dans config, defaut utilise)<br><br>
+            La valeur par defaut ne s'applique que si la propriete est <code>undefined</code>. <code>false</code> et <code>0</code> ne declenchent pas le defaut.
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloc 3 -->
+      <div class="q-card" id="qC3">
+        <div class="q-header">
+          <span class="q-badge code-q">ANALYSE</span>
+          <span class="q-text">Lis ce code et dis ce qu'il affiche. Est-ce correct ? Que pourrait-on ameliorer ?</span>
+          <div class="q-diff"><div class="diff-pip on"></div><div class="diff-pip on"></div><div class="diff-pip"></div></div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">analyse-3.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="obj">utilisateurs</span> = [
+  { id: <span class="num">1</span>, nom: <span class="str">"Alice"</span>, score: <span class="num">0</span>  },
+  { id: <span class="num">2</span>, nom: <span class="str">"Bob"</span>,   score: <span class="kw">null</span> },
+  { id: <span class="num">3</span>, nom: <span class="str">"Clara"</span>              },
+];
+
+<span class="kw">const</span> <span class="obj">resultats</span> = <span class="obj">utilisateurs</span>.<span class="fn">map</span>((<span class="obj">u</span>) => ({
+  nom:    <span class="obj">u</span>.<span class="obj">nom</span>   || <span class="str">"Inconnu"</span>,
+  score:  <span class="obj">u</span>.<span class="obj">score</span> || <span class="num">0</span>,
+  statut: <span class="obj">u</span>.<span class="obj">score</span> > <span class="num">50</span> ? <span class="str">"OK"</span> : <span class="str">"KO"</span>
+}));
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">resultats</span>);</pre>
+        </div>
+        <button class="reveal-btn" onclick="reveal('qC3')">Voir la reponse</button>
+        <div class="q-answer">
+          <div class="answer-label">Reponse</div>
+          <div class="answer-text">
+            <div class="verdict piege">Plusieurs problemes subtils</div>
+            <strong>Alice</strong> : <code>score = 0</code>, mais <code>0 || 0</code> donne 0 — par chance ca semble correct. Mais <code>0 > 50</code> est false donc statut = <strong>"KO"</strong>. Correct.<br><br>
+            <strong>Bob</strong> : <code>score = null</code>, <code>null || 0</code> donne 0. Mais c'est grace au <code>||</code> pas au <code>??</code>. Et <code>null > 50</code> est false, statut = <strong>"KO"</strong>.<br><br>
+            <strong>Clara</strong> : <code>score</code> absent → <code>undefined || 0</code> donne 0. Statut = <strong>"KO"</strong>.<br><br>
+            <strong>Amelioration</strong> : remplacer <code>||</code> par <code>??</code> pour <code>score</code> afin de respecter explicitement les valeurs <code>0</code> intentionnelles. Et utiliser <code>u?.score</code> pour securiser l'acces.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /.wrapper -->
+
+<footer>
+  Real Conseil &nbsp;&middot;&nbsp; Support JS — Etape 5 / 5 &nbsp;&middot;&nbsp; Faux Entretien &nbsp;&middot;&nbsp; Programme complet termine
+</footer>
+
+<script>
+  function showTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+    document.querySelector('.tabs-nav').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function reveal(id) {
+    const card = document.getElementById(id);
+    const btn  = card.querySelector('.reveal-btn');
+    const isOpen = card.classList.contains('revealed');
+
+    if (isOpen) {
+      card.classList.remove('revealed');
+      btn.textContent = 'Voir la reponse';
+      btn.insertAdjacentHTML('afterbegin', '');
+    } else {
+      card.classList.add('revealed');
+      btn.textContent = 'Masquer la reponse';
+    }
+
+    // Re-add the ::before via class toggle logic
+    btn.setAttribute('data-open', !isOpen);
+  }
+</script>
+
+<script src="../Cursor.js"></script>
+
+</body>
+</html>

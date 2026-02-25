@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Filter JavaScript — Real Conseil</title>
+<style>
+
+:root {
+  --bg-deep:       #080b0f;
+  --bg-card:       #0d1117;
+  --bg-card-hover: #111820;
+  --border:        #1e2d3d;
+  --border-glow:   #44D62C;
+  --accent-green:  #44D62C;
+  --accent-blue:   #00b4d8;
+  --accent-orange: #ff6b00;
+  --accent-purple: #a855f7;
+  --accent-yellow: #eab308;
+  --text-primary:  #e6edf3;
+  --text-muted:    #7d8590;
+  --text-dim:      #3d444d;
+  --red-btn:       #ff5f57;
+  --orange-btn:    #febc2e;
+  --green-btn:     #28c840;
+  --titlebar:      #161b22;
+  --font-mono:     'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;
+  --font-ui:       -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── GRID BG ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(68,214,44,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(68,214,44,.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none; z-index: 0;
+}
+
+/* ── ORBS ── */
+.orb { position:fixed; border-radius:50%; filter:blur(120px); pointer-events:none; z-index:0; opacity:.15; }
+.orb-1 { width:600px;height:600px; background:radial-gradient(circle,#44D62C,transparent); top:-200px;left:-200px; animation:orbFloat 18s ease-in-out infinite; }
+.orb-2 { width:500px;height:500px; background:radial-gradient(circle,#00b4d8,transparent); bottom:-150px;right:-150px; animation:orbFloat 22s ease-in-out infinite reverse; }
+.orb-3 { width:300px;height:300px; background:radial-gradient(circle,#a855f7,transparent); top:50%;left:50%; transform:translate(-50%,-50%); animation:orbFloat 15s ease-in-out infinite 5s; opacity:.07; }
+@keyframes orbFloat {
+  0%,100% { transform:translate(0,0) scale(1); }
+  33%     { transform:translate(30px,-30px) scale(1.05); }
+  66%     { transform:translate(-20px,20px) scale(.95); }
+}
+
+/* ── NAV ── */
+.nav {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(8,11,15,.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 24px; height: 52px;
+}
+.nav-mac-dots { display:flex;align-items:center;gap:7px;flex-shrink:0; }
+.nav-mac-dot {
+  width:13px;height:13px;border-radius:50%;
+  border:none;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:filter .15s;flex-shrink:0;position:relative;
+}
+.nav-mac-dot:hover { filter:brightness(1.2); }
+.nav-mac-dot.red    { background:#ff5f57; }
+.nav-mac-dot.orange { background:#febc2e; }
+.nav-mac-dot.green  { background:#28c840; }
+.nav-mac-dot .dot-icon { display:none;font-size:8px;color:rgba(0,0,0,.6);font-weight:800; }
+.nav-mac-dots:hover .dot-icon { display:flex;align-items:center;justify-content:center; }
+.nav-mac-dot::after {
+  content:attr(data-tip);
+  position:absolute;top:calc(100% + 7px);left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.8);color:#fff;font-size:.6rem;white-space:nowrap;
+  padding:3px 8px;border-radius:5px;opacity:0;pointer-events:none;transition:opacity .15s;
+  font-family:var(--font-ui);
+}
+.nav-mac-dot:hover::after { opacity:1; }
+
+.nav-sep { width:1px;height:20px;background:var(--border);flex-shrink:0; }
+.nav-title {
+  font-family: var(--font-mono); font-size:.8rem; color:var(--text-muted);
+  display:flex;align-items:center;gap:8px;
+}
+.nav-title span { color:var(--accent-green); }
+.nav-right { margin-left:auto;display:flex;align-items:center;gap:10px; }
+.nav-pill {
+  font-family:var(--font-mono);font-size:.68rem;
+  background:rgba(68,214,44,.08);border:1px solid rgba(68,214,44,.2);
+  color:var(--accent-green);padding:3px 10px;border-radius:20px;
+}
+.nav-progress {
+  font-size:.7rem;color:var(--text-muted);
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  padding:3px 10px;border-radius:20px;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative; z-index: 1;
+  max-width: 900px; margin: 0 auto;
+  padding: 72px 24px 56px;
+  text-align: center;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(68,214,44,.08); border: 1px solid rgba(68,214,44,.2);
+  border-radius: 20px; padding: 5px 16px;
+  font-family: var(--font-mono); font-size: .72rem; color: var(--accent-green);
+  letter-spacing: .08em; text-transform: uppercase;
+  margin-bottom: 28px;
+  animation: fadeDown .5s ease both;
+}
+.hero-badge::before { content:'▸'; }
+.hero h1 {
+  font-size: clamp(2.4rem,5vw,4rem);
+  font-weight: 800; letter-spacing: -.04em; line-height: 1.06;
+  background: linear-gradient(135deg, #fff 0%, #44D62C 45%, #00b4d8 85%);
+  background-size: 200% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 6s linear infinite, fadeDown .5s ease .1s both;
+  margin-bottom: 18px;
+}
+@keyframes gradientShift { 0%{background-position:0% center} 100%{background-position:200% center} }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:none} }
+.hero-sub {
+  font-size: 1.05rem; color: var(--text-muted); line-height: 1.7;
+  max-width: 600px; margin: 0 auto 36px;
+  animation: fadeDown .5s ease .2s both;
+}
+.hero-sub code {
+  font-family: var(--font-mono); font-size: .9em;
+  color: var(--accent-green);
+  background: rgba(68,214,44,.08); border: 1px solid rgba(68,214,44,.15);
+  padding: 1px 6px; border-radius: 4px;
+}
+.hero-tags {
+  display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+  animation: fadeDown .5s ease .3s both;
+}
+.hero-tag {
+  font-family: var(--font-mono); font-size: .72rem;
+  background: rgba(255,255,255,.04); border: 1px solid var(--border);
+  color: var(--text-muted); padding: 5px 14px; border-radius: 20px;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-bar-wrap {
+  position: sticky; top: 52px; z-index: 199;
+  background: rgba(8,11,15,.8);
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.progress-bar-inner {
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+  width: 0%; transition: width .1s linear;
+}
+
+/* ── CONTAINER ── */
+.container {
+  position: relative; z-index: 1;
+  max-width: 1100px; margin: 0 auto;
+  padding: 0 24px 100px;
+}
+
+/* ── SECTION TITLE ── */
+.section-head {
+  display: flex; align-items: center; gap: 14px;
+  margin: 56px 0 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  font-family: var(--font-mono); font-size: .7rem;
+  color: var(--accent-green); letter-spacing: .1em;
+  background: rgba(68,214,44,.08); border: 1px solid rgba(68,214,44,.2);
+  padding: 3px 10px; border-radius: 6px;
+  flex-shrink: 0;
+}
+.section-head h2 {
+  font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em;
+  color: var(--text-primary);
+}
+.section-head p {
+  font-size: .82rem; color: var(--text-muted);
+  margin-left: auto; font-family: var(--font-mono);
+}
+
+/* ── MAC CODE CARD ── */
+.mac-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  margin-bottom: 20px;
+  transition: border-color .3s, box-shadow .3s;
+  animation: fadeUp .45s ease both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+.mac-card:hover {
+  border-color: rgba(68,214,44,.3);
+  box-shadow: 0 12px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(68,214,44,.1);
+}
+
+.titlebar {
+  background: var(--titlebar);
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.dots { display:flex;gap:7px;align-items:center; }
+.dot {
+  width:13px;height:13px;border-radius:50%;
+  border:none;outline:none;
+  position:relative;
+  transition:filter .15s,transform .15s;
+  flex-shrink:0;
+}
+.dot:hover  { filter:brightness(1.2);transform:scale(1.15); }
+.dot:active { transform:scale(.9); }
+.dot-red    { background:#ff5f57;box-shadow:0 0 6px rgba(255,95,87,.4); }
+.dot-orange { background:#febc2e;box-shadow:0 0 6px rgba(254,188,46,.4); }
+.dot-green  { background:#28c840;box-shadow:0 0 6px rgba(40,200,64,.5); }
+.dot .dot-icon {
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;font-size:9px;font-weight:900;color:rgba(0,0,0,.6);
+  transition:opacity .15s;
+}
+.titlebar:hover .dot .dot-icon { opacity:1; }
+.titlebar-name {
+  flex:1;text-align:center;
+  font-family:var(--font-mono);font-size:.76rem;
+  color:var(--text-muted);letter-spacing:.04em;
+  margin-right:39px;
+}
+
+/* ── CODE BLOCK ── */
+.code-body { padding: 22px 24px; }
+pre {
+  font-family: var(--font-mono);
+  font-size: .83rem; line-height: 1.75;
+  color: var(--text-primary);
+  white-space: pre-wrap; word-break: break-word;
+  tab-size: 2;
+}
+
+/* Syntax highlight */
+.kw  { color: #ff79c6; }           /* keyword: const, let, return */
+.fn  { color: #50fa7b; }           /* function name */
+.str { color: #f1fa8c; }           /* string */
+.num { color: #bd93f9; }           /* number */
+.cmt { color: #6272a4;font-style:italic; }  /* comment */
+.met { color: #8be9fd; }           /* method .filter .map */
+.arr { color: #ffb86c; }           /* arrow, operator */
+.prp { color: #e6edf3; }           /* property */
+.bol { color: #bd93f9; }           /* boolean */
+
+/* ── INFO BOX ── */
+.info-box {
+  background: rgba(68,214,44,.06);
+  border: 1px solid rgba(68,214,44,.2);
+  border-left: 3px solid var(--accent-green);
+  border-radius: 8px; padding: 16px 20px;
+  font-size: .85rem; color: var(--text-muted);
+  line-height: 1.7; margin-bottom: 20px;
+}
+.info-box strong { color: var(--accent-green); }
+.info-box.blue {
+  background: rgba(0,180,216,.06);
+  border-color: rgba(0,180,216,.2);
+  border-left-color: var(--accent-blue);
+}
+.info-box.blue strong { color: var(--accent-blue); }
+.info-box.orange {
+  background: rgba(255,107,0,.06);
+  border-color: rgba(255,107,0,.2);
+  border-left-color: var(--accent-orange);
+}
+.info-box.orange strong { color: var(--accent-orange); }
+.info-box.purple {
+  background: rgba(168,85,247,.06);
+  border-color: rgba(168,85,247,.2);
+  border-left-color: var(--accent-purple);
+}
+.info-box.purple strong { color: var(--accent-purple); }
+
+/* ── CONCEPT CARD ── */
+.concept-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:20px; }
+.concept-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px;
+  transition: border-color .2s, transform .2s;
+}
+.concept-card:hover { border-color:rgba(68,214,44,.3);transform:translateY(-3px); }
+.concept-card h3 {
+  font-family: var(--font-mono); font-size: .88rem;
+  color: var(--accent-green); margin-bottom: 8px;
+  display:flex;align-items:center;gap:8px;
+}
+.concept-card h3::before { content:'▸'; opacity:.6; }
+.concept-card p { font-size:.82rem;color:var(--text-muted);line-height:1.6; }
+.concept-card code {
+  font-family:var(--font-mono);font-size:.78rem;
+  color:var(--accent-blue);
+  background:rgba(0,180,216,.08);
+  padding:1px 5px;border-radius:3px;
+}
+
+/* ── RESULT BOX ── */
+.result-box {
+  background: rgba(8,11,15,.8);
+  border: 1px solid var(--border);
+  border-top: none; padding: 14px 24px;
+  font-family: var(--font-mono); font-size: .8rem;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.result-label {
+  color: var(--accent-blue); flex-shrink:0;
+  font-size:.72rem;letter-spacing:.06em;
+}
+.result-val { color: var(--accent-green); word-break:break-word; }
+
+/* ── GRID LAYOUT ── */
+.grid-2 { display:grid;grid-template-columns:1fr 1fr;gap:20px; }
+.grid-3 { display:grid;grid-template-columns:repeat(3,1fr);gap:16px; }
+
+/* ── COMPARE TABLE ── */
+.compare-table { width:100%;border-collapse:collapse; }
+.compare-table th {
+  background:var(--titlebar);
+  padding:12px 16px;text-align:left;
+  font-family:var(--font-mono);font-size:.72rem;
+  color:var(--text-muted);letter-spacing:.06em;
+  border-bottom:1px solid var(--border);
+}
+.compare-table td {
+  padding:12px 16px;font-size:.82rem;
+  border-bottom:1px solid rgba(30,45,61,.5);
+  vertical-align:top;
+}
+.compare-table tr:last-child td { border:none; }
+.compare-table tr:hover td { background:rgba(255,255,255,.02); }
+.compare-table .met-name {
+  font-family:var(--font-mono);color:var(--accent-green);font-size:.82rem;
+}
+.compare-table .ret-val {
+  font-family:var(--font-mono);font-size:.78rem;color:var(--accent-blue);
+}
+.compare-table td:nth-child(3) { color:var(--text-muted);font-size:.8rem;line-height:1.55; }
+
+/* ── PLAYGROUND ── */
+.playground {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  margin-bottom: 20px;
+}
+.playground-head {
+  background: var(--titlebar);
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.playground-body { padding: 20px 24px; }
+.pg-label {
+  font-family:var(--font-mono);font-size:.7rem;
+  color:var(--text-muted);margin-bottom:8px;letter-spacing:.06em;
+}
+.pg-data {
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;
+}
+.pg-item {
+  background:rgba(68,214,44,.08);border:1px solid rgba(68,214,44,.2);
+  border-radius:6px;padding:4px 12px;
+  font-family:var(--font-mono);font-size:.78rem;
+  color:var(--accent-green);
+  transition:background .2s,border-color .2s;
+}
+.pg-item.excluded {
+  background:rgba(255,95,87,.08);border-color:rgba(255,95,87,.25);
+  color:#ff6b6b;text-decoration:line-through;opacity:.6;
+}
+.pg-filters {
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;
+}
+.pg-btn {
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--text-muted);padding:6px 14px;border-radius:20px;
+  font-family:var(--font-mono);font-size:.75rem;
+  transition:all .15s;
+}
+.pg-btn:hover { border-color:rgba(68,214,44,.4);color:var(--accent-green);background:rgba(68,214,44,.06); }
+.pg-btn.active { background:rgba(68,214,44,.12);border-color:rgba(68,214,44,.4);color:var(--accent-green); }
+.pg-result {
+  background:rgba(8,11,15,.6);border:1px solid var(--border);
+  border-radius:8px;padding:12px 16px;
+  font-family:var(--font-mono);font-size:.8rem;min-height:40px;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.pg-result-label { color:var(--text-dim);flex-shrink:0; }
+.pg-result-val { color:var(--accent-green); }
+.pg-code-preview {
+  margin-top:12px;font-family:var(--font-mono);font-size:.75rem;
+  color:var(--text-dim);background:rgba(0,0,0,.3);
+  border-radius:6px;padding:8px 12px;
+}
+
+/* ── TIPS ── */
+.tips-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:20px; }
+.tip-card {
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:10px;padding:18px;
+  border-top:2px solid transparent;
+  transition:border-color .2s,transform .2s;
+}
+.tip-card:hover { transform:translateY(-2px); }
+.tip-card.green  { border-top-color:var(--accent-green); }
+.tip-card.blue   { border-top-color:var(--accent-blue); }
+.tip-card.orange { border-top-color:var(--accent-orange); }
+.tip-card.purple { border-top-color:var(--accent-purple); }
+.tip-card.yellow { border-top-color:var(--accent-yellow); }
+.tip-icon { font-size:1.4rem;margin-bottom:8px; }
+.tip-card h4 { font-size:.85rem;font-weight:700;color:var(--text-primary);margin-bottom:6px; }
+.tip-card p  { font-size:.78rem;color:var(--text-muted);line-height:1.6; }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed;bottom:30px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--titlebar);border:1px solid var(--border);
+  border-radius:10px;padding:10px 20px;
+  font-family:var(--font-mono);font-size:.82rem;
+  color:var(--accent-orange);
+  box-shadow:0 8px 30px rgba(0,0,0,.6);
+  z-index:1000;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s;
+  opacity:0;white-space:nowrap;
+}
+.toast.show { transform:translateX(-50%) translateY(0);opacity:1; }
+
+/* ── FOOTER ── */
+footer {
+  position:relative;z-index:1;
+  text-align:center;padding:40px 24px 60px;
+  border-top:1px solid var(--border);
+  margin-top:20px;
+}
+footer p { color:var(--text-muted);font-size:.82rem;margin:4px 0; }
+footer a { color:var(--accent-blue);text-decoration:none;font-size:.82rem; }
+footer a:hover { text-decoration:underline; }
+footer .year { font-family:var(--font-mono);color:var(--text-dim);font-size:.72rem;margin-top:16px; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .grid-2,.grid-3 { grid-template-columns:1fr; }
+  .concept-grid   { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Orbs décoratifs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+  <div class="nav-mac-dots">
+    <button class="nav-mac-dot red" data-tip="Retour à l'accueil" onclick="macGoBack()">
+      <span class="dot-icon">✕</span>
+    </button>
+    <button class="nav-mac-dot orange" data-tip="Nouvel onglet" onclick="window.open(location.href,'_blank')">
+      <span class="dot-icon">⊞</span>
+    </button>
+    <button class="nav-mac-dot green" data-tip="Haut de page" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <span class="dot-icon">↑</span>
+    </button>
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-title">
+    <span>filter</span>.js — Real Conseil
+  </div>
+  <div class="nav-right">
+    <div class="nav-pill">JavaScript</div>
+    <div class="nav-progress" id="navProgress">0%</div>
+  </div>
+</nav>
+
+<!-- Progress bar de lecture -->
+<div class="progress-bar-wrap">
+  <div class="progress-bar-inner" id="progressBar"></div>
+</div>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-badge">JavaScript · Les méthodes de filtrage</div>
+  <h1>Filter, Find & co.</h1>
+  <p class="hero-sub">
+    Maîtrise <code>.filter()</code>, <code>.find()</code>, <code>.findIndex()</code>,
+    <code>.some()</code>, <code>.every()</code> et leurs combinaisons.
+    Les outils les plus utilisés en JavaScript quotidien.
+  </p>
+  <div class="hero-tags">
+    <span class="hero-tag">.filter()</span>
+    <span class="hero-tag">.find()</span>
+    <span class="hero-tag">.findIndex()</span>
+    <span class="hero-tag">.some()</span>
+    <span class="hero-tag">.every()</span>
+    <span class="hero-tag">Chaînage</span>
+    <span class="hero-tag">Objets</span>
+    <span class="hero-tag">Async</span>
+  </div>
+</section>
+
+<!-- ── CONTAINER ── -->
+<div class="container">
+
+  
+  <!-- 01 — SYNTAXE DE BASE                       -->
+ 
+  <div class="section-head">
+    <span class="section-num">01</span>
+    <h2>.filter() — La syntaxe</h2>
+    <p>Array → Array filtré</p>
+  </div>
+
+  <div class="info-box">
+    <strong>.filter()</strong> parcourt chaque élément du tableau et retourne un <strong>nouveau tableau</strong> contenant uniquement les éléments pour lesquels la fonction retourne <strong>true</strong>. Le tableau d'origine n'est jamais modifié.
+  </div>
+
+  <div class="mac-card">
+    <div class="titlebar">
+      <div class="dots">
+        <button class="dot dot-red" onclick="macGoBack()"><span class="dot-icon">✕</span></button>
+        <button class="dot dot-orange" onclick="window.open(location.href,'_blank')"><span class="dot-icon">⊞</span></button>
+        <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+      </div>
+      <div class="titlebar-name">syntaxe-filter.js</div>
+    </div>
+    <div class="code-body">
+<pre><span class="cmt">// ── Syntaxe complète ───</span>
+<span class="kw">const</span> <span class="prp">resultat</span> = <span class="prp">tableau</span>.<span class="met">filter</span>(<span class="kw">function</span>(<span class="prp">element</span>, <span class="prp">index</span>, <span class="prp">array</span>) {
+  <span class="kw">return</span> <span class="cmt">/* condition true/false */</span>;
+});
+
+<span class="cmt">// ── Avec arrow function (la forme la plus courante) ──</span>
+<span class="kw">const</span> <span class="prp">resultat</span> = <span class="prp">tableau</span>.<span class="met">filter</span>(<span class="prp">element</span> <span class="arr">=></span> <span class="cmt">/* condition */</span>);
+
+<span class="cmt">// ── Exemple concret ──</span>
+<span class="kw">const</span> <span class="prp">nombres</span> = [<span class="num">1</span>, <span class="num">8</span>, <span class="num">3</span>, <span class="num">12</span>, <span class="num">5</span>, <span class="num">20</span>, <span class="num">7</span>];
+
+<span class="kw">const</span> <span class="prp">grands</span> = <span class="prp">nombres</span>.<span class="met">filter</span>(<span class="prp">n</span> <span class="arr">=></span> <span class="prp">n</span> <span class="arr">></span> <span class="num">6</span>);
+<span class="cmt">// → [8, 12, 20, 7]   ← nouveau tableau, nombres intact</span>
+
+<span class="cmt">// ── Les 3 paramètres disponibles ──</span>
+<span class="prp">nombres</span>.<span class="met">filter</span>((<span class="prp">element</span>, <span class="prp">index</span>, <span class="prp">array</span>) <span class="arr">=></span> {
+  <span class="fn">console</span>.<span class="met">log</span>(<span class="prp">element</span>); <span class="cmt">// valeur courante : 1, 8, 3...</span>
+  <span class="fn">console</span>.<span class="met">log</span>(<span class="prp">index</span>);   <span class="cmt">// indice courant  : 0, 1, 2...</span>
+  <span class="fn">console</span>.<span class="met">log</span>(<span class="prp">array</span>);   <span class="cmt">// tableau entier (rarement utile)</span>
+  <span class="kw">return</span> <span class="prp">element</span> <span class="arr">></span> <span class="num">6</span>;
+});</pre>
+    </div>
+    <div class="result-box">
+      <span class="result-label">// résultat :</span>
+      <span class="result-val">[8, 12, 20, 7]</span>
+    </div>
+  </div>
+
+  <div class="info-box blue">
+    <strong>Règle d'or :</strong> .filter() ne modifie jamais le tableau d'origine. Il retourne toujours un nouveau tableau — vide <code>[]</code> si aucun élément ne passe le test.
+  </div>
+
+ 
+  <!-- 02 — CAS PRATIQUES NOMBRES                 -->
+
+  <div class="section-head">
+    <span class="section-num">02</span>
+    <h2>Filtrer des nombres</h2>
+    <p>Les cas les plus fréquents</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="mac-card">
+      <div class="titlebar">
+        <div class="dots">
+          <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+          <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+          <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+        </div>
+        <div class="titlebar-name">nombres-pairs.js</div>
+      </div>
+      <div class="code-body">
+<pre><span class="kw">const</span> <span class="prp">nums</span> = [<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>,<span class="num">7</span>,<span class="num">8</span>];
+
+<span class="cmt">// Pairs</span>
+<span class="kw">const</span> <span class="prp">pairs</span> = <span class="prp">nums</span>.<span class="met">filter</span>(<span class="prp">n</span> <span class="arr">=></span> <span class="prp">n</span> <span class="arr">%</span> <span class="num">2</span> <span class="arr">===</span> <span class="num">0</span>);
+<span class="cmt">// → [2, 4, 6, 8]</span>
+
+<span class="cmt">// Impairs</span>
+<span class="kw">const</span> <span class="prp">impairs</span> = <span class="prp">nums</span>.<span class="met">filter</span>(<span class="prp">n</span> <span class="arr">=></span> <span class="prp">n</span> <span class="arr">%</span> <span class="num">2</span> <span class="arr">!==</span> <span class="num">0</span>);
+<span class="cmt">// → [1, 3, 5, 7]</span>
+
+<span class="cmt">// Entre deux valeurs</span>
+<span class="kw">const</span> <span class="prp">entre</span> = <span class="prp">nums</span>.<span class="met">filter</span>(<span class="prp">n</span> <span class="arr">=></span> <span class="prp">n</span> <span class="arr">>=</span> <span class="num">3</span> <span class="arr">&&</span> <span class="prp">n</span> <span class="arr"><=</span> <span class="num">6</span>);
+<span class="cmt">// → [3, 4, 5, 6]</span>
+
+<span class="cmt">// Positifs uniquement</span>
+<span class="kw">const</span> <span class="prp">liste</span> = [<span class="num">-3</span>, <span class="num">5</span>, <span class="num">-1</span>, <span class="num">8</span>, <span class="num">-2</span>, <span class="num">4</span>];
+<span class="kw">const</span> <span class="prp">positifs</span> = <span class="prp">liste</span>.<span class="met">filter</span>(<span class="prp">n</span> <span class="arr">=></span> <span class="prp">n</span> <span class="arr">></span> <span class="num">0</span>);
+<span class="cmt">// → [5, 8, 4]</span></pre>
+      </div>
+    </div>
+
+    <div class="mac-card">
+      <div class="titlebar">
+        <div class="dots">
+          <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+          <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+          <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+        </div>
+        <div class="titlebar-name">doublons-uniques.js</div>
+      </div>
+      <div class="code-body">
+<pre><span class="cmt">// Supprimer les doublons avec filter + indexOf</span>
+<span class="kw">const</span> <span class="prp">avecDoublons</span> = [<span class="num">1</span>,<span class="num">2</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">3</span>,<span class="num">3</span>,<span class="num">4</span>];
+
+<span class="kw">const</span> <span class="prp">uniques</span> = <span class="prp">avecDoublons</span>.<span class="met">filter</span>(
+  (<span class="prp">val</span>, <span class="prp">index</span>, <span class="prp">arr</span>) <span class="arr">=></span> <span class="prp">arr</span>.<span class="met">indexOf</span>(<span class="prp">val</span>) <span class="arr">===</span> <span class="prp">index</span>
+);
+<span class="cmt">// → [1, 2, 3, 4]</span>
+<span class="cmt">// indexOf retourne le 1er index trouvé</span>
+<span class="cmt">// si index !== 1er index → c'est un doublon</span>
+
+<span class="cmt">// Alternative moderne avec Set</span>
+<span class="kw">const</span> <span class="prp">uniques2</span> = [<span class="arr">...</span><span class="kw">new</span> <span class="fn">Set</span>(<span class="prp">avecDoublons</span>)];
+<span class="cmt">// → [1, 2, 3, 4]</span>
+
+<span class="cmt">// Filtrer les valeurs falsy (0, null, '', undefined)</span>
+<span class="kw">const</span> <span class="prp">messy</span> = [<span class="num">1</span>, <span class="bol">null</span>, <span class="str">''</span>, <span class="num">2</span>, <span class="bol">undefined</span>, <span class="num">0</span>, <span class="num">3</span>];
+<span class="kw">const</span> <span class="prp">clean</span> = <span class="prp">messy</span>.<span class="met">filter</span>(<span class="fn">Boolean</span>);
+<span class="cmt">// → [1, 2, 3]</span></pre>
+      </div>
+    </div>
+  </div>
+
+ 
+  <!-- 03 — FILTRER DES OBJETS                    -->
+ 
+  <div class="section-head">
+    <span class="section-num">03</span>
+    <h2>Filtrer des tableaux d'objets</h2>
+    <p>Le cas le plus fréquent en vrai projet</p>
+  </div>
+
+  <div class="info-box orange">
+    <strong>En projet réel</strong>, tu filtreras presque toujours des tableaux d'objets : utilisateurs, produits, commandes, articles... C'est le cas le plus important à maîtriser.
+  </div>
+
+  <div class="mac-card">
+    <div class="titlebar">
+      <div class="dots">
+        <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+        <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+        <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+      </div>
+      <div class="titlebar-name">filter-objets.js</div>
+    </div>
+    <div class="code-body">
+<pre><span class="kw">const</span> <span class="prp">users</span> = [
+  { <span class="prp">id</span>: <span class="num">1</span>, <span class="prp">nom</span>: <span class="str">'Alice'</span>,  <span class="prp">age</span>: <span class="num">28</span>, <span class="prp">role</span>: <span class="str">'admin'</span>,  <span class="prp">actif</span>: <span class="bol">true</span>  },
+  { <span class="prp">id</span>: <span class="num">2</span>, <span class="prp">nom</span>: <span class="str">'Bob'</span>,    <span class="prp">age</span>: <span class="num">34</span>, <span class="prp">role</span>: <span class="str">'user'</span>,   <span class="prp">actif</span>: <span class="bol">false</span> },
+  { <span class="prp">id</span>: <span class="num">3</span>, <span class="prp">nom</span>: <span class="str">'Clara'</span>, <span class="prp">age</span>: <span class="num">22</span>, <span class="prp">role</span>: <span class="str">'user'</span>,   <span class="prp">actif</span>: <span class="bol">true</span>  },
+  { <span class="prp">id</span>: <span class="num">4</span>, <span class="prp">nom</span>: <span class="str">'David'</span>, <span class="prp">age</span>: <span class="num">45</span>, <span class="prp">role</span>: <span class="str">'admin'</span>,  <span class="prp">actif</span>: <span class="bol">true</span>  },
+  { <span class="prp">id</span>: <span class="num">5</span>, <span class="prp">nom</span>: <span class="str">'Eva'</span>,   <span class="prp">age</span>: <span class="num">19</span>, <span class="prp">role</span>: <span class="str">'user'</span>,   <span class="prp">actif</span>: <span class="bol">false</span> },
+];
+
+<span class="cmt">// ── Filtrer par propriété booléenne ──</span>
+<span class="kw">const</span> <span class="prp">actifs</span> = <span class="prp">users</span>.<span class="met">filter</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">actif</span>);
+<span class="cmt">// → [Alice, Clara, David]</span>
+
+<span class="cmt">// ── Filtrer par valeur de propriété ───</span>
+<span class="kw">const</span> <span class="prp">admins</span> = <span class="prp">users</span>.<span class="met">filter</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">role</span> <span class="arr">===</span> <span class="str">'admin'</span>);
+<span class="cmt">// → [Alice, David]</span>
+
+<span class="cmt">// ── Filtrer par condition numérique ──</span>
+<span class="kw">const</span> <span class="prp">majeursActifs</span> = <span class="prp">users</span>.<span class="met">filter</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">age</span> <span class="arr">>=</span> <span class="num">18</span> <span class="arr">&&</span> <span class="prp">u</span>.<span class="prp">actif</span>);
+<span class="cmt">// → [Alice, Clara, David]</span>
+
+<span class="cmt">// ── Filtrer en excluant un élément par id ────</span>
+<span class="kw">const</span> <span class="prp">sansBob</span> = <span class="prp">users</span>.<span class="met">filter</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">id</span> <span class="arr">!==</span> <span class="num">2</span>);
+<span class="cmt">// → [Alice, Clara, David, Eva]   ← simule un "delete"</span></pre>
+    </div>
+  </div>
+
+  <!-- Barre de recherche en temps réel -->
+  <div class="mac-card">
+    <div class="titlebar">
+      <div class="dots">
+        <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+        <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+        <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+      </div>
+      <div class="titlebar-name">recherche-temps-reel.js</div>
+    </div>
+    <div class="code-body">
+<pre><span class="cmt">// ── Pattern classique : barre de recherche temps réel ───</span>
+<span class="kw">const</span> <span class="prp">produits</span> = [
+  { <span class="prp">nom</span>: <span class="str">'MacBook Pro'</span>,  <span class="prp">prix</span>: <span class="num">2499</span>, <span class="prp">stock</span>: <span class="num">5</span>  },
+  { <span class="prp">nom</span>: <span class="str">'iPad Air'</span>,     <span class="prp">prix</span>: <span class="num">799</span>,  <span class="prp">stock</span>: <span class="num">12</span> },
+  { <span class="prp">nom</span>: <span class="str">'iPhone 15'</span>,    <span class="prp">prix</span>: <span class="num">1129</span>, <span class="prp">stock</span>: <span class="num">0</span>  },
+  { <span class="prp">nom</span>: <span class="str">'AirPods Pro'</span>,  <span class="prp">prix</span>: <span class="num">279</span>,  <span class="prp">stock</span>: <span class="num">30</span> },
+];
+
+<span class="kw">function</span> <span class="fn">rechercherProduits</span>(<span class="prp">query</span>) {
+  <span class="kw">const</span> <span class="prp">q</span> = <span class="prp">query</span>.<span class="met">toLowerCase</span>();
+  <span class="kw">return</span> <span class="prp">produits</span>.<span class="met">filter</span>(<span class="prp">p</span> <span class="arr">=></span>
+    <span class="prp">p</span>.<span class="prp">nom</span>.<span class="met">toLowerCase</span>().<span class="met">includes</span>(<span class="prp">q</span>)
+  );
+}
+
+<span class="fn">rechercherProduits</span>(<span class="str">'ipad'</span>);    <span class="cmt">// → [{ nom: 'iPad Air', ... }]</span>
+<span class="fn">rechercherProduits</span>(<span class="str">'pro'</span>);     <span class="cmt">// → [MacBook Pro, AirPods Pro]</span>
+
+<span class="cmt">// ── Multi-filtres combinés ─────</span>
+<span class="kw">function</span> <span class="fn">filtrerProduits</span>({ <span class="prp">query</span> = <span class="str">''</span>, <span class="prp">maxPrix</span> = <span class="fn">Infinity</span>, <span class="prp">enStock</span> = <span class="bol">false</span> }) {
+  <span class="kw">return</span> <span class="prp">produits</span>.<span class="met">filter</span>(<span class="prp">p</span> <span class="arr">=></span> {
+    <span class="kw">const</span> <span class="prp">matchNom</span>   = <span class="prp">p</span>.<span class="prp">nom</span>.<span class="met">toLowerCase</span>().<span class="met">includes</span>(<span class="prp">query</span>.<span class="met">toLowerCase</span>());
+    <span class="kw">const</span> <span class="prp">matchPrix</span>  = <span class="prp">p</span>.<span class="prp">prix</span> <span class="arr"><=</span> <span class="prp">maxPrix</span>;
+    <span class="kw">const</span> <span class="prp">matchStock</span> = <span class="prp">enStock</span> <span class="arr">?</span> <span class="prp">p</span>.<span class="prp">stock</span> <span class="arr">></span> <span class="num">0</span> <span class="arr">:</span> <span class="bol">true</span>;
+    <span class="kw">return</span> <span class="prp">matchNom</span> <span class="arr">&&</span> <span class="prp">matchPrix</span> <span class="arr">&&</span> <span class="prp">matchStock</span>;
+  });
+}
+
+<span class="fn">filtrerProduits</span>({ <span class="prp">maxPrix</span>: <span class="num">1000</span>, <span class="prp">enStock</span>: <span class="bol">true</span> });
+<span class="cmt">// → [iPad Air, AirPods Pro]</span></pre>
+    </div>
+  </div>
+
+ 
+  <!-- 04 — FIND ET FINDINDEX                     -->
+ 
+  <div class="section-head">
+    <span class="section-num">04</span>
+    <h2>.find() et .findIndex()</h2>
+    <p>Trouver un seul élément</p>
+  </div>
+
+  <div class="info-box">
+    <strong>Différence clé :</strong> <code>.filter()</code> retourne un tableau. <code>.find()</code> retourne <strong>le premier élément</strong> qui correspond (ou <code>undefined</code>). <code>.findIndex()</code> retourne <strong>l'index</strong> de cet élément (ou <code>-1</code>).
+  </div>
+
+  <div class="grid-2">
+    <div class="mac-card">
+      <div class="titlebar">
+        <div class="dots">
+          <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+          <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+          <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+        </div>
+        <div class="titlebar-name">find.js</div>
+      </div>
+      <div class="code-body">
+<pre><span class="kw">const</span> <span class="prp">users</span> = [
+  { <span class="prp">id</span>: <span class="num">1</span>, <span class="prp">nom</span>: <span class="str">'Alice'</span>, <span class="prp">age</span>: <span class="num">28</span> },
+  { <span class="prp">id</span>: <span class="num">2</span>, <span class="prp">nom</span>: <span class="str">'Bob'</span>,   <span class="prp">age</span>: <span class="num">34</span> },
+  { <span class="prp">id</span>: <span class="num">3</span>, <span class="prp">nom</span>: <span class="str">'Clara'</span>, <span class="prp">age</span>: <span class="num">22</span> },
+];
+
+<span class="cmt">// .find() → retourne l'OBJET directement</span>
+<span class="kw">const</span> <span class="prp">user</span> = <span class="prp">users</span>.<span class="met">find</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">id</span> <span class="arr">===</span> <span class="num">2</span>);
+<span class="cmt">// → { id: 2, nom: 'Bob', age: 34 }</span>
+
+<span class="cmt">// Si rien trouvé → undefined</span>
+<span class="kw">const</span> <span class="prp">inconnu</span> = <span class="prp">users</span>.<span class="met">find</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">id</span> <span class="arr">===</span> <span class="num">99</span>);
+<span class="cmt">// → undefined</span>
+
+<span class="cmt">// Toujours vérifier avant d'utiliser !</span>
+<span class="kw">const</span> <span class="prp">found</span> = <span class="prp">users</span>.<span class="met">find</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">age</span> <span class="arr">></span> <span class="num">30</span>);
+<span class="kw">if</span> (<span class="prp">found</span>) {
+  <span class="fn">console</span>.<span class="met">log</span>(<span class="prp">found</span>.<span class="prp">nom</span>); <span class="cmt">// 'Bob'</span>
+}</pre>
+      </div>
+    </div>
+
+    <div class="mac-card">
+      <div class="titlebar">
+        <div class="dots">
+          <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+          <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+          <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+        </div>
+        <div class="titlebar-name">findIndex.js</div>
+      </div>
+      <div class="code-body">
+<pre><span class="kw">const</span> <span class="prp">fruits</span> = [<span class="str">'pomme'</span>, <span class="str">'banane'</span>, <span class="str">'cerise'</span>, <span class="str">'datte'</span>];
+
+<span class="cmt">// .findIndex() → retourne l'INDEX</span>
+<span class="kw">const</span> <span class="prp">idx</span> = <span class="prp">fruits</span>.<span class="met">findIndex</span>(<span class="prp">f</span> <span class="arr">=></span> <span class="prp">f</span> <span class="arr">===</span> <span class="str">'cerise'</span>);
+<span class="cmt">// → 2</span>
+
+<span class="cmt">// Si rien trouvé → -1</span>
+<span class="kw">const</span> <span class="prp">idx2</span> = <span class="prp">fruits</span>.<span class="met">findIndex</span>(<span class="prp">f</span> <span class="arr">=></span> <span class="prp">f</span> <span class="arr">===</span> <span class="str">'kiwi'</span>);
+<span class="cmt">// → -1</span>
+
+<span class="cmt">// Cas d'usage : modifier un élément dans le tableau</span>
+<span class="kw">const</span> <span class="prp">panier</span> = [
+  { <span class="prp">id</span>: <span class="num">1</span>, <span class="prp">qte</span>: <span class="num">2</span> },
+  { <span class="prp">id</span>: <span class="num">2</span>, <span class="prp">qte</span>: <span class="num">1</span> },
+  { <span class="prp">id</span>: <span class="num">3</span>, <span class="prp">qte</span>: <span class="num">5</span> },
+];
+
+<span class="kw">const</span> <span class="prp">i</span> = <span class="prp">panier</span>.<span class="met">findIndex</span>(<span class="prp">p</span> <span class="arr">=></span> <span class="prp">p</span>.<span class="prp">id</span> <span class="arr">===</span> <span class="num">2</span>);
+<span class="kw">if</span> (<span class="prp">i</span> <span class="arr">!==</span> <span class="num">-1</span>) {
+  <span class="prp">panier</span>[<span class="prp">i</span>] = { ...<span class="prp">panier</span>[<span class="prp">i</span>], <span class="prp">qte</span>: <span class="num">3</span> };
+  <span class="cmt">// Mise à jour immuable</span>
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau comparatif -->
+  <div class="mac-card">
+    <div class="titlebar">
+      <div class="dots">
+        <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+        <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+        <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+      </div>
+      <div class="titlebar-name">comparatif-methodes.js</div>
+    </div>
+    <div class="code-body" style="padding:0">
+      <table class="compare-table" style="width:100%">
+        <tr>
+          <th>Méthode</th>
+          <th>Retourne</th>
+          <th>Quand l'utiliser</th>
+          <th>Si rien trouvé</th>
+        </tr>
+        <tr>
+          <td class="met-name">.filter()</td>
+          <td class="ret-val">Array (nouveau)</td>
+          <td>Plusieurs éléments attendus</td>
+          <td class="ret-val">[] (tableau vide)</td>
+        </tr>
+        <tr>
+          <td class="met-name">.find()</td>
+          <td class="ret-val">Élément</td>
+          <td>Un seul élément attendu</td>
+          <td class="ret-val">undefined</td>
+        </tr>
+        <tr>
+          <td class="met-name">.findIndex()</td>
+          <td class="ret-val">Number (index)</td>
+          <td>Modifier/supprimer par index</td>
+          <td class="ret-val">-1</td>
+        </tr>
+        <tr>
+          <td class="met-name">.some()</td>
+          <td class="ret-val">Boolean</td>
+          <td>Vérifier si AU MOINS un correspond</td>
+          <td class="ret-val">false</td>
+        </tr>
+        <tr>
+          <td class="met-name">.every()</td>
+          <td class="ret-val">Boolean</td>
+          <td>Vérifier si TOUS correspondent</td>
+          <td class="ret-val">true (tableau vide)</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+ 
+  <!-- 05 — SOME ET EVERY                         -->
+ 
+  <div class="section-head">
+    <span class="section-num">05</span>
+    <h2>.some() et .every()</h2>
+    <p>Tests booléens sur tableau</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="mac-card">
+      <div class="titlebar">
+        <div class="dots">
+          <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+          <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+          <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+        </div>
+        <div class="titlebar-name">some.js</div>
+      </div>
+      <div class="code-body">
+<pre><span class="cmt">// .some() → true si AU MOINS 1 élément passe</span>
+<span class="kw">const</span> <span class="prp">ages</span> = [<span class="num">14</span>, <span class="num">17</span>, <span class="num">21</span>, <span class="num">16</span>];
+
+<span class="kw">const</span> <span class="prp">unMajeur</span> = <span class="prp">ages</span>.<span class="met">some</span>(<span class="prp">a</span> <span class="arr">=></span> <span class="prp">a</span> <span class="arr">>=</span> <span class="num">18</span>);
+<span class="cmt">// → true  (21 passe le test)</span>
+
+<span class="cmt">// Cas d'usage : stock disponible ?</span>
+<span class="kw">const</span> <span class="prp">produits</span> = [
+  { <span class="prp">nom</span>: <span class="str">'A'</span>, <span class="prp">stock</span>: <span class="num">0</span> },
+  { <span class="prp">nom</span>: <span class="str">'B'</span>, <span class="prp">stock</span>: <span class="num">5</span> },
+  { <span class="prp">nom</span>: <span class="str">'C'</span>, <span class="prp">stock</span>: <span class="num">0</span> },
+];
+
+<span class="kw">const</span> <span class="prp">stockDispo</span> = <span class="prp">produits</span>.<span class="met">some</span>(<span class="prp">p</span> <span class="arr">=></span> <span class="prp">p</span>.<span class="prp">stock</span> <span class="arr">></span> <span class="num">0</span>);
+<span class="cmt">// → true</span>
+
+<span class="cmt">// Email déjà utilisé ?</span>
+<span class="kw">const</span> <span class="prp">users</span> = [{ <span class="prp">email</span>: <span class="str">'a@b.com'</span> }, { <span class="prp">email</span>: <span class="str">'c@d.com'</span> }];
+<span class="kw">const</span> <span class="prp">emailExiste</span> = <span class="prp">users</span>.<span class="met">some</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">email</span> <span class="arr">===</span> <span class="str">'a@b.com'</span>);
+<span class="cmt">// → true ← email déjà pris !</span></pre>
+      </div>
+    </div>
+
+    <div class="mac-card">
+      <div class="titlebar">
+        <div class="dots">
+          <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+          <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+          <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+        </div>
+        <div class="titlebar-name">every.js</div>
+      </div>
+      <div class="code-body">
+<pre><span class="cmt">// .every() → true SEULEMENT si TOUS passent</span>
+<span class="kw">const</span> <span class="prp">notes</span> = [<span class="num">15</span>, <span class="num">18</span>, <span class="num">12</span>, <span class="num">14</span>];
+
+<span class="kw">const</span> <span class="prp">tousAdmis</span> = <span class="prp">notes</span>.<span class="met">every</span>(<span class="prp">n</span> <span class="arr">=></span> <span class="prp">n</span> <span class="arr">>=</span> <span class="num">10</span>);
+<span class="cmt">// → true  (toutes les notes >= 10)</span>
+
+<span class="kw">const</span> <span class="prp">tousMentionBien</span> = <span class="prp">notes</span>.<span class="met">every</span>(<span class="prp">n</span> <span class="arr">=></span> <span class="prp">n</span> <span class="arr">>=</span> <span class="num">16</span>);
+<span class="cmt">// → false  (12 et 14 ne passent pas)</span>
+
+<span class="cmt">// Cas d'usage : formulaire valide ?</span>
+<span class="kw">const</span> <span class="prp">champs</span> = [
+  { <span class="prp">nom</span>: <span class="str">'prenom'</span>, <span class="prp">valeur</span>: <span class="str">'Alice'</span>  },
+  { <span class="prp">nom</span>: <span class="str">'email'</span>,  <span class="prp">valeur</span>: <span class="str">'a@b.com'</span> },
+  { <span class="prp">nom</span>: <span class="str">'tel'</span>,    <span class="prp">valeur</span>: <span class="str">''</span>       },
+];
+
+<span class="kw">const</span> <span class="prp">formuValide</span> = <span class="prp">champs</span>.<span class="met">every</span>(<span class="prp">c</span> <span class="arr">=></span> <span class="prp">c</span>.<span class="prp">valeur</span>.<span class="met">trim</span>() <span class="arr">!==</span> <span class="str">''</span>);
+<span class="cmt">// → false  (tel est vide)</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 — CHAÎNAGE                              -->
+ 
+  <div class="section-head">
+    <span class="section-num">06</span>
+    <h2>Chaîner les méthodes</h2>
+    <p>filter + map + sort + reduce</p>
+  </div>
+
+  <div class="info-box purple">
+    <strong>Le chaînage</strong> est l'une des techniques les plus puissantes en JavaScript. Chaque méthode retourne un tableau, ce qui permet d'enchaîner les opérations en une seule expression lisible.
+  </div>
+
+  <div class="mac-card">
+    <div class="titlebar">
+      <div class="dots">
+        <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+        <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+        <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+      </div>
+      <div class="titlebar-name">chaining.js</div>
+    </div>
+    <div class="code-body">
+<pre><span class="kw">const</span> <span class="prp">employes</span> = [
+  { <span class="prp">nom</span>: <span class="str">'Alice'</span>,  <span class="prp">dept</span>: <span class="str">'tech'</span>, <span class="prp">salaire</span>: <span class="num">3200</span>, <span class="prp">actif</span>: <span class="bol">true</span>  },
+  { <span class="prp">nom</span>: <span class="str">'Bob'</span>,    <span class="prp">dept</span>: <span class="str">'rh'</span>,   <span class="prp">salaire</span>: <span class="num">2800</span>, <span class="prp">actif</span>: <span class="bol">false</span> },
+  { <span class="prp">nom</span>: <span class="str">'Clara'</span>,  <span class="prp">dept</span>: <span class="str">'tech'</span>, <span class="prp">salaire</span>: <span class="num">3800</span>, <span class="prp">actif</span>: <span class="bol">true</span>  },
+  { <span class="prp">nom</span>: <span class="str">'David'</span>,  <span class="prp">dept</span>: <span class="str">'tech'</span>, <span class="prp">salaire</span>: <span class="num">2900</span>, <span class="prp">actif</span>: <span class="bol">true</span>  },
+  { <span class="prp">nom</span>: <span class="str">'Eva'</span>,    <span class="prp">dept</span>: <span class="str">'rh'</span>,   <span class="prp">salaire</span>: <span class="num">3100</span>, <span class="prp">actif</span>: <span class="bol">true</span>  },
+];
+
+<span class="cmt">// ── filter + map ───</span>
+<span class="cmt">// Noms des techniciens actifs</span>
+<span class="kw">const</span> <span class="prp">nomsTech</span> = <span class="prp">employes</span>
+  .<span class="met">filter</span>(<span class="prp">e</span> <span class="arr">=></span> <span class="prp">e</span>.<span class="prp">dept</span> <span class="arr">===</span> <span class="str">'tech'</span> <span class="arr">&&</span> <span class="prp">e</span>.<span class="prp">actif</span>)
+  .<span class="met">map</span>(<span class="prp">e</span> <span class="arr">=></span> <span class="prp">e</span>.<span class="prp">nom</span>);
+<span class="cmt">// → ['Alice', 'Clara', 'David']</span>
+
+<span class="cmt">// ── filter + sort + map ──</span>
+<span class="cmt">// Actifs triés par salaire décroissant</span>
+<span class="kw">const</span> <span class="prp">topSalaires</span> = <span class="prp">employes</span>
+  .<span class="met">filter</span>(<span class="prp">e</span> <span class="arr">=></span> <span class="prp">e</span>.<span class="prp">actif</span>)
+  .<span class="met">sort</span>((<span class="prp">a</span>, <span class="prp">b</span>) <span class="arr">=></span> <span class="prp">b</span>.<span class="prp">salaire</span> <span class="arr">-</span> <span class="prp">a</span>.<span class="prp">salaire</span>)
+  .<span class="met">map</span>(<span class="prp">e</span> <span class="arr">=></span> `<span class="str">${</span><span class="prp">e</span>.<span class="prp">nom</span><span class="str">} (${</span><span class="prp">e</span>.<span class="prp">salaire</span><span class="str">}€)</span>`);
+<span class="cmt">// → ['Clara (3800€)', 'Eva (3100€)', 'Alice (3200€)', 'David (2900€)']</span>
+
+<span class="cmt">// ── filter + reduce : total salaires tech actifs ───</span>
+<span class="kw">const</span> <span class="prp">massesTech</span> = <span class="prp">employes</span>
+  .<span class="met">filter</span>(<span class="prp">e</span> <span class="arr">=></span> <span class="prp">e</span>.<span class="prp">dept</span> <span class="arr">===</span> <span class="str">'tech'</span> <span class="arr">&&</span> <span class="prp">e</span>.<span class="prp">actif</span>)
+  .<span class="met">reduce</span>((<span class="prp">total</span>, <span class="prp">e</span>) <span class="arr">=></span> <span class="prp">total</span> <span class="arr">+</span> <span class="prp">e</span>.<span class="prp">salaire</span>, <span class="num">0</span>);
+<span class="cmt">// → 9900  (3200 + 3800 + 2900)</span></pre>
+    </div>
+    <div class="result-box">
+      <span class="result-label">// nomsTech :</span>
+      <span class="result-val">['Alice', 'Clara', 'David']</span>
+    </div>
+  </div>
+
+
+  <!-- 07 — PLAYGROUND INTERACTIF   -->
+
+  <div class="section-head">
+    <span class="section-num">07</span>
+    <h2>Playground interactif</h2>
+    <p>Teste .filter() en direct</p>
+  </div>
+
+  <div class="playground">
+    <div class="playground-head">
+      <div class="dots">
+        <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+        <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+        <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+      </div>
+      <span style="font-family:var(--font-mono);font-size:.76rem;color:var(--text-muted);margin-left:8px">playground-filter.js</span>
+    </div>
+    <div class="playground-body">
+      <div class="pg-label">// Le tableau :</div>
+      <div class="pg-data" id="pgData"></div>
+
+      <div class="pg-label" style="margin-top:4px">// Applique le filtre :</div>
+      <div class="pg-filters">
+        <button class="pg-btn active" onclick="applyFilter('all', this)">Tous</button>
+        <button class="pg-btn" onclick="applyFilter('pair', this)">Pairs</button>
+        <button class="pg-btn" onclick="applyFilter('impair', this)">Impairs</button>
+        <button class="pg-btn" onclick="applyFilter('gt10', this)">&gt; 10</button>
+        <button class="pg-btn" onclick="applyFilter('lt10', this)">&lt; 10</button>
+        <button class="pg-btn" onclick="applyFilter('premier', this)">Nombres premiers</button>
+        <button class="pg-btn" onclick="applyFilter('multiple3', this)">Multiple de 3</button>
+      </div>
+
+      <div class="pg-label">// Résultat :</div>
+      <div class="pg-result">
+        <span class="pg-result-label">→</span>
+        <span class="pg-result-val" id="pgResult"></span>
+      </div>
+      <div class="pg-code-preview" id="pgCode"></div>
+    </div>
+  </div>
+
+  
+  <!-- 08 — CAS AVANCÉS -->
+  
+  <div class="section-head">
+    <span class="section-num">08</span>
+    <h2>Cas avancés</h2>
+    <p>Regex, imbriqué, async</p>
+  </div>
+
+  <div class="mac-card">
+    <div class="titlebar">
+      <div class="dots">
+        <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+        <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+        <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+      </div>
+      <div class="titlebar-name">filter-avance.js</div>
+    </div>
+    <div class="code-body">
+<pre><span class="cmt">// ── Filtrer avec une regex ─</span>
+<span class="kw">const</span> <span class="prp">emails</span> = [<span class="str">'alice@gmail.com'</span>, <span class="str">'bob@yahoo.fr'</span>, <span class="str">'clara@gmail.com'</span>, <span class="str">'noreply@'</span>];
+
+<span class="kw">const</span> <span class="prp">validEmails</span> = <span class="prp">emails</span>.<span class="met">filter</span>(<span class="prp">e</span> <span class="arr">=></span> <span class="str">/^[^\s@]+@[^\s@]+\.[^\s@]+$/</span>.<span class="met">test</span>(<span class="prp">e</span>));
+<span class="cmt">// → ['alice@gmail.com', 'bob@yahoo.fr', 'clara@gmail.com']</span>
+
+<span class="kw">const</span> <span class="prp">gmailSeulement</span> = <span class="prp">emails</span>.<span class="met">filter</span>(<span class="prp">e</span> <span class="arr">=></span> <span class="prp">e</span>.<span class="met">endsWith</span>(<span class="str">'@gmail.com'</span>));
+<span class="cmt">// → ['alice@gmail.com', 'clara@gmail.com']</span>
+
+<span class="cmt">// ── Filtrer sur propriété imbriquée ─</span>
+<span class="kw">const</span> <span class="prp">commandes</span> = [
+  { <span class="prp">id</span>: <span class="num">1</span>, <span class="prp">client</span>: { <span class="prp">ville</span>: <span class="str">'Paris'</span>  }, <span class="prp">total</span>: <span class="num">120</span> },
+  { <span class="prp">id</span>: <span class="num">2</span>, <span class="prp">client</span>: { <span class="prp">ville</span>: <span class="str">'Lyon'</span>   }, <span class="prp">total</span>: <span class="num">85</span>  },
+  { <span class="prp">id</span>: <span class="num">3</span>, <span class="prp">client</span>: { <span class="prp">ville</span>: <span class="str">'Paris'</span>  }, <span class="prp">total</span>: <span class="num">220</span> },
+];
+
+<span class="kw">const</span> <span class="prp">parisiens</span> = <span class="prp">commandes</span>.<span class="met">filter</span>(<span class="prp">c</span> <span class="arr">=></span> <span class="prp">c</span>.<span class="prp">client</span>?.<span class="prp">ville</span> <span class="arr">===</span> <span class="str">'Paris'</span>);
+<span class="cmt">// → [{ id: 1 ... }, { id: 3 ... }]</span>
+<span class="cmt">// ?.  = optional chaining → évite le crash si client est null</span>
+
+<span class="cmt">// ── Filtrer un tableau dans un tableau ──</span>
+<span class="kw">const</span> <span class="prp">articles</span> = [
+  { <span class="prp">titre</span>: <span class="str">'JS Basics'</span>,  <span class="prp">tags</span>: [<span class="str">'js'</span>, <span class="str">'débutant'</span>]        },
+  { <span class="prp">titre</span>: <span class="str">'React Hooks'</span>, <span class="prp">tags</span>: [<span class="str">'react'</span>, <span class="str">'js'</span>, <span class="str">'avancé'</span>] },
+  { <span class="prp">titre</span>: <span class="str">'CSS Grid'</span>,    <span class="prp">tags</span>: [<span class="str">'css'</span>, <span class="str">'débutant'</span>]       },
+];
+
+<span class="kw">const</span> <span class="prp">articlesJS</span> = <span class="prp">articles</span>.<span class="met">filter</span>(<span class="prp">a</span> <span class="arr">=></span> <span class="prp">a</span>.<span class="prp">tags</span>.<span class="met">includes</span>(<span class="str">'js'</span>));
+<span class="cmt">// → [JS Basics, React Hooks]</span></pre>
+    </div>
+  </div>
+
+  <div class="mac-card">
+    <div class="titlebar">
+      <div class="dots">
+        <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+        <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+        <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+      </div>
+      <div class="titlebar-name">filter-async.js</div>
+    </div>
+    <div class="code-body">
+<pre><span class="cmt">// .filter() ne supporte PAS les callbacks async directement !</span>
+<span class="cmt">// Ce code NE fonctionne PAS :</span>
+<span class="kw">const</span> <span class="prp">result</span> = <span class="prp">ids</span>.<span class="met">filter</span>(<span class="kw">async</span> <span class="prp">id</span> <span class="arr">=></span> {
+  <span class="kw">const</span> <span class="prp">user</span> = <span class="kw">await</span> <span class="fn">fetchUser</span>(<span class="prp">id</span>); <span class="cmt">// ← .filter reçoit une Promise, pas true/false</span>
+  <span class="kw">return</span> <span class="prp">user</span>.<span class="prp">actif</span>;
+});
+
+<span class="cmt">//  Solution correcte : Promise.all + filter</span>
+<span class="kw">async function</span> <span class="fn">filtrerActifs</span>(<span class="prp">ids</span>) {
+  <span class="cmt">// 1. Récupérer toutes les données d'abord</span>
+  <span class="kw">const</span> <span class="prp">users</span> = <span class="kw">await</span> <span class="fn">Promise</span>.<span class="met">all</span>(<span class="prp">ids</span>.<span class="met">map</span>(<span class="prp">id</span> <span class="arr">=></span> <span class="fn">fetchUser</span>(<span class="prp">id</span>)));
+  <span class="cmt">// 2. Ensuite filtrer de façon synchrone</span>
+  <span class="kw">return</span> <span class="prp">users</span>.<span class="met">filter</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">actif</span>);
+}
+
+<span class="cmt">// Alternative avec reduce async</span>
+<span class="kw">async function</span> <span class="fn">filterAsync</span>(<span class="prp">arr</span>, <span class="prp">asyncPredicate</span>) {
+  <span class="kw">const</span> <span class="prp">results</span> = <span class="kw">await</span> <span class="fn">Promise</span>.<span class="met">all</span>(<span class="prp">arr</span>.<span class="met">map</span>(<span class="prp">asyncPredicate</span>));
+  <span class="kw">return</span> <span class="prp">arr</span>.<span class="met">filter</span>((<span class="prp">_</span>, <span class="prp">i</span>) <span class="arr">=></span> <span class="prp">results</span>[<span class="prp">i</span>]);
+}
+
+<span class="cmt">// Utilisation :</span>
+<span class="kw">const</span> <span class="prp">actifs</span> = <span class="kw">await</span> <span class="fn">filterAsync</span>(<span class="prp">users</span>, <span class="kw">async</span> <span class="prp">u</span> <span class="arr">=></span> {
+  <span class="kw">const</span> <span class="prp">data</span> = <span class="kw">await</span> <span class="fn">checkStatus</span>(<span class="prp">u</span>.<span class="prp">id</span>);
+  <span class="kw">return</span> <span class="prp">data</span>.<span class="prp">actif</span>;
+});</pre>
+    </div>
+    <div class="result-box">
+      <span class="result-label">// Règle :</span>
+      <span class="result-val">toujours résoudre les Promises AVANT de filter()</span>
+    </div>
+  </div>
+
+  
+  <!-- 09 — ERREURS FRÉQUENTES                    -->
+ 
+  <div class="section-head">
+    <span class="section-num">09</span>
+    <h2>Erreurs fréquentes</h2>
+    <p>Pièges à éviter absolument</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="mac-card">
+      <div class="titlebar">
+        <div class="dots">
+          <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+          <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+          <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+        </div>
+        <div class="titlebar-name">erreurs.js</div>
+      </div>
+      <div class="code-body">
+<pre><span class="cmt">// Oublier le return dans un bloc {}</span>
+<span class="kw">const</span> <span class="prp">mauvais</span> = <span class="prp">nums</span>.<span class="met">filter</span>(<span class="prp">n</span> <span class="arr">=></span> {
+  <span class="prp">n</span> <span class="arr">></span> <span class="num">5</span>; <span class="cmt">// ← pas de return → retourne undefined = false</span>
+});
+<span class="cmt">// → [] ← tableau toujours vide !</span>
+
+<span class="cmt">// Correct</span>
+<span class="kw">const</span> <span class="prp">bon</span> = <span class="prp">nums</span>.<span class="met">filter</span>(<span class="prp">n</span> <span class="arr">=></span> {
+  <span class="kw">return</span> <span class="prp">n</span> <span class="arr">></span> <span class="num">5</span>; <span class="cmt">// ← avec return</span>
+});
+
+<span class="cmt">// Confondre filter et find</span>
+<span class="kw">const</span> <span class="prp">user</span> = <span class="prp">users</span>.<span class="met">filter</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">id</span> <span class="arr">===</span> <span class="num">1</span>);
+<span class="prp">user</span>.<span class="prp">nom</span>; <span class="cmt">// undefined — filter retourne un ARRAY !</span>
+
+<span class="cmt">// Utiliser find pour un seul objet</span>
+<span class="kw">const</span> <span class="prp">user2</span> = <span class="prp">users</span>.<span class="met">find</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">id</span> <span class="arr">===</span> <span class="num">1</span>);
+<span class="prp">user2</span>.<span class="prp">nom</span>; <span class="cmt">// 'Alice'</span></pre>
+      </div>
+    </div>
+
+    <div class="mac-card">
+      <div class="titlebar">
+        <div class="dots">
+          <button class="dot dot-red"><span class="dot-icon">✕</span></button>
+          <button class="dot dot-orange"><span class="dot-icon">⊞</span></button>
+          <button class="dot dot-green"><span class="dot-icon">◉</span></button>
+        </div>
+        <div class="titlebar-name">autres-pieges.js</div>
+      </div>
+      <div class="code-body">
+<pre><span class="cmt">// Modifier le tableau original dans filter</span>
+<span class="kw">const</span> <span class="prp">arr</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>];
+<span class="prp">arr</span>.<span class="met">filter</span>((<span class="prp">n</span>, <span class="prp">i</span>, <span class="prp">a</span>) <span class="arr">=></span> {
+  <span class="prp">a</span>.<span class="met">splice</span>(<span class="prp">i</span>, <span class="num">1</span>); <span class="cmt">// mutation pendant l'itération → comportement imprévisible</span>
+  <span class="kw">return</span> <span class="prp">n</span> <span class="arr">></span> <span class="num">2</span>;
+});
+
+<span class="cmt">// Comparer des objets avec ===</span>
+<span class="kw">const</span> <span class="prp">cible</span> = { <span class="prp">id</span>: <span class="num">1</span> };
+<span class="prp">users</span>.<span class="met">filter</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span> <span class="arr">===</span> <span class="prp">cible</span>);
+<span class="cmt">// → [] toujours ! Deux objets ne sont jamais === sauf référence identique</span>
+
+<span class="cmt">// Comparer une propriété</span>
+<span class="prp">users</span>.<span class="met">filter</span>(<span class="prp">u</span> <span class="arr">=></span> <span class="prp">u</span>.<span class="prp">id</span> <span class="arr">===</span> <span class="prp">cible</span>.<span class="prp">id</span>); <span class="cmt">// </span>
+
+<span class="cmt">//  Ne pas gérer undefined après find</span>
+<span class="kw">const</span> <span class="prp">u</span> = <span class="prp">users</span>.<span class="met">find</span>(<span class="prp">x</span> <span class="arr">=></span> <span class="prp">x</span>.<span class="prp">id</span> <span class="arr">===</span> <span class="num">99</span>);
+<span class="prp">u</span>.<span class="prp">nom</span>; <span class="cmt">//  TypeError: Cannot read properties of undefined</span>
+
+<span class="cmt">// Toujours vérifier</span>
+<span class="prp">u</span>?.<span class="prp">nom</span>;         <span class="cmt">// undefined (pas de crash)</span>
+<span class="prp">u</span> <span class="arr">&&</span> <span class="prp">u</span>.<span class="prp">nom</span>;     <span class="cmt">// undefined</span></pre>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- 10 — RÉCAPITULATIF TIPS                    -->
+  
+  <div class="section-head">
+    <span class="section-num">10</span>
+    <h2>À retenir</h2>
+    <p>Les règles d'or</p>
+  </div>
+
+  <div class="tips-grid">
+    <div class="tip-card green">
+      <div class="tip-icon"></div>
+      <h4>Jamais de mutation</h4>
+      <p>.filter() retourne toujours un nouveau tableau. Ne jamais modifier l'original dans le callback.</p>
+    </div>
+    <div class="tip-card blue">
+      <div class="tip-icon"></div>
+      <h4>filter vs find</h4>
+      <p>Tu attends plusieurs résultats → <code>.filter()</code>. Tu attends UN résultat → <code>.find()</code>.</p>
+    </div>
+    <div class="tip-card orange">
+      <div class="tip-icon"></div>
+      <h4>Chaîne sans peur</h4>
+      <p>filter → map → sort → reduce. Chaque méthode retourne un tableau, tu peux enchaîner indéfiniment.</p>
+    </div>
+    <div class="tip-card purple">
+      <div class="tip-icon"></div>
+      <h4>Toujours vérifier find()</h4>
+      <p>Si <code>.find()</code> ne trouve rien il retourne <code>undefined</code>. Utilise <code>?.</code> ou un <code>if</code> avant d'accéder aux propriétés.</p>
+    </div>
+    <div class="tip-card yellow">
+      <div class="tip-icon"></div>
+      <h4>Pas d'async dans filter</h4>
+      <p>Résous toutes tes Promises avec <code>Promise.all()</code> avant de filtrer. Jamais de callback async direct.</p>
+    </div>
+    <div class="tip-card green">
+      <div class="tip-icon"></div>
+      <h4>Nettoyer avec Boolean</h4>
+      <p><code>.filter(Boolean)</code> supprime tous les <code>null</code>, <code>undefined</code>, <code>0</code>, <code>''</code> en une seule ligne.</p>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  <p><strong style="color:var(--text-primary)">Formation Real Conseil — DWWM</strong></p>
+  <p>© DARRAS Thomas</p>
+  <p class="year">// Support mis à jour régulièrement</p>
+</footer>
+
+<script>
+// ── NAVIGATION MAC ──
+function macGoBack() {
+  document.body.style.transition = 'opacity .25s ease';
+  document.body.style.opacity    = '0';
+  setTimeout(() => {
+    if (window.history.length > 1) window.history.back();
+    else window.location.href = '../index.html';
+  }, 220);
+}
+
+// ── PROGRESS BAR ──
+window.addEventListener('scroll', () => {
+  const total = document.body.scrollHeight - window.innerHeight;
+  const pct   = total > 0 ? Math.round((window.scrollY / total) * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('navProgress').textContent  = pct + '%';
+});
+
+// ── TOAST ──
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── PLAYGROUND ──
+const PG_DATA  = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+let   pgFilter = 'all';
+
+function isPrime(n) {
+  if (n < 2) return false;
+  for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
+  return true;
+}
+
+const FILTERS = {
+  all:      { fn: () => true,            code: 'nombres.filter(() => true)' },
+  pair:     { fn: n => n % 2 === 0,      code: 'nombres.filter(n => n % 2 === 0)' },
+  impair:   { fn: n => n % 2 !== 0,      code: 'nombres.filter(n => n % 2 !== 0)' },
+  gt10:     { fn: n => n > 10,           code: 'nombres.filter(n => n > 10)' },
+  lt10:     { fn: n => n < 10,           code: 'nombres.filter(n => n < 10)' },
+  premier:  { fn: isPrime,               code: 'nombres.filter(n => isPrime(n))' },
+  multiple3:{ fn: n => n % 3 === 0,      code: 'nombres.filter(n => n % 3 === 0)' },
+};
+
+function renderPlayground() {
+  const f      = FILTERS[pgFilter];
+  const passed = PG_DATA.filter(f.fn);
+  const set    = new Set(passed);
+
+  document.getElementById('pgData').innerHTML = PG_DATA.map(n =>
+    `<span class="pg-item${set.has(n) ? '' : ' excluded'}">${n}</span>`
+  ).join('');
+
+  document.getElementById('pgResult').textContent =
+    '[' + passed.join(', ') + '] — ' + passed.length + ' élément' + (passed.length > 1 ? 's' : '');
+
+  document.getElementById('pgCode').textContent = '// ' + f.code;
+}
+
+function applyFilter(name, btn) {
+  pgFilter = name;
+  document.querySelectorAll('.pg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPlayground();
+}
+
+renderPlayground();
+
+// Fade in au chargement
+window.addEventListener('pageshow', () => {
+  document.body.style.transition = 'opacity .3s ease';
+  document.body.style.opacity    = '1';
+});
+document.body.style.opacity = '0';
+setTimeout(() => { document.body.style.opacity = '1'; }, 50);
+</script>
+<script src="../Cursor.js"></script>
+</body>
+</html>

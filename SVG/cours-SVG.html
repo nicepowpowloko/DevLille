@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apprendre le SVG — Formation DWWM</title>
+    <style>
+        :root {
+            --bg:       #080b0f;
+            --bg-card:  #0d1117;
+            --bar:      #161b22;
+            --border:   #1e2d3d;
+            --green:    #44D62C;
+            --blue:     #00b4d8;
+            --yellow:   #febc2e;
+            --red:      #ff5f57;
+            --purple:   #a78bfa;
+            --text:     #e6edf3;
+            --muted:    #7d8590;
+            --dim:      #3d444d;
+            --mono:     'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: var(--mono); background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+
+        body::before {
+            content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+            background-image:
+                linear-gradient(rgba(68,214,44,.02) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(68,214,44,.02) 1px,transparent 1px);
+            background-size:40px 40px;
+        }
+
+        .orb { position:fixed; border-radius:50%; filter:blur(130px); pointer-events:none; z-index:0; opacity:.12; }
+        .orb1 { width:600px;height:600px; background:radial-gradient(#44D62C,transparent); top:-200px;left:-200px; }
+        .orb2 { width:400px;height:400px; background:radial-gradient(#00b4d8,transparent); bottom:-100px;right:-100px; }
+
+        /* ── HEADER ── */
+        header {
+            position:relative; z-index:1;
+            text-align:center; padding:60px 24px 40px;
+            border-bottom:1px solid var(--border);
+        }
+        .badge {
+            display:inline-flex; align-items:center; gap:8px;
+            background:rgba(68,214,44,.08); border:1px solid rgba(68,214,44,.2);
+            border-radius:20px; padding:5px 16px; font-size:.72rem;
+            color:var(--green); letter-spacing:.1em; text-transform:uppercase;
+            margin-bottom:20px;
+        }
+        header h1 {
+            font-size:clamp(1.8rem,5vw,3.2rem); font-weight:800; letter-spacing:-.03em;
+            background:linear-gradient(135deg,#fff 0%,var(--green) 50%,var(--blue) 100%);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+            margin-bottom:12px;
+        }
+        header p { color:var(--muted); font-size:.9rem; max-width:500px; margin:0 auto; }
+
+        /* ── PROGRESS BAR ── */
+        .progress-bar {
+            position:sticky; top:0; z-index:100;
+            background:var(--bar); border-bottom:1px solid var(--border);
+            padding:0 24px; display:flex; gap:0; overflow-x:auto;
+        }
+        .step-tab {
+            padding:14px 20px; font-size:.75rem; color:var(--muted);
+            cursor:pointer; border-bottom:2px solid transparent;
+            transition:all .2s; white-space:nowrap; text-decoration:none;
+            display:flex; align-items:center; gap:8px;
+        }
+        .step-tab:hover { color:var(--text); }
+        .step-tab.active { color:var(--green); border-bottom-color:var(--green); }
+        .step-num {
+            width:20px; height:20px; border-radius:50%; background:var(--dim);
+            display:flex; align-items:center; justify-content:center;
+            font-size:.65rem; flex-shrink:0;
+        }
+        .step-tab.active .step-num { background:var(--green); color:#000; }
+
+        /* ── MAIN ── */
+        main { position:relative; z-index:1; max-width:980px; margin:0 auto; padding:40px 24px 80px; }
+
+        /* ── STEP SECTION ── */
+        .step { display:none; animation:fadeIn .4s ease; }
+        .step.active { display:block; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+        .step-header { margin-bottom:32px; }
+        .step-label { font-size:.7rem; color:var(--green); text-transform:uppercase; letter-spacing:.12em; margin-bottom:8px; }
+        .step-title { font-size:1.8rem; font-weight:700; color:var(--text); margin-bottom:10px; }
+        .step-desc { color:var(--muted); font-size:.9rem; line-height:1.7; max-width:620px; }
+
+        /* ── CARD ── */
+        .card {
+            background:var(--bg-card); border:1px solid var(--border); border-radius:12px;
+            overflow:hidden; margin-bottom:24px;
+        }
+        .card-title-bar {
+            background:var(--bar); padding:10px 16px;
+            display:flex; align-items:center; gap:10px;
+            border-bottom:1px solid var(--border); font-size:.78rem; color:var(--muted);
+        }
+        .dot-r{width:12px;height:12px;border-radius:50%;background:var(--red);flex-shrink:0}
+        .dot-o{width:12px;height:12px;border-radius:50%;background:var(--yellow);flex-shrink:0}
+        .dot-g{width:12px;height:12px;border-radius:50%;background:var(--green);flex-shrink:0}
+
+        /* ── LIVE EDITOR ── */
+        .editor-wrap { display:grid; grid-template-columns:1fr 1fr; min-height:280px; }
+        @media(max-width:680px) { .editor-wrap { grid-template-columns:1fr; } }
+
+        .editor-pane {
+            padding:0; border-right:1px solid var(--border); position:relative;
+        }
+        .editor-pane label {
+            display:block; padding:8px 14px;
+            font-size:.65rem; color:var(--green); text-transform:uppercase; letter-spacing:.1em;
+            border-bottom:1px solid var(--border); background:rgba(68,214,44,.04);
+        }
+        textarea {
+            width:100%; height:220px; background:transparent; border:none; outline:none;
+            color:#a8d8a8; font-family:var(--mono); font-size:.82rem; line-height:1.65;
+            padding:14px; resize:none; tab-size:2;
+        }
+        textarea::selection { background:rgba(68,214,44,.2); }
+
+        .preview-pane {
+            display:flex; flex-direction:column;
+        }
+        .preview-pane label {
+            display:block; padding:8px 14px;
+            font-size:.65rem; color:var(--blue); text-transform:uppercase; letter-spacing:.1em;
+            border-bottom:1px solid var(--border); background:rgba(0,180,216,.04);
+        }
+        iframe { flex:1; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.015) 10px, rgba(255,255,255,.015) 20px); }
+
+        .run-btn {
+            margin:10px 14px 14px; padding:8px 18px;
+            background:rgba(68,214,44,.1); border:1px solid rgba(68,214,44,.3);
+            border-radius:8px; color:var(--green); font-family:var(--mono);
+            font-size:.78rem; cursor:pointer; transition:all .2s; text-align:center;
+        }
+        .run-btn:hover { background:rgba(68,214,44,.2); }
+
+        /* ── THÉORIE ── */
+        .theory {
+            background:var(--bg-card); border:1px solid var(--border); border-radius:12px;
+            padding:22px; margin-bottom:24px;
+        }
+        .theory h3 { font-size:.85rem; color:var(--yellow); margin-bottom:12px; letter-spacing:.05em; }
+        .theory p { color:var(--muted); font-size:.85rem; line-height:1.7; margin-bottom:10px; }
+        .theory p:last-child { margin-bottom:0; }
+
+        /* ── CODE INLINE ── */
+        code {
+            background:rgba(68,214,44,.08); border:1px solid rgba(68,214,44,.15);
+            border-radius:4px; padding:1px 7px; color:var(--green); font-family:var(--mono);
+            font-size:.82em;
+        }
+
+        /* ── CHEATSHEET TABLE ── */
+        .cheat { width:100%; border-collapse:collapse; font-size:.82rem; }
+        .cheat th { text-align:left; padding:10px 14px; color:var(--green); border-bottom:1px solid var(--border); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; }
+        .cheat td { padding:10px 14px; border-bottom:1px solid rgba(30,45,61,.5); vertical-align:top; }
+        .cheat td:first-child { color:var(--blue); white-space:nowrap; }
+        .cheat td:last-child { color:var(--muted); }
+        .cheat tr:last-child td { border-bottom:none; }
+
+        /* ── HIGHLIGHT ── */
+        .highlight { color:var(--purple); }
+        .hl-attr { color:var(--yellow); }
+        .hl-val  { color:var(--blue); }
+        .hl-tag  { color:var(--red); }
+        .hl-com  { color:var(--dim); font-style:italic; }
+
+        /* ── NAV BUTTONS ── */
+        .nav-btns { display:flex; justify-content:space-between; align-items:center; margin-top:40px; padding-top:24px; border-top:1px solid var(--border); }
+        .nav-btn {
+            padding:10px 24px; border-radius:8px; font-family:var(--mono); font-size:.82rem;
+            cursor:pointer; transition:all .2s; border:1px solid var(--border);
+            background:var(--bg-card); color:var(--muted);
+        }
+        .nav-btn:hover { border-color:var(--green); color:var(--green); }
+        .nav-btn.primary { background:rgba(68,214,44,.1); border-color:rgba(68,214,44,.3); color:var(--green); }
+        .nav-btn.primary:hover { background:rgba(68,214,44,.2); }
+        .nav-btn:disabled { opacity:.3; cursor:not-allowed; }
+
+        .step-counter { font-size:.78rem; color:var(--muted); }
+        .step-counter span { color:var(--green); }
+
+        /* ── CHALLENGE ── */
+        .challenge {
+            background:rgba(167,139,250,.06); border:1px solid rgba(167,139,250,.2);
+            border-radius:12px; padding:20px 22px; margin-bottom:24px;
+        }
+        .challenge h3 { color:var(--purple); font-size:.85rem; margin-bottom:8px; }
+        .challenge p { color:var(--muted); font-size:.85rem; line-height:1.6; }
+        .challenge ul { color:var(--muted); font-size:.85rem; line-height:1.8; padding-left:18px; margin-top:6px; }
+
+        /* ── FINAL ── */
+        .final-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin:24px 0; }
+        .final-card {
+            background:var(--bg-card); border:1px solid var(--border); border-radius:10px;
+            padding:18px; text-align:center; transition:border-color .2s;
+        }
+        .final-card:hover { border-color:rgba(68,214,44,.3); }
+        .final-card svg { margin-bottom:10px; }
+        .final-card p { font-size:.75rem; color:var(--muted); }
+    </style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<header>
+    <div class="badge">▸ Formation DWWM — 2025/2026</div>
+    <h1>Dessiner en SVG</h1>
+    <p>Apprenez à créer des graphiques vectoriels directement dans le HTML, étape par étape.</p>
+</header>
+
+<!-- TABS DE NAVIGATION -->
+<nav class="progress-bar">
+    <a class="step-tab active" onclick="goTo(0)"><span class="step-num">1</span> C'est quoi SVG ?</a>
+    <a class="step-tab" onclick="goTo(1)"><span class="step-num">2</span> Formes de base</a>
+    <a class="step-tab" onclick="goTo(2)"><span class="step-num">3</span> Path & Courbes</a>
+    <a class="step-tab" onclick="goTo(3)"><span class="step-num">4</span> Couleurs & Style</a>
+    <a class="step-tab" onclick="goTo(4)"><span class="step-num">5</span> Texte & Groupes</a>
+    <a class="step-tab" onclick="goTo(5)"><span class="step-num">6</span> Animations CSS</a>
+    <a class="step-tab" onclick="goTo(6)"><span class="step-num">7</span> Mini Projet</a>
+</nav>
+
+<main>
+
+
+<section class="step active" id="step-0">
+    <div class="step-header">
+        <div class="step-label">Étape 1 / 7</div>
+        <div class="step-title">C'est quoi le SVG ?</div>
+        <p class="step-desc">SVG = <strong>Scalable Vector Graphics</strong>. C'est un format d'image qui se code en HTML. Contrairement aux PNG/JPG, il ne pixelise jamais, quelle que soit la taille.</p>
+    </div>
+
+    <div class="theory">
+        <h3>// Pourquoi SVG ?</h3>
+        <p><strong>Vectoriel</strong> : parfait à toutes les tailles (favicon 16px → écran 4K)</p>
+        <p><strong>Intégré dans le HTML</strong> : on peut le styler avec CSS et l'animer avec JS</p>
+        <p><strong>Léger</strong> : juste du texte, pas de kilos d'image</p>
+        <p><strong>Modifiable</strong> : couleurs, tailles, formes — tout en live</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title-bar">
+            <div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div>
+            <span>mon-premier-svg.html</span>
+        </div>
+        <div class="editor-wrap">
+            <div class="editor-pane">
+                <label>▸ Code SVG</label>
+                <textarea id="ed-0" oninput="run(0)">&lt;svg width="200" height="200"
+     viewBox="0 0 200 200"
+     xmlns="http://www.w3.org/2000/svg"&gt;
+
+  &lt;!-- Un cercle vert --&gt;
+  &lt;circle cx="100" cy="100" r="80"
+          fill="#44D62C"/&gt;
+
+&lt;/svg&gt;</textarea>
+            </div>
+            <div class="preview-pane">
+                <label>▸ Rendu en direct</label>
+                <iframe id="pr-0" style="width:100%;height:220px;border:none;background:transparent"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="theory">
+        <h3>// Les 3 attributs essentiels du SVG</h3>
+        <p><code>width</code> / <code>height</code> → taille affichée en pixels</p>
+        <p><code>viewBox="0 0 200 200"</code> → système de coordonnées interne (x y largeur hauteur). Pense-y comme une "grille" de dessin.</p>
+        <p><code>xmlns</code> → obligatoire, indique que c'est du SVG</p>
+    </div>
+
+    <div class="challenge">
+        <h3>Essaie !</h3>
+        <p>Dans l'éditeur ci-dessus, modifie :</p>
+        <ul>
+            <li>Le <code>r</code> (rayon) du cercle — essaie <code>r="40"</code></li>
+            <li>Le <code>fill</code> — essaie <code>fill="#ff5f57"</code></li>
+            <li>Le <code>cx</code> et <code>cy</code> (position centre)</li>
+        </ul>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" disabled>← Précédent</button>
+        <span class="step-counter">Étape <span>1</span> / 7</span>
+        <button class="nav-btn primary" onclick="goTo(1)">Suivant →</button>
+    </div>
+</section>
+
+
+<section class="step" id="step-1">
+    <div class="step-header">
+        <div class="step-label">Étape 2 / 7</div>
+        <div class="step-title">Les formes de base</div>
+        <p class="step-desc">SVG propose 6 formes prêtes à l'emploi. Maîtrise ces formes et tu peux déjà dessiner beaucoup de choses !</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title-bar">
+            <div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div>
+            <span>formes.html</span>
+        </div>
+        <div class="editor-wrap">
+            <div class="editor-pane">
+                <label>▸ Code SVG</label>
+                <textarea id="ed-1" oninput="run(1)">&lt;svg viewBox="0 0 300 200"
+     xmlns="http://www.w3.org/2000/svg"&gt;
+
+  &lt;!-- CERCLE --&gt;
+  &lt;circle cx="40" cy="40" r="30"
+          fill="#44D62C"/&gt;
+
+  &lt;!-- ELLIPSE --&gt;
+  &lt;ellipse cx="130" cy="40"
+           rx="50" ry="25"
+           fill="#00b4d8"/&gt;
+
+  &lt;!-- RECTANGLE --&gt;
+  &lt;rect x="10" y="90"
+        width="80" height="50"
+        rx="8" fill="#febc2e"/&gt;
+
+  &lt;!-- LIGNE --&gt;
+  &lt;line x1="120" y1="90"
+        x2="200" y2="150"
+        stroke="#ff5f57"
+        stroke-width="4"/&gt;
+
+  &lt;!-- POLYGONE (triangle) --&gt;
+  &lt;polygon
+    points="230,90 270,90 250,150"
+    fill="#a78bfa"/&gt;
+
+&lt;/svg&gt;</textarea>
+            </div>
+            <div class="preview-pane">
+                <label>▸ Rendu en direct</label>
+                <iframe id="pr-1" style="width:100%;height:220px;border:none;background:transparent"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title-bar">
+            <div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div>
+            <span>cheatsheet-formes.md</span>
+        </div>
+        <div style="padding:0 0 4px">
+            <table class="cheat">
+                <tr><th>Forme</th><th>Balise</th><th>Attributs clés</th></tr>
+                <tr><td>Cercle</td><td><code>&lt;circle&gt;</code></td><td><code>cx cy r fill</code></td></tr>
+                <tr><td>Ellipse</td><td><code>&lt;ellipse&gt;</code></td><td><code>cx cy rx ry fill</code></td></tr>
+                <tr><td>Rectangle</td><td><code>&lt;rect&gt;</code></td><td><code>x y width height rx fill</code></td></tr>
+                <tr><td>Ligne</td><td><code>&lt;line&gt;</code></td><td><code>x1 y1 x2 y2 stroke stroke-width</code></td></tr>
+                <tr><td>Polygone</td><td><code>&lt;polygon&gt;</code></td><td><code>points fill</code></td></tr>
+                <tr><td>Polyligne</td><td><code>&lt;polyline&gt;</code></td><td><code>points stroke fill="none"</code></td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="challenge">
+        <h3>Essaie !</h3>
+        <ul>
+            <li>Ajoute <code>rx="15"</code> au rectangle pour arrondir les coins</li>
+            <li>Change le polygone en losange : <code>points="250,90 290,120 250,150 210,120"</code></li>
+            <li>Ajoute un 2ème cercle à côté du premier</li>
+        </ul>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" onclick="goTo(0)">← Précédent</button>
+        <span class="step-counter">Étape <span>2</span> / 7</span>
+        <button class="nav-btn primary" onclick="goTo(2)">Suivant →</button>
+    </div>
+</section>
+
+
+<section class="step" id="step-2">
+    <div class="step-header">
+        <div class="step-label">Étape 3 / 7</div>
+        <div class="step-title">Path — la forme ultime</div>
+        <p class="step-desc"><code>&lt;path&gt;</code> permet de dessiner n'importe quelle forme. C'est la plus puissante des formes SVG. Elle utilise des commandes comme un stylo.</p>
+    </div>
+
+    <div class="theory">
+        <h3>// Les commandes Path</h3>
+        <p><code>M x y</code> → <strong>M</strong>ove to — déplace le stylo sans tracer</p>
+        <p><code>L x y</code> → <strong>L</strong>ine to — trace une ligne droite</p>
+        <p><code>Q cx cy x y</code> → courbe <strong>Q</strong>uadratique (1 point de contrôle)</p>
+        <p><code>C cx1 cy1 cx2 cy2 x y</code> → courbe <strong>C</strong>ubique (2 points de contrôle)</p>
+        <p><code>Z</code> → ferme le chemin (retour au point de départ)</p>
+        <p style="margin-top:8px">Les lettres <strong>majuscules</strong> = coordonnées absolues. <strong>minuscules</strong> = relatives.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title-bar">
+            <div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div>
+            <span>path.html</span>
+        </div>
+        <div class="editor-wrap">
+            <div class="editor-pane">
+                <label>▸ Code SVG</label>
+                <textarea id="ed-2" oninput="run(2)">&lt;svg viewBox="0 0 300 200"
+     xmlns="http://www.w3.org/2000/svg"&gt;
+
+  &lt;!-- Triangle avec path --&gt;
+  &lt;path d="M 150 20
+           L 280 180
+           L 20 180
+           Z"
+        fill="#44D62C"
+        opacity="0.8"/&gt;
+
+  &lt;!-- Courbe douce (Q) --&gt;
+  &lt;path d="M 10 100
+           Q 150 10 290 100"
+        fill="none"
+        stroke="#00b4d8"
+        stroke-width="3"/&gt;
+
+  &lt;!-- Forme organique --&gt;
+  &lt;path d="M 60 150
+           Q 100 110 140 150
+           Q 180 190 220 150"
+        fill="none"
+        stroke="#febc2e"
+        stroke-width="3"/&gt;
+
+&lt;/svg&gt;</textarea>
+            </div>
+            <div class="preview-pane">
+                <label>▸ Rendu en direct</label>
+                <iframe id="pr-2" style="width:100%;height:220px;border:none;background:transparent"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="challenge">
+        <h3>Essaie !</h3>
+        <ul>
+            <li>Modifie le point du milieu de la courbe bleue — change le <code>Q 150 10</code> en <code>Q 150 150</code></li>
+            <li>Dessine un cœur : <code>M 150 80 Q 150 60 170 60 Q 200 60 200 90 Q 200 120 150 150 Q 100 120 100 90 Q 100 60 130 60 Q 150 60 150 80</code></li>
+        </ul>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" onclick="goTo(1)">← Précédent</button>
+        <span class="step-counter">Étape <span>3</span> / 7</span>
+        <button class="nav-btn primary" onclick="goTo(3)">Suivant →</button>
+    </div>
+</section>
+
+
+<section class="step" id="step-3">
+    <div class="step-header">
+        <div class="step-label">Étape 4 / 7</div>
+        <div class="step-title">Couleurs & Styles</div>
+        <p class="step-desc">SVG accepte les mêmes couleurs que CSS. Tu peux aussi faire des dégradés et des effets de flou !</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title-bar">
+            <div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div>
+            <span>couleurs.html</span>
+        </div>
+        <div class="editor-wrap">
+            <div class="editor-pane">
+                <label>▸ Code SVG</label>
+                <textarea id="ed-3" oninput="run(3)">&lt;svg viewBox="0 0 300 200"
+     xmlns="http://www.w3.org/2000/svg"&gt;
+
+  &lt;!-- DÉGRADÉ défini --&gt;
+  &lt;defs&gt;
+    &lt;linearGradient id="grad1"
+        x1="0%" y1="0%"
+        x2="100%" y2="100%"&gt;
+      &lt;stop offset="0%"
+            stop-color="#44D62C"/&gt;
+      &lt;stop offset="100%"
+            stop-color="#00b4d8"/&gt;
+    &lt;/linearGradient&gt;
+  &lt;/defs&gt;
+
+  &lt;!-- Cercle avec dégradé --&gt;
+  &lt;circle cx="80" cy="100" r="60"
+    fill="url(#grad1)"/&gt;
+
+  &lt;!-- Cercle avec contour --&gt;
+  &lt;circle cx="200" cy="100" r="50"
+    fill="none"
+    stroke="#febc2e"
+    stroke-width="4"
+    stroke-dasharray="10 5"/&gt;
+
+  &lt;!-- Opacité --&gt;
+  &lt;rect x="130" y="60"
+    width="80" height="80"
+    fill="#ff5f57"
+    opacity="0.5"/&gt;
+
+&lt;/svg&gt;</textarea>
+            </div>
+            <div class="preview-pane">
+                <label>▸ Rendu en direct</label>
+                <iframe id="pr-3" style="width:100%;height:220px;border:none;background:transparent"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title-bar">
+            <div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div>
+            <span>cheatsheet-style.md</span>
+        </div>
+        <div style="padding:0 0 4px">
+            <table class="cheat">
+                <tr><th>Attribut</th><th>Rôle</th><th>Exemple</th></tr>
+                <tr><td>fill</td><td>couleur de fond</td><td><code>fill="#44D62C"</code></td></tr>
+                <tr><td>stroke</td><td>couleur du contour</td><td><code>stroke="#fff"</code></td></tr>
+                <tr><td>stroke-width</td><td>épaisseur contour</td><td><code>stroke-width="3"</code></td></tr>
+                <tr><td>stroke-dasharray</td><td>tirets</td><td><code>stroke-dasharray="10 5"</code></td></tr>
+                <tr><td>opacity</td><td>transparence globale</td><td><code>opacity="0.5"</code></td></tr>
+                <tr><td>fill-opacity</td><td>transparence du fond</td><td><code>fill-opacity="0.3"</code></td></tr>
+                <tr><td>fill="none"</td><td>fond transparent</td><td><code>fill="none"</code></td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" onclick="goTo(2)">← Précédent</button>
+        <span class="step-counter">Étape <span>4</span> / 7</span>
+        <button class="nav-btn primary" onclick="goTo(4)">Suivant →</button>
+    </div>
+</section>
+
+<section class="step" id="step-4">
+    <div class="step-header">
+        <div class="step-label">Étape 5 / 7</div>
+        <div class="step-title">Texte & Groupes</div>
+        <p class="step-desc">Le texte SVG se comporte comme une forme. Les groupes <code>&lt;g&gt;</code> permettent de bouger/styler plusieurs éléments d'un coup — indispensable pour les animations !</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title-bar">
+            <div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div>
+            <span>texte-groupes.html</span>
+        </div>
+        <div class="editor-wrap">
+            <div class="editor-pane">
+                <label>▸ Code SVG</label>
+                <textarea id="ed-4" oninput="run(4)">&lt;svg viewBox="0 0 300 200"
+     xmlns="http://www.w3.org/2000/svg"&gt;
+
+  &lt;!-- TEXTE de base --&gt;
+  &lt;text x="150" y="40"
+    text-anchor="middle"
+    fill="#44D62C"
+    font-size="24"
+    font-family="monospace"
+    font-weight="bold"&gt;
+    { } DevLille
+  &lt;/text&gt;
+
+  &lt;!-- GROUPE — déplace tout ensemble --&gt;
+  &lt;g transform="translate(60, 70)"&gt;
+
+    &lt;!-- Fond carte --&gt;
+    &lt;rect x="0" y="0"
+      width="180" height="100"
+      rx="10" fill="#0d1117"
+      stroke="#1e2d3d"/&gt;
+
+    &lt;!-- Titre dans la carte --&gt;
+    &lt;text x="90" y="35"
+      text-anchor="middle"
+      fill="#e6edf3"
+      font-size="14"
+      font-family="monospace"&gt;
+      Formation DWWM
+    &lt;/text&gt;
+
+    &lt;!-- Sous-titre --&gt;
+    &lt;text x="90" y="60"
+      text-anchor="middle"
+      fill="#7d8590"
+      font-size="10"
+      font-family="monospace"&gt;
+      2025 — 2026
+    &lt;/text&gt;
+
+    &lt;!-- Badge vert --&gt;
+    &lt;rect x="55" y="72"
+      width="70" height="16"
+      rx="8" fill="#44D62C"
+      opacity="0.15"/&gt;
+    &lt;text x="90" y="84"
+      text-anchor="middle"
+      fill="#44D62C"
+      font-size="9"
+      font-family="monospace"&gt;
+      JavaScript
+    &lt;/text&gt;
+
+  &lt;/g&gt;
+
+&lt;/svg&gt;</textarea>
+            </div>
+            <div class="preview-pane">
+                <label>▸ Rendu en direct</label>
+                <iframe id="pr-4" style="width:100%;height:220px;border:none;background:transparent"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" onclick="goTo(3)">← Précédent</button>
+        <span class="step-counter">Étape <span>5</span> / 7</span>
+        <button class="nav-btn primary" onclick="goTo(5)">Suivant →</button>
+    </div>
+</section>
+
+
+<section class="step" id="step-5">
+    <div class="step-header">
+        <div class="step-label">Étape 6 / 7</div>
+        <div class="step-title">Animations CSS</div>
+        <p class="step-desc">Les éléments SVG se stylent avec CSS comme des éléments HTML. Tu peux les animer avec <code>@keyframes</code> — c'est comme ça qu'on a animé Sakura !</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title-bar">
+            <div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div>
+            <span>animations.html</span>
+        </div>
+        <div class="editor-wrap">
+            <div class="editor-pane">
+                <label>▸ Code HTML + CSS + SVG</label>
+                <textarea id="ed-5" oninput="run(5)">&lt;style&gt;
+  .spin {
+    transform-origin: 150px 100px;
+    animation: spin 3s linear infinite;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { r: 20; opacity: 1; }
+    50%     { r: 35; opacity: 0.4; }
+  }
+
+  .bounce {
+    animation: bounce .6s ease-in-out infinite alternate;
+  }
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-20px); }
+  }
+&lt;/style&gt;
+
+&lt;svg viewBox="0 0 300 200"
+     xmlns="http://www.w3.org/2000/svg"&gt;
+
+  &lt;!-- Carré qui tourne --&gt;
+  &lt;rect class="spin"
+    x="120" y="70"
+    width="60" height="60"
+    rx="8" fill="none"
+    stroke="#44D62C"
+    stroke-width="2"/&gt;
+
+  &lt;!-- Cercle qui pulse --&gt;
+  &lt;circle class="pulse"
+    cx="60" cy="100" r="20"
+    fill="#00b4d8"
+    fill-opacity="0.6"/&gt;
+
+  &lt;!-- Triangle qui rebondit --&gt;
+  &lt;g class="bounce"&gt;
+    &lt;polygon
+      points="250,80 280,140 220,140"
+      fill="#febc2e"/&gt;
+  &lt;/g&gt;
+
+&lt;/svg&gt;</textarea>
+            </div>
+            <div class="preview-pane">
+                <label>▸ Rendu en direct</label>
+                <iframe id="pr-5" style="width:100%;height:220px;border:none;background:transparent"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="theory">
+        <h3>// Transform-origin : LE piège</h3>
+        <p>En SVG, <code>transform-origin</code> utilise les coordonnées du <code>viewBox</code>, pas le coin de l'élément. Pour faire tourner un élément autour de son centre, il faut mettre les coordonnées de son centre exact.</p>
+        <p>Exemple : rectangle à x=120, y=70, width=60, height=60 → centre = <code>transform-origin: 150px 100px</code></p>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" onclick="goTo(4)">← Précédent</button>
+        <span class="step-counter">Étape <span>6</span> / 7</span>
+        <button class="nav-btn primary" onclick="goTo(6)">Suivant →</button>
+    </div>
+</section>
+
+
+<section class="step" id="step-6">
+    <div class="step-header">
+        <div class="step-label">Étape 7 / 7</div>
+        <div class="step-title">Mini Projet — Dessine ton personnage</div>
+        <p class="step-desc">Mets tout en pratique ! Dessine un personnage simple avec les formes apprises. Voilà comment on a créé Sakura, étape par étape.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title-bar">
+            <div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div>
+            <span>mon-personnage.html</span>
+        </div>
+        <div class="editor-wrap">
+            <div class="editor-pane">
+                <label>▸ Ton espace de création</label>
+                <textarea id="ed-6" oninput="run(6)">&lt;style&gt;
+  .tete {
+    animation: float 2s ease-in-out infinite alternate;
+    transform-origin: 100px 60px;
+  }
+  @keyframes float {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-5px); }
+  }
+  .oeil {
+    animation: blink 3s ease-in-out infinite;
+    transform-origin: center;
+  }
+  @keyframes blink {
+    0%,90%,100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.1); }
+  }
+&lt;/style&gt;
+
+&lt;svg viewBox="0 0 200 200"
+     xmlns="http://www.w3.org/2000/svg"&gt;
+
+  &lt;!-- Corps --&gt;
+  &lt;rect x="70" y="110" width="60" height="70"
+        rx="10" fill="#44D62C"/&gt;
+
+  &lt;!-- Jambes --&gt;
+  &lt;rect x="75" y="170" width="20" height="25"
+        rx="5" fill="#1e2d3d"/&gt;
+  &lt;rect x="105" y="170" width="20" height="25"
+        rx="5" fill="#1e2d3d"/&gt;
+
+  &lt;!-- Bras --&gt;
+  &lt;rect x="45" y="115" width="25" height="12"
+        rx="6" fill="#44D62C"/&gt;
+  &lt;rect x="130" y="115" width="25" height="12"
+        rx="6" fill="#44D62C"/&gt;
+
+  &lt;!-- Tête qui flotte --&gt;
+  &lt;g class="tete"&gt;
+    &lt;ellipse cx="100" cy="70" rx="40" ry="38"
+             fill="#ffe0cc"/&gt;
+
+    &lt;!-- Oeil gauche --&gt;
+    &lt;g class="oeil"
+       style="transform-origin:85px 70px"&gt;
+      &lt;circle cx="85" cy="70" r="8" fill="#222"/&gt;
+      &lt;circle cx="88" cy="67" r="2" fill="white"/&gt;
+    &lt;/g&gt;
+
+    &lt;!-- Oeil droit --&gt;
+    &lt;g class="oeil"
+       style="transform-origin:115px 70px;
+              animation-delay:.1s"&gt;
+      &lt;circle cx="115" cy="70" r="8" fill="#222"/&gt;
+      &lt;circle cx="118" cy="67" r="2" fill="white"/&gt;
+    &lt;/g&gt;
+
+    &lt;!-- Sourire --&gt;
+    &lt;path d="M 85 85 Q 100 95 115 85"
+          stroke="#cc6688"
+          stroke-width="2.5"
+          fill="none"
+          stroke-linecap="round"/&gt;
+  &lt;/g&gt;
+
+&lt;/svg&gt;</textarea>
+            </div>
+            <div class="preview-pane">
+                <label>▸ Rendu en direct</label>
+                <iframe id="pr-6" style="width:100%;height:220px;border:none;background:transparent"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="challenge">
+        <h3>Défis bonus !</h3>
+        <ul>
+            <li>Ajoute des cheveux avec <code>&lt;path&gt;</code> et des courbes Q</li>
+            <li>Change la couleur du corps et ajoute un badge/logo</li>
+            <li>Anime les bras avec <code>@keyframes</code> et <code>transform: rotate()</code></li>
+            <li>Ajoute des joues roses avec des <code>&lt;ellipse opacity="0.5"&gt;</code></li>
+        </ul>
+    </div>
+
+    <div class="final-grid">
+        <div class="final-card">
+            <svg viewBox="0 0 60 60" width="60" height="60">
+                <circle cx="30" cy="30" r="25" fill="#44D62C" opacity=".1" stroke="#44D62C" stroke-width="1"/>
+                <text x="30" y="35" text-anchor="middle" font-size="20" fill="#44D62C">✓</text>
+            </svg>
+            <p>Formes de base</p>
+        </div>
+        <div class="final-card">
+            <svg viewBox="0 0 60 60" width="60" height="60">
+                <path d="M10 45 Q30 10 50 45" fill="none" stroke="#00b4d8" stroke-width="3"/>
+            </svg>
+            <p>Path & Courbes</p>
+        </div>
+        <div class="final-card">
+            <svg viewBox="0 0 60 60" width="60" height="60">
+                <defs><linearGradient id="g"><stop offset="0%" stop-color="#44D62C"/><stop offset="100%" stop-color="#00b4d8"/></linearGradient></defs>
+                <circle cx="30" cy="30" r="22" fill="url(#g)"/>
+            </svg>
+            <p>Dégradés</p>
+        </div>
+        <div class="final-card">
+            <svg viewBox="0 0 60 60" width="60" height="60">
+                <rect x="15" y="15" width="30" height="30" rx="6" fill="#febc2e" opacity=".2" stroke="#febc2e"/>
+                <style>.spin2{transform-origin:30px 30px;animation:spin2 3s linear infinite}@keyframes spin2{to{transform:rotate(360deg)}}</style>
+                <rect class="spin2" x="15" y="15" width="30" height="30" rx="6" fill="none" stroke="#febc2e" stroke-dasharray="5 3"/>
+            </svg>
+            <p>Animations</p>
+        </div>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" onclick="goTo(5)">← Précédent</button>
+        <span class="step-counter">Étape <span>7</span> / 7</span>
+        <button class="nav-btn primary" onclick="goTo(0)">Recommencer</button>
+    </div>
+</section>
+
+</main>
+
+<script>
+    let current = 0;
+    const total = 7;
+
+    function goTo(n) {
+        document.querySelectorAll('.step').forEach((s,i) => {
+            s.classList.toggle('active', i === n);
+        });
+        document.querySelectorAll('.step-tab').forEach((t,i) => {
+            t.classList.toggle('active', i === n);
+        });
+        current = n;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        run(n);
+    }
+
+    function decode(str) {
+        return str
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&amp;/g, '&')
+            .replace(/&quot;/g, '"');
+    }
+    function run(n) {
+        const ta = document.getElementById('ed-' + n);
+        const pr = document.getElementById('pr-' + n);
+        if (!ta || !pr) return;
+        const code = decode(ta.value);
+        pr.srcdoc = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{margin:0;background:#0d1117;display:flex;align-items:center;justify-content:center;min-height:100vh;}svg{max-width:100%;max-height:210px;}</style></head><body>' + code + '<\/body><\/html>';
+    }
+
+    // Init toutes les previews après chargement
+    document.addEventListener('DOMContentLoaded', () => {
+        for (let i = 0; i < total; i++) run(i);
+    });
+    // Fallback si DOMContentLoaded déjà passé
+    if (document.readyState !== 'loading') {
+        for (let i = 0; i < total; i++) run(i);
+    }
+</script>
+
+<script src="../Cursor.js"></script>
+
+</body>
+</html>

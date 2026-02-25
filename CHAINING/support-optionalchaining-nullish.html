@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Optional Chaining & Nullish — Support de cours</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #07090f;
+      --surface:   #0c1018;
+      --surface2:  #111620;
+      --surface3:  #161d2a;
+      --border:    #1c2535;
+      --border2:   #222d40;
+      --blue:      #00b4ff;
+      --blue-dim:  #0070a0;
+      --blue-glow: rgba(0,180,255,0.12);
+      --blue-glow2:rgba(0,180,255,0.05);
+      --purple:    #7b5ef8;
+      --purple-dim:#4a38a0;
+      --purple-glow:rgba(123,94,248,0.1);
+      --text:      #d8e4f0;
+      --muted:     #4a6080;
+      --muted2:    #7a90a8;
+      --code-bg:   #060810;
+      --red:       #ff4466;
+      --green:     #00e5a0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    header {
+      position: relative;
+      padding: 4.5rem 2rem 3rem;
+      text-align: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Logitech G style background mesh */
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 50%, rgba(123,94,248,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 80% 30%, rgba(0,180,255,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at 50% 100%, rgba(0,180,255,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Animated top line */
+    header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        var(--purple) 25%,
+        var(--blue) 50%,
+        var(--purple) 75%,
+        transparent 100%);
+      animation: shimmer 4s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { opacity: 0.5; }
+      50%       { opacity: 1; }
+    }
+
+    .header-inner { position: relative; z-index: 1; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--blue);
+      border: 1px solid rgba(0,180,255,0.25);
+      padding: 0.3rem 1rem;
+      margin-bottom: 1.75rem;
+      background: var(--blue-glow2);
+      border-radius: 2px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--blue);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--blue);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      line-height: 1.05;
+      margin-bottom: 0.9rem;
+      color: #fff;
+    }
+
+    h1 .acc-blue   { color: var(--blue);   text-shadow: 0 0 40px rgba(0,180,255,0.5); }
+    h1 .acc-purple { color: var(--purple); text-shadow: 0 0 40px rgba(123,94,248,0.5); }
+
+    .subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted2);
+      letter-spacing: 0.14em;
+    }
+
+    /*  STEP TRACKER  */
+    .step-tracker {
+      position: sticky;
+      top: 0; z-index: 100;
+      background: rgba(7,9,15,0.94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.55rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.66rem;
+      color: var(--muted);
+    }
+
+    .st-prog { color: var(--blue); font-weight: 700; }
+    .st-sep  { color: var(--border2); }
+
+    .step-pills {
+      display: flex;
+      gap: 0.4rem;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+
+    .step-pill {
+      padding: 0.18rem 0.55rem;
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      border-radius: 2px;
+    }
+
+    .step-pill.done    { border-color: rgba(0,229,160,0.3); color: var(--green); background: rgba(0,229,160,0.05); }
+    .step-pill.current { border-color: var(--blue-dim); color: var(--blue); background: var(--blue-glow2); }
+
+    @media (max-width: 600px) { .step-tracker { display: none; } }
+
+    /*  LAYOUT  */
+    .wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 5rem;
+    }
+
+    /*  TABS NAV  */
+    .tabs-nav {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border2);
+      margin-top: 2.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs-nav::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 0.85rem 1.4rem;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.02); }
+
+    .tab-btn.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+      background: var(--blue-glow2);
+    }
+
+    .tab-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--blue-dim);
+      margin-right: 0.4rem;
+    }
+
+    /*  PANELS  */
+    .tab-panel { display: none; }
+    .tab-panel.active {
+      display: block;
+      animation: fadeUp 0.25s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /*  SECTION TITLES  */
+    .section { margin-top: 2.75rem; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-label h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .s-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.63rem;
+      background: var(--blue-glow);
+      border: 1px solid var(--blue-dim);
+      color: var(--blue);
+      padding: 0.2rem 0.55rem;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    .s-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    /*  CARDS  */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(180deg, var(--blue), var(--purple));
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.65rem;
+      color: #fff;
+    }
+
+    .card p {
+      color: var(--muted2);
+      font-size: 0.93rem;
+      line-height: 1.75;
+    }
+
+    .card p + p { margin-top: 0.6rem; }
+
+    /*  ALERTS  */
+    .alert {
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      border-left: 3px solid;
+      font-size: 0.87rem;
+      line-height: 1.7;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .alert-tag {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.45rem;
+      font-weight: 700;
+    }
+
+    .alert-blue {
+      border-color: var(--blue);
+      background: var(--blue-glow2);
+      color: #8ecfe8;
+    }
+    .alert-blue .alert-tag { color: var(--blue); }
+
+    .alert-red {
+      border-color: var(--red);
+      background: rgba(255,68,102,0.05);
+      color: #e8909a;
+    }
+    .alert-red .alert-tag { color: var(--red); }
+
+    .alert-purple {
+      border-color: var(--purple);
+      background: var(--purple-glow);
+      color: #b0a0e8;
+    }
+    .alert-purple .alert-tag { color: var(--purple); }
+
+    .alert-green {
+      border-color: var(--green);
+      background: rgba(0,229,160,0.05);
+      color: #88ddb8;
+    }
+    .alert-green .alert-tag { color: var(--green); }
+
+   
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border2);
+      border-radius: 8px;         /* coins arrondis = look macOS */
+      overflow: hidden;
+      margin: 1.25rem 0;
+      position: relative;
+    }
+
+    .code-block::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,180,255,0.3), rgba(123,94,248,0.3), transparent);
+    }
+
+    /* La barre du haut — imite la barre de titre macOS */
+    .code-header {
+      background: #0d1018;
+      border-bottom: 1px solid var(--border);
+      padding: 0.55rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Les 3 pastilles colorees — rouge / jaune / vert */
+    .mac-dots { display: flex; gap: 6px; align-items: center; }
+    .mac-dot  {
+      width: 11px; height: 11px;
+      border-radius: 50%;           /* rond parfait */
+      flex-shrink: 0;
+    }
+    .dot-r { background: #ff5f57; } /* rouge  = fermer */
+    .dot-y { background: #febc2e; } /* jaune  = reduire */
+    .dot-g { background: #28c840; } /* vert   = plein ecran */
+
+    .code-filename {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.67rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* Le code lui-meme */
+    pre {
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.8;
+      color: #b0c4d8;
+    }
+
+    /* Coloration syntaxique */
+    .kw  { color: #c792ea; }
+    .fn  { color: #82aaff; }
+    .str { color: #c3e88d; }
+    .num { color: #f78c6c; }
+    .cm  { color: #2a3a4a; font-style: italic; }
+    .obj { color: #ffcb6b; }
+    .op  { color: #89ddff; }
+    .blu { color: var(--blue); font-weight: 700; }
+    .pur { color: var(--purple); font-weight: 700; }
+    .red { color: var(--red); }
+    .grn { color: var(--green); }
+
+    /*  GRIDS  */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 1.25rem 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin: 1.25rem 0;
+    }
+
+    @media (max-width: 820px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    .compare-col h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.5rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .compare-col h4.good { color: var(--green);  border-color: rgba(0,229,160,0.25); background: rgba(0,229,160,0.04); }
+    .compare-col h4.bad  { color: var(--red);    border-color: rgba(255,68,102,0.25); background: rgba(255,68,102,0.04); }
+    .compare-col h4.info { color: var(--blue);   border-color: rgba(0,180,255,0.25); background: var(--blue-glow2); }
+
+    .compare-col .code-block {
+      margin: 0;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .mini-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mini-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue), var(--purple), transparent);
+      opacity: 0.4;
+    }
+
+    .mini-card h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 0.65rem;
+      color: var(--blue);
+    }
+
+    .mini-card p {
+      font-size: 0.88rem;
+      color: var(--muted2);
+      line-height: 1.65;
+    }
+
+    /* Operateur visual pill */
+    .op-pill {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+      padding: 0.3rem 0.9rem;
+      border-radius: 4px;
+      margin-right: 0.75rem;
+      vertical-align: middle;
+    }
+
+    .op-blue   { background: var(--blue-glow); color: var(--blue); border: 1px solid var(--blue-dim); }
+    .op-purple { background: var(--purple-glow); color: var(--purple); border: 1px solid var(--purple-dim); }
+
+    /* Table de verite */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      margin: 1.25rem 0;
+    }
+
+    thead tr {
+      background: var(--surface2);
+      border-bottom: 2px solid var(--border2);
+    }
+
+    th {
+      padding: 0.65rem 1rem;
+      text-align: left;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.65rem;
+    }
+
+    td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted2);
+    }
+
+    tbody tr:hover { background: var(--surface2); }
+
+    td.val-true  { color: var(--green); }
+    td.val-false { color: var(--red); }
+    td.val-blue  { color: var(--blue); }
+    td.val-white { color: #fff; }
+
+    /* Checklist */
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--muted2);
+      line-height: 1.55;
+    }
+    .checklist li:last-child { border: none; }
+    .checklist li::before {
+      content: '>';
+      color: var(--blue);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82em;
+      color: var(--blue);
+      background: var(--blue-glow2);
+      padding: 0.1em 0.4em;
+      border-radius: 2px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 2.5rem 1rem 2rem; }
+      .wrapper { padding: 0 1rem 3rem; }
+      .tab-btn { padding: 0.7rem 0.9rem; font-size: 0.8rem; }
+      pre { font-size: 0.73rem; padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- STEP TRACKER -->
+<div class="step-tracker">
+  <span class="st-prog">ETAPE 3 / 5</span>
+  <span class="st-sep">—</span>
+  <span>Optional Chaining &amp; Nullish Coalescing</span>
+  <div class="step-pills">
+    <span class="step-pill done">01 · Promises</span>
+    <span class="step-pill done">02 · Destructuration</span>
+    <span class="step-pill current">03 · ?. / ??</span>
+    <span class="step-pill">04 · Set / Map</span>
+    <span class="step-pill">05 · Entretien</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="eyebrow">Support de cours — Etape 3</div>
+    <h1>
+      <span class="acc-blue">?.</span> &amp; <span class="acc-purple">??</span>
+    </h1>
+    <p class="subtitle">Optional Chaining · Nullish Coalescing · Securiser les donnees</p>
+  </div>
+</header>
+
+<div class="wrapper">
+
+  <!-- TABS NAV -->
+  <nav class="tabs-nav">
+    <button class="tab-btn active" onclick="showTab('intro',    this)"><span class="tab-num">01</span> C'est quoi</button>
+    <button class="tab-btn"        onclick="showTab('optchain', this)"><span class="tab-num">02</span> Optional Chaining ?.</button>
+    <button class="tab-btn"        onclick="showTab('nullish',  this)"><span class="tab-num">03</span> Nullish Coalescing ??</button>
+    <button class="tab-btn"        onclick="showTab('combine',  this)"><span class="tab-num">04</span> Combiner les deux</button>
+    <button class="tab-btn"        onclick="showTab('pieges',   this)"><span class="tab-num">05</span> Pieges classiques</button>
+    <button class="tab-btn"        onclick="showTab('pratique', this)"><span class="tab-num">06</span> Cas reels API</button>
+    <button class="tab-btn"        onclick="showTab('exercice', this)"><span class="tab-num">07</span> Exercice</button>
+  </nav>
+
+
+  <!-- 
+       TAB 01 — INTRO
+ -->
+  <div id="tab-intro" class="tab-panel active">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Le probleme qu'ils resolvent</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>Quand tu travailles avec des donnees d'une API, tu n'as jamais la garantie que toutes les proprietes existent. Une propriete peut etre <code>undefined</code>, <code>null</code>, ou tout simplement absente.</p>
+        <p>Acceder a une propriete sur <code>undefined</code> ou <code>null</code> provoque une <strong style="color:#fff">TypeError</strong> qui plante toute ton application. Ces deux operateurs ont ete crees exactement pour eviter ca.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">le-probleme.js</span>
+        </div>
+        <pre><span class="cm">// Reponse d'API — user.address est parfois absent</span>
+<span class="kw">const</span> <span class="obj">user</span> = {
+  nom:  <span class="str">"Alice"</span>,
+  <span class="cm">// address n'est pas la</span>
+};
+
+<span class="cm">// Sans protection — CRASH !</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">user</span>.<span class="obj">address</span>.<span class="obj">city</span>);
+<span class="cm">// TypeError: Cannot read properties of undefined (reading 'city')</span>
+
+<span class="cm">// L'ancienne facon de se proteger — verbeux et laid</span>
+<span class="kw">const</span> <span class="obj">city</span> = <span class="obj">user</span> <span class="op">&amp;&amp;</span> <span class="obj">user</span>.<span class="obj">address</span> <span class="op">&amp;&amp;</span> <span class="obj">user</span>.<span class="obj">address</span>.<span class="obj">city</span>;
+
+<span class="cm">// La nouvelle facon — propre et lisible</span>
+<span class="kw">const</span> <span class="obj">cityPropre</span> = <span class="obj">user</span><span class="blu">?.</span><span class="obj">address</span><span class="blu">?.</span><span class="obj">city</span>;</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Les deux operateurs en un coup d'oeil</h2><span class="s-line"></span></div>
+
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4><span class="op-pill op-blue">?.</span> Optional Chaining</h4>
+          <p>Acces securise a une propriete. Si la valeur a gauche est <code>null</code> ou <code>undefined</code>, retourne <code>undefined</code> au lieu de planter.</p>
+        </div>
+        <div class="mini-card">
+          <h4><span class="op-pill op-purple">??</span> Nullish Coalescing</h4>
+          <p>Valeur de secours. Retourne la valeur de droite uniquement si la valeur de gauche est <code>null</code> ou <code>undefined</code>. Pas si c'est <code>0</code> ou <code>""</code>.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ═
+       TAB 02 — OPTIONAL CHAINING
+  -->
+  <div id="tab-optchain" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Principe de base</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>Le <code>?.</code> dit : <em>"si la valeur a ma gauche est <code>null</code> ou <code>undefined</code>, arrete-toi et retourne <code>undefined</code>"</em>. Il court-circuite le reste de l'expression sans planter.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">optional-base.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">user</span> = {
+  nom: <span class="str">"Bob"</span>,
+  <span class="cm">// address est absent</span>
+};
+
+<span class="cm">// Sans ?.  → TypeError et crash</span>
+<span class="obj">user</span>.<span class="obj">address</span>.<span class="obj">city</span>;
+
+<span class="cm">// Avec ?.  → retourne undefined, pas de crash</span>
+<span class="obj">user</span><span class="blu">?.</span><span class="obj">address</span>;             <span class="cm">// undefined</span>
+<span class="obj">user</span><span class="blu">?.</span><span class="obj">address</span><span class="blu">?.</span><span class="obj">city</span>;       <span class="cm">// undefined (s'arrete au premier undefined)</span>
+<span class="obj">user</span><span class="blu">?.</span><span class="obj">address</span><span class="blu">?.</span><span class="obj">city</span><span class="blu">?.</span><span class="obj">toUpperCase</span>(); <span class="cm">// undefined (chaine complete securisee)</span>
+
+<span class="cm">// Si la propriete EXISTE, on continue normalement</span>
+<span class="kw">const</span> <span class="obj">user2</span> = { nom: <span class="str">"Alice"</span>, address: { city: <span class="str">"Lyon"</span> } };
+<span class="obj">user2</span><span class="blu">?.</span><span class="obj">address</span><span class="blu">?.</span><span class="obj">city</span>; <span class="cm">// "Lyon" — fonctionne normalement</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Appel de methode optionnel</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>On peut aussi utiliser <code>?.</code> pour appeler une methode qui pourrait ne pas exister. Si la methode est <code>undefined</code>, l'appel est simplement ignore.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">methode-optionnelle.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">player</span> = {
+  nom: <span class="str">"Alice"</span>,
+  <span class="cm">// la methode "saluer" n'existe pas toujours</span>
+};
+
+<span class="kw">const</span> <span class="obj">player2</span> = {
+  nom:    <span class="str">"Bob"</span>,
+  saluer: () => <span class="str">"Bonjour !"</span>
+};
+
+<span class="cm">// Sans ?.() → TypeError si la methode n'existe pas</span>
+<span class="obj">player</span>.<span class="fn">saluer</span>();  <span class="cm">// TypeError: player.saluer is not a function</span>
+
+<span class="cm">// Avec ?.() → retourne undefined si la methode est absente</span>
+<span class="obj">player</span><span class="blu">?.saluer</span>();  <span class="cm">// undefined — pas de crash</span>
+<span class="obj">player2</span><span class="blu">?.saluer</span>(); <span class="cm">// "Bonjour !" — fonctionne</span>
+
+<span class="cm">// Exemple concret : callback optionnel</span>
+<span class="kw">function</span> <span class="fn">traiter</span>(<span class="obj">data</span>, <span class="obj">onSuccess</span>) {
+  <span class="cm">// onSuccess peut ne pas etre fourni</span>
+  <span class="obj">onSuccess</span><span class="blu">?.(</span><span class="obj">data</span><span class="blu">)</span>; <span class="cm">// appelee seulement si elle existe</span>
+}</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">03</span><h2>Acces optionnel a un index de tableau</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">tableau-optionnel.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">users</span> = <span class="kw">null</span>;  <span class="cm">// tableau absent (vient d'une API)</span>
+
+<span class="cm">// Sans ?. → TypeError</span>
+<span class="obj">users</span>[<span class="num">0</span>];         <span class="cm">// TypeError: Cannot read properties of null</span>
+
+<span class="cm">// Avec ?.[] → undefined si le tableau est null/undefined</span>
+<span class="obj">users</span><span class="blu">?.[</span><span class="num">0</span><span class="blu">]</span>;       <span class="cm">// undefined</span>
+<span class="obj">users</span><span class="blu">?.[</span><span class="num">0</span><span class="blu">]?.</span><span class="obj">nom</span>; <span class="cm">// undefined (chaine securisee)</span>
+
+<span class="cm">// Cas reel : premier element d'une liste d'une API</span>
+<span class="kw">const</span> <span class="obj">data</span> = { posts: [{ title: <span class="str">"Hello"</span> }] };
+<span class="kw">const</span> <span class="obj">premiertitle</span> = <span class="obj">data</span><span class="blu">?.posts?.[</span><span class="num">0</span><span class="blu">]?.title</span>;
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">premiertitle</span>); <span class="cm">// "Hello"</span></pre>
+      </div>
+
+      <div class="alert alert-blue">
+        <div class="alert-tag">Recap des 3 syntaxes</div>
+        <code>obj?.prop</code> — acces a une propriete<br>
+        <code>obj?.method()</code> — appel de methode<br>
+        <code>arr?.[index]</code> — acces a un index de tableau
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- 
+       TAB 03 — NULLISH COALESCING
+ -->
+  <div id="tab-nullish" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Principe de base</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>Le <code>??</code> retourne la valeur de droite <strong style="color:#fff">uniquement si la valeur de gauche est <code>null</code> ou <code>undefined</code></strong>. C'est tout. Pas si c'est <code>0</code>, <code>""</code>, <code>false</code> — c'est son avantage cle sur le <code>||</code>.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">nullish-base.js</span>
+        </div>
+        <pre><span class="cm">// null et undefined → retourne la valeur de droite</span>
+<span class="kw">null</span>      <span class="pur">??</span> <span class="str">"defaut"</span>   <span class="cm">// "defaut"</span>
+<span class="kw">undefined</span> <span class="pur">??</span> <span class="str">"defaut"</span>   <span class="cm">// "defaut"</span>
+
+<span class="cm">// 0, "", false → retourne la valeur de GAUCHE (elle existe !)</span>
+<span class="num">0</span>         <span class="pur">??</span> <span class="str">"defaut"</span>   <span class="cm">// 0     ← 0 est une valeur valide</span>
+<span class="str">""</span>        <span class="pur">??</span> <span class="str">"defaut"</span>   <span class="cm">// ""    ← chaine vide valide</span>
+<span class="kw">false</span>     <span class="pur">??</span> <span class="str">"defaut"</span>   <span class="cm">// false ← false est une valeur valide</span>
+
+<span class="cm">// Concretement</span>
+<span class="kw">const</span> <span class="obj">score</span> = <span class="num">0</span>;
+<span class="kw">const</span> <span class="obj">affiche</span> = <span class="obj">score</span> <span class="pur">??</span> <span class="str">"Pas de score"</span>;
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">affiche</span>); <span class="cm">// 0 — pas "Pas de score"</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>?? vs || — la difference fondamentale</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>C'est le piege le plus courant. Le <code>||</code> traite toutes les valeurs <strong style="color:#fff">falsy</strong> comme absentes (<code>0</code>, <code>""</code>, <code>false</code>, <code>NaN</code>...). Le <code>??</code> ne traite comme absentes que <code>null</code> et <code>undefined</code>. En pratique, cela fait une enorme difference.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="compare-col">
+          <h4 class="bad">|| — se trompe sur 0 et ""</h4>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+              <span class="code-filename">or-logique.js</span>
+            </div>
+            <pre><span class="kw">const</span> <span class="obj">config</span> = {
+  volume:   <span class="num">0</span>,
+  pseudo:   <span class="str">""</span>,
+  actif:    <span class="kw">false</span>
+};
+
+<span class="cm">// || considere 0, "", false comme "absent"</span>
+<span class="kw">const</span> <span class="obj">vol</span>  = <span class="obj">config</span>.<span class="obj">volume</span>  <span class="op">||</span> <span class="num">50</span>;   <span class="cm">// 50  ← FAUX</span>
+<span class="kw">const</span> <span class="obj">name</span> = <span class="obj">config</span>.<span class="obj">pseudo</span>  <span class="op">||</span> <span class="str">"Inconnu"</span>; <span class="cm">// "Inconnu" ← FAUX</span>
+<span class="kw">const</span> <span class="obj">ok</span>   = <span class="obj">config</span>.<span class="obj">actif</span>   <span class="op">||</span> <span class="kw">true</span>;  <span class="cm">// true ← FAUX</span>
+
+<span class="cm">// || ecrase les vraies valeurs 0, "" et false !</span></pre>
+          </div>
+        </div>
+        <div class="compare-col">
+          <h4 class="good">?? — respecte 0, "" et false</h4>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+              <span class="code-filename">nullish.js</span>
+            </div>
+            <pre><span class="kw">const</span> <span class="obj">config</span> = {
+  volume:   <span class="num">0</span>,
+  pseudo:   <span class="str">""</span>,
+  actif:    <span class="kw">false</span>
+};
+
+<span class="cm">// ?? ne reagit qu'a null et undefined</span>
+<span class="kw">const</span> <span class="obj">vol</span>  = <span class="obj">config</span>.<span class="obj">volume</span>  <span class="pur">??</span> <span class="num">50</span>;        <span class="cm">// 0  ← CORRECT</span>
+<span class="kw">const</span> <span class="obj">name</span> = <span class="obj">config</span>.<span class="obj">pseudo</span>  <span class="pur">??</span> <span class="str">"Inconnu"</span>;  <span class="cm">// "" ← CORRECT</span>
+<span class="kw">const</span> <span class="obj">ok</span>   = <span class="obj">config</span>.<span class="obj">actif</span>   <span class="pur">??</span> <span class="kw">true</span>;       <span class="cm">// false ← CORRECT</span>
+
+<span class="cm">// ?? respecte toutes les valeurs intentionnelles</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">03</span><h2>Table de verite</h2><span class="s-line"></span></div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Valeur de gauche</th>
+            <th>Type</th>
+            <th>Resultat avec <code style="color:var(--blue)">??</code></th>
+            <th>Resultat avec <code style="color:var(--muted2)">||</code></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>null</code></td>
+            <td>nullish</td>
+            <td class="val-blue">valeur de droite</td>
+            <td class="val-blue">valeur de droite</td>
+          </tr>
+          <tr>
+            <td><code>undefined</code></td>
+            <td>nullish</td>
+            <td class="val-blue">valeur de droite</td>
+            <td class="val-blue">valeur de droite</td>
+          </tr>
+          <tr>
+            <td><code>0</code></td>
+            <td>falsy mais pas nullish</td>
+            <td class="val-green">0 (valeur de gauche)</td>
+            <td class="val-red">valeur de droite</td>
+          </tr>
+          <tr>
+            <td><code>""</code></td>
+            <td>falsy mais pas nullish</td>
+            <td class="val-green">"" (valeur de gauche)</td>
+            <td class="val-red">valeur de droite</td>
+          </tr>
+          <tr>
+            <td><code>false</code></td>
+            <td>falsy mais pas nullish</td>
+            <td class="val-green">false (valeur de gauche)</td>
+            <td class="val-red">valeur de droite</td>
+          </tr>
+          <tr>
+            <td><code>"texte"</code></td>
+            <td>truthy</td>
+            <td class="val-green">"texte" (valeur de gauche)</td>
+            <td class="val-green">"texte" (valeur de gauche)</td>
+          </tr>
+          <tr>
+            <td><code>42</code></td>
+            <td>truthy</td>
+            <td class="val-green">42 (valeur de gauche)</td>
+            <td class="val-green">42 (valeur de gauche)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+
+  <!-- 
+       TAB 04 — COMBINER
+  -->
+  <div id="tab-combine" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>?.  et  ?? ensemble</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>Les deux operateurs sont faits pour etre combines. Le <code>?.</code> securise l'acces, le <code>??</code> gere la valeur de remplacement quand le resultat est <code>undefined</code>. C'est le combo parfait pour travailler avec des APIs.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">combo-parfait.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">user</span> = {
+  nom: <span class="str">"Alice"</span>,
+  <span class="cm">// address, bio, score sont absents</span>
+};
+
+<span class="cm">// ?.  → "ne plante pas si absent"</span>
+<span class="cm">// ??  → "donne cette valeur si le resultat est null/undefined"</span>
+
+<span class="kw">const</span> <span class="obj">ville</span>  = <span class="obj">user</span><span class="blu">?.address?.city</span>   <span class="pur">??</span> <span class="str">"Ville inconnue"</span>;
+<span class="kw">const</span> <span class="obj">bio</span>    = <span class="obj">user</span><span class="blu">?.bio</span>              <span class="pur">??</span> <span class="str">"Pas de bio"</span>;
+<span class="kw">const</span> <span class="obj">score</span>  = <span class="obj">user</span><span class="blu">?.stats?.score</span>   <span class="pur">??</span> <span class="num">0</span>;
+<span class="kw">const</span> <span class="obj">avatar</span> = <span class="obj">user</span><span class="blu">?.photos?.[0]?.url</span> <span class="pur">??</span> <span class="str">"/images/default.png"</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">ville</span>);  <span class="cm">// "Ville inconnue"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">bio</span>);    <span class="cm">// "Pas de bio"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">score</span>);  <span class="cm">// 0</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">avatar</span>); <span class="cm">// "/images/default.png"</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Affectation avec ??= (bonus ES2021)</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>L'operateur <code>??=</code> assigne une valeur a une variable <strong style="color:#fff">seulement si elle est nulle ou indefinie</strong>. C'est un raccourci pour <code>x = x ?? valeur</code>.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">affectation-nullish.js</span>
+        </div>
+        <pre><span class="kw">let</span> <span class="obj">pseudo</span> = <span class="kw">null</span>;
+<span class="kw">let</span> <span class="obj">score</span>  = <span class="num">0</span>;
+<span class="kw">let</span> <span class="obj">nom</span>    = <span class="str">"Alice"</span>;
+
+<span class="cm">// ??= assigne uniquement si null ou undefined</span>
+<span class="obj">pseudo</span> <span class="pur">??=</span> <span class="str">"Anonyme"</span>;  <span class="cm">// pseudo = "Anonyme"  (etait null)</span>
+<span class="obj">score</span>  <span class="pur">??=</span> <span class="num">100</span>;        <span class="cm">// score  = 0          (0 n'est pas nullish)</span>
+<span class="obj">nom</span>    <span class="pur">??=</span> <span class="str">"Inconnu"</span>;  <span class="cm">// nom    = "Alice"     (deja defini)</span>
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">pseudo</span>); <span class="cm">// "Anonyme"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">score</span>);  <span class="cm">// 0</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">nom</span>);    <span class="cm">// "Alice"</span>
+
+<span class="cm">// Equivalent long :</span>
+<span class="obj">pseudo</span> = <span class="obj">pseudo</span> <span class="pur">??</span> <span class="str">"Anonyme"</span>;</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">03</span><h2>Avec la destructuration (etape 2)</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>On peut combiner <code>?.</code>, <code>??</code> et la destructuration. C'est exactement comme ca qu'on ecrit du code moderne en JS ou React.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">triple-combo.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">apiData</span> = {
+  user: {
+    nom:   <span class="str">"Alice"</span>,
+    score: <span class="num">0</span>,
+    <span class="cm">// address absent</span>
+    <span class="cm">// role absent</span>
+  }
+};
+
+<span class="cm">// 1. Destructuration pour extraire user</span>
+<span class="kw">const</span> { <span class="obj">user</span> } = <span class="obj">apiData</span>;
+
+<span class="cm">// 2. ?. pour l'acces securise</span>
+<span class="cm">// 3. ?? pour la valeur de secours</span>
+<span class="kw">const</span> <span class="obj">ville</span>  = <span class="obj">user</span><span class="blu">?.address?.city</span>   <span class="pur">??</span> <span class="str">"NC"</span>;
+<span class="kw">const</span> <span class="obj">role</span>   = <span class="obj">user</span><span class="blu">?.role</span>             <span class="pur">??</span> <span class="str">"visiteur"</span>;
+<span class="kw">const</span> <span class="obj">score</span>  = <span class="obj">user</span><span class="blu">?.score</span>            <span class="pur">??</span> <span class="str">"aucun score"</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">ville</span>);  <span class="cm">// "NC"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">role</span>);   <span class="cm">// "visiteur"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">score</span>);  <span class="cm">// 0  ← ?? respecte 0, pas de valeur de remplacement</span></pre>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- 
+       TAB 05 — PIEGES
+ -->
+  <div id="tab-pieges" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">Pieges</span><h2>Les erreurs classiques</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <h3>Piege 1 — confondre ?? et ||</h3>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">piege-1.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="obj">produit</span> = { nom: <span class="str">"Souris"</span>, stock: <span class="num">0</span>, actif: <span class="kw">false</span> };
+
+<span class="cm">//  MAUVAIS — || ecrase les valeurs 0 et false</span>
+<span class="kw">const</span> <span class="obj">stock</span> = <span class="obj">produit</span>.<span class="obj">stock</span>  <span class="op">||</span> <span class="str">"Rupture"</span>; <span class="cm">// "Rupture" — FAUX, stock = 0</span>
+<span class="kw">const</span> <span class="obj">actif</span> = <span class="obj">produit</span>.<span class="obj">actif</span>  <span class="op">||</span> <span class="kw">true</span>;      <span class="cm">// true — FAUX, actif = false</span>
+
+<span class="cm">//  BON — ?? respecte 0 et false</span>
+<span class="kw">const</span> <span class="obj">stock2</span> = <span class="obj">produit</span>.<span class="obj">stock</span> <span class="pur">??</span> <span class="str">"Rupture"</span>; <span class="cm">// 0     — correct</span>
+<span class="kw">const</span> <span class="obj">actif2</span> = <span class="obj">produit</span>.<span class="obj">actif</span> <span class="pur">??</span> <span class="kw">true</span>;      <span class="cm">// false — correct</span></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Piege 2 — ?. ne protege pas contre toutes les erreurs</h3>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">piege-2.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="obj">user</span> = <span class="kw">null</span>;
+
+<span class="cm">//  ?. protege contre null et undefined</span>
+<span class="obj">user</span><span class="blu">?.nom</span>;      <span class="cm">// undefined — pas de crash</span>
+
+<span class="cm">//  Si la valeur est un mauvais type, ?. ne peut rien</span>
+<span class="kw">const</span> <span class="obj">n</span> = <span class="num">42</span>;
+<span class="obj">n</span>.<span class="fn">toUpperCase</span>(); <span class="cm">// TypeError: n.toUpperCase is not a function</span>
+<span class="cm">// ?. ne protege pas contre les types incompatibles</span>
+
+<span class="cm">//  Pour ca, on utilise un check de type ou try/catch</span>
+<span class="kw">typeof</span> <span class="obj">n</span> === <span class="str">"string"</span> ? <span class="obj">n</span>.<span class="fn">toUpperCase</span>() : <span class="str">"pas une chaine"</span>;</pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Piege 3 — Melanger ?? et && sans parentheses</h3>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">piege-3.js</span>
+          </div>
+          <pre><span class="cm">// Syntaxe interdite — JS refuse ce melange sans parentheses</span>
+<span class="kw">const</span> <span class="obj">x</span> = <span class="kw">null</span> <span class="op">||</span> <span class="str">"defaut"</span> <span class="pur">??</span> <span class="str">"autre"</span>;
+<span class="cm">// SyntaxError: Unexpected token '??'</span>
+
+<span class="cm">// Mettre des parentheses pour etre explicite</span>
+<span class="kw">const</span> <span class="obj">y</span> = (<span class="kw">null</span> <span class="op">||</span> <span class="str">"defaut"</span>) <span class="pur">??</span> <span class="str">"autre"</span>;  <span class="cm">// "defaut"</span>
+<span class="kw">const</span> <span class="obj">z</span> = <span class="kw">null</span> <span class="op">||</span> (<span class="str">"defaut"</span> <span class="pur">??</span> <span class="str">"autre"</span>); <span class="cm">// "defaut"</span></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Piege 4 — Ne pas mettre ?. sur toute la chaine</h3>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+            <span class="code-filename">piege-4.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="obj">data</span> = { user: <span class="kw">null</span> };
+
+<span class="cm">//  ?. sur le premier niveau mais pas le second → crash quand meme</span>
+<span class="obj">data</span><span class="blu">?.user</span>.<span class="obj">address</span>.<span class="obj">city</span>;
+<span class="cm">// TypeError: Cannot read properties of null (reading 'address')</span>
+<span class="cm">// data?.user retourne null, puis null.address plante</span>
+
+<span class="cm">//  ?. sur chaque niveau potentiellement absent</span>
+<span class="obj">data</span><span class="blu">?.user?.address?.city</span>; <span class="cm">// undefined — securise a chaque etape</span></pre>
+        </div>
+
+        <div class="alert alert-red">
+          <div class="alert-tag">Regle a retenir</div>
+          Le <code>?.</code> court-circuite uniquement le niveau ou il est place. Chaque propriete potentiellement <code>null</code> ou <code>undefined</code> dans la chaine doit avoir son propre <code>?.</code>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- 
+       TAB 06 — CAS REELS API
+ -->
+  <div id="tab-pratique" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Traitement d'une reponse API complete</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">api-securisee.js</span>
+        </div>
+        <pre><span class="cm">// Reponse typique d'une API — certains champs peuvent manquer</span>
+<span class="kw">async function</span> <span class="fn">afficherProfil</span>(<span class="obj">userId</span>) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> <span class="obj">res</span>  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://jsonplaceholder.typicode.com/users/<span class="acc">${userId}</span>`</span>);
+    <span class="kw">const</span> <span class="obj">user</span> = <span class="kw">await</span> <span class="obj">res</span>.<span class="fn">json</span>();
+
+    <span class="cm">// Destructuration + acces securise + valeurs de remplacement</span>
+    <span class="kw">const</span> {
+      name:    <span class="obj">nom</span>,
+      email,
+      phone,
+      address: <span class="obj">adresseObj</span>,
+      company: <span class="obj">companyObj</span>
+    } = <span class="obj">user</span>;
+
+    <span class="cm">// Optional chaining pour les sous-proprietes</span>
+    <span class="kw">const</span> <span class="obj">ville</span>   = <span class="obj">adresseObj</span><span class="blu">?.city</span>        <span class="pur">??</span> <span class="str">"Ville non renseignee"</span>;
+    <span class="kw">const</span> <span class="obj">societe</span> = <span class="obj">companyObj</span><span class="blu">?.name</span>        <span class="pur">??</span> <span class="str">"Independant"</span>;
+    <span class="kw">const</span> <span class="obj">geo</span>     = <span class="obj">adresseObj</span><span class="blu">?.geo</span>         <span class="pur">??</span> <span class="kw">null</span>;
+    <span class="kw">const</span> <span class="obj">lat</span>     = <span class="obj">geo</span><span class="blu">?.lat</span>               <span class="pur">??</span> <span class="str">"N/A"</span>;
+
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Nom     :"</span>, <span class="obj">nom</span>    <span class="pur">??</span> <span class="str">"Inconnu"</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Email   :"</span>, <span class="obj">email</span>  <span class="pur">??</span> <span class="str">"Non fourni"</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Ville   :"</span>, <span class="obj">ville</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Societe :"</span>, <span class="obj">societe</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Lat     :"</span>, <span class="obj">lat</span>);
+
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="obj">console</span>.<span class="fn">error</span>(<span class="obj">err</span>.<span class="obj">message</span>);
+  }
+}
+
+<span class="fn">afficherProfil</span>(<span class="num">1</span>);</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Fonction utilitaire de securisation</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">safe-get.js</span>
+        </div>
+        <pre><span class="cm">// Pattern courant : fonction qui securise l'acces a une propriete profonde</span>
+<span class="kw">function</span> <span class="fn">safeGet</span>(<span class="obj">obj</span>, <span class="obj">chemin</span>, <span class="obj">defaut</span> = <span class="kw">null</span>) {
+  <span class="kw">return</span> <span class="obj">chemin</span>
+    .<span class="fn">split</span>(<span class="str">"."</span>)
+    .<span class="fn">reduce</span>((<span class="obj">acc</span>, <span class="obj">key</span>) => <span class="obj">acc</span><span class="blu">?.[</span><span class="obj">key</span><span class="blu">]</span>, <span class="obj">obj</span>)
+    <span class="pur">??</span> <span class="obj">defaut</span>;
+}
+
+<span class="kw">const</span> <span class="obj">data</span> = {
+  user: {
+    profil: {
+      nom: <span class="str">"Alice"</span>
+      <span class="cm">// bio absent</span>
+    }
+  }
+};
+
+<span class="fn">safeGet</span>(<span class="obj">data</span>, <span class="str">"user.profil.nom"</span>, <span class="str">"NC"</span>);      <span class="cm">// "Alice"</span>
+<span class="fn">safeGet</span>(<span class="obj">data</span>, <span class="str">"user.profil.bio"</span>, <span class="str">"NC"</span>);      <span class="cm">// "NC"</span>
+<span class="fn">safeGet</span>(<span class="obj">data</span>, <span class="str">"user.adresse.ville"</span>, <span class="str">"NC"</span>);   <span class="cm">// "NC"</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">03</span><h2>Affichage conditionnel (pattern React)</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">affichage-conditionnel.js</span>
+        </div>
+        <pre><span class="cm">// En JS vanilla — construction de HTML selon les donnees disponibles</span>
+<span class="kw">function</span> <span class="fn">renderCard</span>(<span class="obj">user</span>) {
+  <span class="kw">const</span> <span class="obj">nom</span>     = <span class="obj">user</span><span class="blu">?.nom</span>                  <span class="pur">??</span> <span class="str">"Utilisateur"</span>;
+  <span class="kw">const</span> <span class="obj">avatar</span>  = <span class="obj">user</span><span class="blu">?.photos?.[0]?.url</span>     <span class="pur">??</span> <span class="str">"/default.png"</span>;
+  <span class="kw">const</span> <span class="obj">bio</span>     = <span class="obj">user</span><span class="blu">?.bio</span>                  <span class="pur">??</span> <span class="str">"Aucune description"</span>;
+  <span class="kw">const</span> <span class="obj">nbPosts</span> = <span class="obj">user</span><span class="blu">?.stats?.posts</span>         <span class="pur">??</span> <span class="num">0</span>;
+  <span class="kw">const</span> <span class="obj">badge</span>   = <span class="obj">user</span><span class="blu">?.role</span> === <span class="str">"admin"</span>      <span class="pur">??</span> <span class="kw">false</span>;
+
+  <span class="kw">return</span> <span class="str">`
+    &lt;div class="card"&gt;
+      &lt;img src="<span class="obj">${avatar}</span>" alt="<span class="obj">${nom}</span>" /&gt;
+      &lt;h2&gt;<span class="obj">${nom}</span>&lt;/h2&gt;
+      &lt;p&gt;<span class="obj">${bio}</span>&lt;/p&gt;
+      &lt;span&gt;<span class="obj">${nbPosts}</span> posts&lt;/span&gt;
+    &lt;/div&gt;
+  `</span>;
+}
+
+<span class="fn">renderCard</span>(<span class="kw">null</span>);         <span class="cm">// affiche la card avec toutes les valeurs par defaut</span>
+<span class="fn">renderCard</span>({ nom: <span class="str">"Bob"</span> }); <span class="cm">// affiche Bob avec les defaults pour le reste</span></pre>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- 
+       TAB 07 — EXERCICE
+ -->
+  <div id="tab-exercice" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">Exercice</span><h2>Mets en pratique</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <h3>Objectif</h3>
+        <p>Tu vas reprendre l'exercice de l'etape 2 (API JSONPlaceholder) et le securiser completement avec <code>?.</code> et <code>??</code>, comme si les donnees pouvaient etre incompletes a tout moment.</p>
+      </div>
+
+      <div class="alert alert-blue">
+        <div class="alert-tag">API de test</div>
+        <code>https://jsonplaceholder.typicode.com/users/1</code><br>
+        Proprietes disponibles : name, email, phone, website, address.city, address.geo, company.name
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Consignes</h2><span class="s-line"></span></div>
+
+      <ul class="checklist">
+        <li>Faire un fetch sur l'utilisateur id=1 avec async/await</li>
+        <li>Destructurer <code>name</code>, <code>email</code>, <code>address</code>, <code>company</code> depuis la reponse</li>
+        <li>Utiliser <code>?.</code> pour acceder a <code>address.city</code>, <code>address.geo.lat</code>, <code>company.name</code></li>
+        <li>Utiliser <code>??</code> pour fournir une valeur par defaut a chaque acces</li>
+        <li>Tester avec un id inexistant (ex: 9999) — rien ne doit planter</li>
+        <li>Bonus : ecrire une fonction <code>formatUser(user)</code> qui retourne un objet propre avec tous les champs securises, puis l'utiliser dans plusieurs contextes</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Starter</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">exercice-starter.js</span>
+        </div>
+        <pre><span class="kw">async function</span> <span class="fn">getUser</span>(<span class="obj">id</span>) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> <span class="obj">res</span>  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://jsonplaceholder.typicode.com/users/<span class="acc">${id}</span>`</span>);
+    <span class="kw">const</span> <span class="obj">user</span> = <span class="kw">await</span> <span class="obj">res</span>.<span class="fn">json</span>();
+
+    <span class="cm">// TODO 1 : destructurer name, email, address, company</span>
+    <span class="kw">const</span> { <span class="cm">/* ... */</span> } = <span class="obj">user</span>;
+
+    <span class="cm">// TODO 2 : acceder a address.city avec ?. et valeur par defaut avec ??</span>
+    <span class="kw">const</span> <span class="obj">ville</span>   = <span class="cm">/* ... */</span>
+
+    <span class="cm">// TODO 3 : acceder a address.geo.lat avec ?. et valeur par defaut</span>
+    <span class="kw">const</span> <span class="obj">lat</span>     = <span class="cm">/* ... */</span>
+
+    <span class="cm">// TODO 4 : acceder a company.name avec ?. et valeur par defaut</span>
+    <span class="kw">const</span> <span class="obj">societe</span> = <span class="cm">/* ... */</span>
+
+    <span class="cm">// TODO 5 : afficher tout</span>
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="cm">/* ... */</span>);
+
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="obj">console</span>.<span class="fn">error</span>(<span class="obj">err</span>.<span class="obj">message</span>);
+  }
+}
+
+<span class="fn">getUser</span>(<span class="num">1</span>);
+<span class="fn">getUser</span>(<span class="num">9999</span>); <span class="cm">// ne doit pas planter</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">03</span><h2>Correction</h2><span class="s-line"></span></div>
+
+      <div class="alert alert-red">
+        <div class="alert-tag">A lire seulement apres avoir essaye</div>
+        Les erreurs que tu vas faire sont plus instructives que la correction.
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">correction.js</span>
+        </div>
+        <pre><span class="cm">// BONUS : fonction de formatage reutilisable</span>
+<span class="kw">function</span> <span class="fn">formatUser</span>(<span class="obj">user</span>) {
+  <span class="kw">const</span> { name, email, address, company } = <span class="obj">user</span>;
+
+  <span class="kw">return</span> {
+    nom:     <span class="obj">name</span>                      <span class="pur">??</span> <span class="str">"Inconnu"</span>,
+    email:   <span class="obj">email</span>                     <span class="pur">??</span> <span class="str">"Non fourni"</span>,
+    ville:   <span class="obj">address</span><span class="blu">?.city</span>            <span class="pur">??</span> <span class="str">"NC"</span>,
+    lat:     <span class="obj">address</span><span class="blu">?.geo?.lat</span>        <span class="pur">??</span> <span class="str">"N/A"</span>,
+    lng:     <span class="obj">address</span><span class="blu">?.geo?.lng</span>        <span class="pur">??</span> <span class="str">"N/A"</span>,
+    societe: <span class="obj">company</span><span class="blu">?.name</span>            <span class="pur">??</span> <span class="str">"Independant"</span>,
+    secteur: <span class="obj">company</span><span class="blu">?.bs</span>              <span class="pur">??</span> <span class="str">"Non precise"</span>,
+  };
+}
+
+<span class="kw">async function</span> <span class="fn">getUser</span>(<span class="obj">id</span>) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> <span class="obj">res</span>  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://jsonplaceholder.typicode.com/users/<span class="acc">${id}</span>`</span>);
+
+    <span class="kw">if</span> (<span class="op">!</span><span class="obj">res</span>.<span class="obj">ok</span>) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`HTTP <span class="acc">${res.status}</span>`</span>);
+
+    <span class="kw">const</span> <span class="obj">userData</span> = <span class="kw">await</span> <span class="obj">res</span>.<span class="fn">json</span>();
+
+    <span class="cm">// On formate pour avoir un objet propre et securise</span>
+    <span class="kw">const</span> <span class="obj">user</span> = <span class="fn">formatUser</span>(<span class="obj">userData</span>);
+
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Nom     :"</span>, <span class="obj">user</span>.<span class="obj">nom</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Email   :"</span>, <span class="obj">user</span>.<span class="obj">email</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Ville   :"</span>, <span class="obj">user</span>.<span class="obj">ville</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"GPS     :"</span>, <span class="obj">user</span>.<span class="obj">lat</span>, <span class="obj">user</span>.<span class="obj">lng</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Societe :"</span>, <span class="obj">user</span>.<span class="obj">societe</span>);
+
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="cm">// ?.message car err lui-meme pourrait ne pas avoir .message</span>
+    <span class="obj">console</span>.<span class="fn">error</span>(<span class="str">"Erreur :"</span>, <span class="obj">err</span><span class="blu">?.message</span> <span class="pur">??</span> <span class="str">"Erreur inconnue"</span>);
+  }
+}
+
+<span class="fn">getUser</span>(<span class="num">1</span>);
+<span class="fn">getUser</span>(<span class="num">9999</span>); <span class="cm">// gere proprement</span></pre>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /.wrapper -->
+
+<footer>
+  Real Conseil &nbsp;·&nbsp; Support JS — Etape 3 / 5 &nbsp;·&nbsp; Optional Chaining &amp; Nullish Coalescing
+</footer>
+
+<script>
+  function showTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+    document.querySelector('.tabs-nav').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+
+<script src="../Cursor.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Set & Map — Support de cours</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:          #060608;
+      --surface:     #0d0d11;
+      --surface2:    #121217;
+      --surface3:    #17171e;
+      --border:      #1e1e28;
+      --border2:     #26263a;
+      --red:         #e8192c;
+      --red-dim:     #8c0f1a;
+      --red-glow:    rgba(232,25,44,0.12);
+      --red-glow2:   rgba(232,25,44,0.05);
+      --orange:      #ff6b1a;
+      --orange-dim:  #99400f;
+      --orange-glow: rgba(255,107,26,0.08);
+      --text:        #dde0e8;
+      --muted:       #484860;
+      --muted2:      #7878a0;
+      --code-bg:     #050507;
+      --green:       #00d97e;
+      --blue:        #2fa8ff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ═══════ HEADER ═══════ */
+    header {
+      position: relative;
+      padding: 4.5rem 2rem 3rem;
+      text-align: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ROG-style background */
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(232,25,44,0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 50% at 10% 80%, rgba(255,107,26,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 50% at 90% 80%, rgba(232,25,44,0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Diagonal slash accent top-left */
+    header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red) 0%, var(--orange) 40%, transparent 70%);
+    }
+
+    .header-inner { position: relative; z-index: 1; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--red);
+      border: 1px solid var(--red-dim);
+      padding: 0.35rem 1.1rem;
+      margin-bottom: 1.75rem;
+      background: var(--red-glow2);
+      border-radius: 2px;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: '';
+      width: 14px; height: 1px;
+      background: var(--red);
+      opacity: 0.6;
+    }
+
+    h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.6rem, 7vw, 5rem);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    h1 .acc-red    { color: var(--red);    text-shadow: 0 0 50px rgba(232,25,44,0.6); }
+    h1 .acc-orange { color: var(--orange); text-shadow: 0 0 50px rgba(255,107,26,0.5); }
+    h1 .sep        { color: var(--muted); margin: 0 0.3em; font-size: 0.7em; }
+
+    .subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted2);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    /* ═══════ STEP TRACKER ═══════ */
+    .step-tracker {
+      position: sticky;
+      top: 0; z-index: 100;
+      background: rgba(6,6,8,0.96);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border2);
+      padding: 0.55rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem;
+      color: var(--muted);
+    }
+
+    .st-prog { color: var(--red); font-weight: 700; letter-spacing: 0.05em; }
+    .step-pills { display: flex; gap: 0.4rem; margin-left: auto; flex-wrap: wrap; }
+
+    .step-pill {
+      padding: 0.18rem 0.55rem;
+      font-size: 0.57rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      border-radius: 2px;
+    }
+    .step-pill.done    { border-color: rgba(0,217,126,0.3); color: var(--green); background: rgba(0,217,126,0.04); }
+    .step-pill.current { border-color: var(--red-dim); color: var(--red); background: var(--red-glow2); }
+
+    @media (max-width: 600px) { .step-tracker { display: none; } }
+
+    /* ═══════ LAYOUT ═══════ */
+    .wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 5rem;
+    }
+
+    /* ═══════ TABS NAV ═══════ */
+    .tabs-nav {
+      display: flex;
+      border-bottom: 1px solid var(--border2);
+      margin-top: 2.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs-nav::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 0.9rem 1.3rem;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.02); }
+    .tab-btn.active { color: var(--red); border-bottom-color: var(--red); background: var(--red-glow2); }
+
+    .tab-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem;
+      color: var(--red-dim);
+      margin-right: 0.4rem;
+    }
+
+    /* ═══════ PANELS ═══════ */
+    .tab-panel { display: none; }
+    .tab-panel.active {
+      display: block;
+      animation: fadeUp 0.25s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════ SECTION TITLES ═══════ */
+    .section { margin-top: 2.75rem; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-label h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .s-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      background: var(--red-glow);
+      border: 1px solid var(--red-dim);
+      color: var(--red);
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    .s-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2) 0%, transparent 100%);
+    }
+
+    /* ═══════ CARDS ═══════ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(180deg, var(--red), var(--orange));
+    }
+
+    .card h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.65rem;
+      color: #fff;
+    }
+    .card p { color: var(--muted2); font-size: 0.92rem; line-height: 1.75; }
+    .card p + p { margin-top: 0.6rem; }
+
+    /* ═══════ ALERTS ═══════ */
+    .alert {
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      border-left: 3px solid;
+      font-size: 0.86rem;
+      line-height: 1.7;
+      border-radius: 0 4px 4px 0;
+    }
+    .alert-tag {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.4rem;
+      font-weight: 700;
+    }
+    .alert-red    { border-color: var(--red);    background: var(--red-glow2);              color: #e8a0a8; }
+    .alert-red    .alert-tag { color: var(--red); }
+    .alert-orange { border-color: var(--orange);  background: var(--orange-glow);             color: #e8c090; }
+    .alert-orange .alert-tag { color: var(--orange); }
+    .alert-green  { border-color: var(--green);   background: rgba(0,217,126,0.05);           color: #80d8b0; }
+    .alert-green  .alert-tag { color: var(--green); }
+    .alert-blue   { border-color: var(--blue);    background: rgba(47,168,255,0.05);          color: #80c8e8; }
+    .alert-blue   .alert-tag { color: var(--blue); }
+
+    /* ═══════ MAC CODE BLOCKS ═══════ */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 1.25rem 0;
+      position: relative;
+    }
+    .code-block::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--red), var(--orange) 40%, transparent 70%);
+      opacity: 0.5;
+    }
+    .code-header {
+      background: #0b0b0e;
+      border-bottom: 1px solid var(--border);
+      padding: 0.55rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mac-dots { display: flex; gap: 6px; align-items: center; }
+    .mac-dot  { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+    .dot-r    { background: #ff5f57; }
+    .dot-y    { background: #febc2e; }
+    .dot-g    { background: #28c840; }
+    .code-filename {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.66rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    pre {
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.79rem;
+      line-height: 1.82;
+      color: #b0b8d0;
+    }
+
+    /* Syntax colors */
+    .kw  { color: #c792ea; }
+    .fn  { color: #82aaff; }
+    .str { color: #c3e88d; }
+    .num { color: #f78c6c; }
+    .cm  { color: #2a2a40; font-style: italic; }
+    .obj { color: #ffcb6b; }
+    .op  { color: #89ddff; }
+    .rd  { color: var(--red);    font-weight: 700; }
+    .og  { color: var(--orange); font-weight: 700; }
+    .gn  { color: var(--green); }
+    .bl  { color: var(--blue); }
+
+    /* ═══════ GRIDS ═══════ */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 1.25rem 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin: 1.25rem 0;
+    }
+    @media (max-width: 820px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    .compare-col h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.5rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+    }
+    .compare-col h4.good  { color: var(--green);  border-color: rgba(0,217,126,0.25); background: rgba(0,217,126,0.04); }
+    .compare-col h4.bad   { color: var(--red);    border-color: rgba(232,25,44,0.3);  background: var(--red-glow2); }
+    .compare-col h4.info  { color: var(--blue);   border-color: rgba(47,168,255,0.25); background: rgba(47,168,255,0.04); }
+    .compare-col .code-block { margin: 0; border-top: none; border-radius: 0 0 8px 8px; }
+
+    .mini-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 1.2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .mini-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--red), var(--orange), transparent);
+      opacity: 0.4;
+    }
+    .mini-card h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 0.55rem;
+      color: var(--red);
+    }
+    .mini-card p { font-size: 0.87rem; color: var(--muted2); line-height: 1.65; }
+
+    /* ═══════ TABLE ═══════ */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.77rem;
+      margin: 1.25rem 0;
+    }
+    .data-table thead tr { background: var(--surface2); border-bottom: 2px solid var(--border2); }
+    .data-table th {
+      padding: 0.65rem 1rem;
+      text-align: left;
+      color: var(--red);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.62rem;
+    }
+    .data-table td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); color: var(--muted2); }
+    .data-table tbody tr:hover { background: var(--surface2); }
+    .td-yes   { color: var(--green); }
+    .td-no    { color: var(--red); }
+    .td-part  { color: var(--orange); }
+    .td-white { color: #fff; font-weight: 600; }
+
+    /* Method badges */
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    .method-item {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .method-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--red);
+      white-space: nowrap;
+      flex-shrink: 0;
+      padding-top: 0.05rem;
+    }
+    .method-desc {
+      font-size: 0.82rem;
+      color: var(--muted2);
+      line-height: 1.5;
+    }
+
+    /* Checklist */
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--muted2);
+      line-height: 1.55;
+    }
+    .checklist li:last-child { border: none; }
+    .checklist li::before {
+      content: '//';
+      color: var(--red);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82em;
+      color: var(--red);
+      background: var(--red-glow2);
+      padding: 0.1em 0.4em;
+      border-radius: 2px;
+      border: 1px solid rgba(232,25,44,0.15);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.63rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 2.5rem 1rem 2rem; }
+      .wrapper { padding: 0 1rem 3rem; }
+      .tab-btn { padding: 0.7rem 0.85rem; font-size: 0.78rem; }
+      pre { font-size: 0.72rem; padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- STEP TRACKER -->
+<div class="step-tracker">
+  <span class="st-prog">ETAPE 4 / 5</span>
+  <span style="color:var(--border2)">—</span>
+  <span>Set &amp; Map</span>
+  <div class="step-pills">
+    <span class="step-pill done">01 · Promises</span>
+    <span class="step-pill done">02 · Destructuration</span>
+    <span class="step-pill done">03 · ?. / ??</span>
+    <span class="step-pill current">04 · Set / Map</span>
+    <span class="step-pill">05 · Entretien</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="eyebrow">Support de cours — Etape 4</div>
+    <h1>
+      <span class="acc-red">Set</span>
+      <span class="sep">&amp;</span>
+      <span class="acc-orange">Map</span>
+    </h1>
+    <p class="subtitle">Structures de donnees modernes · Cas d'usage · Methodes</p>
+  </div>
+</header>
+
+<div class="wrapper">
+
+  <!-- TABS NAV -->
+  <nav class="tabs-nav">
+    <button class="tab-btn active" onclick="showTab('intro',     this)"><span class="tab-num">01</span> C'est quoi</button>
+    <button class="tab-btn"        onclick="showTab('set',       this)"><span class="tab-num">02</span> Set</button>
+    <button class="tab-btn"        onclick="showTab('setmeth',   this)"><span class="tab-num">03</span> Methodes Set</button>
+    <button class="tab-btn"        onclick="showTab('map',       this)"><span class="tab-num">04</span> Map</button>
+    <button class="tab-btn"        onclick="showTab('mapmeth',   this)"><span class="tab-num">05</span> Methodes Map</button>
+    <button class="tab-btn"        onclick="showTab('vsclassic', this)"><span class="tab-num">06</span> Set/Map vs Array/Object</button>
+    <button class="tab-btn"        onclick="showTab('pratique',  this)"><span class="tab-num">07</span> Cas reels</button>
+    <button class="tab-btn"        onclick="showTab('exercice',  this)"><span class="tab-num">08</span> Exercice</button>
+  </nav>
+
+
+  <!-- ══════════════════════════════
+       TAB 01 — INTRO
+  ══════════════════════════════ -->
+  <div id="tab-intro" class="tab-panel active">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Pourquoi ces structures existent</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>JS dispose de deux structures de donnees classiques : les <strong style="color:#fff">tableaux</strong> (<code>Array</code>) et les <strong style="color:#fff">objets</strong> (<code>Object</code>). Elles couvrent 90% des cas, mais elles ont des limites precises.</p>
+        <p><code>Set</code> et <code>Map</code> ont ete introduits en ES6 pour resoudre ces limites de facon native, propre et performante. Ce ne sont pas des remplacants — ce sont des complements pour des cas d'usage specifiques.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>Set</h4>
+          <p>Une collection de valeurs <strong style="color:#fff">uniques</strong>. Comme un tableau, mais il refuse automatiquement les doublons. Ideal pour stocker des identifiants, des tags, des elements selectionnes.</p>
+        </div>
+        <div class="mini-card">
+          <h4>Map</h4>
+          <p>Une collection de paires <strong style="color:#fff">cle → valeur</strong>. Comme un objet, mais les cles peuvent etre de n'importe quel type, pas seulement des chaines. Ideal pour des associations, des caches, des compteurs.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Vue d'ensemble rapide</h2><span class="s-line"></span></div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Structure</th>
+            <th>Stocke</th>
+            <th>Doublons</th>
+            <th>Type des cles</th>
+            <th>Ordre garanti</th>
+            <th>Quand l'utiliser</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-white">Array</td>
+            <td>valeurs indexees</td>
+            <td class="td-yes">Oui</td>
+            <td>index numerique</td>
+            <td class="td-yes">Oui</td>
+            <td>listes ordonnees</td>
+          </tr>
+          <tr>
+            <td class="td-white">Object</td>
+            <td>paires cle/valeur</td>
+            <td class="td-yes">Oui</td>
+            <td>string / Symbol</td>
+            <td class="td-part">Partiel</td>
+            <td>config, entites</td>
+          </tr>
+          <tr>
+            <td class="td-white" style="color:var(--red)">Set</td>
+            <td>valeurs uniques</td>
+            <td class="td-no">Non</td>
+            <td>—</td>
+            <td class="td-yes">Oui (insertion)</td>
+            <td>unicite, dedup</td>
+          </tr>
+          <tr>
+            <td class="td-white" style="color:var(--orange)">Map</td>
+            <td>paires cle/valeur</td>
+            <td class="td-yes">Oui</td>
+            <td>n'importe quel type</td>
+            <td class="td-yes">Oui (insertion)</td>
+            <td>association, cache</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════
+       TAB 02 — SET
+  ══════════════════════════════ -->
+  <div id="tab-set" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Creer un Set</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>Un <code>Set</code> s'instancie avec <code>new Set()</code>. On peut lui passer un iterable (tableau, chaine...) en argument. Tous les doublons sont automatiquement supprimes a la creation.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">set-creation.js</span>
+        </div>
+        <pre><span class="cm">// Set vide</span>
+<span class="kw">const</span> <span class="obj">monSet</span> = <span class="kw">new</span> <span class="rd">Set</span>();
+
+<span class="cm">// Set a partir d'un tableau — les doublons sont vires d'office</span>
+<span class="kw">const</span> <span class="obj">nombres</span> = <span class="kw">new</span> <span class="rd">Set</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">2</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">3</span>]);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">nombres</span>); <span class="cm">// Set(4) { 1, 2, 3, 4 }</span>
+
+<span class="cm">// Set a partir d'une chaine — chaque caractere unique</span>
+<span class="kw">const</span> <span class="obj">lettres</span> = <span class="kw">new</span> <span class="rd">Set</span>(<span class="str">"javascript"</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">lettres</span>); <span class="cm">// Set(9) { 'j', 'a', 'v', 's', 'c', 'r', 'i', 'p', 't' }</span>
+
+<span class="cm">// La propriete .size (pas .length !)</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">nombres</span>.<span class="rd">size</span>); <span class="cm">// 4</span></pre>
+      </div>
+
+      <div class="alert alert-orange">
+        <div class="alert-tag">Attention</div>
+        Un Set utilise <code>.size</code> et non <code>.length</code> comme les tableaux. C'est un piege classique a l'entretien.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Iterer sur un Set</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">set-iteration.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">tags</span> = <span class="kw">new</span> <span class="rd">Set</span>([<span class="str">"js"</span>, <span class="str">"react"</span>, <span class="str">"css"</span>, <span class="str">"html"</span>]);
+
+<span class="cm">// for...of — la facon la plus courante</span>
+<span class="kw">for</span> (<span class="kw">const</span> <span class="obj">tag</span> <span class="kw">of</span> <span class="obj">tags</span>) {
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">tag</span>); <span class="cm">// "js", "react", "css", "html"</span>
+}
+
+<span class="cm">// .forEach()</span>
+<span class="obj">tags</span>.<span class="fn">forEach</span>((<span class="obj">valeur</span>) => {
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">valeur</span>);
+});
+
+<span class="cm">// Convertir en tableau pour utiliser .map(), .filter(), etc.</span>
+<span class="kw">const</span> <span class="obj">tableau</span> = [<span class="op">...</span><span class="obj">tags</span>];      <span class="cm">// spread operator</span>
+<span class="kw">const</span> <span class="obj">tableau2</span> = <span class="obj">Array</span>.<span class="fn">from</span>(<span class="obj">tags</span>); <span class="cm">// Array.from()</span>
+
+<span class="cm">// Les deux sont equivalents</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">tableau</span>);  <span class="cm">// ["js", "react", "css", "html"]</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">03</span><h2>Cas d'usage classique — dedoublonner un tableau</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>C'est probablement la chose pour laquelle on utilise le plus Set en pratique : <strong style="color:#fff">supprimer les doublons d'un tableau en une ligne</strong>. Propre, lisible, natif.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">dedup.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">ids</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">2</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">3</span>, <span class="num">5</span>];
+
+<span class="cm">// Avant — verbose et lent</span>
+<span class="kw">const</span> <span class="obj">unique1</span> = <span class="obj">ids</span>.<span class="fn">filter</span>((<span class="obj">val</span>, <span class="obj">idx</span>, <span class="obj">arr</span>) => <span class="obj">arr</span>.<span class="fn">indexOf</span>(<span class="obj">val</span>) === <span class="obj">idx</span>);
+
+<span class="cm">// Apres — une ligne avec Set</span>
+<span class="kw">const</span> <span class="obj">unique2</span> = [<span class="op">...</span><span class="kw">new</span> <span class="rd">Set</span>(<span class="obj">ids</span>)];
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">unique2</span>); <span class="cm">// [1, 2, 3, 4, 5]</span>
+
+<span class="cm">// Meme chose avec des chaines</span>
+<span class="kw">const</span> <span class="obj">mots</span>   = [<span class="str">"js"</span>, <span class="str">"react"</span>, <span class="str">"js"</span>, <span class="str">"vue"</span>, <span class="str">"react"</span>];
+<span class="kw">const</span> <span class="obj">uniques</span> = [<span class="op">...</span><span class="kw">new</span> <span class="rd">Set</span>(<span class="obj">mots</span>)];
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">uniques</span>); <span class="cm">// ["js", "react", "vue"]</span></pre>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════
+       TAB 03 — METHODES SET
+  ══════════════════════════════ -->
+  <div id="tab-setmeth" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Toutes les methodes</h2><span class="s-line"></span></div>
+
+      <div class="method-grid">
+        <div class="method-item">
+          <span class="method-name">.add(val)</span>
+          <span class="method-desc">Ajoute une valeur. Si elle existe deja, rien ne se passe. Retourne le Set (chainable).</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name">.has(val)</span>
+          <span class="method-desc">Verifie si une valeur existe. Retourne <code>true</code> ou <code>false</code>. Tres rapide (O(1)).</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name">.delete(val)</span>
+          <span class="method-desc">Supprime une valeur. Retourne <code>true</code> si elle existait, <code>false</code> sinon.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name">.clear()</span>
+          <span class="method-desc">Vide completement le Set. Aucun retour utile.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name">.size</span>
+          <span class="method-desc">Propriete (pas methode) — nombre d'elements dans le Set.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name">.forEach(fn)</span>
+          <span class="method-desc">Itere sur chaque valeur et appelle la fonction.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name">.values()</span>
+          <span class="method-desc">Retourne un iterateur sur les valeurs. Utilisable avec <code>for...of</code>.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name">[...set]</span>
+          <span class="method-desc">Spread pour convertir en tableau et acceder aux methodes Array.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Exemples detailles</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">set-methodes.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">competences</span> = <span class="kw">new</span> <span class="rd">Set</span>([<span class="str">"js"</span>, <span class="str">"html"</span>, <span class="str">"css"</span>]);
+
+<span class="cm">// .add() — chainable</span>
+<span class="obj">competences</span>.<span class="fn">add</span>(<span class="str">"react"</span>).<span class="fn">add</span>(<span class="str">"node"</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">competences</span>); <span class="cm">// Set(5) { 'js', 'html', 'css', 'react', 'node' }</span>
+
+<span class="cm">// .add() ignore les doublons silencieusement</span>
+<span class="obj">competences</span>.<span class="fn">add</span>(<span class="str">"js"</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">competences</span>.<span class="rd">size</span>); <span class="cm">// 5, pas 6</span>
+
+<span class="cm">// .has() — verification rapide O(1)</span>
+<span class="obj">competences</span>.<span class="fn">has</span>(<span class="str">"react"</span>);  <span class="cm">// true</span>
+<span class="obj">competences</span>.<span class="fn">has</span>(<span class="str">"python"</span>); <span class="cm">// false</span>
+
+<span class="cm">// .delete() — retourne true si la valeur existait</span>
+<span class="kw">const</span> <span class="obj">supprime</span> = <span class="obj">competences</span>.<span class="fn">delete</span>(<span class="str">"html"</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">supprime</span>);     <span class="cm">// true</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">competences</span>.<span class="rd">size</span>); <span class="cm">// 4</span>
+
+<span class="cm">// Convertir + filtrer — Set n'a pas .filter() nativement</span>
+<span class="kw">const</span> <span class="obj">courtes</span> = [<span class="op">...</span><span class="obj">competences</span>].<span class="fn">filter</span>(<span class="obj">c</span> => <span class="obj">c</span>.<span class="obj">length</span> <= <span class="num">3</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">courtes</span>); <span class="cm">// ["js", "css"]</span>
+
+<span class="cm">// .clear()</span>
+<span class="obj">competences</span>.<span class="fn">clear</span>();
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">competences</span>.<span class="rd">size</span>); <span class="cm">// 0</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">03</span><h2>Operations ensemblistes</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>Set n'a pas de methodes natives pour l'union, l'intersection ou la difference, mais elles s'implementent facilement en une ligne avec le spread et les methodes de tableaux.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">set-operations.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">setA</span> = <span class="kw">new</span> <span class="rd">Set</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>]);
+<span class="kw">const</span> <span class="obj">setB</span> = <span class="kw">new</span> <span class="rd">Set</span>([<span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>]);
+
+<span class="cm">// Union — tous les elements des deux</span>
+<span class="kw">const</span> <span class="obj">union</span>        = <span class="kw">new</span> <span class="rd">Set</span>([<span class="op">...</span><span class="obj">setA</span>, <span class="op">...</span><span class="obj">setB</span>]);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">union</span>); <span class="cm">// Set { 1, 2, 3, 4, 5, 6 }</span>
+
+<span class="cm">// Intersection — elements presents dans les deux</span>
+<span class="kw">const</span> <span class="obj">inter</span>        = <span class="kw">new</span> <span class="rd">Set</span>([<span class="op">...</span><span class="obj">setA</span>].<span class="fn">filter</span>(<span class="obj">x</span> => <span class="obj">setB</span>.<span class="fn">has</span>(<span class="obj">x</span>)));
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">inter</span>); <span class="cm">// Set { 3, 4 }</span>
+
+<span class="cm">// Difference — elements de A absents de B</span>
+<span class="kw">const</span> <span class="obj">diff</span>         = <span class="kw">new</span> <span class="rd">Set</span>([<span class="op">...</span><span class="obj">setA</span>].<span class="fn">filter</span>(<span class="obj">x</span> => <span class="op">!</span><span class="obj">setB</span>.<span class="fn">has</span>(<span class="obj">x</span>)));
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">diff</span>);  <span class="cm">// Set { 1, 2 }</span></pre>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════
+       TAB 04 — MAP
+  ══════════════════════════════ -->
+  <div id="tab-map" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Creer une Map</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <p>Une <code>Map</code> s'instancie avec <code>new Map()</code>. On peut lui passer un tableau de paires <code>[cle, valeur]</code>. Contrairement a un objet, les cles peuvent etre <strong style="color:#fff">de n'importe quel type</strong> : string, number, objet, fonction...</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">map-creation.js</span>
+        </div>
+        <pre><span class="cm">// Map vide puis remplissage</span>
+<span class="kw">const</span> <span class="obj">maMap</span> = <span class="kw">new</span> <span class="og">Map</span>();
+<span class="obj">maMap</span>.<span class="fn">set</span>(<span class="str">"nom"</span>,    <span class="str">"Alice"</span>);
+<span class="obj">maMap</span>.<span class="fn">set</span>(<span class="str">"age"</span>,    <span class="num">28</span>);
+<span class="obj">maMap</span>.<span class="fn">set</span>(<span class="str">"actif"</span>,  <span class="kw">true</span>);
+
+<span class="cm">// Map a partir d'un tableau de paires [cle, valeur]</span>
+<span class="kw">const</span> <span class="obj">scores</span> = <span class="kw">new</span> <span class="og">Map</span>([
+  [<span class="str">"Alice"</span>, <span class="num">95</span>],
+  [<span class="str">"Bob"</span>,   <span class="num">87</span>],
+  [<span class="str">"Clara"</span>, <span class="num">91</span>]
+]);
+
+<span class="cm">// .size — nombre de paires</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">scores</span>.<span class="og">size</span>); <span class="cm">// 3</span>
+
+<span class="cm">// Cles de n'importe quel type — IMPOSSIBLE avec un objet !</span>
+<span class="kw">const</span> <span class="obj">objKey</span>  = { id: <span class="num">1</span> };
+<span class="kw">const</span> <span class="obj">fnKey</span>   = () => {};
+<span class="kw">const</span> <span class="obj">mapAvec</span> = <span class="kw">new</span> <span class="og">Map</span>();
+
+<span class="obj">mapAvec</span>.<span class="fn">set</span>(<span class="obj">objKey</span>, <span class="str">"un objet comme cle"</span>);
+<span class="obj">mapAvec</span>.<span class="fn">set</span>(<span class="obj">fnKey</span>,  <span class="str">"une fonction comme cle"</span>);
+<span class="obj">mapAvec</span>.<span class="fn">set</span>(<span class="num">42</span>,     <span class="str">"un nombre comme cle"</span>);
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">mapAvec</span>.<span class="fn">get</span>(<span class="obj">objKey</span>)); <span class="cm">// "un objet comme cle"</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Iterer sur une Map</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">map-iteration.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">scores</span> = <span class="kw">new</span> <span class="og">Map</span>([
+  [<span class="str">"Alice"</span>, <span class="num">95</span>], [<span class="str">"Bob"</span>, <span class="num">87</span>], [<span class="str">"Clara"</span>, <span class="num">91</span>]
+]);
+
+<span class="cm">// for...of avec destructuration [cle, valeur]</span>
+<span class="kw">for</span> (<span class="kw">const</span> [<span class="obj">nom</span>, <span class="obj">score</span>] <span class="kw">of</span> <span class="obj">scores</span>) {
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">`<span class="obj">${nom}</span> : <span class="obj">${score}</span>`</span>);
+}
+<span class="cm">// "Alice : 95"  "Bob : 87"  "Clara : 91"</span>
+
+<span class="cm">// .forEach(valeur, cle) — ATTENTION : valeur avant cle !</span>
+<span class="obj">scores</span>.<span class="fn">forEach</span>((<span class="obj">score</span>, <span class="obj">nom</span>) => {
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">nom</span>, <span class="str">"->"</span>, <span class="obj">score</span>);
+});
+
+<span class="cm">// Iterer sur les cles ou valeurs separement</span>
+<span class="kw">for</span> (<span class="kw">const</span> <span class="obj">cle</span>    <span class="kw">of</span> <span class="obj">scores</span>.<span class="fn">keys</span>())   { <span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">cle</span>); }
+<span class="kw">for</span> (<span class="kw">const</span> <span class="obj">valeur</span> <span class="kw">of</span> <span class="obj">scores</span>.<span class="fn">values</span>()) { <span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">valeur</span>); }
+
+<span class="cm">// Convertir en tableau de paires</span>
+<span class="kw">const</span> <span class="obj">paires</span> = [<span class="op">...</span><span class="obj">scores</span>];
+<span class="cm">// [ ["Alice", 95], ["Bob", 87], ["Clara", 91] ]</span></pre>
+      </div>
+
+      <div class="alert alert-orange">
+        <div class="alert-tag">Piege classique</div>
+        Dans <code>.forEach()</code>, l'ordre des parametres est <code>(valeur, cle)</code> et non <code>(cle, valeur)</code>. C'est l'inverse de ce qu'on attendrait intuitivement.
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════
+       TAB 05 — METHODES MAP
+  ══════════════════════════════ -->
+  <div id="tab-mapmeth" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Toutes les methodes</h2><span class="s-line"></span></div>
+
+      <div class="method-grid">
+        <div class="method-item">
+          <span class="method-name" style="color:var(--orange)">.set(k, v)</span>
+          <span class="method-desc">Ajoute ou met a jour une paire cle/valeur. Retourne la Map (chainable).</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name" style="color:var(--orange)">.get(k)</span>
+          <span class="method-desc">Recupere la valeur associee a la cle. Retourne <code>undefined</code> si la cle n'existe pas.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name" style="color:var(--orange)">.has(k)</span>
+          <span class="method-desc">Verifie si une cle existe. Retourne <code>true</code> ou <code>false</code>. Complexite O(1).</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name" style="color:var(--orange)">.delete(k)</span>
+          <span class="method-desc">Supprime la paire associee a la cle. Retourne <code>true</code> si la cle existait.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name" style="color:var(--orange)">.clear()</span>
+          <span class="method-desc">Vide completement la Map.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name" style="color:var(--orange)">.size</span>
+          <span class="method-desc">Propriete — nombre de paires cle/valeur.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name" style="color:var(--orange)">.keys()</span>
+          <span class="method-desc">Iterateur sur les cles dans l'ordre d'insertion.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name" style="color:var(--orange)">.values()</span>
+          <span class="method-desc">Iterateur sur les valeurs dans l'ordre d'insertion.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name" style="color:var(--orange)">.entries()</span>
+          <span class="method-desc">Iterateur sur les paires <code>[cle, valeur]</code>. Equivalent de boucler sur la Map.</span>
+        </div>
+        <div class="method-item">
+          <span class="method-name" style="color:var(--orange)">.forEach(fn)</span>
+          <span class="method-desc">Itere avec un callback. Ordre des params : <code>(valeur, cle, map)</code>.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Exemples detailles</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">map-methodes.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">cache</span> = <span class="kw">new</span> <span class="og">Map</span>();
+
+<span class="cm">// .set() — chainable</span>
+<span class="obj">cache</span>
+  .<span class="fn">set</span>(<span class="str">"user:1"</span>, { nom: <span class="str">"Alice"</span>, age: <span class="num">28</span> })
+  .<span class="fn">set</span>(<span class="str">"user:2"</span>, { nom: <span class="str">"Bob"</span>,   age: <span class="num">32</span> });
+
+<span class="cm">// .get() — recuperer une valeur</span>
+<span class="kw">const</span> <span class="obj">alice</span> = <span class="obj">cache</span>.<span class="fn">get</span>(<span class="str">"user:1"</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">alice</span>); <span class="cm">// { nom: "Alice", age: 28 }</span>
+
+<span class="cm">// .get() sur une cle inexistante → undefined, pas d'erreur</span>
+<span class="obj">cache</span>.<span class="fn">get</span>(<span class="str">"user:999"</span>); <span class="cm">// undefined</span>
+
+<span class="cm">// .has() — verifier avant de lire pour eviter undefined</span>
+<span class="kw">if</span> (<span class="obj">cache</span>.<span class="fn">has</span>(<span class="str">"user:1"</span>)) {
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"En cache !"</span>, <span class="obj">cache</span>.<span class="fn">get</span>(<span class="str">"user:1"</span>));
+}
+
+<span class="cm">// .set() met a jour si la cle existe deja</span>
+<span class="obj">cache</span>.<span class="fn">set</span>(<span class="str">"user:1"</span>, { nom: <span class="str">"Alice"</span>, age: <span class="num">29</span> }); <span class="cm">// mise a jour</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">cache</span>.<span class="og">size</span>); <span class="cm">// 2, pas 3</span>
+
+<span class="cm">// .delete()</span>
+<span class="obj">cache</span>.<span class="fn">delete</span>(<span class="str">"user:2"</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">cache</span>.<span class="og">size</span>); <span class="cm">// 1</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">03</span><h2>Map vers Object et Object vers Map</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">conversion.js</span>
+        </div>
+        <pre><span class="cm">// Object → Map</span>
+<span class="kw">const</span> <span class="obj">config</span> = { host: <span class="str">"localhost"</span>, port: <span class="num">3000</span>, debug: <span class="kw">true</span> };
+<span class="kw">const</span> <span class="obj">configMap</span> = <span class="kw">new</span> <span class="og">Map</span>(<span class="obj">Object</span>.<span class="fn">entries</span>(<span class="obj">config</span>));
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">configMap</span>); <span class="cm">// Map { 'host' => 'localhost', 'port' => 3000, ... }</span>
+
+<span class="cm">// Map → Object</span>
+<span class="kw">const</span> <span class="obj">maMap</span>   = <span class="kw">new</span> <span class="og">Map</span>([[ <span class="str">"a"</span>, <span class="num">1</span>], [<span class="str">"b"</span>, <span class="num">2</span>]]);
+<span class="kw">const</span> <span class="obj">monObjet</span> = <span class="obj">Object</span>.<span class="fn">fromEntries</span>(<span class="obj">maMap</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">monObjet</span>); <span class="cm">// { a: 1, b: 2 }</span>
+
+<span class="cm">// Map → Array de paires</span>
+<span class="kw">const</span> <span class="obj">paires</span> = [<span class="op">...</span><span class="obj">maMap</span>]; <span class="cm">// ou Array.from(maMap)</span>
+<span class="cm">// [ ['a', 1], ['b', 2] ]</span></pre>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════
+       TAB 06 — VS CLASSIQUES
+  ══════════════════════════════ -->
+  <div id="tab-vsclassic" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Set vs Array</h2><span class="s-line"></span></div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Operation</th>
+            <th>Array</th>
+            <th>Set</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Verifier l'existence d'une valeur</td>
+            <td><code>.includes(v)</code> — O(n) lent sur grands tableaux</td>
+            <td class="td-yes"><code>.has(v)</code> — O(1) toujours rapide</td>
+          </tr>
+          <tr>
+            <td>Ajouter une valeur unique</td>
+            <td>Verifier + push — 2 etapes</td>
+            <td class="td-yes"><code>.add(v)</code> — 1 etape, gere les doublons</td>
+          </tr>
+          <tr>
+            <td>Supprimer une valeur</td>
+            <td><code>.filter()</code> — cree un nouveau tableau</td>
+            <td class="td-yes"><code>.delete(v)</code> — en place, direct</td>
+          </tr>
+          <tr>
+            <td>Acces par index</td>
+            <td class="td-yes"><code>arr[2]</code> — oui</td>
+            <td class="td-no">Non — Set n'a pas d'index</td>
+          </tr>
+          <tr>
+            <td>Doublons</td>
+            <td class="td-no">Oui — gestion manuelle</td>
+            <td class="td-yes">Non — automatique</td>
+          </tr>
+          <tr>
+            <td>.map() .filter() .reduce()</td>
+            <td class="td-yes">Oui — natif</td>
+            <td class="td-no">Non — convertir en tableau d'abord</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-green">
+        <div class="alert-tag">Quand choisir Set</div>
+        Quand tu as besoin d'unicite et/ou de verifications rapides d'existence. Autrement, garde un tableau.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Map vs Object</h2><span class="s-line"></span></div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Caracteristique</th>
+            <th>Object</th>
+            <th>Map</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Type des cles</td>
+            <td>String ou Symbol uniquement</td>
+            <td class="td-yes">N'importe quel type</td>
+          </tr>
+          <tr>
+            <td>Ordre des cles</td>
+            <td class="td-part">Partiel (strings numeriques d'abord)</td>
+            <td class="td-yes">Ordre d'insertion garanti</td>
+          </tr>
+          <tr>
+            <td>Compter les entrees</td>
+            <td><code>Object.keys(o).length</code> — verbose</td>
+            <td class="td-yes"><code>map.size</code> — direct</td>
+          </tr>
+          <tr>
+            <td>Cles heritees</td>
+            <td class="td-no">Oui — heritage du prototype</td>
+            <td class="td-yes">Non — seulement les cles definies</td>
+          </tr>
+          <tr>
+            <td>Performances (lectures/ecritures frequentes)</td>
+            <td class="td-part">Correct</td>
+            <td class="td-yes">Meilleur sur de nombreuses ops</td>
+          </tr>
+          <tr>
+            <td>Serialisation JSON</td>
+            <td class="td-yes"><code>JSON.stringify()</code> natif</td>
+            <td class="td-no">Pas natif — convertir d'abord</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-blue">
+        <div class="alert-tag">Quand choisir Map</div>
+        Quand les cles ne sont pas des strings, quand tu fais de nombreuses ajouts/suppressions, ou quand tu as besoin d'ordre d'insertion garanti. Pour des donnees statiques, garde un objet.
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════
+       TAB 07 — CAS REELS
+  ══════════════════════════════ -->
+  <div id="tab-pratique" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Set — gestion d'elements selectionnes</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">selection-set.js</span>
+        </div>
+        <pre><span class="cm">// Panier de produits — chaque produit ne peut etre qu'une fois</span>
+<span class="kw">const</span> <span class="obj">panier</span> = <span class="kw">new</span> <span class="rd">Set</span>();
+
+<span class="kw">function</span> <span class="fn">toggleProduit</span>(<span class="obj">id</span>) {
+  <span class="kw">if</span> (<span class="obj">panier</span>.<span class="fn">has</span>(<span class="obj">id</span>)) {
+    <span class="obj">panier</span>.<span class="fn">delete</span>(<span class="obj">id</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">`Produit <span class="obj">${id}</span> retire du panier`</span>);
+  } <span class="kw">else</span> {
+    <span class="obj">panier</span>.<span class="fn">add</span>(<span class="obj">id</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">`Produit <span class="obj">${id}</span> ajoute au panier`</span>);
+  }
+}
+
+<span class="fn">toggleProduit</span>(<span class="str">"prod-1"</span>); <span class="cm">// ajoute</span>
+<span class="fn">toggleProduit</span>(<span class="str">"prod-2"</span>); <span class="cm">// ajoute</span>
+<span class="fn">toggleProduit</span>(<span class="str">"prod-1"</span>); <span class="cm">// retire</span>
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Panier :"</span>, [<span class="op">...</span><span class="obj">panier</span>]); <span class="cm">// ["prod-2"]</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Total :"</span>, <span class="obj">panier</span>.<span class="rd">size</span>);    <span class="cm">// 1</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Map — cache de resultats API</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">cache-map.js</span>
+        </div>
+        <pre><span class="cm">// Cache pour eviter des appels API redondants</span>
+<span class="kw">const</span> <span class="obj">userCache</span> = <span class="kw">new</span> <span class="og">Map</span>();
+
+<span class="kw">async function</span> <span class="fn">getUser</span>(<span class="obj">id</span>) {
+
+  <span class="cm">// Verifier si deja en cache</span>
+  <span class="kw">if</span> (<span class="obj">userCache</span>.<span class="fn">has</span>(<span class="obj">id</span>)) {
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">`Cache hit pour id=<span class="obj">${id}</span>`</span>);
+    <span class="kw">return</span> <span class="obj">userCache</span>.<span class="fn">get</span>(<span class="obj">id</span>);
+  }
+
+  <span class="cm">// Sinon, appel API</span>
+  <span class="kw">const</span> <span class="obj">res</span>  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://jsonplaceholder.typicode.com/users/<span class="obj">${id}</span>`</span>);
+  <span class="kw">const</span> <span class="obj">data</span> = <span class="kw">await</span> <span class="obj">res</span>.<span class="fn">json</span>();
+
+  <span class="cm">// Stocker en cache pour la prochaine fois</span>
+  <span class="obj">userCache</span>.<span class="fn">set</span>(<span class="obj">id</span>, <span class="obj">data</span>);
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">`Fetch API pour id=<span class="obj">${id}</span>`</span>);
+
+  <span class="kw">return</span> <span class="obj">data</span>;
+}
+
+<span class="kw">await</span> <span class="fn">getUser</span>(<span class="num">1</span>); <span class="cm">// Fetch API</span>
+<span class="kw">await</span> <span class="fn">getUser</span>(<span class="num">1</span>); <span class="cm">// Cache hit — pas de requete reseau</span>
+<span class="kw">await</span> <span class="fn">getUser</span>(<span class="num">2</span>); <span class="cm">// Fetch API</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">03</span><h2>Map — compteur de frequences</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">compteur-map.js</span>
+        </div>
+        <pre><span class="cm">// Compter la frequence de chaque valeur dans un tableau</span>
+<span class="kw">const</span> <span class="obj">langues</span> = [<span class="str">"js"</span>, <span class="str">"php"</span>, <span class="str">"js"</span>, <span class="str">"python"</span>, <span class="str">"js"</span>, <span class="str">"php"</span>, <span class="str">"rust"</span>];
+
+<span class="kw">const</span> <span class="obj">compteur</span> = <span class="kw">new</span> <span class="og">Map</span>();
+
+<span class="kw">for</span> (<span class="kw">const</span> <span class="obj">lang</span> <span class="kw">of</span> <span class="obj">langues</span>) {
+  <span class="cm">// .get() retourne undefined si absent → ?? 0 pour initialiser</span>
+  <span class="kw">const</span> <span class="obj">actuel</span> = <span class="obj">compteur</span>.<span class="fn">get</span>(<span class="obj">lang</span>) <span class="op">??</span> <span class="num">0</span>;
+  <span class="obj">compteur</span>.<span class="fn">set</span>(<span class="obj">lang</span>, <span class="obj">actuel</span> + <span class="num">1</span>);
+}
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">compteur</span>);
+<span class="cm">// Map { 'js' => 3, 'php' => 2, 'python' => 1, 'rust' => 1 }</span>
+
+<span class="cm">// Trouver la langue la plus utilisee</span>
+<span class="kw">let</span> <span class="obj">max</span> = <span class="str">""</span>, <span class="obj">maxVal</span> = <span class="num">0</span>;
+<span class="kw">for</span> (<span class="kw">const</span> [<span class="obj">lang</span>, <span class="obj">nb</span>] <span class="kw">of</span> <span class="obj">compteur</span>) {
+  <span class="kw">if</span> (<span class="obj">nb</span> > <span class="obj">maxVal</span>) { <span class="obj">max</span> = <span class="obj">lang</span>; <span class="obj">maxVal</span> = <span class="obj">nb</span>; }
+}
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="str">`Plus populaire : <span class="obj">${max}</span> (<span class="obj">${maxVal}</span> fois)`</span>); <span class="cm">// js (3 fois)</span></pre>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════
+       TAB 08 — EXERCICE
+  ══════════════════════════════ -->
+  <div id="tab-exercice" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">Exercice</span><h2>Mets en pratique</h2><span class="s-line"></span></div>
+
+      <div class="card">
+        <h3>Objectif</h3>
+        <p>Tu vas travailler avec l'API JSONPlaceholder. On va recuperer une liste de posts, puis utiliser <code>Set</code> et <code>Map</code> pour analyser et organiser ces donnees.</p>
+      </div>
+
+      <div class="alert alert-blue">
+        <div class="alert-tag">API</div>
+        <code>https://jsonplaceholder.typicode.com/posts</code> — retourne 100 posts avec <code>userId</code>, <code>id</code>, <code>title</code>, <code>body</code>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">01</span><h2>Consignes</h2><span class="s-line"></span></div>
+
+      <ul class="checklist">
+        <li>Fetcher les 100 posts de l'API avec async/await</li>
+        <li>Utiliser un <strong style="color:#fff">Set</strong> pour extraire la liste des userId uniques presents dans les posts</li>
+        <li>Utiliser une <strong style="color:#fff">Map</strong> pour regrouper les posts par userId (cle = userId, valeur = tableau de posts)</li>
+        <li>Afficher combien de posts chaque utilisateur a publies</li>
+        <li>Bonus : trouver l'utilisateur avec le plus de posts en iterant sur la Map</li>
+        <li>Bonus 2 : utiliser <code>??</code> et <code>?.</code> pour securiser tous les acces aux proprietes</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">02</span><h2>Starter</h2><span class="s-line"></span></div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">exercice-starter.js</span>
+        </div>
+        <pre><span class="kw">async function</span> <span class="fn">analyserPosts</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> <span class="obj">res</span>   = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://jsonplaceholder.typicode.com/posts"</span>);
+    <span class="kw">const</span> <span class="obj">posts</span> = <span class="kw">await</span> <span class="obj">res</span>.<span class="fn">json</span>();
+
+    <span class="cm">// TODO 1 : utiliser un Set pour extraire les userIds uniques</span>
+    <span class="kw">const</span> <span class="obj">userIds</span> = <span class="cm">/* ... */</span>;
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Nombre d'utilisateurs :"</span>, <span class="cm">/* ... */</span>);
+
+    <span class="cm">// TODO 2 : utiliser une Map pour regrouper les posts par userId</span>
+    <span class="cm">// cle = userId, valeur = tableau de posts</span>
+    <span class="kw">const</span> <span class="obj">postsByUser</span> = <span class="kw">new</span> <span class="og">Map</span>();
+
+    <span class="kw">for</span> (<span class="kw">const</span> <span class="obj">post</span> <span class="kw">of</span> <span class="obj">posts</span>) {
+      <span class="cm">// TODO : ajouter le post dans la bonne entree de la Map</span>
+    }
+
+    <span class="cm">// TODO 3 : afficher le nombre de posts par utilisateur</span>
+    <span class="kw">for</span> (<span class="kw">const</span> [<span class="obj">userId</span>, <span class="obj">userPosts</span>] <span class="kw">of</span> <span class="obj">postsByUser</span>) {
+      <span class="obj">console</span>.<span class="fn">log</span>(<span class="cm">/* ... */</span>);
+    }
+
+    <span class="cm">// TODO 4 (bonus) : trouver l'utilisateur avec le plus de posts</span>
+
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="obj">console</span>.<span class="fn">error</span>(<span class="obj">err</span><span class="op">?.</span><span class="obj">message</span> <span class="op">??</span> <span class="str">"Erreur inconnue"</span>);
+  }
+}
+
+<span class="fn">analyserPosts</span>();</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label"><span class="s-num">03</span><h2>Correction</h2><span class="s-line"></span></div>
+
+      <div class="alert alert-red">
+        <div class="alert-tag">A lire seulement apres avoir essaye</div>
+        C'est en faisant des erreurs qu'on apprend le mieux.
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">correction.js</span>
+        </div>
+        <pre><span class="kw">async function</span> <span class="fn">analyserPosts</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> <span class="obj">res</span>   = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://jsonplaceholder.typicode.com/posts"</span>);
+    <span class="kw">const</span> <span class="obj">posts</span> = <span class="kw">await</span> <span class="obj">res</span>.<span class="fn">json</span>();
+
+    <span class="cm">// 1. Set des userIds uniques</span>
+    <span class="kw">const</span> <span class="obj">userIds</span> = <span class="kw">new</span> <span class="rd">Set</span>(<span class="obj">posts</span>.<span class="fn">map</span>((<span class="obj">p</span>) => <span class="obj">p</span><span class="op">?.</span><span class="obj">userId</span> <span class="op">??</span> <span class="num">0</span>));
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Utilisateurs uniques :"</span>, <span class="obj">userIds</span>.<span class="rd">size</span>); <span class="cm">// 10</span>
+
+    <span class="cm">// 2. Map userId → tableau de posts</span>
+    <span class="kw">const</span> <span class="obj">postsByUser</span> = <span class="kw">new</span> <span class="og">Map</span>();
+
+    <span class="kw">for</span> (<span class="kw">const</span> <span class="obj">post</span> <span class="kw">of</span> <span class="obj">posts</span>) {
+      <span class="kw">const</span> <span class="obj">uid</span>     = <span class="obj">post</span><span class="op">?.</span><span class="obj">userId</span> <span class="op">??</span> <span class="num">0</span>;
+      <span class="kw">const</span> <span class="obj">existant</span> = <span class="obj">postsByUser</span>.<span class="fn">get</span>(<span class="obj">uid</span>) <span class="op">??</span> [];
+      <span class="obj">postsByUser</span>.<span class="fn">set</span>(<span class="obj">uid</span>, [...<span class="obj">existant</span>, <span class="obj">post</span>]);
+    }
+
+    <span class="cm">// 3. Afficher les stats</span>
+    <span class="kw">for</span> (<span class="kw">const</span> [<span class="obj">userId</span>, <span class="obj">userPosts</span>] <span class="kw">of</span> <span class="obj">postsByUser</span>) {
+      <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">`User <span class="obj">${userId}</span> : <span class="obj">${userPosts.length}</span> posts`</span>);
+    }
+
+    <span class="cm">// BONUS — utilisateur avec le plus de posts</span>
+    <span class="kw">let</span> <span class="obj">topUser</span> = <span class="kw">null</span>, <span class="obj">topCount</span> = <span class="num">0</span>;
+
+    <span class="kw">for</span> (<span class="kw">const</span> [<span class="obj">userId</span>, <span class="obj">userPosts</span>] <span class="kw">of</span> <span class="obj">postsByUser</span>) {
+      <span class="kw">if</span> (<span class="obj">userPosts</span>.<span class="obj">length</span> > <span class="obj">topCount</span>) {
+        <span class="obj">topUser</span>  = <span class="obj">userId</span>;
+        <span class="obj">topCount</span> = <span class="obj">userPosts</span>.<span class="obj">length</span>;
+      }
+    }
+
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">`Top auteur : User <span class="obj">${topUser}</span> avec <span class="obj">${topCount}</span> posts`</span>);
+
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="obj">console</span>.<span class="fn">error</span>(<span class="str">"Erreur :"</span>, <span class="obj">err</span><span class="op">?.</span><span class="obj">message</span> <span class="op">??</span> <span class="str">"inconnue"</span>);
+  }
+}
+
+<span class="fn">analyserPosts</span>();</pre>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /.wrapper -->
+
+<footer>
+  Real Conseil &nbsp;&middot;&nbsp; Support JS — Etape 4 / 5 &nbsp;&middot;&nbsp; Set &amp; Map
+</footer>
+
+<script>
+  function showTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+    document.querySelector('.tabs-nav').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+
+<script src="../Cursor.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Déstructuration JS — Support de cours</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:       #050505;
+      --surface:  #0d0d0d;
+      --surface2: #111111;
+      --surface3: #181818;
+      --border:   #1e1e1e;
+      --border2:  #252525;
+      --green:    #44D62C;
+      --green-dim:#2a8a1a;
+      --green-glow: rgba(68,214,44,0.15);
+      --green-glow2: rgba(68,214,44,0.06);
+      --text:     #e0e0e0;
+      --muted:    #555;
+      --muted2:   #888;
+      --code-bg:  #080808;
+      --red:      #e63c3c;
+      --blue:     #3c9ee6;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* 
+       HEADER
+     */
+    header {
+      position: relative;
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(68,214,44,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Razer-style corner accents */
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--green) 30%, var(--green) 70%, transparent 100%);
+      opacity: 0.4;
+    }
+
+    .header-inner { position: relative; z-index: 1; }
+
+    .eyebrow {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--green);
+      border: 1px solid var(--green-dim);
+      padding: 0.3rem 1rem;
+      margin-bottom: 1.5rem;
+      background: var(--green-glow2);
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      line-height: 1.05;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    h1 .accent {
+      color: var(--green);
+      text-shadow: 0 0 30px rgba(68,214,44,0.5);
+    }
+
+    .subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted2);
+      letter-spacing: 0.12em;
+    }
+
+    /* ═
+       LAYOUT
+    ═*/
+    .wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* 
+       TABS NAV
+     */
+    .tabs-nav {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border2);
+      margin-top: 2.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      position: relative;
+    }
+
+    .tabs-nav::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.85rem 1.4rem;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.02); }
+
+    .tab-btn.active {
+      color: var(--green);
+      border-bottom-color: var(--green);
+      background: var(--green-glow2);
+    }
+
+    .tab-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--green-dim);
+      margin-right: 0.4rem;
+    }
+
+    /* 
+       TAB PANELS
+    */
+    .tab-panel { display: none; }
+    .tab-panel.active {
+      display: block;
+      animation: slideIn 0.25s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 
+       SECTION TITLES
+  */
+    .section { margin-top: 2.75rem; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-label h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #fff;
+    }
+
+    .s-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      background: var(--green-glow);
+      border: 1px solid var(--green-dim);
+      color: var(--green);
+      padding: 0.2rem 0.55rem;
+      letter-spacing: 0.05em;
+    }
+
+    .s-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border2), transparent);
+    }
+
+    /* 
+       CONCEPT CARDS
+     */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--green);
+      opacity: 0.5;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.6rem;
+      color: #fff;
+    }
+
+    .card p {
+      color: var(--muted2);
+      font-size: 0.93rem;
+      line-height: 1.75;
+    }
+
+    .card p + p { margin-top: 0.6rem; }
+
+    /* 
+       ALERTS
+     */
+    .alert {
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      border-left: 3px solid;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .alert-tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.4rem;
+      font-weight: 700;
+    }
+
+    .alert-green {
+      border-color: var(--green);
+      background: var(--green-glow2);
+      color: #9ee891;
+    }
+    .alert-green .alert-tag { color: var(--green); }
+
+    .alert-red {
+      border-color: var(--red);
+      background: rgba(230,60,60,0.05);
+      color: #e89393;
+    }
+    .alert-red .alert-tag { color: var(--red); }
+
+    .alert-blue {
+      border-color: var(--blue);
+      background: rgba(60,158,230,0.05);
+      color: #93c9e8;
+    }
+    .alert-blue .alert-tag { color: var(--blue); }
+
+    /* 
+       MAC CODE BLOCKS
+    */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border2);
+      border-radius: 0;
+      overflow: hidden;
+      margin: 1.25rem 0;
+      position: relative;
+    }
+
+    /* Razer glow line on top */
+    .code-block::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--green-dim), transparent);
+      opacity: 0.6;
+    }
+
+    .code-header {
+      background: #0f0f0f;
+      border-bottom: 1px solid var(--border2);
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .mac-dots { display: flex; gap: 6px; align-items: center; }
+    .mac-dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+
+    .code-filename {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    pre {
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.8;
+      color: #b0bec5;
+    }
+
+    /* Syntax colors */
+    .kw  { color: #c792ea; }
+    .fn  { color: #82aaff; }
+    .str { color: #c3e88d; }
+    .num { color: #f78c6c; }
+    .cm  { color: #3a4a52; font-style: italic; }
+    .obj { color: #ffcb6b; }
+    .op  { color: #89ddff; }
+    .grn { color: var(--green); font-weight: 700; }
+    .red { color: var(--red); }
+
+    /* ═
+       GRIDS
+     */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 1.25rem 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin: 1.25rem 0;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* Compare columns */
+    .compare-col h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.5rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-bottom: none;
+    }
+    .compare-col h4.good { color: var(--green); border-color: var(--green-dim); background: var(--green-glow2); }
+    .compare-col h4.bad  { color: var(--red);   border-color: rgba(230,60,60,0.3); background: rgba(230,60,60,0.04); }
+    .compare-col .code-block { margin: 0; border-top: none; }
+
+    /* Mini cards */
+    .mini-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      padding: 1.25rem;
+      position: relative;
+    }
+
+    .mini-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--green), transparent);
+      opacity: 0.3;
+    }
+
+    .mini-card h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.6rem;
+      color: var(--green);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .mini-card p {
+      font-size: 0.88rem;
+      color: var(--muted2);
+      line-height: 1.65;
+    }
+
+    /* ═
+       CHECKLIST
+    */
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--muted2);
+      line-height: 1.5;
+    }
+    .checklist li:last-child { border: none; }
+    .checklist li::before {
+      content: '>';
+      color: var(--green);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    /* ══
+       DIVIDER
+     */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    /* 
+       STEP TRACKER (sticky)
+ */
+    .step-tracker {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(5,5,5,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+
+    .step-tracker .prog { color: var(--green); }
+
+    .step-pills {
+      display: flex;
+      gap: 0.4rem;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+
+    .step-pill {
+      padding: 0.2rem 0.6rem;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid var(--border2);
+      color: var(--muted);
+    }
+
+    .step-pill.done { border-color: var(--green-dim); color: var(--green); background: var(--green-glow2); }
+    .step-pill.current { border-color: var(--green); color: var(--green); background: var(--green-glow); }
+
+    /* ═
+       FOOTER
+     */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ═
+       RESPONSIVE
+*/
+    @media (max-width: 600px) {
+      header { padding: 2.5rem 1rem 2rem; }
+      .wrapper { padding: 0 1rem 3rem; }
+      .tab-btn { padding: 0.7rem 0.9rem; font-size: 0.8rem; }
+      pre { font-size: 0.73rem; padding: 1rem; }
+      .step-tracker { display: none; }
+      .card { clip-path: none; }
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82em;
+      color: var(--green);
+      background: var(--green-glow2);
+      padding: 0.1em 0.4em;
+    }
+  </style>
+</head>
+<body>
+
+<!-- STEP TRACKER -->
+<div class="step-tracker">
+  <span class="prog">ETAPE 2 / 5</span>
+  <span>—</span>
+  <span>Destructuration JS</span>
+  <div class="step-pills">
+    <span class="step-pill done">01 · Promises</span>
+    <span class="step-pill current">02 · Destructuration</span>
+    <span class="step-pill">03 · ?. / ??</span>
+    <span class="step-pill">04 · Set / Map</span>
+    <span class="step-pill">05 · Entretien</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="eyebrow">Support de cours — Etape 2</div>
+    <h1>La <span class="accent">Destructuration</span></h1>
+    <p class="subtitle">Tableaux · Objets · Renommage · Valeurs par defaut · Imbriquee</p>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="wrapper">
+
+  <!-- TABS NAV -->
+  <nav class="tabs-nav">
+    <button class="tab-btn active" onclick="showTab('intro', this)">
+      <span class="tab-num">01</span> C'est quoi
+    </button>
+    <button class="tab-btn" onclick="showTab('tableaux', this)">
+      <span class="tab-num">02</span> Tableaux
+    </button>
+    <button class="tab-btn" onclick="showTab('objets', this)">
+      <span class="tab-num">03</span> Objets
+    </button>
+    <button class="tab-btn" onclick="showTab('avance', this)">
+      <span class="tab-num">04</span> Renommage & Defaut
+    </button>
+    <button class="tab-btn" onclick="showTab('imbrique', this)">
+      <span class="tab-num">05</span> Imbriquee
+    </button>
+    <button class="tab-btn" onclick="showTab('pratique', this)">
+      <span class="tab-num">06</span> Cas reels
+    </button>
+    <button class="tab-btn" onclick="showTab('exercice', this)">
+      <span class="tab-num">07</span> Exercice
+    </button>
+  </nav>
+
+  <!-- 
+       TAB 01 — INTRO
+-->
+  <div id="tab-intro" class="tab-panel active">
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">01</span>
+        <h2>Pourquoi ca existe</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <p>La destructuration est une syntaxe qui permet d'<strong style="color:#fff">extraire des valeurs</strong> d'un tableau ou d'un objet et de les affecter directement a des variables, en une seule ligne.</p>
+        <p>C'est fondamental en JS moderne : React, les APIs, Node.js — tu la retrouves partout. Sans elle, le code devient verbeux et difficile a lire.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">02</span>
+        <h2>Avant / Apres</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="grid-2">
+        <div class="compare-col">
+          <h4 class="bad">Avant — sans destructuration</h4>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+              <span class="code-filename">avant.js</span>
+            </div>
+            <pre><span class="kw">const</span> <span class="obj">user</span> = {
+  nom: <span class="str">"Alice"</span>,
+  age: <span class="num">28</span>,
+  ville: <span class="str">"Lyon"</span>
+};
+
+<span class="cm">// Recuperer chaque propriete separement</span>
+<span class="kw">const</span> <span class="obj">nom</span>   = <span class="obj">user</span>.<span class="obj">nom</span>;
+<span class="kw">const</span> <span class="obj">age</span>   = <span class="obj">user</span>.<span class="obj">age</span>;
+<span class="kw">const</span> <span class="obj">ville</span> = <span class="obj">user</span>.<span class="obj">ville</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">nom</span>, <span class="obj">age</span>, <span class="obj">ville</span>);
+<span class="cm">// "Alice" 28 "Lyon"</span></pre>
+          </div>
+        </div>
+        <div class="compare-col">
+          <h4 class="good">Apres — avec destructuration</h4>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+              <span class="code-filename">apres.js</span>
+            </div>
+            <pre><span class="kw">const</span> <span class="obj">user</span> = {
+  nom: <span class="str">"Alice"</span>,
+  age: <span class="num">28</span>,
+  ville: <span class="str">"Lyon"</span>
+};
+
+<span class="cm">// Tout en une seule ligne</span>
+<span class="kw">const</span> { <span class="grn">nom</span>, <span class="grn">age</span>, <span class="grn">ville</span> } = <span class="obj">user</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">nom</span>, <span class="obj">age</span>, <span class="obj">ville</span>);
+<span class="cm">// "Alice" 28 "Lyon"</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">03</span>
+        <h2>Les deux formes</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>Destructuration d'objet</h4>
+          <p>Utilise des <strong style="color:#fff">accolades</strong> <code>{ }</code>. On extrait par le <strong style="color:#fff">nom des proprietes</strong>.</p>
+        </div>
+        <div class="mini-card">
+          <h4>Destructuration de tableau</h4>
+          <p>Utilise des <strong style="color:#fff">crochets</strong> <code>[ ]</code>. On extrait par la <strong style="color:#fff">position</strong> (index).</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =
+       TAB 02 — TABLEAUX
+-->
+  <div id="tab-tableaux" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">01</span>
+        <h2>Principe de base</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <p>Avec un tableau, la destructuration extrait les valeurs selon leur <strong style="color:#fff">position</strong>. Le premier crochet = index 0, le deuxieme = index 1, etc.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">tableau-base.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">couleurs</span> = [<span class="str">"rouge"</span>, <span class="str">"vert"</span>, <span class="str">"bleu"</span>];
+
+<span class="cm">// Sans destructuration</span>
+<span class="kw">const</span> <span class="obj">c1</span> = <span class="obj">couleurs</span>[<span class="num">0</span>]; <span class="cm">// "rouge"</span>
+<span class="kw">const</span> <span class="obj">c2</span> = <span class="obj">couleurs</span>[<span class="num">1</span>]; <span class="cm">// "vert"</span>
+
+<span class="cm">// Avec destructuration — tu choisis le nom librement</span>
+<span class="kw">const</span> [<span class="grn">premiere</span>, <span class="grn">deuxieme</span>, <span class="grn">troisieme</span>] = <span class="obj">couleurs</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">premiere</span>);  <span class="cm">// "rouge"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">deuxieme</span>);  <span class="cm">// "vert"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">troisieme</span>); <span class="cm">// "bleu"</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">02</span>
+        <h2>Ignorer des elements</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">ignorer.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">scores</span> = [<span class="num">100</span>, <span class="num">85</span>, <span class="num">70</span>, <span class="num">60</span>, <span class="num">45</span>];
+
+<span class="cm">// On ne recupere que le 1er et le 3eme</span>
+<span class="cm">// Une virgule vide = on saute cet element</span>
+<span class="kw">const</span> [<span class="grn">premier</span>, , <span class="grn">troisieme</span>] = <span class="obj">scores</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">premier</span>);   <span class="cm">// 100</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">troisieme</span>); <span class="cm">// 70</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">03</span>
+        <h2>Le rest operator — ...rest</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <p>Le <code>...</code> (spread/rest) permet de capturer <strong style="color:#fff">tous les elements restants</strong> dans un nouveau tableau. Il doit toujours etre en dernier.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">rest-tableau.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">equipe</span> = [<span class="str">"Alice"</span>, <span class="str">"Bob"</span>, <span class="str">"Clara"</span>, <span class="str">"David"</span>, <span class="str">"Eve"</span>];
+
+<span class="cm">// Premier = capitaine, le reste = membres</span>
+<span class="kw">const</span> [<span class="grn">capitaine</span>, <span class="grn">adjoint</span>, <span class="op">...</span><span class="grn">membres</span>] = <span class="obj">equipe</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">capitaine</span>); <span class="cm">// "Alice"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">adjoint</span>);   <span class="cm">// "Bob"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">membres</span>);   <span class="cm">// ["Clara", "David", "Eve"]</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">04</span>
+        <h2>Valeur par defaut dans un tableau</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">defaut-tableau.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">coords</span> = [<span class="num">48.85</span>, <span class="num">2.35</span>];
+
+<span class="cm">// altitude n'existe pas dans le tableau → on lui donne 0 par defaut</span>
+<span class="kw">const</span> [<span class="grn">lat</span>, <span class="grn">lng</span>, <span class="grn">altitude</span> = <span class="num">0</span>] = <span class="obj">coords</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">lat</span>);      <span class="cm">// 48.85</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">lng</span>);      <span class="cm">// 2.35</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">altitude</span>); <span class="cm">// 0 (valeur par defaut)</span></pre>
+      </div>
+
+      <div class="alert alert-green">
+        <div class="alert-tag">Bon a savoir</div>
+        La valeur par defaut ne s'applique que si la valeur est <code>undefined</code>. Si la valeur est <code>null</code> ou <code>0</code>, la valeur par defaut n'est PAS utilisee.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">05</span>
+        <h2>Echanger deux variables</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <p>L'un des cas d'usage les plus elegants : permuter deux variables sans variable temporaire.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">swap.js</span>
+        </div>
+        <pre><span class="kw">let</span> <span class="obj">a</span> = <span class="num">1</span>;
+<span class="kw">let</span> <span class="obj">b</span> = <span class="num">2</span>;
+
+<span class="cm">// Avant : besoin d'une variable temporaire</span>
+<span class="kw">let</span> <span class="obj">temp</span> = <span class="obj">a</span>;
+<span class="obj">a</span> = <span class="obj">b</span>;
+<span class="obj">b</span> = <span class="obj">temp</span>;
+
+<span class="cm">// Apres : une seule ligne avec la destructuration</span>
+[<span class="grn">a</span>, <span class="grn">b</span>] = [<span class="obj">b</span>, <span class="obj">a</span>];
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">a</span>); <span class="cm">// 2</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">b</span>); <span class="cm">// 1</span></pre>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =
+       TAB 03 — OBJETS
+ -->
+  <div id="tab-objets" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">01</span>
+        <h2>Principe de base</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <p>Avec un objet, la destructuration extrait par le <strong style="color:#fff">nom de la propriete</strong>. L'ordre n'a aucune importance — contrairement aux tableaux.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">objet-base.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">produit</span> = {
+  nom:       <span class="str">"Clavier Razer"</span>,
+  prix:      <span class="num">149</span>,
+  categorie: <span class="str">"peripherique"</span>,
+  stock:     <span class="num">42</span>
+};
+
+<span class="cm">// On extrait seulement ce dont on a besoin</span>
+<span class="kw">const</span> { <span class="grn">nom</span>, <span class="grn">prix</span> } = <span class="obj">produit</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">nom</span>);  <span class="cm">// "Clavier Razer"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">prix</span>); <span class="cm">// 149</span>
+
+<span class="cm">// L'ordre n'a pas d'importance</span>
+<span class="kw">const</span> { <span class="grn">stock</span>, <span class="grn">categorie</span>, <span class="grn">nom</span>: <span class="obj">n</span> } = <span class="obj">produit</span>;</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">02</span>
+        <h2>Destructuration dans les parametres de fonction</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <p>L'un des usages les plus courants en pratique : destructurer directement dans la signature de la fonction. Ca evite d'ecrire <code>user.nom</code>, <code>user.age</code>... partout dans le corps.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">param-fonction.js</span>
+        </div>
+        <pre><span class="cm">// Avant — on recoit l'objet entier et on accede aux props</span>
+<span class="kw">function</span> <span class="fn">afficherUser</span>(<span class="obj">user</span>) {
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">user</span>.<span class="obj">nom</span>, <span class="obj">user</span>.<span class="obj">age</span>, <span class="obj">user</span>.<span class="obj">email</span>);
+}
+
+<span class="cm">// Apres — on destructure directement dans les parametres</span>
+<span class="kw">function</span> <span class="fn">afficherUser</span>({ <span class="grn">nom</span>, <span class="grn">age</span>, <span class="grn">email</span> }) {
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">nom</span>, <span class="obj">age</span>, <span class="obj">email</span>);
+}
+
+<span class="kw">const</span> <span class="obj">user</span> = { nom: <span class="str">"Bob"</span>, age: <span class="num">32</span>, email: <span class="str">"bob@mail.fr"</span> };
+<span class="fn">afficherUser</span>(<span class="obj">user</span>); <span class="cm">// "Bob" 32 "bob@mail.fr"</span>
+
+<span class="cm">// Tres courant en React pour les props de composant</span>
+<span class="kw">function</span> <span class="fn">Bouton</span>({ <span class="grn">label</span>, <span class="grn">onClick</span>, <span class="grn">disabled</span> = <span class="kw">false</span> }) {
+  <span class="cm">// label, onClick et disabled sont directement accessibles</span>
+}</pre>
+      </div>
+
+      <div class="alert alert-blue">
+        <div class="alert-tag">Contexte React</div>
+        En React, toutes les props arrivent dans un objet. Destructurer dans les parametres est la convention standard : <code>function Card({ title, content, isActive })</code>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">03</span>
+        <h2>Le rest operator avec un objet</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">rest-objet.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">config</span> = {
+  host:     <span class="str">"localhost"</span>,
+  port:     <span class="num">3000</span>,
+  debug:    <span class="kw">true</span>,
+  timeout:  <span class="num">5000</span>,
+  retries:  <span class="num">3</span>
+};
+
+<span class="cm">// On extrait host et port, le reste va dans "options"</span>
+<span class="kw">const</span> { <span class="grn">host</span>, <span class="grn">port</span>, <span class="op">...</span><span class="grn">options</span> } = <span class="obj">config</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">host</span>);    <span class="cm">// "localhost"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">port</span>);    <span class="cm">// 3000</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">options</span>); <span class="cm">// { debug: true, timeout: 5000, retries: 3 }</span></pre>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 
+       TAB 04 — RENOMMAGE & DEFAUT
+   -->
+  <div id="tab-avance" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">01</span>
+        <h2>Renommer une variable</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <p>Par defaut, la variable cree porte le meme nom que la propriete. Mais on peut <strong style="color:#fff">renommer avec les deux-points</strong> <code>:</code> pour eviter les conflits ou pour plus de clarte.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">renommage.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">apiResponse</span> = {
+  user_name:   <span class="str">"alice_dev"</span>,
+  user_email:  <span class="str">"alice@dev.fr"</span>,
+  created_at:  <span class="str">"2024-01-15"</span>
+};
+
+<span class="cm">// Syntaxe : propriete: nouveauNom</span>
+<span class="kw">const</span> {
+  <span class="grn">user_name</span>:  <span class="obj">username</span>,
+  <span class="grn">user_email</span>: <span class="obj">email</span>,
+  <span class="grn">created_at</span>: <span class="obj">dateCreation</span>
+} = <span class="obj">apiResponse</span>;
+
+<span class="cm">// Les variables s'appellent username, email, dateCreation</span>
+<span class="cm">// user_name, user_email, created_at n'existent PAS</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">username</span>);     <span class="cm">// "alice_dev"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">email</span>);        <span class="cm">// "alice@dev.fr"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">dateCreation</span>); <span class="cm">// "2024-01-15"</span></pre>
+      </div>
+
+      <div class="alert alert-red">
+        <div class="alert-tag">Piege classique</div>
+        Apres un renommage, la variable originale (<code>user_name</code>) n'existe pas. Seul le nouveau nom (<code>username</code>) est accessible. Essayer d'utiliser l'ancien nom provoque une <code>ReferenceError</code>.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">02</span>
+        <h2>Valeurs par defaut</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <p>On peut definir une valeur de secours avec <code>=</code> qui s'applique uniquement si la propriete est <code>undefined</code>. Tres utile pour rendre le code robuste face a des donnees incompletes.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">valeur-defaut.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">settings</span> = {
+  theme: <span class="str">"dark"</span>,
+  lang:  <span class="str">"fr"</span>
+  <span class="cm">// fontSize n'est pas presente dans l'objet</span>
+};
+
+<span class="kw">const</span> {
+  <span class="grn">theme</span>    = <span class="str">"light"</span>,   <span class="cm">// existe → "dark" (pas la valeur par defaut)</span>
+  <span class="grn">lang</span>     = <span class="str">"en"</span>,     <span class="cm">// existe → "fr" (pas la valeur par defaut)</span>
+  <span class="grn">fontSize</span> = <span class="num">16</span>        <span class="cm">// absent → 16 (valeur par defaut utilisee)</span>
+} = <span class="obj">settings</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">theme</span>);    <span class="cm">// "dark"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">lang</span>);     <span class="cm">// "fr"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">fontSize</span>); <span class="cm">// 16</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">03</span>
+        <h2>Renommage + Valeur par defaut combine</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <p>On peut combiner les deux : renommer ET donner une valeur par defaut en meme temps. La syntaxe : <code>propriete: nouveauNom = valeurDefaut</code></p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">combo.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">data</span> = {
+  user_id: <span class="num">42</span>
+  <span class="cm">// user_role absent</span>
+};
+
+<span class="kw">const</span> {
+  <span class="grn">user_id</span>:   <span class="obj">id</span>             = <span class="num">0</span>,
+  <span class="grn">user_role</span>: <span class="obj">role</span>           = <span class="str">"visiteur"</span>,
+  <span class="grn">user_name</span>: <span class="obj">nom</span>            = <span class="str">"Anonyme"</span>
+} = <span class="obj">data</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">id</span>);   <span class="cm">// 42</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">role</span>); <span class="cm">// "visiteur"  (absent → valeur par defaut)</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">nom</span>);  <span class="cm">// "Anonyme"   (absent → valeur par defaut)</span></pre>
+      </div>
+
+      <div class="alert alert-green">
+        <div class="alert-tag">Recap syntaxe</div>
+        <code>{ prop }</code> — extraction simple<br>
+        <code>{ prop: nouveauNom }</code> — renommage<br>
+        <code>{ prop = defaut }</code> — valeur par defaut<br>
+        <code>{ prop: nouveauNom = defaut }</code> — les deux combines
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 
+       TAB 05 — IMBRIQUEE
+  -->
+  <div id="tab-imbrique" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">01</span>
+        <h2>Destructuration imbriquee d'objet</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <p>Quand une propriete contient elle-meme un objet, on peut descendre dans la structure en imbriquant les accolades. Tres courant avec les reponses d'API.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">imbrique-objet.js</span>
+        </div>
+        <pre><span class="cm">// Structure typique d'une reponse API</span>
+<span class="kw">const</span> <span class="obj">utilisateur</span> = {
+  id:   <span class="num">1</span>,
+  nom:  <span class="str">"Alice"</span>,
+  adresse: {
+    ville:       <span class="str">"Lyon"</span>,
+    codePostal:  <span class="str">"69001"</span>,
+    pays:        <span class="str">"France"</span>
+  },
+  preferences: {
+    theme:       <span class="str">"dark"</span>,
+    notifications: <span class="kw">true</span>
+  }
+};
+
+<span class="cm">// On destructure en une seule expression</span>
+<span class="kw">const</span> {
+  <span class="grn">nom</span>,
+  <span class="grn">adresse</span>: { <span class="grn">ville</span>, <span class="grn">codePostal</span> },
+  <span class="grn">preferences</span>: { <span class="grn">theme</span> }
+} = <span class="obj">utilisateur</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">nom</span>);         <span class="cm">// "Alice"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">ville</span>);       <span class="cm">// "Lyon"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">codePostal</span>);  <span class="cm">// "69001"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">theme</span>);       <span class="cm">// "dark"</span>
+
+<span class="cm">// Attention : "adresse" et "preferences" ne sont PAS des variables</span>
+<span class="cm">// On n'a extrait que ce qui est entre les accolades imbriquees</span></pre>
+      </div>
+
+      <div class="alert alert-red">
+        <div class="alert-tag">Piege important</div>
+        Apres une destructuration imbriquee <code>{ adresse: { ville } }</code>, la variable <code>adresse</code> n'existe PAS. Seul <code>ville</code> existe. Si tu veux aussi garder l'objet complet, il faut le declarer separement.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">02</span>
+        <h2>Tableau dans un objet</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">tableau-dans-objet.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">equipe</span> = {
+  projet:  <span class="str">"Site e-commerce"</span>,
+  membres: [<span class="str">"Alice"</span>, <span class="str">"Bob"</span>, <span class="str">"Clara"</span>],
+  scores:  [<span class="num">95</span>, <span class="num">87</span>, <span class="num">91</span>]
+};
+
+<span class="cm">// On destructure l'objet ET les tableaux en meme temps</span>
+<span class="kw">const</span> {
+  <span class="grn">projet</span>,
+  <span class="grn">membres</span>: [<span class="grn">lead</span>, <span class="grn">dev1</span>],
+  <span class="grn">scores</span>:  [<span class="grn">scoreA</span>, , <span class="grn">scoreC</span>]
+} = <span class="obj">equipe</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">projet</span>); <span class="cm">// "Site e-commerce"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">lead</span>);   <span class="cm">// "Alice"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">dev1</span>);   <span class="cm">// "Bob"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">scoreA</span>); <span class="cm">// 95</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">scoreC</span>); <span class="cm">// 91</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">03</span>
+        <h2>Objets dans un tableau</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">objets-dans-tableau.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">users</span> = [
+  { id: <span class="num">1</span>, nom: <span class="str">"Alice"</span>, role: <span class="str">"admin"</span> },
+  { id: <span class="num">2</span>, nom: <span class="str">"Bob"</span>,   role: <span class="str">"user"</span>  }
+];
+
+<span class="cm">// Destructuration du premier element du tableau</span>
+<span class="kw">const</span> [{ <span class="grn">nom</span>: <span class="obj">premierNom</span>, <span class="grn">role</span>: <span class="obj">premierRole</span> }] = <span class="obj">users</span>;
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">premierNom</span>);  <span class="cm">// "Alice"</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">premierRole</span>); <span class="cm">// "admin"</span>
+
+<span class="cm">// Dans un .map() → tres courant avec les donnees d'API</span>
+<span class="obj">users</span>.<span class="fn">map</span>(({ <span class="grn">id</span>, <span class="grn">nom</span> }) => {
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">`User #<span class="acc">${id}</span> : <span class="acc">${nom}</span>`</span>);
+});</pre>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 
+       TAB 06 — CAS REELS
+ -->
+  <div id="tab-pratique" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">01</span>
+        <h2>Avec fetch et une API</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <p>La destructuration prend tout son sens quand on recoit des donnees d'une API. On extrait exactement ce dont on a besoin, en renommant si necesaire, et on garde le reste accessible.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">fetch-destructure.js</span>
+        </div>
+        <pre><span class="kw">async function</span> <span class="fn">afficherProfil</span>(<span class="obj">username</span>) {
+  <span class="kw">const</span> <span class="obj">response</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://api.github.com/users/<span class="acc">${username}</span>`</span>);
+  <span class="kw">const</span> <span class="obj">data</span>     = <span class="kw">await</span> <span class="obj">response</span>.<span class="fn">json</span>();
+
+  <span class="cm">// Sans destructuration — verbeux</span>
+  <span class="cm">// console.log(data.name, data.bio, data.public_repos, data.followers)</span>
+
+  <span class="cm">// Avec destructuration + renommage + valeur par defaut</span>
+  <span class="kw">const</span> {
+    <span class="grn">name</span>:         <span class="obj">nom</span>,
+    <span class="grn">bio</span>           = <span class="str">"Pas de bio renseignee"</span>,
+    <span class="grn">public_repos</span>: <span class="obj">nbRepos</span>,
+    <span class="grn">followers</span>,
+    <span class="grn">company</span>       = <span class="str">"Independant"</span>,
+    <span class="grn">location</span>      = <span class="str">"Localisation inconnue"</span>
+  } = <span class="obj">data</span>;
+
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Nom      :"</span>, <span class="obj">nom</span>);
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Bio      :"</span>, <span class="obj">bio</span>);
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Repos    :"</span>, <span class="obj">nbRepos</span>);
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Followers:"</span>, <span class="obj">followers</span>);
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Societe  :"</span>, <span class="obj">company</span>);
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Lieu     :"</span>, <span class="obj">location</span>);
+}
+
+<span class="fn">afficherProfil</span>(<span class="str">"torvalds"</span>);</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">02</span>
+        <h2>Dans un .map() — pattern tres courant</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">map-destructure.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="obj">produits</span> = [
+  { id: <span class="num">1</span>, nom: <span class="str">"Souris"</span>,  prix: <span class="num">59</span>,  stock: <span class="num">12</span> },
+  { id: <span class="num">2</span>, nom: <span class="str">"Clavier"</span>, prix: <span class="num">149</span>, stock: <span class="num">0</span>  },
+  { id: <span class="num">3</span>, nom: <span class="str">"Casque"</span>,  prix: <span class="num">99</span>,  stock: <span class="num">5</span>  }
+];
+
+<span class="cm">// On destructure directement dans le callback du .map()</span>
+<span class="kw">const</span> <span class="obj">labels</span> = <span class="obj">produits</span>.<span class="fn">map</span>(({ <span class="grn">nom</span>, <span class="grn">prix</span>, <span class="grn">stock</span> }) => {
+  <span class="kw">const</span> <span class="obj">dispo</span> = <span class="obj">stock</span> > <span class="num">0</span> ? <span class="str">"disponible"</span> : <span class="str">"rupture"</span>;
+  <span class="kw">return</span> <span class="str">`<span class="acc">${nom}</span> — <span class="acc">${prix}</span>EUR (<span class="acc">${dispo}</span>)`</span>;
+});
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">labels</span>);
+<span class="cm">// ["Souris — 59EUR (disponible)", "Clavier — 149EUR (rupture)", ...]</span>
+
+<span class="cm">// Meme chose avec .filter()</span>
+<span class="kw">const</span> <span class="obj">enStock</span> = <span class="obj">produits</span>.<span class="fn">filter</span>(({ <span class="grn">stock</span> }) => <span class="obj">stock</span> > <span class="num">0</span>);
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="obj">enStock</span>); <span class="cm">// Souris et Casque</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">03</span>
+        <h2>Retourner plusieurs valeurs d'une fonction</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">retour-multiple.js</span>
+        </div>
+        <pre><span class="cm">// Une fonction ne peut retourner qu'une valeur</span>
+<span class="cm">// Astuce : retourner un objet ou un tableau et le destructurer</span>
+
+<span class="kw">function</span> <span class="fn">calculerStats</span>(<span class="obj">notes</span>) {
+  <span class="kw">const</span> <span class="obj">total</span>   = <span class="obj">notes</span>.<span class="fn">reduce</span>((<span class="obj">acc</span>, <span class="obj">n</span>) => <span class="obj">acc</span> + <span class="obj">n</span>, <span class="num">0</span>);
+  <span class="kw">const</span> <span class="obj">moyenne</span> = <span class="obj">total</span> / <span class="obj">notes</span>.<span class="obj">length</span>;
+  <span class="kw">const</span> <span class="obj">min</span>     = <span class="obj">Math</span>.<span class="fn">min</span>(<span class="op">...</span><span class="obj">notes</span>);
+  <span class="kw">const</span> <span class="obj">max</span>     = <span class="obj">Math</span>.<span class="fn">max</span>(<span class="op">...</span><span class="obj">notes</span>);
+
+  <span class="kw">return</span> { <span class="obj">total</span>, <span class="obj">moyenne</span>, <span class="obj">min</span>, <span class="obj">max</span> };
+}
+
+<span class="cm">// On recoit les 4 valeurs en une ligne</span>
+<span class="kw">const</span> { <span class="grn">moyenne</span>, <span class="grn">min</span>, <span class="grn">max</span> } = <span class="fn">calculerStats</span>([<span class="num">14</span>, <span class="num">17</span>, <span class="num">9</span>, <span class="num">12</span>, <span class="num">18</span>]);
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Moyenne :"</span>, <span class="obj">moyenne</span>); <span class="cm">// 14</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Min :"</span>, <span class="obj">min</span>);         <span class="cm">// 9</span>
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Max :"</span>, <span class="obj">max</span>);         <span class="cm">// 18</span></pre>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =
+       TAB 07 — EXERCICE
+  -->
+  <div id="tab-exercice" class="tab-panel">
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">Exercice</span>
+        <h2>Mets en pratique</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="card">
+        <h3>Objectif</h3>
+        <p>On travaille avec l'API JSONPlaceholder vue a l'etape 1. Cette fois on va combiner fetch + async/await + destructuration pour extraire proprement les donnees.</p>
+      </div>
+
+      <div class="alert alert-blue">
+        <div class="alert-tag">API disponible</div>
+        <code>https://jsonplaceholder.typicode.com/users/1</code> — un utilisateur complet<br>
+        <code>https://jsonplaceholder.typicode.com/posts?userId=1</code> — ses posts
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">01</span>
+        <h2>Consignes</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <ul class="checklist">
+        <li>Creer une fonction <code>getProfilComplet(userId)</code> en async/await</li>
+        <li>Faire un fetch sur l'utilisateur et destructurer : <code>name</code>, <code>email</code>, <code>phone</code>, et <code>address.city</code></li>
+        <li>Renommer <code>name</code> en <code>nomComplet</code> et <code>address.city</code> en <code>ville</code></li>
+        <li>Donner une valeur par defaut a <code>website</code> si absent : <code>"non renseigne"</code></li>
+        <li>Faire un deuxieme fetch pour recuperer ses posts et destructurer uniquement <code>title</code> et <code>body</code> de chaque post avec un <code>.map()</code></li>
+        <li>Afficher tout dans la console de facon lisible</li>
+        <li>Bonus : utiliser <code>Promise.all</code> pour faire les deux fetch en parallele</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">02</span>
+        <h2>Code de depart</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">exercice-starter.js — complete le code</span>
+        </div>
+        <pre><span class="kw">async function</span> <span class="fn">getProfilComplet</span>(<span class="obj">userId</span>) {
+  <span class="kw">try</span> {
+
+    <span class="cm">// TODO 1 : fetch l'utilisateur</span>
+    <span class="kw">const</span> <span class="obj">userRes</span> = <span class="cm">/* ... */</span>
+    <span class="kw">const</span> <span class="obj">userData</span> = <span class="cm">/* ... */</span>
+
+    <span class="cm">// TODO 2 : destructurer userData avec renommage + valeur par defaut</span>
+    <span class="kw">const</span> { <span class="cm">/* ... */</span> } = <span class="obj">userData</span>;
+
+    <span class="cm">// TODO 3 : fetch les posts</span>
+    <span class="kw">const</span> <span class="obj">postsRes</span>  = <span class="cm">/* ... */</span>
+    <span class="kw">const</span> <span class="obj">postsData</span> = <span class="cm">/* ... */</span>
+
+    <span class="cm">// TODO 4 : extraire title + body de chaque post avec .map()</span>
+    <span class="kw">const</span> <span class="obj">posts</span> = <span class="obj">postsData</span>.<span class="fn">map</span>((<span class="cm">/* destructure ici */</span>) => ({
+      <span class="cm">/* retourner un objet propre */</span>
+    }));
+
+    <span class="cm">// TODO 5 : afficher tout</span>
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="cm">/* ... */</span>);
+
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="obj">console</span>.<span class="fn">error</span>(<span class="obj">err</span>.<span class="obj">message</span>);
+  }
+}
+
+<span class="fn">getProfilComplet</span>(<span class="num">1</span>);</pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">
+        <span class="s-num">03</span>
+        <h2>Correction</h2>
+        <span class="s-line"></span>
+      </div>
+
+      <div class="alert alert-red">
+        <div class="alert-tag">A lire seulement apres avoir essaye</div>
+        Essaie d'abord par toi-meme. Les erreurs que tu vas faire sont plus instructives que la correction elle-meme.
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="mac-dots"><div class="mac-dot dot-r"></div><div class="mac-dot dot-y"></div><div class="mac-dot dot-g"></div></div>
+          <span class="code-filename">correction.js</span>
+        </div>
+        <pre><span class="kw">async function</span> <span class="fn">getProfilComplet</span>(<span class="obj">userId</span>) {
+  <span class="kw">try</span> {
+
+    <span class="cm">// BONUS : les deux fetch en parallele avec Promise.all</span>
+    <span class="kw">const</span> [<span class="grn">userRes</span>, <span class="grn">postsRes</span>] = <span class="kw">await</span> <span class="obj">Promise</span>.<span class="fn">all</span>([
+      <span class="fn">fetch</span>(<span class="str">`https://jsonplaceholder.typicode.com/users/<span class="acc">${userId}</span>`</span>),
+      <span class="fn">fetch</span>(<span class="str">`https://jsonplaceholder.typicode.com/posts?userId=<span class="acc">${userId}</span>`</span>)
+    ]);
+
+    <span class="cm">// Conversion JSON en parallele aussi</span>
+    <span class="kw">const</span> [<span class="grn">userData</span>, <span class="grn">postsData</span>] = <span class="kw">await</span> <span class="obj">Promise</span>.<span class="fn">all</span>([
+      <span class="obj">userRes</span>.<span class="fn">json</span>(),
+      <span class="obj">postsRes</span>.<span class="fn">json</span>()
+    ]);
+
+    <span class="cm">// Destructuration avec renommage + imbriquee + valeur par defaut</span>
+    <span class="kw">const</span> {
+      <span class="grn">name</span>:    <span class="obj">nomComplet</span>,
+      <span class="grn">email</span>,
+      <span class="grn">phone</span>,
+      <span class="grn">website</span> = <span class="str">"non renseigne"</span>,
+      <span class="grn">address</span>: { <span class="grn">city</span>: <span class="obj">ville</span> }
+    } = <span class="obj">userData</span>;
+
+    <span class="cm">// Destructuration dans le .map()</span>
+    <span class="kw">const</span> <span class="obj">posts</span> = <span class="obj">postsData</span>.<span class="fn">map</span>(({ <span class="grn">title</span>, <span class="grn">body</span> }) => ({ <span class="obj">title</span>, <span class="obj">body</span> }));
+
+    <span class="cm">// Affichage</span>
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Nom     :"</span>, <span class="obj">nomComplet</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Email   :"</span>, <span class="obj">email</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Ville   :"</span>, <span class="obj">ville</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Site    :"</span>, <span class="obj">website</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Posts   :"</span>, <span class="obj">posts</span>.<span class="obj">length</span>, <span class="str">"articles"</span>);
+    <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Titre 1 :"</span>, <span class="obj">posts</span>[<span class="num">0</span>]<span class="op">.</span><span class="obj">title</span>);
+
+  } <span class="kw">catch</span> (<span class="obj">err</span>) {
+    <span class="obj">console</span>.<span class="fn">error</span>(<span class="str">"Erreur :"</span>, <span class="obj">err</span>.<span class="obj">message</span>);
+  }
+}
+
+<span class="fn">getProfilComplet</span>(<span class="num">1</span>);</pre>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /.wrapper -->
+
+<footer>
+  Real Conseil &nbsp;·&nbsp; Support JS — Etape 2 / 5 &nbsp;·&nbsp; Destructuration
+</footer>
+
+<script>
+  function showTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+    // scroll to top of content
+    document.querySelector('.tabs-nav').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+
+<script src="../Cursor.js"></script>
+</body>
+</html>

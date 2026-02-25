@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Path Editor — Tutoriel — Formation DWWM</title>
+    <style>
+        :root {
+            --bg:       #080b0f;
+            --bg-card:  #0d1117;
+            --bar:      #161b22;
+            --border:   #1e2d3d;
+            --green:    #ff6aaa;
+            --blue:     #00b4d8;
+            --yellow:   #febc2e;
+            --red:      #ff5f57;
+            --purple:   #a78bfa;
+            --text:     #e6edf3;
+            --muted:    #7d8590;
+            --dim:      #3d444d;
+            --mono:     'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:var(--mono); background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+        body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:0; background-image: linear-gradient(rgba(255,106,170,.02) 1px,transparent 1px), linear-gradient(90deg,rgba(255,106,170,.02) 1px,transparent 1px); background-size:40px 40px; }
+        .orb { position:fixed; border-radius:50%; filter:blur(130px); pointer-events:none; z-index:0; opacity:.12; }
+        .orb1 { width:600px;height:600px; background:radial-gradient(#ff6aaa,transparent); top:-200px;left:-200px; }
+        .orb2 { width:400px;height:400px; background:radial-gradient(#00b4d8,transparent); bottom:-100px;right:-100px; }
+
+        header { position:relative; z-index:1; text-align:center; padding:60px 24px 40px; border-bottom:1px solid var(--border); }
+        .badge { display:inline-flex; align-items:center; gap:8px; background:rgba(255,106,170,.08); border:1px solid rgba(255,106,170,.2); border-radius:20px; padding:5px 16px; font-size:.72rem; color:var(--green); letter-spacing:.1em; text-transform:uppercase; margin-bottom:20px; }
+        header h1 { font-size:clamp(1.8rem,5vw,3rem); font-weight:800; letter-spacing:-.03em; background:linear-gradient(135deg,#fff 0%,var(--green) 50%,var(--blue) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:12px; }
+        header p { color:var(--muted); font-size:.9rem; max-width:520px; margin:0 auto 24px; }
+        .open-btn { display:inline-flex; align-items:center; gap:8px; background:rgba(255,106,170,.1); border:1px solid rgba(255,106,170,.3); border-radius:10px; padding:12px 24px; color:var(--green); font-family:var(--mono); font-size:.85rem; text-decoration:none; transition:all .2s; }
+        .open-btn:hover { background:rgba(255,106,170,.2); transform:translateY(-2px); }
+
+        /* PROGRESS BAR */
+        .progress-bar { position:sticky; top:0; z-index:100; background:var(--bar); border-bottom:1px solid var(--border); padding:0 24px; display:flex; gap:0; overflow-x:auto; }
+        .step-tab { padding:14px 20px; font-size:.75rem; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; display:flex; align-items:center; gap:8px; }
+        .step-tab:hover { color:var(--text); }
+        .step-tab.active { color:var(--green); border-bottom-color:var(--green); }
+        .step-num { width:20px; height:20px; border-radius:50%; background:var(--dim); display:flex; align-items:center; justify-content:center; font-size:.65rem; flex-shrink:0; }
+        .step-tab.active .step-num { background:var(--green); color:#000; }
+
+        main { position:relative; z-index:1; max-width:900px; margin:0 auto; padding:40px 24px 80px; }
+
+        .step { display:none; animation:fadeIn .4s ease; }
+        .step.active { display:block; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+        .step-label { font-size:.7rem; color:var(--green); text-transform:uppercase; letter-spacing:.12em; margin-bottom:8px; }
+        .step-title { font-size:1.8rem; font-weight:700; color:var(--text); margin-bottom:10px; }
+        .step-desc { color:var(--muted); font-size:.9rem; line-height:1.7; max-width:640px; margin-bottom:32px; }
+
+        /* CARD */
+        .card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:24px; }
+        .card-bar { background:var(--bar); padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); font-size:.78rem; color:var(--muted); }
+        .dot-r{width:12px;height:12px;border-radius:50%;background:var(--red);flex-shrink:0}
+        .dot-o{width:12px;height:12px;border-radius:50%;background:var(--yellow);flex-shrink:0}
+        .dot-g{width:12px;height:12px;border-radius:50%;background:var(--green);flex-shrink:0}
+        .card-body { padding:22px; }
+
+        /* THEORY */
+        .theory { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:22px; margin-bottom:24px; }
+        .theory h3 { font-size:.85rem; color:var(--yellow); margin-bottom:14px; letter-spacing:.05em; }
+        .theory p { color:var(--muted); font-size:.85rem; line-height:1.7; margin-bottom:10px; }
+        .theory p:last-child { margin-bottom:0; }
+
+        code { background:rgba(255,106,170,.08); border:1px solid rgba(255,106,170,.15); border-radius:4px; padding:1px 7px; color:var(--green); font-family:var(--mono); font-size:.82em; }
+
+        /* INTERFACE DIAGRAM */
+        .interface-diagram { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:24px; margin-bottom:24px; }
+        .interface-diagram h3 { font-size:.85rem; color:var(--blue); margin-bottom:18px; }
+
+        .ui-mockup { background:#0a0e14; border:1px solid var(--border); border-radius:10px; padding:16px; font-size:.75rem; position:relative; }
+        .ui-zone { border:1px solid; border-radius:6px; padding:10px 14px; margin-bottom:10px; position:relative; }
+        .ui-zone.canvas { border-color:rgba(255,106,170,.3); background:rgba(255,106,170,.03); min-height:80px; display:flex; align-items:center; justify-content:center; }
+        .ui-zone.path-input { border-color:rgba(0,180,216,.3); background:rgba(0,180,216,.03); }
+        .ui-zone.commands { border-color:rgba(254,188,46,.3); background:rgba(254,188,46,.03); }
+        .ui-zone.toolbar { border-color:rgba(167,139,250,.3); background:rgba(167,139,250,.03); }
+        .zone-label { position:absolute; top:-9px; left:10px; background:var(--bg-card); padding:0 6px; font-size:.65rem; text-transform:uppercase; letter-spacing:.08em; }
+        .zone-label.green { color:var(--green); }
+        .zone-label.blue { color:var(--blue); }
+        .zone-label.yellow { color:var(--yellow); }
+        .zone-label.purple { color:var(--purple); }
+        .zone-desc { color:var(--muted); font-size:.78rem; line-height:1.6; }
+
+        /* STEPS LIST */
+        .steps-list { display:flex; flex-direction:column; gap:14px; margin-bottom:24px; }
+        .step-item { display:flex; gap:16px; align-items:flex-start; background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:16px; transition:border-color .2s; }
+        .step-item:hover { border-color:rgba(255,106,170,.25); }
+        .step-num-big { width:36px; height:36px; border-radius:8px; background:rgba(255,106,170,.1); border:1px solid rgba(255,106,170,.25); display:flex; align-items:center; justify-content:center; color:var(--green); font-size:.85rem; font-weight:700; flex-shrink:0; }
+        .step-content h4 { color:var(--text); font-size:.88rem; margin-bottom:5px; }
+        .step-content p { color:var(--muted); font-size:.82rem; line-height:1.6; }
+
+        /* KEYBOARD SHORTCUTS */
+        .shortcuts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px; }
+        @media(max-width:580px) { .shortcuts { grid-template-columns:1fr; } }
+        .shortcut { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:12px 14px; display:flex; align-items:center; gap:12px; }
+        .key { background:var(--bar); border:1px solid var(--border); border-radius:5px; padding:3px 8px; font-size:.75rem; color:var(--text); min-width:32px; text-align:center; box-shadow:0 2px 0 var(--dim); }
+        .key-desc { color:var(--muted); font-size:.78rem; }
+
+        /* COMMANDS TABLE */
+        .cheat { width:100%; border-collapse:collapse; font-size:.82rem; }
+        .cheat th { text-align:left; padding:10px 14px; color:var(--green); border-bottom:1px solid var(--border); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; }
+        .cheat td { padding:10px 14px; border-bottom:1px solid rgba(30,45,61,.5); vertical-align:top; }
+        .cheat td:first-child { color:var(--blue); white-space:nowrap; font-weight:700; }
+        .cheat td:nth-child(2) { color:var(--yellow); }
+        .cheat td:last-child { color:var(--muted); }
+        .cheat tr:last-child td { border-bottom:none; }
+        .tag-abs { background:rgba(167,139,250,.1); border:1px solid rgba(167,139,250,.3); border-radius:4px; padding:1px 6px; color:var(--purple); font-size:.7rem; }
+        .tag-rel { background:rgba(254,188,46,.1); border:1px solid rgba(254,188,46,.3); border-radius:4px; padding:1px 6px; color:var(--yellow); font-size:.7rem; }
+
+        /* CHALLENGE */
+        .challenge { background:rgba(167,139,250,.06); border:1px solid rgba(167,139,250,.2); border-radius:12px; padding:20px 22px; margin-bottom:24px; }
+        .challenge h3 { color:var(--purple); font-size:.85rem; margin-bottom:10px; }
+        .challenge ol { color:var(--muted); font-size:.85rem; line-height:2; padding-left:18px; }
+        .challenge li { padding-left:4px; }
+
+        /* TIP */
+        .tip { background:rgba(0,180,216,.06); border:1px solid rgba(0,180,216,.2); border-left:3px solid var(--blue); border-radius:0 10px 10px 0; padding:14px 18px; margin-bottom:16px; }
+        .tip strong { color:var(--blue); display:block; margin-bottom:4px; font-size:.8rem; }
+        .tip p { color:var(--muted); font-size:.82rem; line-height:1.6; margin:0; }
+
+        /* SVG PREVIEW */
+        .svg-preview { display:flex; align-items:center; justify-content:center; background:#0a0e14; border:1px solid var(--border); border-radius:8px; padding:20px; margin:12px 0; min-height:120px; }
+
+        /* NAV BTNS */
+        .nav-btns { display:flex; justify-content:space-between; align-items:center; margin-top:40px; padding-top:24px; border-top:1px solid var(--border); }
+        .nav-btn { padding:10px 24px; border-radius:8px; font-family:var(--mono); font-size:.82rem; cursor:pointer; transition:all .2s; border:1px solid var(--border); background:var(--bg-card); color:var(--muted); }
+        .nav-btn:hover { border-color:var(--green); color:var(--green); }
+        .nav-btn.primary { background:rgba(255,106,170,.1); border-color:rgba(255,106,170,.3); color:var(--green); }
+        .nav-btn.primary:hover { background:rgba(255,106,170,.2); }
+        .nav-btn:disabled { opacity:.3; cursor:not-allowed; }
+        .step-counter { font-size:.78rem; color:var(--muted); }
+        .step-counter span { color:var(--green); }
+    </style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<header>
+    <div class="badge">▸ Formation DWWM — Outil SVG</div>
+    <h1>SVG Path Editor</h1>
+    <p>Apprenez à utiliser l'outil le plus puissant pour créer des formes SVG sans coder à la main.</p>
+    <a href="https://yqnn.github.io/svg-path-editor/" target="_blank" class="open-btn">
+        ↗ Ouvrir SVG Path Editor
+    </a>
+</header>
+
+<nav class="progress-bar">
+    <a class="step-tab active" onclick="goTo(0)"><span class="step-num">1</span> C'est quoi ?</a>
+    <a class="step-tab" onclick="goTo(1)"><span class="step-num">2</span> L'interface</a>
+    <a class="step-tab" onclick="goTo(2)"><span class="step-num">3</span> Premiers pas</a>
+    <a class="step-tab" onclick="goTo(3)"><span class="step-num">4</span> Les commandes</a>
+    <a class="step-tab" onclick="goTo(4)"><span class="step-num">5</span> Raccourcis</a>
+    <a class="step-tab" onclick="goTo(5)"><span class="step-num">6</span> Exercice pratique</a>
+</nav>
+
+<main>
+
+
+<section class="step active" id="step-0">
+    <div class="step-label">Étape 1 / 6</div>
+    <div class="step-title">C'est quoi SVG Path Editor ?</div>
+    <p class="step-desc">Un outil en ligne gratuit pour créer et modifier des paths SVG visuellement. Au lieu de taper des coordonnées à la main, tu cliques et fais glisser des points sur un canvas.</p>
+
+    <div class="theory">
+        <h3>// Le problème sans cet outil</h3>
+        <p>Écrire un path SVG à la main c'est difficile :</p>
+        <p><code>d="M 150 20 Q 200 60 170 80 Q 140 100 120 90 Q 80 70 90 40 Z"</code></p>
+        <p>Tu ne sais pas ce que ça donne sans l'afficher. Modifier un point = recalculer toutes les coordonnées. C'est long et source d'erreurs.</p>
+    </div>
+
+    <div class="theory">
+        <h3>// La solution avec SVG Path Editor</h3>
+        <p>Tu <strong>vois</strong> ta forme en temps réel pendant que tu la dessines</p>
+        <p>Tu <strong>glisses</strong> les points avec la souris au lieu de taper des chiffres</p>
+        <p>Le code <code>d="..."</code> est <strong>généré automatiquement</strong></p>
+        <p>Tu <strong>copies</strong> le path et tu le colles dans ton HTML</p>
+    </div>
+
+    <div class="card">
+        <div class="card-bar"><div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div><span>workflow.md</span></div>
+        <div class="card-body">
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-num-big">1</div>
+                    <div class="step-content">
+                        <h4>Ouvrir l'outil</h4>
+                        <p>Va sur <strong>yqnn.github.io/svg-path-editor</strong> dans ton navigateur</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num-big">2</div>
+                    <div class="step-content">
+                        <h4>Dessiner ta forme</h4>
+                        <p>Clique sur le canvas pour placer des points, ajuste les courbes en tirant les poignées</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num-big">3</div>
+                    <div class="step-content">
+                        <h4>Copier le path</h4>
+                        <p>Le champ en haut contient ton <code>d="..."</code> — tu le copies directement</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num-big">4</div>
+                    <div class="step-content">
+                        <h4>Coller dans ton SVG</h4>
+                        <p>Dans ton HTML : <code>&lt;path d="TON_PATH" fill="#ff6aaa"/&gt;</code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" disabled>← Précédent</button>
+        <span class="step-counter">Étape <span>1</span> / 6</span>
+        <button class="nav-btn primary" onclick="goTo(1)">Suivant →</button>
+    </div>
+</section>
+
+
+<section class="step" id="step-1">
+    <div class="step-label">Étape 2 / 6</div>
+    <div class="step-title">L'interface de l'outil</div>
+    <p class="step-desc">L'outil est divisé en 4 zones principales. Comprendre chaque zone te permet de travailler efficacement.</p>
+
+    <div class="interface-diagram">
+        <h3>// Les 4 zones de l'interface</h3>
+
+        <div class="ui-mockup">
+            <div class="ui-zone toolbar">
+                <span class="zone-label purple">① Barre d'outils</span>
+                <div class="zone-desc">Zoom +/−, Convertir en absolu/relatif, options d'affichage (grille, règles, points de contrôle)</div>
+            </div>
+            <div class="ui-zone path-input">
+                <span class="zone-label blue">② Champ Path</span>
+                <div class="zone-desc">La valeur <code>d="..."</code> du path — modifiable directement au clavier. Se met à jour en temps réel quand tu bouges les points.</div>
+            </div>
+            <div class="ui-zone canvas">
+                <span class="zone-label green">③ Canvas de dessin</span>
+                <div class="zone-desc" style="text-align:center">Zone principale — clique pour ajouter des points, glisse pour déplacer. Les points <span style="color:var(--purple)">violets</span> = absolu, <span style="color:var(--yellow)">orange</span> = relatif.</div>
+            </div>
+            <div class="ui-zone commands">
+                <span class="zone-label yellow">④ Liste des commandes</span>
+                <div class="zone-desc">Chaque point du path apparaît ici sous forme de ligne. Clique sur <code>...</code> pour modifier, supprimer, ou convertir une commande.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tip">
+        <strong>Astuce — Coordonnées absolues vs relatives</strong>
+        <p>Couleur <span style="color:var(--purple)">violette</span> = coordonnées <strong>absolues</strong> (position exacte dans le SVG). Couleur <span style="color:var(--yellow)">orange</span> = coordonnées <strong>relatives</strong> (position par rapport au point précédent). Les deux donnent le même résultat visuellement — c'est juste une question de lisibilité du code.</p>
+    </div>
+
+    <div class="tip">
+        <strong>Astuce — Grille d'aide</strong>
+        <p>Active la grille avec le bouton <strong>Grid</strong> dans la barre d'outils pour aligner tes points plus facilement.</p>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" onclick="goTo(0)">← Précédent</button>
+        <span class="step-counter">Étape <span>2</span> / 6</span>
+        <button class="nav-btn primary" onclick="goTo(2)">Suivant →</button>
+    </div>
+</section>
+
+
+<section class="step" id="step-2">
+    <div class="step-label">Étape 3 / 6</div>
+    <div class="step-title">Premiers pas — Dessiner une forme</div>
+    <p class="step-desc">Suis ces étapes sur l'outil ouvert dans un autre onglet pour dessiner ta première forme.</p>
+
+    <div class="card">
+        <div class="card-bar"><div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div><span>dessiner-triangle.md</span></div>
+        <div class="card-body">
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-num-big">1</div>
+                    <div class="step-content">
+                        <h4>Effacer le path existant</h4>
+                        <p>Dans le champ <code>d="..."</code> en haut, sélectionne tout et supprime. Le canvas devient vide.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num-big">2</div>
+                    <div class="step-content">
+                        <h4>Placer le premier point (M)</h4>
+                        <p>Clique une fois sur le canvas. Un point violet apparaît — c'est le point de départ <code>M</code> (Move to).</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num-big">3</div>
+                    <div class="step-content">
+                        <h4>Tracer des lignes (L)</h4>
+                        <p>Clique à d'autres endroits pour tracer des lignes droites. Chaque clic ajoute une commande <code>L</code> (Line to).</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num-big">4</div>
+                    <div class="step-content">
+                        <h4>Fermer la forme (Z)</h4>
+                        <p>Dans la liste des commandes, clique sur <code>...</code> du dernier point → <strong>Insert after</strong> → choisis <code>Z</code> pour fermer le path.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num-big">5</div>
+                    <div class="step-content">
+                        <h4>Copier et utiliser</h4>
+                        <p>Sélectionne le contenu du champ <code>d="..."</code>, copie, et colle dans ton HTML comme valeur du <code>d</code>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-bar"><div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div><span>transformer-en-courbe.md</span></div>
+        <div class="card-body">
+            <p style="color:var(--muted);font-size:.85rem;line-height:1.7;margin-bottom:16px">Pour transformer une ligne droite en courbe :</p>
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-num-big">→</div>
+                    <div class="step-content">
+                        <h4>Sélectionne un point L dans la liste</h4>
+                        <p>Clique sur <code>...</code> à droite → <strong>Convert to</strong> → choisis <code>Q</code> (courbe quadratique) ou <code>C</code> (cubique)</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num-big">→</div>
+                    <div class="step-content">
+                        <h4>Ajuster la courbe</h4>
+                        <p>Des poignées de contrôle apparaissent sur le canvas — tire-les pour modifier la courbure de la ligne.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" onclick="goTo(1)">← Précédent</button>
+        <span class="step-counter">Étape <span>3</span> / 6</span>
+        <button class="nav-btn primary" onclick="goTo(3)">Suivant →</button>
+    </div>
+</section>
+
+
+<section class="step" id="step-3">
+    <div class="step-label">Étape 4 / 6</div>
+    <div class="step-title">Les commandes disponibles</div>
+    <p class="step-desc">Chaque lettre dans un path correspond à une commande. Voici ce que chacune fait dans l'outil.</p>
+
+    <div class="card">
+        <div class="card-bar"><div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div><span>commandes-path.md</span></div>
+        <div style="padding:0 0 4px">
+            <table class="cheat">
+                <tr>
+                    <th>Cmd</th>
+                    <th>Nom</th>
+                    <th>Ce que ça fait</th>
+                </tr>
+                <tr>
+                    <td>M / m</td>
+                    <td><span class="tag-abs">M</span> Move to</td>
+                    <td>Déplace le stylo sans tracer — point de départ obligatoire</td>
+                </tr>
+                <tr>
+                    <td>L / l</td>
+                    <td><span class="tag-abs">L</span> Line to</td>
+                    <td>Trace une ligne droite jusqu'au point</td>
+                </tr>
+                <tr>
+                    <td>H / h</td>
+                    <td><span class="tag-abs">H</span> Horizontal</td>
+                    <td>Ligne horizontale — ne prend qu'une coordonnée X</td>
+                </tr>
+                <tr>
+                    <td>V / v</td>
+                    <td><span class="tag-abs">V</span> Vertical</td>
+                    <td>Ligne verticale — ne prend qu'une coordonnée Y</td>
+                </tr>
+                <tr>
+                    <td>Q / q</td>
+                    <td><span class="tag-abs">Q</span> Quadratic</td>
+                    <td>Courbe avec 1 point de contrôle — courbe douce simple</td>
+                </tr>
+                <tr>
+                    <td>C / c</td>
+                    <td><span class="tag-abs">C</span> Cubic</td>
+                    <td>Courbe avec 2 points de contrôle — courbe très précise</td>
+                </tr>
+                <tr>
+                    <td>S / s</td>
+                    <td><span class="tag-abs">S</span> Smooth cubic</td>
+                    <td>Courbe cubique qui continue la courbe précédente en douceur</td>
+                </tr>
+                <tr>
+                    <td>T / t</td>
+                    <td><span class="tag-abs">T</span> Smooth quad</td>
+                    <td>Courbe quadratique qui continue la courbe précédente</td>
+                </tr>
+                <tr>
+                    <td>A / a</td>
+                    <td><span class="tag-abs">A</span> Arc</td>
+                    <td>Arc de cercle ou d'ellipse — pour les arrondis parfaits</td>
+                </tr>
+                <tr>
+                    <td>Z / z</td>
+                    <td><span class="tag-abs">Z</span> Close path</td>
+                    <td>Ferme le chemin en revenant au point de départ</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="tip">
+        <strong>Majuscule vs minuscule</strong>
+        <p><code>L 100 50</code> = va aux coordonnées absolues (100, 50) dans le SVG. <code>l 100 50</code> = avance de 100px à droite et 50px en bas par rapport à la position actuelle. Pour débuter, utilise les <strong>majuscules</strong> — c'est plus intuitif.</p>
+    </div>
+
+    <div class="tip">
+        <strong>Le plus utile au quotidien</strong>
+        <p>Pour 90% des formes tu auras besoin de : <code>M</code> pour commencer, <code>L</code> pour les droites, <code>Q</code> pour les courbes douces, et <code>Z</code> pour fermer. Le reste c'est pour les cas spéciaux.</p>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" onclick="goTo(2)">← Précédent</button>
+        <span class="step-counter">Étape <span>4</span> / 6</span>
+        <button class="nav-btn primary" onclick="goTo(4)">Suivant →</button>
+    </div>
+</section>
+
+
+<section class="step" id="step-4">
+    <div class="step-label">Étape 5 / 6</div>
+    <div class="step-title">Raccourcis clavier</div>
+    <p class="step-desc">L'outil supporte des raccourcis clavier pour aller beaucoup plus vite. Une fois mémorisés, tu n'as plus besoin du menu <code>...</code>.</p>
+
+    <div class="card">
+        <div class="card-bar"><div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div><span>raccourcis.md</span></div>
+        <div class="card-body">
+            <p style="color:var(--muted);font-size:.82rem;margin-bottom:16px">Quand un point est sélectionné sur le canvas :</p>
+            <div class="shortcuts">
+                <div class="shortcut"><span class="key">M</span><span class="key-desc">Insérer une commande Move après</span></div>
+                <div class="shortcut"><span class="key">L</span><span class="key-desc">Insérer une ligne droite après</span></div>
+                <div class="shortcut"><span class="key">Q</span><span class="key-desc">Insérer une courbe quadratique après</span></div>
+                <div class="shortcut"><span class="key">C</span><span class="key-desc">Insérer une courbe cubique après</span></div>
+                <div class="shortcut"><span class="key">H</span><span class="key-desc">Insérer une ligne horizontale après</span></div>
+                <div class="shortcut"><span class="key">V</span><span class="key-desc">Insérer une ligne verticale après</span></div>
+                <div class="shortcut"><span class="key">A</span><span class="key-desc">Insérer un arc après</span></div>
+                <div class="shortcut"><span class="key">Z</span><span class="key-desc">Insérer une fermeture de path après</span></div>
+            </div>
+            <p style="color:var(--muted);font-size:.82rem;margin:16px 0">Pour <strong>convertir</strong> le point sélectionné (au lieu d'insérer après) :</p>
+            <div class="shortcuts">
+                <div class="shortcut"><span class="key">⇧</span><span class="key" style="margin-left:4px">L</span><span class="key-desc">Convertir le point en ligne droite</span></div>
+                <div class="shortcut"><span class="key">⇧</span><span class="key" style="margin-left:4px">Q</span><span class="key-desc">Convertir en courbe quadratique</span></div>
+                <div class="shortcut"><span class="key">⇧</span><span class="key" style="margin-left:4px">C</span><span class="key-desc">Convertir en courbe cubique</span></div>
+                <div class="shortcut"><span class="key">⇧</span><span class="key" style="margin-left:4px">H</span><span class="key-desc">Convertir en horizontale</span></div>
+            </div>
+            <p style="color:var(--muted);font-size:.82rem;margin:16px 0">Navigation et zoom :</p>
+            <div class="shortcuts">
+                <div class="shortcut"><span class="key">scroll</span><span class="key-desc">Zoom avant / arrière</span></div>
+                <div class="shortcut"><span class="key">clic</span><span class="key-desc">Sélectionner / désélectionner un point</span></div>
+                <div class="shortcut"><span class="key">drag</span><span class="key-desc">Déplacer un point ou une poignée</span></div>
+                <div class="shortcut"><span class="key">Del</span><span class="key-desc">Supprimer le point sélectionné</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" onclick="goTo(3)">← Précédent</button>
+        <span class="step-counter">Étape <span>5</span> / 6</span>
+        <button class="nav-btn primary" onclick="goTo(5)">Suivant →</button>
+    </div>
+</section>
+
+<section class="step" id="step-5">
+    <div class="step-label">Étape 6 / 6</div>
+    <div class="step-title">Exercice pratique</div>
+    <p class="step-desc">Mets en pratique ce que tu as appris ! Voici 3 exercices progressifs à faire directement dans l'outil.</p>
+
+    <div class="challenge">
+        <h3>Exercice 1 — La goutte d'eau</h3>
+        <ol>
+            <li>Ouvre le Path Editor dans un nouvel onglet</li>
+            <li>Place un point en haut au centre <code>M 100 10</code></li>
+            <li>Trace une courbe vers le bas à gauche avec <code>Q</code></li>
+            <li>Trace une courbe vers le bas à droite avec <code>Q</code></li>
+            <li>Ferme avec <code>Z</code></li>
+            <li>Copie le path et colle dans un <code>&lt;path&gt;</code> avec <code>fill="#00b4d8"</code></li>
+        </ol>
+    </div>
+
+    <div class="challenge">
+        <h3>🎯 Exercice 2 — L'étoile</h3>
+        <ol>
+            <li>Crée 5 points alternés : un haut, un bas, un haut, un bas, un haut en cercle</li>
+            <li>Utilise uniquement des commandes <code>L</code></li>
+            <li>Ferme avec <code>Z</code></li>
+            <li>Essaie de convertir certaines lignes en courbes <code>Q</code> pour arrondir les pointes</li>
+        </ol>
+    </div>
+
+    <div class="challenge">
+        <h3>Exercice 3 — Cheveux de Sakura</h3>
+        <ol>
+            <li>Reprends le path des cheveux de Sakura dans le <code>cursor.js</code></li>
+            <li>Colle-le dans le champ <code>d="..."</code> du Path Editor</li>
+            <li>Observe comment les points et les courbes sont placés</li>
+            <li>Essaie de modifier la forme en déplaçant un point de contrôle</li>
+            <li>Copie le nouveau path modifié et remplace dans le cursor.js</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <div class="card-bar"><div class="dot-r"></div><div class="dot-o"></div><div class="dot-g"></div><span>exemple-resultat.html</span></div>
+        <div class="card-body">
+            <p style="color:var(--muted);font-size:.82rem;margin-bottom:16px">Voilà quelques exemples de paths obtenus avec l'outil :</p>
+            <div class="svg-preview">
+                <svg viewBox="0 0 400 120" width="100%" height="120">
+                    <!-- Goutte -->
+                    <path d="M 60 10 Q 20 60 40 90 Q 60 115 80 90 Q 100 60 60 10 Z" fill="#00b4d8" opacity=".8"/>
+                    <text x="60" y="132" text-anchor="middle" fill="#7d8590" font-size="9" font-family="monospace">goutte</text>
+
+                    <!-- Étoile -->
+                    <path d="M 190 15 L 200 45 L 230 45 L 207 63 L 216 93 L 190 75 L 164 93 L 173 63 L 150 45 L 180 45 Z" fill="#febc2e" opacity=".8"/>
+                    <text x="190" y="108" text-anchor="middle" fill="#7d8590" font-size="9" font-family="monospace">étoile</text>
+
+                    <!-- Nuage -->
+                    <path d="M 290 70 Q 280 40 310 40 Q 320 20 345 30 Q 360 15 375 30 Q 400 30 395 55 Q 410 65 400 80 L 285 80 Z" fill="#a78bfa" opacity=".7"/>
+                    <text x="345" y="100" text-anchor="middle" fill="#7d8590" font-size="9" font-family="monospace">nuage</text>
+                </svg>
+            </div>
+            <p style="color:var(--dim);font-size:.75rem;margin-top:10px;text-align:center">Tous ces paths ont été créés visuellement dans SVG Path Editor en moins de 2 minutes chacun.</p>
+        </div>
+    </div>
+
+    <div class="tip">
+        <strong>Workflow pro</strong>
+        <p>Pour les logos et icônes complexes : dessine d'abord sur papier, prends une photo, importe-la comme fond dans l'outil (option <strong>Image</strong>), et trace par-dessus avec précision.</p>
+    </div>
+
+    <div class="nav-btns">
+        <button class="nav-btn" onclick="goTo(4)">← Précédent</button>
+        <span class="step-counter">Étape <span>6</span> / 6</span>
+        <button class="nav-btn primary" onclick="goTo(0)">Recommencer</button>
+    </div>
+</section>
+
+</main>
+
+<script>
+    let current = 0;
+    function goTo(n) {
+        document.querySelectorAll('.step').forEach((s,i) => s.classList.toggle('active', i === n));
+        document.querySelectorAll('.step-tab').forEach((t,i) => t.classList.toggle('active', i === n));
+        current = n;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+<script src="../Cursor.js"></script>
+
+</body>
+</html>
