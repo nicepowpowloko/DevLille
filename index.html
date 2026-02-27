@@ -27,6 +27,12 @@
             --titlebar:      #161b22;
             --font-mono:     'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
             --font-ui:       -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+            /* couleurs catégories */
+            --c-ccp1:    #44D62C;
+            --c-ccp2:    #00b4d8;
+            --c-outils:  #ff6b00;
+            --c-bonus:   #a855f7;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -462,6 +468,149 @@
             .grid { grid-template-columns: 1fr; }
             .legend { gap: 16px; }
         }
+
+        /* ── FILTER BAR ── */
+        .filter-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+            animation: fadeDown .6s ease .15s both;
+        }
+        .filter-label {
+            font-family: var(--font-mono);
+            font-size: .72rem;
+            color: var(--text-dim);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            letter-spacing: .05em;
+            cursor: pointer;
+            transition: all .2s cubic-bezier(.34,1.56,.64,1);
+            user-select: none;
+        }
+        .filter-btn:hover { transform: translateY(-2px); color: var(--text-primary); }
+        .filter-btn .fdot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+        .filter-btn .fcount {
+            background: rgba(255,255,255,.07);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: .68rem;
+            color: var(--text-dim);
+            transition: all .2s;
+        }
+        .filter-btn.active .fcount { background:rgba(255,255,255,.15); color:var(--text-primary); }
+
+        .filter-btn[data-filter="all"].active,
+        .filter-btn[data-filter="all"]:hover {
+            border-color: rgba(255,255,255,.2); background:rgba(255,255,255,.06); color:#fff;
+        }
+        .filter-btn[data-filter="ccp1"].active,
+        .filter-btn[data-filter="ccp1"]:hover {
+            border-color:rgba(68,214,44,.4); background:rgba(68,214,44,.08);
+            color:var(--c-ccp1); box-shadow:0 0 16px rgba(68,214,44,.12);
+        }
+        .filter-btn[data-filter="ccp1"] .fdot { background:var(--c-ccp1); box-shadow:0 0 6px var(--c-ccp1); }
+        .filter-btn[data-filter="ccp2"].active,
+        .filter-btn[data-filter="ccp2"]:hover {
+            border-color:rgba(0,180,216,.4); background:rgba(0,180,216,.08);
+            color:var(--c-ccp2); box-shadow:0 0 16px rgba(0,180,216,.12);
+        }
+        .filter-btn[data-filter="ccp2"] .fdot { background:var(--c-ccp2); box-shadow:0 0 6px var(--c-ccp2); }
+        .filter-btn[data-filter="outils"].active,
+        .filter-btn[data-filter="outils"]:hover {
+            border-color:rgba(255,107,0,.4); background:rgba(255,107,0,.08);
+            color:var(--c-outils); box-shadow:0 0 16px rgba(255,107,0,.12);
+        }
+        .filter-btn[data-filter="outils"] .fdot { background:var(--c-outils); box-shadow:0 0 6px var(--c-outils); }
+        .filter-btn[data-filter="bonus"].active,
+        .filter-btn[data-filter="bonus"]:hover {
+            border-color:rgba(168,85,247,.4); background:rgba(168,85,247,.08);
+            color:var(--c-bonus); box-shadow:0 0 16px rgba(168,85,247,.12);
+        }
+        .filter-btn[data-filter="bonus"] .fdot { background:var(--c-bonus); box-shadow:0 0 6px var(--c-bonus); }
+
+        /* ── STATS LINE ── */
+        .stats-line {
+            font-family: var(--font-mono);
+            font-size: .73rem;
+            color: var(--text-dim);
+            text-align: center;
+            margin-bottom: 32px;
+            animation: fadeDown .6s ease .2s both;
+        }
+        .stats-line strong { color: var(--accent-green); font-weight: 600; }
+
+        /* ── CATEGORY STRIPE (top of card) ── */
+        .cat-stripe { height: 2px; width: 100%; }
+        .cat-stripe.ccp1   { background: linear-gradient(90deg, var(--c-ccp1),   transparent); }
+        .cat-stripe.ccp2   { background: linear-gradient(90deg, var(--c-ccp2),   transparent); }
+        .cat-stripe.outils { background: linear-gradient(90deg, var(--c-outils), transparent); }
+        .cat-stripe.bonus  { background: linear-gradient(90deg, var(--c-bonus),  transparent); }
+
+        /* ── CARD CATEGORY BADGE ── */
+        .card-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border-radius: 5px;
+            padding: 2px 9px;
+            font-family: var(--font-mono);
+            font-size: .65rem;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            border: 1px solid;
+        }
+        .card-category.ccp1   { background:rgba(68,214,44,.07);  border-color:rgba(68,214,44,.2);  color:var(--c-ccp1); }
+        .card-category.ccp2   { background:rgba(0,180,216,.07);  border-color:rgba(0,180,216,.2);  color:var(--c-ccp2); }
+        .card-category.outils { background:rgba(255,107,0,.07);  border-color:rgba(255,107,0,.2);  color:var(--c-outils); }
+        .card-category.bonus  { background:rgba(168,85,247,.07); border-color:rgba(168,85,247,.2); color:var(--c-bonus); }
+
+        /* ── CARD HIDE / SHOW ── */
+        .mac-card.hidden { display: none; }
+        .mac-card.card-anim {
+            animation: cardIn .35s cubic-bezier(.34,1.56,.64,1) both;
+        }
+        @keyframes cardIn {
+            from { opacity:0; transform:translateY(14px) scale(.97); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            display: none;
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            font-size: .88rem;
+        }
+        .empty-state .e-emoji { font-size: 2rem; display:block; margin-bottom:12px; }
+
+        @media (max-width: 640px) {
+            .filter-tabs { gap: 6px; }
+            .filter-btn  { padding: 7px 12px; font-size: .72rem; }
+        }
     </style>
 </head>
 <body>
@@ -504,6 +653,39 @@
         </div>
     </div>
 
+    <!-- Filtres catégories -->
+    <div class="filter-bar">
+        <span class="filter-label">// filtrer par compétence</span>
+        <div class="filter-tabs">
+            <button class="filter-btn active" data-filter="all">
+                <span>Tous les modules</span>
+                <span class="fcount" id="count-all">0</span>
+            </button>
+            <button class="filter-btn" data-filter="ccp1">
+                <span class="fdot"></span>
+                <span>CCP1 — Front-end</span>
+                <span class="fcount" id="count-ccp1">0</span>
+            </button>
+            <button class="filter-btn" data-filter="ccp2">
+                <span class="fdot"></span>
+                <span>CCP2 — Back-end</span>
+                <span class="fcount" id="count-ccp2">0</span>
+            </button>
+            <button class="filter-btn" data-filter="outils">
+                <span class="fdot"></span>
+                <span>Outils &amp; Env.</span>
+                <span class="fcount" id="count-outils">0</span>
+            </button>
+            <button class="filter-btn" data-filter="bonus">
+                <span class="fdot"></span>
+                <span>Ext.</span>
+                <span class="fcount" id="count-bonus">0</span>
+            </button>
+        </div>
+    </div>
+
+    <p class="stats-line" id="statsLine">— <strong id="visibleCount">0</strong> modules affichés —</p>
+
     <!-- Grille des cours -->
     <div class="grid" id="coursesGrid">
 
@@ -525,168 +707,169 @@
 
 <script>
     const courses = [
+        // ── CCP1 — FRONT-END ──
         {
             title: 'HTML',
             desc: 'Structure sémantique, balises, formulaires et accessibilité.',
-            path: './HTML/',
-            file: 'index.html'
+            path: './HTML/', file: 'index.html', cat: 'ccp1'
         },
         {
             title: 'CSS',
             desc: 'Flexbox, Grid, variables CSS et animations.',
-            path: './CSS/',
-            file: 'index.html'
+            path: './CSS/', file: 'index.html', cat: 'ccp1'
         },
         {
             title: 'Responsive',
             desc: 'Media queries, mobile-first et design adaptatif.',
-            path: './RESPONSIVE/formation-responsive-web-design.html',
-            file: ''
+            path: './RESPONSIVE/formation-responsive-web-design.html', file: '', cat: 'ccp1'
         },
         {
             title: 'JavaScript',
             desc: 'ES6+, DOM, async/await, fetch et modules.',
-            path: './JAVASCRIPT/',
-            file: 'index.html'
-        },
-         {
-            title: 'Glossaire',
-            desc: 'Définitions des termes techniques utilisés dans la formation.',
-            path: './GLOSSAIRE/glossaire-dwwm.html',
-            file: ''
+            path: './JAVASCRIPT/', file: 'index.html', cat: 'ccp1'
         },
         {
-            title: 'Cheat Sheet',
-            desc: 'Références rapides pour toutes les technos.',
-            path: './CHEAT_SHEET/cheatsheet-dwwm.html',
-            file: 'index.html'
-        },
-        {
-            title: 'Révision JS',
-            desc: 'Exercices de révision JavaScript et corrections.',
-            path: './RÉVISION/',
-            file: 'index.html'
+            title: 'Async',
+            desc: 'Fonctions asynchrones, Promises, async/await et gestion des erreurs.',
+            path: './ASYNC/support-async-js.html', file: '', cat: 'ccp1'
         },
         {
             title: 'Api Rest',
             desc: 'Fetch, Axios, méthodes HTTP et gestion des erreurs.',
-            path: './API_REST/api-rest.html',
-            file: ''
-        },
-          {
-            title: 'Async',
-            desc: 'Fonctions asynchrones, Promises, async/await et gestion des erreurs.',
-            path: './ASYNC/support-async-js.html',
-            file: ''
-        },
-            {
-            title: 'Destructuration',
-            desc: 'Destructuration d\'objets et tableaux en JavaScript.',
-            path: './DESTRUCTURATION/support-destructuration.html',
-            file: ''
-        },
-          {
-            title: 'Chaining',
-            desc: 'Découvrez les opérateurs de coalescence nulle et d\'optionnel chaining.',
-            path: './CHAINING/support-optionalchaining-nullish.html',
-            file: ''
+            path: './API_REST/api-rest.html', file: '', cat: 'ccp1'
         },
         {
-            title: 'Set & Map',
-            desc: ' Utilisation avancée des collections Set et Map en JavaScript.',
-            path: './SET_MAP/support-set-map.html',
-            file: ''
-        },
-        {
-            title: 'Entretien Dev',
-            desc: 'Préparation à l\'entretien technique de développeur web.',
-            path: './ENTRETIEN/support-entretien.html',
-            file: ''
-        },
-        {
-            title: 'Storage',
-            desc: 'localStorage, sessionStorage et cookies.',
-            path: './STORAGE/cours-localStorage.html',
-            file: ''
-        },
-        {
-            title: 'Pagination',
-            desc: 'Implémentation côté client et serveur.',
-            path: './PAGINATION/pagination_cours_complet.html',
-            file: ''
-        },
-          {
             title: 'React',
             desc: 'Composants, hooks, state, props et routing.',
-            path: './REACT/',
-            file: 'index.html'
-        },
-          {
-            title: 'Environnement',
-            desc: 'Setup Mac, Windows, Linux, VS Code et Terminal.',
-            path: './ENVIRONEMENT/support_environnement.html',
-            file: ''
-        },
-        {
-            title: 'PHP',
-            desc: 'Bases PHP, POO, sessions et connexion BDD.',
-            path: './PHP/',
-            file: 'index.html'
-        },
-         {
-            title: 'Docker',
-            desc: 'Conteneurs, images, docker-compose et déploiement.',
-            path: './DOCKER/',
-            file: 'index.html'
-        },
-        {
-            title: 'Code',
-            desc: 'Exemples de code et snippets réutilisables.',
-            path: './CODE/',
-            file: 'index.html'
-        },
-        {
-            title: 'Réseaux',
-            desc: 'Protocoles, adressage IP, DNS et HTTP/HTTPS.',
-            path: './RESEAUX/formation-reseaux.html',
-            file: ''
-        },
-        {
-            title: 'Sécurité',
-            desc: 'XSS, CSRF, SQL injection et bonnes pratiques.',
-            path: './SECURITE/securite-formation.html',
-            file: ''
+            path: './REACT/', file: 'index.html', cat: 'ccp1'
         },
         {
             title: 'UI/UX',
             desc: 'Principes de design, accessibilité et prototypage.',
-            path: './UI_UX/',
-            file: 'index.html'
+            path: './UI_UX/', file: 'index.html', cat: 'ccp1'
         },
-          {
+
+        // ── CCP2 — BACK-END ──
+        {
+            title: 'PHP',
+            desc: 'Bases PHP, POO, sessions et connexion BDD.',
+            path: './PHP/', file: 'index.html', cat: 'ccp2'
+        },
+        {
+            title: 'SQL / BDD',
+            desc: 'MySQL, SELECT, JOIN, relations et modélisation de données.',
+            path: './BDD/support-bdd.html', file: '', cat: 'ccp2'
+        },
+        {
+            title: 'Sécurité',
+            desc: 'XSS, CSRF, SQL injection et bonnes pratiques.',
+            path: './SECURITE/securite-formation.html', file: '', cat: 'ccp2'
+        },
+        {
+            title: 'Storage',
+            desc: 'localStorage, sessionStorage et cookies.',
+            path: './STORAGE/cours-localStorage.html', file: '', cat: 'ccp2'
+        },
+        {
+            title: 'Pagination',
+            desc: 'Implémentation côté client et serveur.',
+            path: './PAGINATION/pagination_cours_complet.html', file: '', cat: 'ccp2'
+        },
+
+        // ── OUTILS & ENV. ──
+        {
+            title: 'Git & GitHub',
+            desc: 'Branches, merge, pull request.',
+            path: './Git_Github/support_Git.html', file: '', cat: 'outils'
+        },
+        {
+            title: 'Environnement',
+            desc: 'Setup Mac, Windows, Linux, VS Code et Terminal.',
+            path: './ENVIRONEMENT/support_environnement.html', file: '', cat: 'outils'
+        },
+        {
+            title: 'Docker',
+            desc: 'Conteneurs, images, docker-compose et déploiement.',
+            path: './DOCKER/', file: 'index.html', cat: 'outils'
+        },
+        {
+            title: 'Réseaux',
+            desc: 'Protocoles, adressage IP, DNS et HTTP/HTTPS.',
+            path: './RESEAUX/formation-reseaux.html', file: '', cat: 'outils'
+        },
+        {
+            title: 'Cheat Sheet',
+            desc: 'Références rapides pour toutes les technos.',
+            path: './CHEAT_SHEET/cheatsheet-dwwm.html', file: 'index.html', cat: 'outils'
+        },
+        {
+            title: 'Glossaire',
+            desc: 'Définitions des termes techniques utilisés dans la formation.',
+            path: './GLOSSAIRE/glossaire-dwwm.html', file: '', cat: 'outils'
+        },
+        {
+            title: 'Code',
+            desc: 'Exemples de code et snippets réutilisables.',
+            path: './CODE/', file: 'index.html', cat: 'outils'
+        },
+
+        // ── BONUS ──
+        {
+            title: 'Révision JS',
+            desc: 'Exercices de révision JavaScript et corrections.',
+            path: './RÉVISION/', file: 'index.html', cat: 'bonus'
+        },
+        {
+            title: 'Destructuration',
+            desc: 'Destructuration d\'objets et tableaux en JavaScript.',
+            path: './DESTRUCTURATION/support-destructuration.html', file: '', cat: 'bonus'
+        },
+        {
+            title: 'Chaining',
+            desc: 'Découvrez les opérateurs de coalescence nulle et d\'optionnel chaining.',
+            path: './CHAINING/support-optionalchaining-nullish.html', file: '', cat: 'bonus'
+        },
+        {
+            title: 'Set & Map',
+            desc: 'Utilisation avancée des collections Set et Map en JavaScript.',
+            path: './SET_MAP/support-set-map.html', file: '', cat: 'bonus'
+        },
+        {
+            title: 'Entretien Dev',
+            desc: 'Préparation à l\'entretien technique de développeur web.',
+            path: './ENTRETIEN/support-entretien.html', file: '', cat: 'bonus'
+        },
+        {
             title: 'SVG',
             desc: 'Création et animation de graphiques vectoriels avec SVG.',
-            path: './SVG/cours-SVG.html',
-            file: ''
+            path: './SVG/cours-SVG.html', file: '', cat: 'bonus'
         },
-          {
+        {
             title: 'Path Editor',
             desc: 'Outil interactif pour éditer les courbes SVG et générer du code.',
-            path: './PATH_EDITOR/tuto-svg-path-editor.html',
-            file: ''
+            path: './PATH_EDITOR/tuto-svg-path-editor.html', file: '', cat: 'bonus'
         },
     ];
 
     /* GÉNÉRATION DES CARTES */
     const grid = document.getElementById('coursesGrid');
 
+    const catLabels = {
+        ccp1:   'CCP1 — Front-end',
+        ccp2:   'CCP2 — Back-end',
+        outils: 'Outils & Env.',
+        bonus:  'Ext.',
+    };
+
     courses.forEach((course, i) => {
         const url = course.path;
-        const label = course.title.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const label = course.title.toLowerCase().replace(/[^a-z0-9]/g, '');
 
         const card = document.createElement('div');
         card.className = 'mac-card';
+        card.dataset.cat = course.cat;
         card.innerHTML = `
+            <div class="cat-stripe ${course.cat}"></div>
             <div class="titlebar">
                 <div class="dots">
                     <button class="dot dot-red" title="Retour arrière" onclick="goBack(event)" aria-label="Retour arrière">
@@ -702,6 +885,7 @@
                 <span class="titlebar-name">${label}.dev</span>
             </div>
             <div class="card-body">
+                <div class="card-category ${course.cat}">▸ ${catLabels[course.cat]}</div>
                 <div class="card-badge">${course.title}</div>
                 <h2 class="card-title">${course.title}</h2>
                 <p class="card-desc">${course.desc}</p>
@@ -713,6 +897,67 @@
         `;
         grid.appendChild(card);
     });
+
+    // Ajouter l'empty state dans la grille
+    const emptyState = document.createElement('div');
+    emptyState.className = 'empty-state';
+    emptyState.id = 'emptyState';
+    emptyState.innerHTML = '<span class="e-emoji">🔍</span>Aucun module dans cette catégorie.';
+    grid.appendChild(emptyState);
+
+    // ── Compteurs ──
+    const counts = { all: courses.length, ccp1:0, ccp2:0, outils:0, bonus:0 };
+    courses.forEach(c => counts[c.cat]++);
+    Object.keys(counts).forEach(k => {
+        const el = document.getElementById('count-' + k);
+        if (el) el.textContent = counts[k];
+    });
+    updateStats('all', courses.length);
+
+    // ── Animations stagger initiales ──
+    document.querySelectorAll('.mac-card[data-cat]').forEach((card, i) => {
+        card.style.animationDelay = (i * 0.04) + 's';
+        card.style.animation = `fadeUp .5s ease ${(i * 0.04)}s both`;
+    });
+
+    // ── Filtres ──
+    let activeFilter = 'all';
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const f = btn.dataset.filter;
+            if (f === activeFilter) return;
+            activeFilter = f;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterCards(f);
+        });
+    });
+
+    function filterCards(filter) {
+        const cards = document.querySelectorAll('.mac-card[data-cat]');
+        let visible = 0;
+        cards.forEach(card => {
+            const match = filter === 'all' || card.dataset.cat === filter;
+            if (match) {
+                card.classList.remove('hidden');
+                card.style.animation = 'none';
+                void card.offsetWidth;
+                card.style.animation = `cardIn .35s cubic-bezier(.34,1.56,.64,1) ${visible * 0.04}s both`;
+                visible++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+        document.getElementById('emptyState').style.display = visible === 0 ? 'block' : 'none';
+        updateStats(filter, visible);
+    }
+
+    function updateStats(filter, count) {
+        const label = filter === 'all' ? '' : ` · <span style="color:var(--text-muted)">${catLabels[filter]}</span>`;
+        const sl = document.getElementById('statsLine');
+        if (sl) sl.innerHTML =
+            `— <strong>${count}</strong> module${count > 1 ? 's' : ''} affiché${count > 1 ? 's' : ''}${label} —`;
+    }
 
     function goBack(event) {
         event.stopPropagation();

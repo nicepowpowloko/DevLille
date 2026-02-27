@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../favicon-32x32.png" type="image/png">
+<title>Projet Jeu Vidéo React — DWWM</title>
+<style>
+:root {
+    --bg-deep:      #080b0f;
+    --bg-card:      #0d1117;
+    --titlebar:     #161b22;
+    --border:       #1e2d3d;
+    --accent-neon:  #44D62C;
+    --accent-blue:  #61dafb;
+    --accent-gold:  #febc2e;
+    --text-primary: #e6edf3;
+    --text-muted:   #7d8590;
+    --text-dim:     #3d444d;
+    --red-btn:      #ff5f57;
+    --orange-btn:   #febc2e;
+    --green-btn:    #28c840;
+    --diff-1: #28c840;
+    --diff-2: #febc2e;
+    --diff-3: #ff8c42;
+    --diff-4: #ff5f57;
+    --font-mono: 'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;
+    --font-ui:   -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+    font-family:var(--font-ui);
+    background:var(--bg-deep);
+    min-height:100vh;
+    color:var(--text-primary);
+    overflow-x:hidden;
+}
+body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image:
+        linear-gradient(rgba(68,214,44,.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(68,214,44,.02) 1px, transparent 1px);
+    background-size:40px 40px;
+    pointer-events:none; z-index:0;
+}
+.orb { position:fixed; border-radius:50%; filter:blur(130px); pointer-events:none; z-index:0; opacity:.12; }
+.orb-1 { width:600px;height:600px; background:radial-gradient(circle,#44D62C,transparent); top:-200px;left:-200px; animation:orbFloat 20s ease-in-out infinite; }
+.orb-2 { width:500px;height:500px; background:radial-gradient(circle,#61dafb,transparent); bottom:-150px;right:-150px; animation:orbFloat 25s ease-in-out infinite reverse; }
+.orb-3 { width:300px;height:300px; background:radial-gradient(circle,#febc2e,transparent); top:40%;left:50%; animation:orbFloat 15s ease-in-out infinite 5s; }
+@keyframes orbFloat { 0%,100%{transform:translate(0,0)} 33%{transform:translate(25px,-25px)} 66%{transform:translate(-20px,20px)} }
+
+.overlay { position:fixed;inset:0;background:var(--bg-deep);z-index:9999;opacity:0;pointer-events:none;transition:opacity .35s ease; }
+.overlay.active { opacity:1;pointer-events:all; }
+.toast { position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--titlebar);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-family:var(--font-mono);font-size:.8rem;color:var(--orange-btn);box-shadow:0 8px 30px rgba(0,0,0,.5);z-index:1000;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s ease;opacity:0;white-space:nowrap; }
+.toast.show { transform:translateX(-50%) translateY(0);opacity:1; }
+
+.container { position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:60px 24px 80px; }
+
+/* ── HEADER ── */
+.header { text-align:center;margin-bottom:50px; }
+.logo-wrap { display:inline-block;margin-bottom:18px;position:relative; }
+.logo-wrap::before { content:'';position:absolute;inset:-8px;border-radius:20px;background:linear-gradient(135deg,var(--accent-neon),var(--accent-blue));opacity:.2;filter:blur(16px);animation:logoPulse 3s ease-in-out infinite; }
+@keyframes logoPulse { 0%,100%{opacity:.12} 50%{opacity:.4} }
+.logo-wrap img { position:relative;width:64px;background:#fff;padding:8px;border-radius:12px;display:block; }
+.header h1 { font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:700;letter-spacing:-.02em;background:linear-gradient(135deg,#fff 0%,var(--accent-blue) 40%,var(--accent-neon) 85%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradShift 6s linear infinite;margin-bottom:8px; }
+@keyframes gradShift { 0%{background-position:0% center} 100%{background-position:200% center} }
+.breadcrumb { font-family:var(--font-mono);font-size:.75rem;color:var(--text-muted); }
+.breadcrumb span { color:var(--accent-neon); }
+
+/* ── INTRO BANNER ── */
+.intro-banner {
+    background:linear-gradient(135deg, rgba(97,218,251,.06), rgba(68,214,44,.04));
+    border:1px solid rgba(97,218,251,.15);
+    border-radius:14px;
+    padding:24px 28px;
+    margin-bottom:40px;
+    display:flex;
+    align-items:flex-start;
+    gap:20px;
+}
+.intro-icon { font-size:2.4rem;flex-shrink:0;margin-top:2px; }
+.intro-text h2 { font-size:1.05rem;font-weight:600;color:var(--text-primary);margin-bottom:8px; }
+.intro-text p { font-size:.88rem;color:var(--text-muted);line-height:1.7; }
+.intro-text strong { color:var(--accent-blue); }
+.rules-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px; }
+.rule-item {
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 14px;
+    display:flex;align-items:center;gap:10px;
+    font-size:.82rem;color:var(--text-muted);
+}
+.rule-icon { font-size:1.1rem;flex-shrink:0; }
+
+/* ── DIFF LEGEND ── */
+.diff-legend {
+    display:flex;justify-content:center;gap:20px;flex-wrap:wrap;
+    margin-bottom:36px;
+    font-family:var(--font-mono);font-size:.73rem;color:var(--text-muted);
+}
+.diff-dot { width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px; }
+
+/* ── SECTION TITLE ── */
+.section-label {
+    font-family:var(--font-mono);font-size:.72rem;
+    color:var(--accent-neon);letter-spacing:.1em;text-transform:uppercase;
+    margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.section-label::before { content:'//'; }
+.section-label::after  { content:'';flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent); }
+
+/* ── GAMES GRID ── */
+.games-grid { display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:40px; }
+@media(max-width:700px) { .games-grid { grid-template-columns:1fr; } }
+
+.game-card {
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1), border-color .3s, box-shadow .3s;
+    cursor:default;
+    position:relative;
+}
+.game-card:hover {
+    transform:translateY(-6px) scale(1.01);
+    box-shadow:0 20px 50px rgba(0,0,0,.6), 0 0 0 1px rgba(68,214,44,.15);
+}
+
+/* Couleur de la barre haut selon difficulté */
+.game-card[data-diff="1"] { border-top:3px solid var(--diff-1); }
+.game-card[data-diff="2"] { border-top:3px solid var(--diff-2); }
+.game-card[data-diff="3"] { border-top:3px solid var(--diff-3); }
+.game-card[data-diff="4"] { border-top:3px solid var(--diff-4); }
+.game-card[data-diff="1"]:hover { border-color:rgba(40,200,64,.4); }
+.game-card[data-diff="2"]:hover { border-color:rgba(254,188,46,.4); }
+.game-card[data-diff="3"]:hover { border-color:rgba(255,140,66,.4); }
+.game-card[data-diff="4"]:hover { border-color:rgba(255,95,87,.4); }
+
+/* Titlebar Mac */
+.gc-titlebar {
+    background:var(--titlebar);
+    padding:9px 14px;
+    display:flex;align-items:center;gap:10px;
+    border-bottom:1px solid var(--border);
+}
+.dots { display:flex;gap:7px;align-items:center; }
+.dot { width:12px;height:12px;border-radius:50%;flex-shrink:0;border:none;outline:none;cursor:default; }
+.dot-r { background:var(--red-btn); }
+.dot-o { background:var(--orange-btn); }
+.dot-g { background:var(--green-btn); }
+.gc-filename { flex:1;text-align:center;font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);margin-right:39px; }
+
+.gc-body { padding:18px 20px 20px; }
+.gc-header { display:flex;align-items:center;gap:12px;margin-bottom:14px; }
+.gc-emoji { font-size:2rem; }
+.gc-info { flex:1; }
+.gc-title { font-size:1.05rem;font-weight:700;color:var(--text-primary);margin-bottom:4px; }
+.gc-meta { display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
+
+.diff-badge {
+    font-family:var(--font-mono);font-size:.65rem;
+    padding:2px 8px;border-radius:100px;font-weight:600;
+}
+.diff-badge[data-diff="1"] { background:rgba(40,200,64,.15);color:var(--diff-1);border:1px solid rgba(40,200,64,.25); }
+.diff-badge[data-diff="2"] { background:rgba(254,188,46,.15);color:var(--diff-2);border:1px solid rgba(254,188,46,.25); }
+.diff-badge[data-diff="3"] { background:rgba(255,140,66,.15);color:var(--diff-3);border:1px solid rgba(255,140,66,.25); }
+.diff-badge[data-diff="4"] { background:rgba(255,95,87,.15);color:var(--diff-4);border:1px solid rgba(255,95,87,.25); }
+
+.time-badge {
+    font-family:var(--font-mono);font-size:.65rem;
+    color:var(--text-dim);
+    padding:2px 8px;border-radius:100px;
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--border);
+}
+
+.gc-desc { font-size:.85rem;color:var(--text-muted);line-height:1.65;margin-bottom:14px; }
+
+.gc-concepts { margin-bottom:14px; }
+.gc-concepts-label {
+    font-family:var(--font-mono);font-size:.67rem;
+    color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;
+    margin-bottom:8px;
+}
+.tags { display:flex;flex-wrap:wrap;gap:5px; }
+.tag {
+    font-family:var(--font-mono);font-size:.67rem;
+    background:rgba(97,218,251,.07);
+    border:1px solid rgba(97,218,251,.15);
+    color:var(--accent-blue);
+    padding:3px 9px;border-radius:4px;
+}
+.tag.green {
+    background:rgba(68,214,44,.07);
+    border-color:rgba(68,214,44,.15);
+    color:var(--accent-neon);
+}
+.tag.gold {
+    background:rgba(254,188,46,.07);
+    border-color:rgba(254,188,46,.15);
+    color:var(--accent-gold);
+}
+
+.gc-deliverables {
+    border-top:1px solid var(--border);
+    padding-top:12px;
+    margin-top:4px;
+}
+.gc-deliverables-label {
+    font-family:var(--font-mono);font-size:.67rem;
+    color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;
+    margin-bottom:8px;
+}
+.deliverable-item {
+    display:flex;align-items:flex-start;gap:8px;
+    font-size:.82rem;color:var(--text-muted);
+    line-height:1.5;margin-bottom:5px;
+}
+.deliverable-item::before { content:'→';color:var(--accent-neon);font-size:.72rem;margin-top:2px;flex-shrink:0; }
+
+/* ── CONSIGNES GÉNÉRALES ── */
+.mac-card {
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:12px;overflow:hidden;
+    margin-bottom:20px;
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1), border-color .3s, box-shadow .3s;
+}
+.mac-card:hover {
+    transform:translateY(-4px);
+    border-color:rgba(68,214,44,.25);
+    box-shadow:0 16px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(68,214,44,.1);
+}
+.titlebar {
+    background:var(--titlebar);padding:10px 14px;
+    display:flex;align-items:center;gap:10px;
+    border-bottom:1px solid var(--border);
+}
+.titlebar-dot { width:12px;height:12px;border-radius:50%;flex-shrink:0; }
+.titlebar-name { flex:1;text-align:center;font-family:var(--font-mono);font-size:.75rem;color:var(--text-muted);margin-right:39px; }
+.card-body { padding:22px 24px 26px; }
+.card-tag {
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(68,214,44,.07);border:1px solid rgba(68,214,44,.18);
+    border-radius:6px;padding:3px 10px;
+    font-family:var(--font-mono);font-size:.68rem;color:var(--accent-neon);
+    letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;
+}
+.card-tag::before { content:'▸';font-size:.62rem; }
+.card-section-title {
+    font-size:1rem;font-weight:600;color:var(--text-primary);
+    margin-bottom:14px;padding-left:10px;
+    border-left:3px solid var(--accent-neon);
+}
+
+.steps { display:flex;flex-direction:column;gap:10px; }
+.step {
+    display:flex;align-items:flex-start;gap:14px;
+    background:rgba(255,255,255,.02);
+    border:1px solid var(--border);
+    border-radius:8px;padding:12px 14px;
+}
+.step-num {
+    width:26px;height:26px;border-radius:50%;flex-shrink:0;
+    background:rgba(68,214,44,.1);border:1px solid rgba(68,214,44,.2);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-mono);font-size:.72rem;font-weight:700;
+    color:var(--accent-neon);
+}
+.step-text { flex:1; }
+.step-title { font-size:.88rem;font-weight:600;color:var(--text-primary);margin-bottom:3px; }
+.step-desc  { font-size:.82rem;color:var(--text-muted);line-height:1.55; }
+
+.criteria-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px; }
+@media(max-width:600px) { .criteria-grid { grid-template-columns:1fr; } }
+.crit-item {
+    display:flex;align-items:flex-start;gap:10px;
+    background:rgba(255,255,255,.02);border:1px solid var(--border);
+    border-radius:8px;padding:10px 12px;
+    font-size:.83rem;color:var(--text-muted);line-height:1.5;
+}
+.crit-icon { font-size:1rem;flex-shrink:0;margin-top:1px; }
+.crit-text strong { color:var(--text-primary);display:block;font-size:.85rem;margin-bottom:2px; }
+
+/* ── NAV BOTTOM ── */
+.nav-bottom { display:flex;gap:12px;justify-content:center;margin-top:10px;flex-wrap:wrap; }
+.nav-btn {
+    background:rgba(68,214,44,.08);border:1px solid rgba(68,214,44,.2);
+    color:var(--accent-neon);
+    padding:10px 22px;border-radius:8px;
+    font-family:var(--font-mono);font-size:.82rem;
+    text-decoration:none;cursor:pointer;
+    transition:all .2s;display:inline-flex;align-items:center;gap:7px;
+}
+.nav-btn:hover { background:rgba(68,214,44,.15);transform:translateY(-2px); }
+.nav-btn.blue {
+    background:rgba(97,218,251,.08);border-color:rgba(97,218,251,.2);color:var(--accent-blue);
+}
+.nav-btn.blue:hover { background:rgba(97,218,251,.15); }
+
+/* ── FOOTER ── */
+footer { position:relative;z-index:1;text-align:center;padding:36px 24px 60px;border-top:1px solid var(--border);margin-top:40px; }
+footer img { width:52px;background:#fff;padding:7px;border-radius:10px;margin-bottom:14px;opacity:.75; }
+footer p  { color:var(--text-muted);font-size:.8rem;margin:4px 0; }
+footer a  { color:var(--accent-blue);text-decoration:none;font-size:.8rem; }
+footer a:hover { text-decoration:underline; }
+.mono { font-family:var(--font-mono);color:var(--text-dim);font-size:.7rem;margin-top:14px; }
+
+@media(max-width:600px) {
+    .intro-banner { flex-direction:column; }
+    .rules-grid { grid-template-columns:1fr; }
+    .gc-header { flex-direction:column;align-items:flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"></div>
+<div class="toast"   id="toast"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="container" id="mainContainer">
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo-wrap">
+            <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil">
+        </div>
+        <h1>🎮 Projet — Jeu vidéo React</h1>
+        <p class="breadcrumb">Formation DWWM <span>/</span> React <span>/</span> Projet Binôme <span>// 2025-2026</span></p>
+    </header>
+
+    <!-- INTRO BANNER -->
+    <div class="intro-banner">
+        <div class="intro-icon">👥</div>
+        <div class="intro-text">
+            <h2>Travail en binôme — Choisissez votre jeu !</h2>
+            <p>
+                Vous travaillez <strong>par groupe de 2</strong>. Chaque binôme choisit un jeu parmi les propositions ci-dessous et le réalise entièrement en React.
+                L'objectif est de mettre en pratique les concepts vus en cours : <strong>composants, useState, useEffect, props</strong> et gestion d'état.
+                Un binôme = un jeu. Pas deux groupes sur le même jeu si possible.
+            </p>
+         
+        </div>
+    </div>
+
+    <!-- LEGENDE DIFFICULTE -->
+    <div class="diff-legend">
+        <span><span class="diff-dot" style="background:var(--diff-1)"></span>Débutant</span>
+        <span><span class="diff-dot" style="background:var(--diff-2)"></span>Intermédiaire</span>
+        <span><span class="diff-dot" style="background:var(--diff-3)"></span>Avancé</span>
+        <span><span class="diff-dot" style="background:var(--diff-4)"></span>Ambitieux</span>
+    </div>
+
+    <!-- CHOIX DES JEUX -->
+    <div class="section-label">Propositions de jeux</div>
+
+    <div class="games-grid">
+
+        <!-- JEU 1 : Morpion -->
+        <div class="game-card" data-diff="1">
+            <div class="gc-titlebar">
+                <div class="dots">
+                    <div class="dot dot-r"></div>
+                    <div class="dot dot-o"></div>
+                    <div class="dot dot-g"></div>
+                </div>
+                <span class="gc-filename">morpion.jsx</span>
+            </div>
+            <div class="gc-body">
+                <div class="gc-header">
+                    <div class="gc-emoji">⭕</div>
+                    <div class="gc-info">
+                        <div class="gc-title">Morpion (Tic-Tac-Toe)</div>
+                        <div class="gc-meta">
+                            <span class="diff-badge" data-diff="1">⬤ Débutant</span>
+                            <span class="time-badge">⏱ 2–3 jours</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="gc-desc">Le grand classique. Deux joueurs s'affrontent en local sur la même machine. Gérer les tours, détecter le gagnant et afficher le score. Idéal pour bien maîtriser <code>useState</code>.</p>
+                <div class="gc-concepts">
+                    <div class="gc-concepts-label">Concepts React pratiqués</div>
+                    <div class="tags">
+                        <span class="tag">useState</span>
+                        <span class="tag">props</span>
+                        <span class="tag">composants</span>
+                        <span class="tag green">logique conditionnelle</span>
+                    </div>
+                </div>
+                <div class="gc-deliverables">
+                    <div class="gc-deliverables-label">Fonctionnalités attendues</div>
+                    <div class="deliverable-item">Plateau 3×3 cliquable, alternance des joueurs X / O</div>
+                    <div class="deliverable-item">Détection automatique du gagnant ou match nul</div>
+                    <div class="deliverable-item">Bouton "Rejouer" et affichage du score cumulé</div>
+                    <div class="deliverable-item"><strong>Bonus :</strong> historique des coups + retour arrière</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JEU 2 : Memory -->
+        <div class="game-card" data-diff="1">
+            <div class="gc-titlebar">
+                <div class="dots">
+                    <div class="dot dot-r"></div>
+                    <div class="dot dot-o"></div>
+                    <div class="dot dot-g"></div>
+                </div>
+                <span class="gc-filename">memory-game.jsx</span>
+            </div>
+            <div class="gc-body">
+                <div class="gc-header">
+                    <div class="gc-emoji">🃏</div>
+                    <div class="gc-info">
+                        <div class="gc-title">Jeu de Memory</div>
+                        <div class="gc-meta">
+                            <span class="diff-badge" data-diff="1">⬤ Débutant</span>
+                            <span class="time-badge">⏱ 2–3 jours</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="gc-desc">Retournez les cartes et retrouvez les paires identiques. Excellent pour pratiquer la gestion d'état d'un tableau, les délais avec <code>useEffect</code> et le mélange de tableaux.</p>
+                <div class="gc-concepts">
+                    <div class="gc-concepts-label">Concepts React pratiqués</div>
+                    <div class="tags">
+                        <span class="tag">useState</span>
+                        <span class="tag">useEffect</span>
+                        <span class="tag">map()</span>
+                        <span class="tag green">tableau de données</span>
+                    </div>
+                </div>
+                <div class="gc-deliverables">
+                    <div class="gc-deliverables-label">Fonctionnalités attendues</div>
+                    <div class="deliverable-item">Grille de cartes mélangées (emojis ou images)</div>
+                    <div class="deliverable-item">Retournement animé, vérification des paires</div>
+                    <div class="deliverable-item">Compteur de tentatives et timer</div>
+                    <div class="deliverable-item"><strong>Bonus :</strong> meilleur score sauvegardé (localStorage)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JEU 3 : Quiz -->
+        <div class="game-card" data-diff="2">
+            <div class="gc-titlebar">
+                <div class="dots">
+                    <div class="dot dot-r"></div>
+                    <div class="dot dot-o"></div>
+                    <div class="dot dot-g"></div>
+                </div>
+                <span class="gc-filename">quiz-app.jsx</span>
+            </div>
+            <div class="gc-body">
+                <div class="gc-header">
+                    <div class="gc-emoji">🧠</div>
+                    <div class="gc-info">
+                        <div class="gc-title">Quiz interactif</div>
+                        <div class="gc-meta">
+                            <span class="diff-badge" data-diff="2">⬤ Intermédiaire</span>
+                            <span class="time-badge">⏱ 3–4 jours</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="gc-desc">Un quiz avec 10 questions, chronomètre par question et score final. Thème libre (culture générale, React lui-même, cinéma…). Parfait pour structurer des composants réutilisables.</p>
+                <div class="gc-concepts">
+                    <div class="gc-concepts-label">Concepts React pratiqués</div>
+                    <div class="tags">
+                        <span class="tag">useState</span>
+                        <span class="tag">useEffect</span>
+                        <span class="tag">composants réutilisables</span>
+                        <span class="tag gold">données JSON</span>
+                    </div>
+                </div>
+                <div class="gc-deliverables">
+                    <div class="gc-deliverables-label">Fonctionnalités attendues</div>
+                    <div class="deliverable-item">Minimum 10 questions avec 4 choix chacune</div>
+                    <div class="deliverable-item">Barre de progression et chronomètre par question</div>
+                    <div class="deliverable-item">Écran de résultats avec score et récapitulatif</div>
+                    <div class="deliverable-item"><strong>Bonus :</strong> questions chargées depuis une API (Open Trivia DB)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JEU 4 : Snake -->
+        <div class="game-card" data-diff="2">
+            <div class="gc-titlebar">
+                <div class="dots">
+                    <div class="dot dot-r"></div>
+                    <div class="dot dot-o"></div>
+                    <div class="dot dot-g"></div>
+                </div>
+                <span class="gc-filename">snake.jsx</span>
+            </div>
+            <div class="gc-body">
+                <div class="gc-header">
+                    <div class="gc-emoji">🐍</div>
+                    <div class="gc-info">
+                        <div class="gc-title">Snake</div>
+                        <div class="gc-meta">
+                            <span class="diff-badge" data-diff="2">⬤ Intermédiaire</span>
+                            <span class="time-badge">⏱ 3–5 jours</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="gc-desc">Le serpent qui grandit en mangeant des fruits. Gérer le mouvement automatique avec un intervalle, les collisions et les touches du clavier. Bonne introduction aux boucles de jeu en React.</p>
+                <div class="gc-concepts">
+                    <div class="gc-concepts-label">Concepts React pratiqués</div>
+                    <div class="tags">
+                        <span class="tag">useState</span>
+                        <span class="tag">useEffect</span>
+                        <span class="tag">useRef</span>
+                        <span class="tag green">setInterval</span>
+                        <span class="tag green">keydown events</span>
+                    </div>
+                </div>
+                <div class="gc-deliverables">
+                    <div class="gc-deliverables-label">Fonctionnalités attendues</div>
+                    <div class="deliverable-item">Serpent contrôlable aux touches directionnelles</div>
+                    <div class="deliverable-item">Gestion des collisions (mur + corps)</div>
+                    <div class="deliverable-item">Vitesse progressive et compteur de score</div>
+                    <div class="deliverable-item"><strong>Bonus :</strong> mode mobile avec swipe + meilleur score</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JEU 5 : Whack-a-Mole -->
+        <div class="game-card" data-diff="2">
+            <div class="gc-titlebar">
+                <div class="dots">
+                    <div class="dot dot-r"></div>
+                    <div class="dot dot-o"></div>
+                    <div class="dot dot-g"></div>
+                </div>
+                <span class="gc-filename">whack-a-mole.jsx</span>
+            </div>
+            <div class="gc-body">
+                <div class="gc-header">
+                    <div class="gc-emoji">🐹</div>
+                    <div class="gc-info">
+                        <div class="gc-title">Whack-a-Mole</div>
+                        <div class="gc-meta">
+                            <span class="diff-badge" data-diff="2">⬤ Intermédiaire</span>
+                            <span class="time-badge">⏱ 2–4 jours</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="gc-desc">Des taupes apparaissent aléatoirement dans des trous — cliquez dessus avant qu'elles disparaissent ! Un classique des jeux de réaction, très ludique à coder et excellent pour <code>setTimeout</code>.</p>
+                <div class="gc-concepts">
+                    <div class="gc-concepts-label">Concepts React pratiqués</div>
+                    <div class="tags">
+                        <span class="tag">useState</span>
+                        <span class="tag">useEffect</span>
+                        <span class="tag gold">Math.random()</span>
+                        <span class="tag green">setTimeout</span>
+                    </div>
+                </div>
+                <div class="gc-deliverables">
+                    <div class="gc-deliverables-label">Fonctionnalités attendues</div>
+                    <div class="deliverable-item">Grille de trous (3×3 minimum) avec apparitions aléatoires</div>
+                    <div class="deliverable-item">Compte à rebours de 30 secondes et score</div>
+                    <div class="deliverable-item">Difficultés progressives (apparitions plus rapides)</div>
+                    <div class="deliverable-item"><strong>Bonus :</strong> taupe bonus / malus (cliquer dessus enlève des points)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JEU 6 : Wordle -->
+        <div class="game-card" data-diff="3">
+            <div class="gc-titlebar">
+                <div class="dots">
+                    <div class="dot dot-r"></div>
+                    <div class="dot dot-o"></div>
+                    <div class="dot dot-g"></div>
+                </div>
+                <span class="gc-filename">wordle-fr.jsx</span>
+            </div>
+            <div class="gc-body">
+                <div class="gc-header">
+                    <div class="gc-emoji">🟩</div>
+                    <div class="gc-info">
+                        <div class="gc-title">Wordle français</div>
+                        <div class="gc-meta">
+                            <span class="diff-badge" data-diff="3">⬤ Avancé</span>
+                            <span class="time-badge">⏱ 4–6 jours</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="gc-desc">Devinez le mot en 6 tentatives. Chaque lettre indique si elle est bien placée (🟩), présente (🟨) ou absente (⬜). Gestion d'un clavier virtuel, d'un tableau 2D et de la validation de mots.</p>
+                <div class="gc-concepts">
+                    <div class="gc-concepts-label">Concepts React pratiqués</div>
+                    <div class="tags">
+                        <span class="tag">useState</span>
+                        <span class="tag">useEffect</span>
+                        <span class="tag gold">tableau 2D</span>
+                        <span class="tag gold">clavier virtuel</span>
+                        <span class="tag green">validation complexe</span>
+                    </div>
+                </div>
+                <div class="gc-deliverables">
+                    <div class="gc-deliverables-label">Fonctionnalités attendues</div>
+                    <div class="deliverable-item">Grille 6×5 avec coloration des lettres</div>
+                    <div class="deliverable-item">Clavier virtuel + saisie physique au clavier</div>
+                    <div class="deliverable-item">Liste de mots valides (dictionnaire JS intégré)</div>
+                    <div class="deliverable-item"><strong>Bonus :</strong> animations d'entrée des lettres + mode sombre/clair</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JEU 7 : Tower Defense -->
+        <div class="game-card" data-diff="3">
+            <div class="gc-titlebar">
+                <div class="dots">
+                    <div class="dot dot-r"></div>
+                    <div class="dot dot-o"></div>
+                    <div class="dot dot-g"></div>
+                </div>
+                <span class="gc-filename">tower-defense.jsx</span>
+            </div>
+            <div class="gc-body">
+                <div class="gc-header">
+                    <div class="gc-emoji">🏰</div>
+                    <div class="gc-info">
+                        <div class="gc-title">Mini Tower Defense</div>
+                        <div class="gc-meta">
+                            <span class="diff-badge" data-diff="3">⬤ Avancé</span>
+                            <span class="time-badge">⏱ 5–7 jours</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="gc-desc">Placez des tours sur une grille pour stopper les ennemis qui avancent sur un chemin. Version simplifiée mais réelle. Apprendre à gérer une boucle de jeu complexe et des données imbriquées.</p>
+                <div class="gc-concepts">
+                    <div class="gc-concepts-label">Concepts React pratiqués</div>
+                    <div class="tags">
+                        <span class="tag">useState</span>
+                        <span class="tag">useEffect</span>
+                        <span class="tag">useRef</span>
+                        <span class="tag gold">état complexe</span>
+                        <span class="tag green">boucle de jeu</span>
+                    </div>
+                </div>
+                <div class="gc-deliverables">
+                    <div class="gc-deliverables-label">Fonctionnalités attendues</div>
+                    <div class="deliverable-item">Grille avec chemin fixe et zones de placement</div>
+                    <div class="deliverable-item">Ennemis qui avancent par vagues avec une barre de vie</div>
+                    <div class="deliverable-item">1 ou 2 types de tours avec portée et dégâts</div>
+                    <div class="deliverable-item"><strong>Bonus :</strong> système d'argent pour acheter des tours</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JEU 8 : 2048 -->
+        <div class="game-card" data-diff="4">
+            <div class="gc-titlebar">
+                <div class="dots">
+                    <div class="dot dot-r"></div>
+                    <div class="dot dot-o"></div>
+                    <div class="dot dot-g"></div>
+                </div>
+                <span class="gc-filename">game-2048.jsx</span>
+            </div>
+            <div class="gc-body">
+                <div class="gc-header">
+                    <div class="gc-emoji">🔢</div>
+                    <div class="gc-info">
+                        <div class="gc-title">2048</div>
+                        <div class="gc-meta">
+                            <span class="diff-badge" data-diff="4">⬤ Ambitieux</span>
+                            <span class="time-badge">⏱ 5–8 jours</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="gc-desc">Faites glisser les tuiles pour additionner les chiffres et atteindre 2048. Algorithme de fusion de tuiles, gestion des 4 directions, détection de fin de partie. Un vrai défi algorithmique.</p>
+                <div class="gc-concepts">
+                    <div class="gc-concepts-label">Concepts React pratiqués</div>
+                    <div class="tags">
+                        <span class="tag">useState</span>
+                        <span class="tag">useEffect</span>
+                        <span class="tag">useCallback</span>
+                        <span class="tag gold">algo fusion tableaux</span>
+                        <span class="tag green">gestes swipe</span>
+                    </div>
+                </div>
+                <div class="gc-deliverables">
+                    <div class="gc-deliverables-label">Fonctionnalités attendues</div>
+                    <div class="deliverable-item">Grille 4×4 avec glissements (↑↓←→) et fusions</div>
+                    <div class="deliverable-item">Apparition aléatoire de nouvelles tuiles (2 ou 4)</div>
+                    <div class="deliverable-item">Score, meilleur score et détection victoire / défaite</div>
+                    <div class="deliverable-item"><strong>Bonus :</strong> animations CSS des tuiles + mode swipe mobile</div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /games-grid -->
+
+    <!-- CONSIGNES GÉNÉRALES -->
+    <div class="section-label">Consignes & organisation</div>
+
+    <div class="mac-card">
+        <div class="titlebar">
+            <div class="titlebar-dot dot-r" style="background:var(--red-btn)"></div>
+            <div class="titlebar-dot dot-o" style="background:var(--orange-btn)"></div>
+            <div class="titlebar-dot dot-g" style="background:var(--green-btn)"></div>
+            <span class="titlebar-name">consignes-projet.md</span>
+        </div>
+        <div class="card-body">
+            <div class="card-tag">Étapes de travail</div>
+            <p class="card-section-title">Comment s'organiser en binôme</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-text">
+                        <div class="step-title">Choisissez votre jeu et signalez votre choix</div>
+                        <div class="step-desc">Discutez avec votre binôme du jeu qui vous correspond. Un jeu = un binôme. Signalez votre choix au formateur pour éviter les doublons.</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-text">
+                        <div class="step-title">Créez un repo GitHub commun dès le début</div>
+                        <div class="step-desc">Un membre crée le repo, l'autre est ajouté en collaborateur. Travaillez avec des branches et faites des commits réguliers avec des messages clairs.</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-text">
+                        <div class="step-title">Décomposez en composants avant de coder</div>
+                        <div class="step-desc">Faites un schéma (papier ou Figma) de vos composants React avant de commencer. Qui gère quel état ? Quelles props passe-t-on ?</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-text">
+                        <div class="step-title">Répartissez les tâches équitablement</div>
+                        <div class="step-desc">Exemple : l'un gère la logique de jeu (state, fonctions), l'autre le rendu et le style. Changez les rôles à mi-parcours pour que chacun touche à tout.</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">5</div>
+                    <div class="step-text">
+                        <div class="step-title">Préparez une présentation de 5 minutes</div>
+                        <div class="step-desc">Montrez le jeu en action, expliquez votre architecture de composants, parlez des difficultés rencontrées et de ce que vous avez appris.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CRITERES D'EVALUATION -->
+    <div class="mac-card">
+        <div class="titlebar">
+            <div class="titlebar-dot" style="background:var(--red-btn)"></div>
+            <div class="titlebar-dot" style="background:var(--orange-btn)"></div>
+            <div class="titlebar-dot" style="background:var(--green-btn)"></div>
+            <span class="titlebar-name">grille-evaluation.md</span>
+        </div>
+        <div class="card-body">
+            <div class="card-tag">Évaluation</div>
+            <p class="card-section-title">Critères d'évaluation</p>
+            <div class="criteria-grid">
+                <div class="crit-item">
+                    <span class="crit-icon"></span>
+                    <div class="crit-text">
+                        <strong>Utilisation de React</strong>
+                        Hooks utilisés correctement (useState, useEffect), composants bien séparés, pas de code spaghetti.
+                    </div>
+                </div>
+                <div class="crit-item">
+                    <span class="crit-icon"></span>
+                    <div class="crit-text">
+                        <strong>Le jeu fonctionne</strong>
+                        Le jeu est jouable du début à la fin, sans bug bloquant. La logique est correcte.
+                    </div>
+                </div>
+                <div class="crit-item">
+                    <span class="crit-icon"></span>
+                    <div class="crit-text">
+                        <strong>Qualité du code</strong>
+                        Code lisible, bien commenté, noms de variables explicites. Pas de code mort.
+                    </div>
+                </div>
+                <div class="crit-item">
+                    <span class="crit-icon"></span>
+                    <div class="crit-text">
+                        <strong>Interface & design</strong>
+                        L'interface est propre et utilisable. Pas besoin d'être parfait, mais soigné.
+                    </div>
+                </div>
+                <div class="crit-item">
+                    <span class="crit-icon"></span>
+                    <div class="crit-text">
+                        <strong>GitHub & organisation</strong>
+                        Repo public, commits réguliers des deux membres, README expliquant le projet.
+                    </div>
+                </div>
+                <div class="crit-item">
+                    <span class="crit-icon"></span>
+                    <div class="crit-text">
+                        <strong>Présentation orale</strong>
+                        Chaque membre parle. Vous expliquez vos choix techniques et ce que vous avez appris.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <div class="nav-bottom">
+        <a class="nav-btn" onclick="goTo(event,'./index.html')">← Retour React</a>
+        <a class="nav-btn blue" href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo GitHub</a>
+        <a class="nav-btn" onclick="goTo(event,'../index.html')">Accueil DWWM</a>
+    </div>
+
+</div><!-- /container -->
+
+<footer>
+    <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil">
+    <p><strong style="color:var(--text-primary)">Formation Real Conseil — DWWM</strong></p>
+    <p>&copy; DARRAS Thomas</p>
+    <a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a>
+    <p class="mono">// Supports mis à jour régulièrement via GitHub &nbsp;·&nbsp;
+        <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo</a>
+    </p>
+</footer>
+
+<script>
+    function goBack(event) {
+        if(event) event.stopPropagation();
+        if(window.history.length > 1) pageOut(() => window.history.back());
+        else showToast('⬅ Pas d\'historique de navigation');
+    }
+    function goTo(event, url) {
+        if(event) event.stopPropagation();
+        pageOut(() => { window.location.href = url; });
+    }
+    function pageOut(cb) {
+        const overlay   = document.getElementById('overlay');
+        const container = document.getElementById('mainContainer');
+        container.style.transition = 'transform .32s ease, opacity .32s ease';
+        container.style.transform  = 'scale(0.96) translateY(8px)';
+        container.style.opacity    = '0';
+        overlay.classList.add('active');
+        setTimeout(cb, 340);
+    }
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2600);
+    }
+    // Entrée fluide
+    window.addEventListener('pageshow', () => {
+        const c = document.getElementById('mainContainer');
+        c.style.transition = 'none';
+        c.style.transform  = 'scale(0.96) translateY(10px)';
+        c.style.opacity    = '0';
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                c.style.transition = 'transform .45s cubic-bezier(.34,1.56,.64,1), opacity .4s ease';
+                c.style.transform  = 'scale(1) translateY(0)';
+                c.style.opacity    = '1';
+            });
+        });
+    });
+</script>
+
+<script src="../cursor.js"></script>
+
+</body>
+</html>

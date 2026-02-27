@@ -5,437 +5,755 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../favicon-32x32.png" type="image/png">
     <title>PHP - Supports de cours - Formation DWWM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg:          #07060c;
+            --surface:     #0e0c18;
+            --surface2:    #13101f;
+            --surface3:    #181428;
+            --border:      #1e1a30;
+            --border2:     #28224a;
+            --purple:      #8b5cf6;
+            --purple-dim:  #4c2d8a;
+            --purple-glow: rgba(139,92,246,0.14);
+            --purple-glow2:rgba(139,92,246,0.05);
+            --purple-light:#b48bff;
+            --php-blue:    #4f5b93;
+            --php-purple:  #8993be;
+            --text:        #d0cce8;
+            --muted:       #3a3060;
+            --muted2:      #7868a8;
+            --code-bg:     #060508;
+            --green:       #00d97e;
+            --cyan:        #22d3ee;
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Exo 2', sans-serif;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            background-attachment: fixed;
-            position: relative;
+            background: var(--bg);
+            color: var(--text);
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* Icônes technologiques flottantes */
-        .floating-icons {
+        /* ═══ BACKGROUND GRID ═══ */
+        body::before {
+            content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(139,92,246,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139,92,246,0.025) 1px, transparent 1px);
+            background-size: 44px 44px;
             pointer-events: none;
             z-index: 0;
         }
 
+        /* ═══ AMBIENT GLOW ═══ */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 45% at 50% -5%,  rgba(139,92,246,0.12) 0%, transparent 65%),
+                radial-gradient(ellipse 30% 35% at 5%  50%,  rgba(79,91,147,0.10)  0%, transparent 60%),
+                radial-gradient(ellipse 25% 35% at 95% 70%,  rgba(139,92,246,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 30% at 50% 100%, rgba(79,91,147,0.06)  0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ═══ FLOATING ICONS ═══ */
+        .floating-icons {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
         .tech-icon {
             position: absolute;
-            opacity: 0.15;
-            animation: float 20s infinite ease-in-out;
+            opacity: 0;
+            animation: floatIn 1s forwards, floatLoop var(--dur, 24s) infinite ease-in-out;
         }
 
-        .tech-icon:nth-child(1) {
-            top: 10%;
-            left: 5%;
-            animation-delay: 0s;
-            animation-duration: 25s;
+        .tech-icon:nth-child(1) { top: 8%;  left: 4%;   --dur: 25s; animation-delay: 0.2s, 0.2s; }
+        .tech-icon:nth-child(2) { top: 18%; right: 6%;  --dur: 20s; animation-delay: 0.5s, 0.5s; }
+        .tech-icon:nth-child(3) { top: 58%; left: 8%;   --dur: 30s; animation-delay: 0.8s, 0.8s; }
+        .tech-icon:nth-child(4) { top: 68%; right: 12%; --dur: 22s; animation-delay: 1.0s, 1.0s; }
+        .tech-icon:nth-child(5) { top: 38%; left: 13%;  --dur: 28s; animation-delay: 1.2s, 1.2s; }
+        .tech-icon:nth-child(6) { top: 48%; right: 4%;  --dur: 26s; animation-delay: 1.4s, 1.4s; }
+        .tech-icon:nth-child(7) { top: 82%; left: 18%;  --dur: 24s; animation-delay: 1.6s, 1.6s; }
+        .tech-icon:nth-child(8) { top: 28%; right: 18%; --dur: 27s; animation-delay: 1.8s, 1.8s; }
+
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; }
         }
 
-        .tech-icon:nth-child(2) {
-            top: 20%;
-            right: 8%;
-            animation-delay: 3s;
-            animation-duration: 20s;
-        }
-
-        .tech-icon:nth-child(3) {
-            top: 60%;
-            left: 10%;
-            animation-delay: 5s;
-            animation-duration: 30s;
-        }
-
-        .tech-icon:nth-child(4) {
-            top: 70%;
-            right: 15%;
-            animation-delay: 2s;
-            animation-duration: 22s;
-        }
-
-        .tech-icon:nth-child(5) {
-            top: 40%;
-            left: 15%;
-            animation-delay: 7s;
-            animation-duration: 28s;
-        }
-
-        .tech-icon:nth-child(6) {
-            top: 50%;
-            right: 5%;
-            animation-delay: 4s;
-            animation-duration: 26s;
-        }
-
-        .tech-icon:nth-child(7) {
-            top: 85%;
-            left: 20%;
-            animation-delay: 6s;
-            animation-duration: 24s;
-        }
-
-        .tech-icon:nth-child(8) {
-            top: 30%;
-            right: 20%;
-            animation-delay: 1s;
-            animation-duration: 27s;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            25% {
-                transform: translateY(-20px) rotate(5deg);
-            }
-            50% {
-                transform: translateY(0) rotate(0deg);
-            }
-            75% {
-                transform: translateY(20px) rotate(-5deg);
-            }
+        @keyframes floatLoop {
+            0%, 100% { transform: translateY(0)    rotate(0deg); }
+            25%       { transform: translateY(-18px) rotate(4deg); }
+            50%       { transform: translateY(0)    rotate(0deg); }
+            75%       { transform: translateY(18px)  rotate(-4deg); }
         }
 
         .tech-icon svg {
-            width: 80px;
-            height: 80px;
-            fill: white;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+            width: 72px; height: 72px;
+            fill: var(--purple);
+            opacity: 0.09;
+            filter: drop-shadow(0 0 10px rgba(139,92,246,0.25));
         }
 
-        /* Container principal */
+        /* ═══ TOP LINE ═══ */
+        .top-line {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent,
+                var(--php-blue),
+                var(--purple),
+                var(--php-purple),
+                var(--purple),
+                var(--php-blue),
+                transparent);
+            z-index: 100;
+            animation: shimmerLine 5s ease-in-out infinite;
+        }
+
+        @keyframes shimmerLine {
+            0%, 100% { opacity: 0.55; }
+            50%       { opacity: 1; }
+        }
+
+        /* ═══ CONTAINER ═══ */
         .container {
             position: relative;
-            z-index: 1;
-            max-width: 900px;
+            z-index: 2;
+            max-width: 860px;
             margin: 0 auto;
-            padding: 50px 20px;
+            padding: 62px 20px 52px;
         }
 
-        /* Logo avec animation pulse */
+        /* ═══ LOGO ═══ */
         .logo-container {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 1.75rem;
+            animation: fadeDown 0.6s ease both;
         }
 
-        .logo-container img {
-            width: 120px;
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            animation: logoPulse 3s ease-in-out infinite;
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-wrap {
+            display: inline-block;
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            padding: 16px 20px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(139,92,246,0.08),
+                0 8px 32px rgba(0,0,0,0.55);
+            animation: logoPulse 5s ease-in-out infinite;
+        }
+
+        .logo-wrap::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--purple), transparent);
+            opacity: 0.5;
         }
 
         @keyframes logoPulse {
-            0%, 100% {
-                box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            }
-            50% {
-                box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6),
-                            0 0 40px rgba(118, 75, 162, 0.4),
-                            0 0 60px rgba(240, 147, 251, 0.3);
-            }
+            0%, 100% { box-shadow: 0 0 0 1px rgba(139,92,246,0.06), 0 8px 32px rgba(0,0,0,0.55); }
+            50%       { box-shadow: 0 0 0 1px rgba(139,92,246,0.18), 0 0 60px rgba(139,92,246,0.14), 0 0 100px rgba(79,91,147,0.10), 0 8px 32px rgba(0,0,0,0.55); }
         }
 
-        /* Titre avec dégradé animé + effet 3D au hover */
-        h1 {
-            color: white;
+        .logo-wrap img {
+            width: 100px;
+            display: block;
+            filter: brightness(1.05);
+        }
+
+        /* ═══ TITLE ═══ */
+        .title-block {
             text-align: center;
-            padding-bottom: 10px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 40px;
-            
-            /* Dégradé animé */
-            background: linear-gradient(90deg, 
-                #ffffff 0%, 
-                #a8b5ff 25%, 
-                 #2C3F77 50%, 
-            #ffd4ff 75%, 
-            #A0866B 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 10s ease infinite;
-            
-            transition: all 0.3s ease;
+            margin-bottom: 3rem;
+            animation: fadeDown 0.7s 0.1s ease both;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--php-purple);
+            border: 1px solid rgba(137,147,190,0.28);
+            padding: 0.32rem 1.1rem;
+            margin-bottom: 1.2rem;
+            background: rgba(79,91,147,0.08);
+            border-radius: 2px;
+        }
+
+        .eyebrow::before, .eyebrow::after {
+            content: '';
+            width: 14px; height: 1px;
+            background: var(--php-purple);
+            opacity: 0.5;
+        }
+
+        h1 {
+            font-family: 'Exo 2', sans-serif;
+            font-size: clamp(2rem, 6vw, 3.8rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            line-height: 1.05;
+            color: #fff;
             cursor: default;
+            transition: transform 0.35s ease;
         }
 
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% center;
-            }
-            50% {
-                background-position: 100% center;
-            }
-            100% {
-                background-position: 0% center;
-            }
+        h1 .acc {
+            color: var(--purple);
+            text-shadow: 0 0 45px rgba(139,92,246,0.55);
         }
 
-        /* Effet 3D au hover sur le titre */
-        h1:hover {
-            transform: translateY(-5px);
-            text-shadow: 
-                0 10px 20px rgba(0,0,0,0.3),
-                0 15px 30px rgba(102, 126, 234, 0.4),
-                0 20px 40px rgba(118, 75, 162, 0.3);
+        h1:hover { transform: translateY(-5px); }
+
+        .title-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--muted2);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-top: 0.75rem;
         }
 
-        h3 {
-            color: #A0866B;
-            margin-top: 0;
-           border-left: 4px solid #A0866B;
-            padding-left: 10px;
-            font-size: 1.3em;
-            margin-bottom: 15px;
-        }
-
-        /* Sections/Cartes avec effet glow */
+        /* ═══ SECTIONS ═══ */
         .section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 25px;
-            margin: 20px 0;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            transition: all 0.4s ease;
-            border: 2px solid transparent;
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            padding: 1.75rem 1.75rem 1.25rem;
+            margin: 1.25rem 0;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.2s; }
+        .section:nth-child(2) { animation-delay: 0.35s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* top accent */
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--purple), var(--php-blue), transparent);
+            opacity: 0.45;
+            transition: opacity 0.3s;
+        }
+
+        /* left bar */
+        .section::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: linear-gradient(180deg, var(--purple), var(--php-blue));
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.3),
-                        0 0 40px rgba(102, 126, 234, 0.5),
-                        0 0 60px rgba(118, 75, 162, 0.3),
-                        inset 0 0 20px rgba(102, 126, 234, 0.1);
-            border: 2px solid rgba(102, 126, 234, 0.3);
+            transform: translateY(-6px);
+            box-shadow:
+                0 14px 44px rgba(0,0,0,0.55),
+                0 0 55px rgba(139,92,246,0.09),
+                0 0 0 1px rgba(139,92,246,0.18);
+            border-color: rgba(139,92,246,0.22);
         }
 
-        /* Liens */
+        .section:hover::before { opacity: 1; }
+        .section:hover::after  { opacity: 1; }
+
+        /* scan line effect */
+        .scan {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--purple), transparent);
+            pointer-events: none;
+        }
+
+        .section:hover .scan {
+            animation: scanLine 1.2s linear;
+        }
+
+        @keyframes scanLine {
+            from { transform: translateY(-2px); opacity: 0.5; }
+            to   { transform: translateY(600%); opacity: 0; }
+        }
+
+        /* ═══ SECTION TITLES ═══ */
+        h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--purple);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        h3::before {
+            content: '//';
+            color: var(--purple-dim);
+            font-size: 0.68rem;
+        }
+
+        h3::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border2), transparent);
+            margin-left: 0.4rem;
+        }
+
+        /* ═══ LINKS ═══ */
         a {
-            color: #2C3F77;
+            color: var(--text);
             text-decoration: none;
-            font-size: 16px;
-            display: block;
-            padding: 12px;
-            margin: 8px 0;
-            border-left: 3px solid #2C3F77;
-            padding-left: 15px;
-            transition: all 0.3s ease;
-            border-radius: 5px;
+            font-size: 0.94rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--surface2);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        a::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 0;
+            background: linear-gradient(90deg, var(--purple-glow), transparent);
+            transition: width 0.3s ease;
+            border-radius: inherit;
+        }
+
+        a::after {
+            content: '→';
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--purple);
+            margin-left: auto;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: opacity 0.25s, transform 0.25s;
         }
 
         a:hover {
-            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent);
-            border-left-color: #667eea;
-            padding-left: 20px;
+            border-color: rgba(139,92,246,0.28);
+            color: #fff;
+            background: var(--surface3);
+            padding-left: 1.25rem;
         }
 
-        /* Bouton */
+        a:hover::before { width: 100%; }
+        a:hover::after  { opacity: 1; transform: translateX(0); }
+
+        .link-icon {
+            width: 28px; height: 28px;
+            background: var(--surface3);
+            border: 1px solid var(--border2);
+            border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--php-purple);
+            transition: background 0.25s, border-color 0.25s, color 0.25s;
+            position: relative;
+            z-index: 1;
+        }
+
+        a:hover .link-icon {
+            background: rgba(79,91,147,0.22);
+            border-color: var(--purple);
+            color: var(--purple-light);
+        }
+
+        /* ═══ BACK BUTTON ═══ */
         .btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white !important;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            display: inline-block;
-            text-align: center;
-            border-left: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.6rem !important;
+            background: var(--surface) !important;
+            border: 1px solid var(--border2) !important;
+            color: var(--muted2) !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 0.73rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.1em !important;
+            text-transform: uppercase !important;
+            padding: 0.8rem 1.5rem !important;
+            border-radius: 4px !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        .btn::before {
+            content: '' !important;
+            position: absolute !important;
+            inset: 0 !important;
+            background: linear-gradient(135deg, var(--purple-glow), transparent) !important;
+            opacity: 0 !important;
+            transition: opacity 0.25s !important;
+            z-index: 0 !important;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-            background: linear-gradient(135deg, #764ba2, #667eea);
-            padding-left: 30px !important;
+            border-color: rgba(139,92,246,0.35) !important;
+            color: var(--purple-light) !important;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 6px 22px rgba(139,92,246,0.12) !important;
+            padding-left: 1.5rem !important;
         }
 
-        /* Footer */
-        footer {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        .btn:hover::before { opacity: 1 !important; }
+
+        .btn::after { display: none !important; }
+
+        .btn span { position: relative; z-index: 1; }
+
+        .btn-wrapper {
             text-align: center;
-            margin-top: 50px;
-            padding: 30px 20px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            color: #666;
+            margin-top: 2rem;
+            animation: fadeUp 0.5s 0.5s ease both;
+        }
+
+        /* ═══ FOOTER ═══ */
+        footer {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            margin-top: 3rem;
+            padding: 2.25rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp 0.5s 0.6s ease both;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent,
+                var(--php-blue),
+                var(--purple),
+                var(--php-purple),
+                var(--php-blue),
+                transparent);
+            opacity: 0.5;
+        }
+
+        .footer-logo-wrap {
+            display: inline-block;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-logo-wrap img {
+            width: 80px;
+            display: block;
+            filter: brightness(1.05);
+        }
+
+        .footer-title {
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 800;
+            font-size: 0.92rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #fff;
+            margin-bottom: 0.4rem;
         }
 
         footer p {
-            margin: 10px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--muted2);
+            margin: 0.3rem 0;
+            letter-spacing: 0.04em;
         }
 
         footer a {
-            display: inline;
-            border: none;
-            padding: 0;
-            color: #667eea;
+            display: inline !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: none !important;
+            color: var(--purple-light) !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 0.7rem !important;
+            position: static !important;
+            overflow: visible !important;
+            transform: none !important;
         }
+
+        footer a::before,
+        footer a::after { display: none !important; }
 
         footer a:hover {
-            background: none;
-            text-decoration: underline;
-            padding-left: 0;
+            text-decoration: underline !important;
+            color: #fff !important;
+            transform: none !important;
+            padding-left: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
         }
 
-        footer img {
-            max-width: 100px;
-            margin-bottom: 15px;
+        .footer-divider {
+            width: 50px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border2), transparent);
+            margin: 0.9rem auto;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
-            }
+        /* ═══ PHP BADGE ═══ */
+        .php-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--php-purple);
+            border: 1px solid rgba(137,147,190,0.2);
+            padding: 0.2rem 0.7rem;
+            background: rgba(79,91,147,0.06);
+            border-radius: 2px;
+            margin-bottom: 0.75rem;
+        }
 
-            .tech-icon svg {
-                width: 60px;
-                height: 60px;
-            }
+        .php-badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--purple);
+            box-shadow: 0 0 8px var(--purple);
+            animation: blinkDot 2.5s ease-in-out infinite;
+        }
 
-            .container {
-                padding: 30px 15px;
-            }
+        @keyframes blinkDot {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+
+        /* ═══ RESPONSIVE ═══ */
+        @media (max-width: 640px) {
+            .container { padding: 50px 14px 40px; }
+            h1 { font-size: 2rem; }
+            .tech-icon svg { width: 54px; height: 54px; }
+            .section { padding: 1.25rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Icônes flottantes -->
+
+    <!-- Top accent line -->
+    <div class="top-line"></div>
+
+    <!-- Floating tech icons -->
     <div class="floating-icons">
+        <!-- PHP ellipse -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="40" cy="40" rx="38" ry="22" fill="none" stroke="currentColor" stroke-width="3"/>
+                <text x="40" y="48" font-size="18" text-anchor="middle" fill="currentColor" font-family="Arial" font-weight="bold">PHP</text>
+            </svg>
+        </div>
         <!-- HTML5 -->
         <div class="tech-icon">
             <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10 5L15 70L40 78L65 70L70 5H10ZM57 22H28L29 32H56L53 58L40 62L27 58L26 48H34L35 52L40 54L45 52L46 44H26L23 16H57V22Z"/>
             </svg>
         </div>
-
-        <!-- CSS3 -->
+        <!-- JS -->
         <div class="tech-icon">
             <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 5L15 70L40 78L65 70L70 5H10ZM57 22H32L33 32H56L53 58L40 62L27 58L26 48H34L35 52L40 54L45 52L46 44H26L23 16H57V22Z"/>
-                <circle cx="25" cy="35" r="3"/>
-                <circle cx="35" cy="35" r="3"/>
-                <circle cx="45" cy="35" r="3"/>
+                <rect x="5" y="5" width="70" height="70" rx="6"/>
+                <text x="40" y="58" font-size="42" text-anchor="middle" fill="var(--bg)" font-family="Arial" font-weight="bold">JS</text>
             </svg>
         </div>
-
-        <!-- JavaScript -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <rect x="5" y="5" width="70" height="70" rx="5"/>
-                <text x="40" y="60" font-size="50" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-weight="bold">JS</text>
-            </svg>
-        </div>
-
         <!-- React -->
         <div class="tech-icon">
             <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3"/>
-                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3" transform="rotate(60 40 40)"/>
-                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="white" stroke-width="3" transform="rotate(120 40 40)"/>
+                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="currentColor" stroke-width="3"/>
+                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="currentColor" stroke-width="3" transform="rotate(60 40 40)"/>
+                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="currentColor" stroke-width="3" transform="rotate(120 40 40)"/>
                 <circle cx="40" cy="40" r="5"/>
             </svg>
         </div>
-
-        <!-- Git -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M75 35L45 5L40 10L35 5L5 35L10 40L5 45L35 75L40 70L45 75L75 45L70 40L75 35Z"/>
-                <circle cx="25" cy="40" r="6"/>
-                <circle cx="55" cy="40" r="6"/>
-                <line x1="31" y1="40" x2="49" y2="40" stroke="white" stroke-width="4"/>
-            </svg>
-        </div>
-
-        <!-- Node.js -->
-        <div class="tech-icon">
-            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 5L70 22.5V57.5L40 75L10 57.5V22.5L40 5Z"/>
-                <text x="40" y="50" font-size="20" text-anchor="middle" fill="white" font-family="monospace">NODE</text>
-            </svg>
-        </div>
-
         <!-- Database -->
         <div class="tech-icon">
             <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
                 <ellipse cx="40" cy="20" rx="30" ry="10"/>
                 <path d="M10 20V60C10 65.5 23.4 70 40 70C56.6 70 70 65.5 70 60V20"/>
-                <ellipse cx="40" cy="40" rx="30" ry="10" fill="none" stroke="white" stroke-width="2"/>
+                <ellipse cx="40" cy="40" rx="30" ry="10" fill="none" stroke="currentColor" stroke-width="2"/>
             </svg>
         </div>
-
         <!-- Code brackets -->
         <div class="tech-icon">
             <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M25 15L10 40L25 65" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
-                <path d="M55 15L70 40L55 65" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
-                <line x1="45" y1="20" x2="35" y2="60" stroke="white" stroke-width="5" stroke-linecap="round"/>
+                <path d="M25 15L10 40L25 65" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                <path d="M55 15L70 40L55 65" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                <line x1="45" y1="20" x2="35" y2="60" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <!-- Git -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M75 35L45 5L40 10L35 5L5 35L10 40L5 45L35 75L40 70L45 75L75 45L70 40Z"/>
+                <circle cx="25" cy="40" r="6"/>
+                <circle cx="55" cy="40" r="6"/>
+                <line x1="31" y1="40" x2="49" y2="40" stroke="var(--bg)" stroke-width="4"/>
+            </svg>
+        </div>
+        <!-- Node -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M40 5L70 22.5V57.5L40 75L10 57.5V22.5L40 5Z" fill="none" stroke="currentColor" stroke-width="4"/>
+                <text x="40" y="48" font-size="13" text-anchor="middle" fill="currentColor" font-family="monospace" font-weight="bold">NODE</text>
             </svg>
         </div>
     </div>
 
     <!-- Contenu principal -->
     <div class="container">
-        <!-- Logo Real Conseil -->
+
+        <!-- Logo -->
         <div class="logo-container">
-            <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
+            <div class="logo-wrap">
+                <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
+            </div>
         </div>
 
-        <h1>Supports cours PHP</h1>
+        <!-- Titre -->
+        <div class="title-block">
+            <div class="eyebrow">Formation DWWM 2025–2026</div>
+            <h1>Supports cours <span class="acc">PHP</span></h1>
+        </div>
 
+        <!-- Section 1 -->
         <div class="section">
-            <h3>Dossier Principal</h3>
-            <a href="./formation-php-partie1-avec-menu-flottant.html">Support PHP</a>
+            <div class="scan"></div>
+            <h3>Partie 1</h3>
+            <a href="./formation-php-partie1-avec-menu-flottant.html">
+                <span class="link-icon">P1</span>
+                Support PHP — Partie 1
+            </a>
         </div>
 
-         <div class="section">
-            <h3>Dossier Secondaire</h3>
-            <a href="./formation-php-partie2-avec-menu-flottant.html">Support PHP</a>
+        <!-- Section 2 -->
+        <div class="section">
+            <div class="scan"></div>
+            <h3>Partie 2</h3>
+            <a href="./formation-php-partie2-avec-menu-flottant.html">
+                <span class="link-icon">P2</span>
+                Support PHP — Partie 2
+            </a>
+        </div>
+
+         <!-- Section 3 -->
+        <div class="section">
+            <div class="scan"></div>
+            <h3>Partie 3</h3>
+            <a href="./formation-php-partie3-poo.html">
+                <span class="link-icon">P3</span>
+                Support PHP — Partie 3
+            </a>
         </div>
 
         <!-- Bouton retour -->
-        <div style="text-align: center; margin-top: 30px;">
-            <a href="../index.html" class="btn">← Retour à l'accueil</a>
+        <div class="btn-wrapper">
+            <a href="../index.html" class="btn"><span>← Retour a l'accueil</span></a>
         </div>
 
         <!-- Footer -->
         <footer>
-            <p><strong>Formation Real Conseil - DWWM 2025-2026</strong></p>
+            
+            <div class="php-badge">PHP</div>
+            <div class="footer-title">Formation Real Conseil</div>
+            <p>DWWM 2025–2026</p>
+            <div class="footer-divider"></div>
             <p>&copy; DARRAS Thomas</p>
-            <a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a>
-            <p style="font-size: 14px; margin-top: 15px;">
-                Les supports sont mis à jour régulièrement via GitHub
+            <p><a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a></p>
+            <p style="margin-top:0.75rem; font-size:0.62rem; color:var(--muted);">
+                Les supports sont mis a jour regulierement via GitHub
             </p>
-            <div style="text-align: center; margin-top: 20px;">
-                <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
-                <p style="font-size: 12px; color: #999;">
-                    <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo GitHub</a>
-                </p>
-            </div>
+            <p style="margin-top:0.6rem;">
+                <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo GitHub</a>
+            </p>
         </footer>
+
     </div>
+
+    <script>
+        // Re-trigger scan animation on each hover
+        document.querySelectorAll('.section').forEach(section => {
+            section.addEventListener('mouseenter', () => {
+                const scan = section.querySelector('.scan');
+                scan.style.animation = 'none';
+                scan.offsetHeight; // force reflow
+                scan.style.animation = 'scanLine 1.2s linear';
+            });
+        });
+    </script>
+
+    <script src="../cursor.js"></script>
+
 </body>
 </html>
