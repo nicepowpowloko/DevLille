@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express.js — Formation DWWM</title>
+    <style>
+        :root {
+            --bg-deep:      #08090c;
+            --bg-card:      #0e0f14;
+            --bg-surface:   #13141a;
+            --border:       #1e2030;
+            --accent:       #e2e8f0;   /* Express = blanc/slate — minimaliste */
+            --accent-dim:   #94a3b8;
+            --accent-2:     #44D62C;
+            --accent-blue:  #60a5fa;
+            --accent-yellow:#fbbf24;
+            --accent-red:   #f87171;
+            --accent-green: #4ade80;
+            --accent-purple:#c084fc;
+            --text-primary: #e2e8f0;
+            --text-muted:   #64748b;
+            --text-dim:     #334155;
+            --titlebar:     #0e0f14;
+            --font-mono:    'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;
+            --font-ui:      -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body { font-family:var(--font-ui); background:var(--bg-deep); color:var(--text-primary); min-height:100vh; overflow-x:hidden; }
+        body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(226,232,240,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(226,232,240,.015) 1px,transparent 1px); background-size:40px 40px; pointer-events:none; z-index:0; }
+        .orb { position:fixed; border-radius:50%; filter:blur(150px); pointer-events:none; z-index:0; opacity:.06; }
+        .orb-1 { width:600px;height:600px;background:radial-gradient(circle,#e2e8f0,transparent);top:-200px;right:-100px;animation:orbF 22s ease-in-out infinite; }
+        .orb-2 { width:400px;height:400px;background:radial-gradient(circle,#60a5fa,transparent);bottom:-100px;left:-100px;animation:orbF 28s ease-in-out infinite reverse; }
+        @keyframes orbF { 0%,100%{transform:translate(0,0)} 50%{transform:translate(15px,-15px)} }
+
+        .layout { display:flex; min-height:100vh; position:relative; z-index:1; }
+
+        /* ── SIDEBAR ── */
+        .sidebar { width:260px; flex-shrink:0; background:rgba(14,15,20,.97); border-right:1px solid var(--border); padding:24px 0 40px; position:sticky; top:0; height:100vh; overflow-y:auto; backdrop-filter:blur(12px); }
+        .sidebar::-webkit-scrollbar { width:4px; }
+        .sidebar::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+        .sidebar-logo { padding:0 20px 20px; border-bottom:1px solid var(--border); margin-bottom:20px; }
+        .sidebar-logo a { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text-primary); font-size:.82rem; font-family:var(--font-mono); }
+        .sidebar-logo a:hover { color:var(--accent); }
+        .exp-icon { width:36px; height:36px; border-radius:8px; background:#1a1a2e; border:1px solid rgba(226,232,240,.2); display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:800; color:var(--accent); flex-shrink:0; font-family:var(--font-mono); letter-spacing:-.05em; box-shadow:0 0 16px rgba(226,232,240,.08); }
+        .nav-section { padding:0 12px; margin-bottom:6px; }
+        .nav-section-title { font-family:var(--font-mono); font-size:.62rem; letter-spacing:.12em; text-transform:uppercase; color:var(--text-dim); padding:10px 8px 6px; }
+        .nav-link { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--text-muted); font-size:.83rem; transition:all .15s; cursor:pointer; }
+        .nav-link:hover { background:rgba(226,232,240,.05); color:var(--text-primary); }
+        .nav-link.active { background:rgba(226,232,240,.08); color:var(--accent); border-left:2px solid var(--accent-dim); }
+        .nav-link .nav-icon { font-size:.9rem; width:18px; text-align:center; flex-shrink:0; }
+        .nav-num { margin-left:auto; font-family:var(--font-mono); font-size:.62rem; color:var(--text-dim); background:rgba(255,255,255,.04); padding:1px 5px; border-radius:3px; }
+
+        /* ── MAIN ── */
+        .main { flex:1; padding:48px 48px 80px; max-width:960px; }
+        .page-header { margin-bottom:56px; animation:fadeDown .5s ease both; }
+        @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+        .breadcrumb { display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:.75rem; color:var(--text-dim); margin-bottom:20px; }
+        .breadcrumb a { color:var(--accent-2); text-decoration:none; }
+        .breadcrumb a:hover { text-decoration:underline; }
+        .page-header h1 { font-size:clamp(2rem,4vw,3rem); font-weight:800; letter-spacing:-.03em; line-height:1.1; margin-bottom:14px; }
+        .page-header h1 .exp-word { background:linear-gradient(135deg,#f8fafc,#94a3b8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .page-header p { color:var(--text-muted); font-size:1rem; line-height:1.6; max-width:600px; }
+        .header-tags { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+        .htag { font-family:var(--font-mono); font-size:.7rem; padding:3px 10px; border-radius:20px; border:1px solid; letter-spacing:.05em; }
+        .htag.white  { background:rgba(226,232,240,.06); border-color:rgba(226,232,240,.2); color:var(--accent-dim); }
+        .htag.blue   { background:rgba(96,165,250,.08);  border-color:rgba(96,165,250,.25); color:var(--accent-blue); }
+        .htag.green  { background:rgba(68,214,44,.08);   border-color:rgba(68,214,44,.25);  color:var(--accent-2); }
+
+        /* ── SECTION ── */
+        .section { margin-bottom:64px; animation:fadeUp .5s ease both; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        .section-header { display:flex; align-items:center; gap:14px; margin-bottom:28px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+        .section-num { width:36px; height:36px; border-radius:9px; background:linear-gradient(135deg,#e2e8f0,#94a3b8); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:.8rem; font-weight:700; color:#0e0f14; flex-shrink:0; box-shadow:0 4px 12px rgba(226,232,240,.1); }
+        .section-header h2 { font-size:1.4rem; font-weight:700; letter-spacing:-.01em; }
+        .section-badge { margin-left:auto; font-family:var(--font-mono); font-size:.65rem; padding:3px 8px; border-radius:4px; background:rgba(68,214,44,.08); border:1px solid rgba(68,214,44,.2); color:var(--accent-2); letter-spacing:.08em; text-transform:uppercase; }
+
+        /* ── PROSE ── */
+        .prose { color:var(--text-muted); line-height:1.75; font-size:.92rem; margin-bottom:20px; }
+        .prose strong { color:var(--text-primary); }
+        .prose code { font-family:var(--font-mono); font-size:.82rem; background:rgba(255,255,255,.06); border:1px solid var(--border); padding:1px 6px; border-radius:4px; color:var(--accent-blue); }
+
+        /* ── CALLOUT ── */
+        .callout { border-radius:10px; padding:16px 20px; margin-bottom:20px; display:flex; gap:12px; font-size:.88rem; line-height:1.65; }
+        .callout-icon { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
+        .callout.info   { background:rgba(96,165,250,.07);  border:1px solid rgba(96,165,250,.2);  color:#93c5fd; }
+        .callout.tip    { background:rgba(74,222,128,.07);  border:1px solid rgba(74,222,128,.2);  color:#86efac; }
+        .callout.warn   { background:rgba(251,191,36,.07);  border:1px solid rgba(251,191,36,.2);  color:#fcd34d; }
+        .callout.danger { background:rgba(248,113,113,.07); border:1px solid rgba(248,113,113,.2); color:#fca5a5; }
+        .callout strong { color:inherit; font-weight:700; }
+
+        /* ── CODE BLOCK ── */
+        .code-block { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:20px; }
+        .code-block-header { background:var(--titlebar); padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); }
+        .cb-dots { display:flex; gap:6px; }
+        .cb-dot { width:11px; height:11px; border-radius:50%; }
+        .cb-dot.r{background:#ff5f57;}.cb-dot.o{background:#febc2e;}.cb-dot.g{background:#28c840;}
+        .cb-filename { font-family:var(--font-mono); font-size:.75rem; color:var(--text-muted); margin-left:4px; }
+        .cb-copy { margin-left:auto; background:rgba(255,255,255,.04); border:1px solid var(--border); color:var(--text-dim); font-family:var(--font-mono); font-size:.68rem; padding:3px 10px; border-radius:5px; cursor:pointer; transition:all .15s; }
+        .cb-copy:hover { background:rgba(226,232,240,.08); border-color:rgba(226,232,240,.2); color:var(--accent); }
+        .cb-copy.copied { color:var(--accent-2); border-color:rgba(68,214,44,.4); }
+        pre { padding:20px; overflow-x:auto; font-family:var(--font-mono); font-size:.82rem; line-height:1.75; }
+        pre code { background:none; border:none; padding:0; color:inherit; font-size:inherit; }
+
+        /* JS/Express syntax */
+        .kw   { color:#f87171; font-weight:600; }
+        .fn   { color:#c084fc; }
+        .str  { color:#93c5fd; }
+        .num  { color:#fbbf24; }
+        .cmt  { color:var(--text-dim); font-style:italic; }
+        .var  { color:#4ade80; }
+        .met  { color:#60a5fa; }
+        .mw   { color:#fb923c; }   /* middleware couleur */
+        .rt   { color:#e2e8f0; }   /* routes */
+        .http { color:#a78bfa; }   /* GET POST PUT DELETE */
+        .ok   { color:#4ade80; }
+
+        /* ── CARD GRID ── */
+        .card-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+        @media(max-width:700px){.card-grid{grid-template-columns:1fr;}}
+        .info-card { background:var(--bg-card); border:1px solid var(--border); border-radius:9px; padding:16px; transition:border-color .2s,transform .2s; }
+        .info-card:hover { border-color:rgba(226,232,240,.15); transform:translateY(-2px); }
+        .info-card .ic-title { font-weight:600; font-size:.88rem; margin-bottom:6px; }
+        .info-card .ic-desc { font-size:.8rem; color:var(--text-muted); line-height:1.55; }
+        .info-card code { font-family:var(--font-mono); font-size:.78rem; background:rgba(255,255,255,.05); padding:1px 5px; border-radius:3px; color:var(--accent-blue); }
+
+        /* ── STEPS ── */
+        .steps { display:flex; flex-direction:column; gap:0; margin-bottom:20px; }
+        .step { display:flex; gap:16px; padding-bottom:24px; position:relative; }
+        .step:not(:last-child)::before { content:''; position:absolute; left:15px; top:32px; bottom:0; width:1px; background:var(--border); }
+        .step-num { width:32px; height:32px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,#e2e8f0,#94a3b8); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:.75rem; font-weight:700; color:#0e0f14; z-index:1; }
+        .step-content { flex:1; }
+        .step-title { font-weight:600; margin-bottom:6px; font-size:.9rem; }
+        .step-desc { font-size:.83rem; color:var(--text-muted); line-height:1.6; }
+
+        /* ── HTTP METHOD BADGES ── */
+        .method { display:inline-block; font-family:var(--font-mono); font-size:.68rem; font-weight:700; padding:2px 8px; border-radius:4px; margin-right:6px; letter-spacing:.05em; }
+        .method.get    { background:rgba(74,222,128,.12);  color:#4ade80; border:1px solid rgba(74,222,128,.3); }
+        .method.post   { background:rgba(251,191,36,.12);  color:#fbbf24; border:1px solid rgba(251,191,36,.3); }
+        .method.put    { background:rgba(96,165,250,.12);  color:#60a5fa; border:1px solid rgba(96,165,250,.3); }
+        .method.delete { background:rgba(248,113,113,.12); color:#f87171; border:1px solid rgba(248,113,113,.3); }
+        .method.patch  { background:rgba(192,132,252,.12); color:#c084fc; border:1px solid rgba(192,132,252,.3); }
+
+        /* ── ROUTE TABLE ── */
+        .route-table-wrap { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:20px; }
+        .route-table { width:100%; border-collapse:collapse; font-size:.82rem; }
+        .route-table th { background:var(--titlebar); padding:9px 14px; text-align:left; font-family:var(--font-mono); font-size:.68rem; color:var(--text-dim); border-bottom:1px solid var(--border); letter-spacing:.08em; text-transform:uppercase; }
+        .route-table td { padding:10px 14px; border-bottom:1px solid rgba(30,32,48,.5); vertical-align:middle; color:var(--text-muted); }
+        .route-table tr:hover td { background:rgba(255,255,255,.02); }
+        .route-table .rc { font-family:var(--font-mono); font-size:.78rem; color:var(--accent-dim); }
+        .route-table .rd { font-size:.82rem; }
+
+        /* ── CHEAT TABLE ── */
+        .cheat-wrap { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:20px; }
+        .cheat-table { width:100%; border-collapse:collapse; font-size:.83rem; }
+        .cheat-table th { text-align:left; padding:10px 14px; font-family:var(--font-mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); background:var(--titlebar); border-bottom:1px solid var(--border); }
+        .cheat-table td { padding:10px 14px; border-bottom:1px solid rgba(30,32,48,.5); vertical-align:top; }
+        .cheat-table tr:hover td { background:rgba(255,255,255,.02); }
+        .cheat-table .tc { font-family:var(--font-mono); font-size:.78rem; color:var(--accent-blue); }
+        .cheat-table .td { color:var(--text-muted); line-height:1.5; }
+
+        /* ── QUIZ ── */
+        .quiz-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:24px; margin-bottom:16px; }
+        .quiz-q { font-weight:600; margin-bottom:16px; font-size:.92rem; }
+        .quiz-q .qnum { color:var(--accent-dim); font-family:var(--font-mono); font-size:.8rem; margin-right:8px; }
+        .quiz-options { display:flex; flex-direction:column; gap:8px; }
+        .quiz-opt { padding:10px 16px; border-radius:7px; border:1px solid var(--border); background:var(--bg-surface); color:var(--text-muted); font-size:.85rem; cursor:pointer; transition:all .15s; text-align:left; font-family:var(--font-mono); }
+        .quiz-opt:hover { border-color:rgba(226,232,240,.2); color:var(--text-primary); }
+        .quiz-opt.correct { border-color:rgba(74,222,128,.5); background:rgba(74,222,128,.06); color:#4ade80; }
+        .quiz-opt.wrong   { border-color:rgba(248,113,113,.4); background:rgba(248,113,113,.05); color:#f87171; }
+        .quiz-feedback { margin-top:12px; font-size:.82rem; padding:10px 14px; border-radius:7px; display:none; line-height:1.6; }
+        .quiz-feedback.show { display:block; }
+        .quiz-feedback.ok  { background:rgba(74,222,128,.07); border:1px solid rgba(74,222,128,.2); color:#86efac; }
+        .quiz-feedback.ko  { background:rgba(248,113,113,.06); border:1px solid rgba(248,113,113,.2); color:#fca5a5; }
+
+        /* ── PROGRESS ── */
+        .module-progress { position:sticky; top:0; z-index:100; background:rgba(8,9,12,.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:8px 48px; display:flex; align-items:center; gap:12px; }
+        .progress-label { font-family:var(--font-mono); font-size:.7rem; color:var(--text-dim); white-space:nowrap; }
+        .progress-bar { flex:1; height:2px; background:var(--border); border-radius:2px; overflow:hidden; }
+        .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent-dim),var(--accent-2)); transition:width .3s ease; }
+        .progress-pct { font-family:var(--font-mono); font-size:.7rem; color:var(--accent-dim); white-space:nowrap; }
+        .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:10px 20px; font-family:var(--font-mono); font-size:.8rem; color:var(--accent-2); box-shadow:0 8px 30px rgba(0,0,0,.6); z-index:9999; opacity:0; transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s; }
+        .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+        ::-webkit-scrollbar{width:6px;height:6px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+        @media(max-width:900px){.sidebar{display:none;}.main{padding:32px 24px 60px;}.module-progress{padding:8px 24px;}}
+    </style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="toast" id="toast"></div>
+
+<div class="module-progress">
+    <span class="progress-label">// progression</span>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <span class="progress-pct" id="progressPct">0%</span>
+</div>
+
+<div class="layout">
+<nav class="sidebar">
+    <div class="sidebar-logo">
+        <a href="../index.html">
+            <div class="exp-icon">ex</div>
+            <span>Express.js</span>
+        </a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-title">Introduction</div>
+        <a class="nav-link active" href="#intro" onclick="setActive(this)"><span class="nav-icon"></span>C'est quoi Express ?</a>
+        <a class="nav-link" href="#setup" onclick="setActive(this)"><span class="nav-icon"></span>Installation & setup</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-title">Routing</div>
+        <a class="nav-link" href="#routes" onclick="setActive(this)"><span class="nav-icon"></span>Routes de base<span class="nav-num">GET POST…</span></a>
+        <a class="nav-link" href="#params" onclick="setActive(this)"><span class="nav-icon"></span>Params & Query</a>
+        <a class="nav-link" href="#router" onclick="setActive(this)"><span class="nav-icon"></span>Router — organiser les routes</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-title">Middleware</div>
+        <a class="nav-link" href="#middleware" onclick="setActive(this)"><span class="nav-icon"></span>Middleware — principe</a>
+        <a class="nav-link" href="#middleware-built" onclick="setActive(this)"><span class="nav-icon"></span>Middlewares intégrés</a>
+        <a class="nav-link" href="#errors" onclick="setActive(this)"><span class="nav-icon"></span>Gestion des erreurs</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-title">API REST</div>
+        <a class="nav-link" href="#rest" onclick="setActive(this)"><span class="nav-icon"></span>API REST complète</a>
+        <a class="nav-link" href="#mysql" onclick="setActive(this)"><span class="nav-icon"></span>Connexion MySQL</a>
+        <a class="nav-link" href="#structure" onclick="setActive(this)"><span class="nav-icon"></span>Structure de projet</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-title">Révision</div>
+        <a class="nav-link" href="#cheatsheet" onclick="setActive(this)"><span class="nav-icon"></span>Cheat Sheet</a>
+        <a class="nav-link" href="#quiz" onclick="setActive(this)"><span class="nav-icon"></span>Quiz</a>
+    </div>
+</nav>
+
+<main class="main">
+
+    <div class="page-header">
+        <div class="breadcrumb">
+            <a href="../index.html">← Accueil</a>
+            <span>/</span><span>Outils & Env.</span>
+            <span>/</span><span>Express.js</span>
+        </div>
+        <h1><span class="exp-word">Express.js</span></h1>
+        <p>Le framework Node.js minimaliste pour construire des APIs REST robustes. Simple, rapide, non-opinioné.</p>
+        <div class="header-tags">
+            <span class="htag white">Node.js requis</span>
+            <span class="htag blue">API REST</span>
+            <span class="htag green">CCP2 — Back-end</span>
+        </div>
+    </div>
+
+    <!-- 01 — INTRO -->
+    <section class="section" id="intro">
+        <div class="section-header">
+            <div class="section-num">01</div>
+            <h2>C'est quoi Express ?</h2>
+            <span class="section-badge">Fondamentaux</span>
+        </div>
+        <p class="prose"><strong>Express.js</strong> est un framework minimaliste pour Node.js. Il ajoute une couche d'abstraction sur le module HTTP natif pour gérer facilement le routing, les middlewares et les réponses HTTP.</p>
+
+        <div class="callout info">
+            <span class="callout-icon">🔍</span>
+            <div><strong>Rappel :</strong> sans Express, créer une route <code>GET /users</code> demandait de parser l'URL manuellement dans des <code>if/else</code>. Express réduit ça à une ligne : <code>app.get('/users', handler)</code>.</div>
+        </div>
+
+        <div class="card-grid">
+            <div class="info-card"><div class="ic-title">Routing</div><div class="ic-desc">Associe une URL + méthode HTTP à une fonction handler. Supporte les paramètres dynamiques, les query strings et les regex.</div></div>
+            <div class="info-card"><div class="ic-title"> Middleware</div><div class="ic-desc">Fonctions qui s'exécutent dans la chaîne de traitement d'une requête. Parsing JSON, authentification, logs, CORS…</div></div>
+            <div class="info-card"><div class="ic-title">Écosystème</div><div class="ic-desc">Des centaines de middlewares NPM prêts à l'emploi : <code>cors</code>, <code>helmet</code>, <code>express-validator</code>, <code>multer</code>, <code>passport</code>…</div></div>
+            <div class="info-card"><div class="ic-title">Non-opinioné</div><div class="ic-desc">Express ne t'impose pas de structure de projet. Tu choisis ton ORM, ta structure de dossiers, ton système d'authentification…</div></div>
+        </div>
+    </section>
+
+    <!-- 02 — SETUP -->
+    <section class="section" id="setup">
+        <div class="section-header">
+            <div class="section-num">02</div>
+            <h2>Installation & premier serveur</h2>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">terminal — créer un projet Express</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code><span class="cmt"># Créer le dossier et initialiser</span>
+<span class="met">mkdir</span> mon-api && <span class="met">cd</span> mon-api
+<span class="met">npm</span> init -y
+
+<span class="cmt"># Installer Express + outils dev</span>
+<span class="met">npm</span> i express dotenv
+<span class="met">npm</span> i -D nodemon
+
+<span class="cmt"># Ajouter dans package.json</span>
+<span class="str">"type"</span>: <span class="str">"module"</span>,
+<span class="str">"scripts"</span>: {
+    <span class="str">"dev"</span>: <span class="str">"nodemon src/app.js"</span>,
+    <span class="str">"start"</span>: <span class="str">"node src/app.js"</span>
+}</code></pre>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">src/app.js — serveur Express minimal</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code><span class="kw">import</span> <span class="var">express</span> <span class="kw">from</span> <span class="str">'express'</span>;
+<span class="kw">import</span> <span class="str">'dotenv/config'</span>;
+
+<span class="kw">const</span> <span class="var">app</span>  = <span class="fn">express</span>();
+<span class="kw">const</span> <span class="var">PORT</span> = <span class="var">process</span>.<span class="var">env</span>.<span class="var">PORT</span> || <span class="num">3000</span>;
+
+<span class="cmt">// Middleware pour parser le JSON des requêtes</span>
+<span class="var">app</span>.<span class="met">use</span>(<span class="var">express</span>.<span class="met">json</span>());
+
+<span class="cmt">// Première route</span>
+<span class="var">app</span>.<span class="http">get</span>(<span class="str">'/'</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+    <span class="var">res</span>.<span class="met">json</span>({ message: <span class="str">'API opérationnelle'</span> });
+});
+
+<span class="cmt">// Démarrer le serveur</span>
+<span class="var">app</span>.<span class="met">listen</span>(<span class="var">PORT</span>, () => {
+    console.<span class="met">log</span>(<span class="str">`Serveur Express sur http://localhost:<span class="var">${PORT}</span>`</span>);
+});</code></pre>
+        </div>
+    </section>
+
+    <!-- 03 — ROUTES -->
+    <section class="section" id="routes">
+        <div class="section-header">
+            <div class="section-num">03</div>
+            <h2>Routes de base — GET, POST, PUT, DELETE</h2>
+            <span class="section-badge">CRUD</span>
+        </div>
+
+        <p class="prose">Chaque route associe une <strong>méthode HTTP</strong> + un <strong>chemin URL</strong> à une fonction handler qui reçoit <code>req</code> (requête) et <code>res</code> (réponse).</p>
+
+        <!-- Tableau REST -->
+        <div class="route-table-wrap">
+            <table class="route-table">
+                <thead><tr><th>Méthode</th><th>Route</th><th>Action</th><th>Code HTTP</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="method get">GET</span></td><td class="rc">/users</td><td class="rd">Lire tous les utilisateurs</td><td class="rc">200</td></tr>
+                    <tr><td><span class="method get">GET</span></td><td class="rc">/users/:id</td><td class="rd">Lire un utilisateur par id</td><td class="rc">200 / 404</td></tr>
+                    <tr><td><span class="method post">POST</span></td><td class="rc">/users</td><td class="rd">Créer un utilisateur</td><td class="rc">201</td></tr>
+                    <tr><td><span class="method put">PUT</span></td><td class="rc">/users/:id</td><td class="rd">Remplacer un utilisateur</td><td class="rc">200</td></tr>
+                    <tr><td><span class="method patch">PATCH</span></td><td class="rc">/users/:id</td><td class="rd">Modifier partiellement</td><td class="rc">200</td></tr>
+                    <tr><td><span class="method delete">DELETE</span></td><td class="rc">/users/:id</td><td class="rd">Supprimer un utilisateur</td><td class="rc">204</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">routes/users.js — CRUD complet (données en mémoire)</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code><span class="kw">import</span> <span class="var">express</span> <span class="kw">from</span> <span class="str">'express'</span>;
+<span class="kw">const</span> <span class="var">router</span> = <span class="var">express</span>.<span class="met">Router</span>();
+
+<span class="cmt">// Données simulées (en prod → base de données)</span>
+<span class="kw">let</span> <span class="var">users</span> = [
+    { id: <span class="num">1</span>, nom: <span class="str">'Alice'</span>, email: <span class="str">'alice@mail.fr'</span> },
+    { id: <span class="num">2</span>, nom: <span class="str">'Bob'</span>,   email: <span class="str">'bob@mail.fr'</span>   },
+];
+
+<span class="cmt">// GET /users — tous les utilisateurs</span>
+<span class="var">router</span>.<span class="http">get</span>(<span class="str">'/'</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+    <span class="var">res</span>.<span class="met">json</span>(<span class="var">users</span>);
+});
+
+<span class="cmt">// GET /users/:id — un utilisateur</span>
+<span class="var">router</span>.<span class="http">get</span>(<span class="str">'/:id'</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+    <span class="kw">const</span> <span class="var">user</span> = <span class="var">users</span>.<span class="met">find</span>(u => u.id === <span class="fn">Number</span>(<span class="var">req</span>.<span class="var">params</span>.<span class="var">id</span>));
+    <span class="kw">if</span> (!<span class="var">user</span>) <span class="kw">return</span> <span class="var">res</span>.<span class="met">status</span>(<span class="num">404</span>).<span class="met">json</span>({ erreur: <span class="str">'Utilisateur introuvable'</span> });
+    <span class="var">res</span>.<span class="met">json</span>(<span class="var">user</span>);
+});
+
+<span class="cmt">// POST /users — créer</span>
+<span class="var">router</span>.<span class="http">post</span>(<span class="str">'/'</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+    <span class="kw">const</span> { <span class="var">nom</span>, <span class="var">email</span> } = <span class="var">req</span>.<span class="var">body</span>;
+    <span class="kw">if</span> (!<span class="var">nom</span> || !<span class="var">email</span>) {
+        <span class="kw">return</span> <span class="var">res</span>.<span class="met">status</span>(<span class="num">400</span>).<span class="met">json</span>({ erreur: <span class="str">'nom et email requis'</span> });
+    }
+    <span class="kw">const</span> <span class="var">newUser</span> = { id: <span class="fn">Date</span>.<span class="met">now</span>(), <span class="var">nom</span>, <span class="var">email</span> };
+    <span class="var">users</span>.<span class="met">push</span>(<span class="var">newUser</span>);
+    <span class="var">res</span>.<span class="met">status</span>(<span class="num">201</span>).<span class="met">json</span>(<span class="var">newUser</span>);
+});
+
+<span class="cmt">// PUT /users/:id — remplacer</span>
+<span class="var">router</span>.<span class="http">put</span>(<span class="str">'/:id'</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+    <span class="kw">const</span> <span class="var">idx</span> = <span class="var">users</span>.<span class="met">findIndex</span>(u => u.id === <span class="fn">Number</span>(<span class="var">req</span>.<span class="var">params</span>.<span class="var">id</span>));
+    <span class="kw">if</span> (<span class="var">idx</span> === <span class="num">-1</span>) <span class="kw">return</span> <span class="var">res</span>.<span class="met">status</span>(<span class="num">404</span>).<span class="met">json</span>({ erreur: <span class="str">'Introuvable'</span> });
+    <span class="var">users</span>[<span class="var">idx</span>] = { id: <span class="fn">Number</span>(<span class="var">req</span>.<span class="var">params</span>.<span class="var">id</span>), ...<span class="var">req</span>.<span class="var">body</span> };
+    <span class="var">res</span>.<span class="met">json</span>(<span class="var">users</span>[<span class="var">idx</span>]);
+});
+
+<span class="cmt">// DELETE /users/:id — supprimer</span>
+<span class="var">router</span>.<span class="http">delete</span>(<span class="str">'/:id'</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+    <span class="kw">const</span> <span class="var">before</span> = <span class="var">users</span>.<span class="var">length</span>;
+    <span class="var">users</span> = <span class="var">users</span>.<span class="met">filter</span>(u => u.id !== <span class="fn">Number</span>(<span class="var">req</span>.<span class="var">params</span>.<span class="var">id</span>));
+    <span class="kw">if</span> (<span class="var">users</span>.<span class="var">length</span> === <span class="var">before</span>) <span class="kw">return</span> <span class="var">res</span>.<span class="met">status</span>(<span class="num">404</span>).<span class="met">json</span>({ erreur: <span class="str">'Introuvable'</span> });
+    <span class="var">res</span>.<span class="met">status</span>(<span class="num">204</span>).<span class="met">send</span>();  <span class="cmt">// 204 = No Content</span>
+});
+
+<span class="kw">export default</span> <span class="var">router</span>;</code></pre>
+        </div>
+    </section>
+
+    <!-- 04 — PARAMS -->
+    <section class="section" id="params">
+        <div class="section-header">
+            <div class="section-num">04</div>
+            <h2>Paramètres de route & Query strings</h2>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">Express — req.params, req.query, req.body</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code><span class="cmt">//  Paramètres de route (:id) ─</span>
+<span class="cmt">// URL : /users/42</span>
+<span class="var">app</span>.<span class="http">get</span>(<span class="str">'/users/:id'</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+    console.<span class="met">log</span>(<span class="var">req</span>.<span class="var">params</span>.<span class="var">id</span>);     <span class="cmt">// '42' (string)</span>
+    console.<span class="met">log</span>(<span class="fn">Number</span>(<span class="var">req</span>.<span class="var">params</span>.<span class="var">id</span>)); <span class="cmt">// 42  (number)</span>
+});
+
+<span class="cmt">// Plusieurs paramètres</span>
+<span class="cmt">// URL : /users/5/articles/12</span>
+<span class="var">app</span>.<span class="http">get</span>(<span class="str">'/users/:userId/articles/:articleId'</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+    <span class="kw">const</span> { <span class="var">userId</span>, <span class="var">articleId</span> } = <span class="var">req</span>.<span class="var">params</span>;
+    <span class="var">res</span>.<span class="met">json</span>({ <span class="var">userId</span>, <span class="var">articleId</span> });
+});
+
+<span class="cmt">// ── Query strings (après ?) ──</span>
+<span class="cmt">// URL : /articles?page=2&limit=10&search=node</span>
+<span class="var">app</span>.<span class="http">get</span>(<span class="str">'/articles'</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+    <span class="kw">const</span> <span class="var">page</span>   = <span class="fn">Number</span>(<span class="var">req</span>.<span class="var">query</span>.<span class="var">page</span>)   || <span class="num">1</span>;
+    <span class="kw">const</span> <span class="var">limit</span>  = <span class="fn">Number</span>(<span class="var">req</span>.<span class="var">query</span>.<span class="var">limit</span>)  || <span class="num">10</span>;
+    <span class="kw">const</span> <span class="var">search</span> = <span class="var">req</span>.<span class="var">query</span>.<span class="var">search</span> || <span class="str">''</span>;
+    <span class="var">res</span>.<span class="met">json</span>({ <span class="var">page</span>, <span class="var">limit</span>, <span class="var">search</span> });
+});
+
+<span class="cmt">// ── Body (POST/PUT/PATCH) ──</span>
+<span class="cmt">// Requête : POST /users avec body JSON</span>
+<span class="var">app</span>.<span class="http">post</span>(<span class="str">'/users'</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+    <span class="kw">const</span> { <span class="var">nom</span>, <span class="var">email</span> } = <span class="var">req</span>.<span class="var">body</span>;  <span class="cmt">// nécessite express.json()</span>
+    <span class="var">res</span>.<span class="met">status</span>(<span class="num">201</span>).<span class="met">json</span>({ <span class="var">nom</span>, <span class="var">email</span> });
+});
+
+<span class="cmt">// ── Headers ──</span>
+<span class="kw">const</span> <span class="var">token</span> = <span class="var">req</span>.<span class="var">headers</span>[<span class="str">'authorization'</span>];
+<span class="kw">const</span> <span class="var">lang</span>  = <span class="var">req</span>.<span class="met">get</span>(<span class="str">'Accept-Language'</span>);</code></pre>
+        </div>
+    </section>
+
+    <!-- 05 — ROUTER -->
+    <section class="section" id="router">
+        <div class="section-header">
+            <div class="section-num">05</div>
+            <h2>Router — organiser les routes</h2>
+        </div>
+        <p class="prose">Quand une API grandit, on sépare les routes dans des fichiers dédiés avec <code>express.Router()</code>. Chaque ressource a son propre fichier de routes.</p>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">src/app.js — monter les routers</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code><span class="kw">import</span> <span class="var">express</span>      <span class="kw">from</span> <span class="str">'express'</span>;
+<span class="kw">import</span> <span class="var">usersRouter</span>  <span class="kw">from</span> <span class="str">'./routes/users.js'</span>;
+<span class="kw">import</span> <span class="var">articlesRouter</span> <span class="kw">from</span> <span class="str">'./routes/articles.js'</span>;
+
+<span class="kw">const</span> <span class="var">app</span> = <span class="fn">express</span>();
+<span class="var">app</span>.<span class="met">use</span>(<span class="var">express</span>.<span class="met">json</span>());
+
+<span class="cmt">// Monter les routers avec leur préfixe</span>
+<span class="var">app</span>.<span class="met">use</span>(<span class="str">'/api/users'</span>,    <span class="var">usersRouter</span>);
+<span class="var">app</span>.<span class="met">use</span>(<span class="str">'/api/articles'</span>, <span class="var">articlesRouter</span>);
+
+<span class="cmt">// GET /api/users    → usersRouter.get('/')
+// GET /api/users/5  → usersRouter.get('/:id')
+// POST /api/articles → articlesRouter.post('/')</span>
+
+<span class="var">app</span>.<span class="met">listen</span>(<span class="num">3000</span>);</code></pre>
+        </div>
+    </section>
+
+    <!-- 06 — MIDDLEWARE -->
+    <section class="section" id="middleware">
+        <div class="section-header">
+            <div class="section-num">06</div>
+            <h2>Middleware — le concept clé d'Express</h2>
+            <span class="section-badge">Architecture</span>
+        </div>
+        <p class="prose">Un <strong>middleware</strong> est une fonction avec la signature <code>(req, res, next)</code>. Il peut modifier <code>req</code> et <code>res</code>, terminer la requête, ou appeler <code>next()</code> pour passer au suivant.</p>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;">
+            <div style="font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);margin-bottom:16px;">// Chaîne de traitement d'une requête</div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--font-mono);font-size:.75rem;">
+                <div style="padding:10px 14px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2);border-radius:7px;color:var(--accent-blue);">Requête</div>
+                <div style="color:var(--text-dim)">→</div>
+                <div style="padding:10px 14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:7px;color:var(--accent-yellow);">logger()</div>
+                <div style="color:var(--text-dim)">→</div>
+                <div style="padding:10px 14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:7px;color:var(--accent-yellow);">auth()</div>
+                <div style="color:var(--text-dim)">→</div>
+                <div style="padding:10px 14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:7px;color:var(--accent-yellow);">validate()</div>
+                <div style="color:var(--text-dim)">→</div>
+                <div style="padding:10px 14px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:7px;color:var(--accent-green);"> handler</div>
+                <div style="color:var(--text-dim)">→</div>
+                <div style="padding:10px 14px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2);border-radius:7px;color:var(--accent-blue);"> Réponse</div>
+            </div>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">middleware — exemples pratiques</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code><span class="cmt">// ── Middleware global (toutes les routes) ──</span>
+<span class="kw">const</span> <span class="mw">logger</span> = (<span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+    console.<span class="met">log</span>(<span class="str">`<span class="var">${new Date().toISOString()}</span> <span class="var">${req.method}</span> <span class="var">${req.url}</span>`</span>);
+    <span class="fn">next</span>(); <span class="cmt">// ← OBLIGATOIRE pour passer au suivant</span>
+};
+<span class="var">app</span>.<span class="met">use</span>(<span class="mw">logger</span>);
+
+<span class="cmt">// ── Middleware d'authentification JWT ──</span>
+<span class="kw">const</span> <span class="mw">authMiddleware</span> = (<span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+    <span class="kw">const</span> <span class="var">token</span> = <span class="var">req</span>.<span class="var">headers</span>.<span class="var">authorization</span>?.replace(<span class="str">'Bearer '</span>, <span class="str">''</span>);
+    <span class="kw">if</span> (!<span class="var">token</span>) {
+        <span class="kw">return</span> <span class="var">res</span>.<span class="met">status</span>(<span class="num">401</span>).<span class="met">json</span>({ erreur: <span class="str">'Token manquant'</span> });
+        <span class="cmt">// ← on NE call pas next(), la chaîne s'arrête ici</span>
+    }
+    <span class="cmt">// Vérifier le token (ex: jwt.verify)</span>
+    <span class="var">req</span>.<span class="var">user</span> = { id: <span class="num">1</span>, role: <span class="str">'admin'</span> }; <span class="cmt">// ajouter l'user à req</span>
+    <span class="fn">next</span>();
+};
+
+<span class="cmt">// Appliquer sur une route spécifique</span>
+<span class="var">app</span>.<span class="http">get</span>(<span class="str">'/profile'</span>, <span class="mw">authMiddleware</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+    <span class="var">res</span>.<span class="met">json</span>(<span class="var">req</span>.<span class="var">user</span>);
+});
+
+<span class="cmt">// Appliquer sur un groupe de routes</span>
+<span class="var">router</span>.<span class="met">use</span>(<span class="mw">authMiddleware</span>);  <span class="cmt">// protège toutes les routes du router</span>
+
+<span class="cmt">// ── Middleware de validation ──</span>
+<span class="kw">const</span> <span class="mw">validateUser</span> = (<span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+    <span class="kw">const</span> { <span class="var">nom</span>, <span class="var">email</span> } = <span class="var">req</span>.<span class="var">body</span>;
+    <span class="kw">if</span> (!<span class="var">nom</span>?.trim())   <span class="kw">return</span> <span class="var">res</span>.<span class="met">status</span>(<span class="num">400</span>).<span class="met">json</span>({ erreur: <span class="str">'nom requis'</span> });
+    <span class="kw">if</span> (!<span class="var">email</span>?.includes(<span class="str">'@'</span>)) <span class="kw">return</span> <span class="var">res</span>.<span class="met">status</span>(<span class="num">400</span>).<span class="met">json</span>({ erreur: <span class="str">'email invalide'</span> });
+    <span class="fn">next</span>();
+};
+<span class="var">router</span>.<span class="http">post</span>(<span class="str">'/'</span>, <span class="mw">validateUser</span>, <span class="var">usersController</span>.<span class="var">create</span>);</code></pre>
+        </div>
+    </section>
+
+    <!-- 07 — MIDDLEWARES INTÉGRÉS -->
+    <section class="section" id="middleware-built">
+        <div class="section-header">
+            <div class="section-num">07</div>
+            <h2>Middlewares intégrés & populaires</h2>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">app.js — middlewares essentiels</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code><span class="kw">import</span> <span class="var">express</span> <span class="kw">from</span> <span class="str">'express'</span>;
+<span class="kw">import</span> <span class="var">cors</span>    <span class="kw">from</span> <span class="str">'cors'</span>;      <span class="cmt">// npm i cors</span>
+<span class="kw">import</span> <span class="var">helmet</span>  <span class="kw">from</span> <span class="str">'helmet'</span>;    <span class="cmt">// npm i helmet</span>
+<span class="kw">import</span> <span class="var">morgan</span>  <span class="kw">from</span> <span class="str">'morgan'</span>;    <span class="cmt">// npm i morgan</span>
+
+<span class="kw">const</span> <span class="var">app</span> = <span class="fn">express</span>();
+
+<span class="cmt">// ── Sécurité — headers HTTP (indispensable en prod)</span>
+<span class="var">app</span>.<span class="met">use</span>(<span class="fn">helmet</span>());
+
+<span class="cmt">// ── CORS — autoriser le front à appeler l'API</span>
+<span class="var">app</span>.<span class="met">use</span>(<span class="fn">cors</span>({
+    origin: <span class="str">'http://localhost:5173'</span>,  <span class="cmt">// URL du front React/Vite</span>
+    methods: [<span class="str">'GET'</span>,<span class="str">'POST'</span>,<span class="str">'PUT'</span>,<span class="str">'DELETE'</span>],
+    credentials: <span class="kw">true</span>,
+}));
+
+<span class="cmt">// ── Logs des requêtes (dev = format coloré)</span>
+<span class="var">app</span>.<span class="met">use</span>(<span class="fn">morgan</span>(<span class="str">'dev'</span>));
+
+<span class="cmt">// ── Parser le JSON des requêtes</span>
+<span class="var">app</span>.<span class="met">use</span>(<span class="var">express</span>.<span class="met">json</span>());
+
+<span class="cmt">// ── Parser les formulaires HTML (application/x-www-form-urlencoded)</span>
+<span class="var">app</span>.<span class="met">use</span>(<span class="var">express</span>.<span class="met">urlencoded</span>({ extended: <span class="kw">true</span> }));
+
+<span class="cmt">// ── Servir des fichiers statiques</span>
+<span class="var">app</span>.<span class="met">use</span>(<span class="fn">express</span>.<span class="met">static</span>(<span class="str">'public'</span>)); <span class="cmt">// dossier public/</span></code></pre>
+        </div>
+    </section>
+
+    <!-- 08 — ERRORS -->
+    <section class="section" id="errors">
+        <div class="section-header">
+            <div class="section-num">08</div>
+            <h2>Gestion centralisée des erreurs</h2>
+        </div>
+        <p class="prose">Express a un mécanisme de gestion d'erreurs via un middleware à <strong>4 paramètres</strong> <code>(err, req, res, next)</code> placé en dernier.</p>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">app.js — gestion d'erreurs et route 404</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code><span class="cmt">// ── Propager une erreur depuis une route ──</span>
+<span class="var">app</span>.<span class="http">get</span>(<span class="str">'/users/:id'</span>, <span class="kw">async</span> (<span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+    <span class="kw">try</span> {
+        <span class="kw">const</span> <span class="var">user</span> = <span class="kw">await</span> <span class="var">UserService</span>.<span class="met">findById</span>(<span class="var">req</span>.<span class="var">params</span>.<span class="var">id</span>);
+        <span class="kw">if</span> (!<span class="var">user</span>) {
+            <span class="kw">const</span> <span class="var">err</span> = <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">'Utilisateur introuvable'</span>);
+            <span class="var">err</span>.<span class="var">status</span> = <span class="num">404</span>;
+            <span class="kw">return</span> <span class="fn">next</span>(<span class="var">err</span>);  <span class="cmt">// passe l'erreur au gestionnaire</span>
+        }
+        <span class="var">res</span>.<span class="met">json</span>(<span class="var">user</span>);
+    } <span class="kw">catch</span> (<span class="var">err</span>) {
+        <span class="fn">next</span>(<span class="var">err</span>);  <span class="cmt">// toutes les erreurs non gérées</span>
+    }
+});
+
+<span class="cmt">// ── 404 — route non trouvée (avant le gestionnaire d'erreurs)</span>
+<span class="var">app</span>.<span class="met">use</span>((<span class="var">req</span>, <span class="var">res</span>) => {
+    <span class="var">res</span>.<span class="met">status</span>(<span class="num">404</span>).<span class="met">json</span>({ erreur: <span class="str">`Route <span class="var">${req.method}</span> <span class="var">${req.url}</span> introuvable`</span> });
+});
+
+<span class="cmt">// ── Gestionnaire d'erreurs global (4 params — obligatoire) ──</span>
+<span class="var">app</span>.<span class="met">use</span>((<span class="var">err</span>, <span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+    console.<span class="met">error</span>(<span class="var">err</span>.<span class="var">stack</span>);
+
+    <span class="kw">const</span> <span class="var">status</span>  = <span class="var">err</span>.<span class="var">status</span>  || <span class="num">500</span>;
+    <span class="kw">const</span> <span class="var">message</span> = <span class="var">err</span>.<span class="var">message</span> || <span class="str">'Erreur interne du serveur'</span>;
+
+    <span class="var">res</span>.<span class="met">status</span>(<span class="var">status</span>).<span class="met">json</span>({
+        erreur: <span class="var">message</span>,
+        <span class="cmt">// stack uniquement en développement</span>
+        ...(<span class="var">process</span>.<span class="var">env</span>.<span class="var">NODE_ENV</span> === <span class="str">'development'</span> && { stack: <span class="var">err</span>.<span class="var">stack</span> })
+    });
+});</code></pre>
+        </div>
+
+        <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div>Dans les routes <code>async</code>, toujours entourer d'un <code>try/catch</code> et appeler <code>next(err)</code>. Sinon les erreurs asynchrones ne sont pas capturées par le gestionnaire global.</div>
+        </div>
+    </section>
+
+    <!-- 09 — REST COMPLÈTE -->
+    <section class="section" id="rest">
+        <div class="section-header">
+            <div class="section-num">09</div>
+            <h2>API REST complète — Architecture MVC</h2>
+            <span class="section-badge">Best practices</span>
+        </div>
+        <p class="prose">En production, on sépare les responsabilités : <strong>Routes</strong> (définir les endpoints), <strong>Controllers</strong> (logique métier), <strong>Services</strong> (accès aux données).</p>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">controllers/users.controller.js</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code><span class="kw">import</span> * <span class="kw">as</span> <span class="var">UserService</span> <span class="kw">from</span> <span class="str">'../services/users.service.js'</span>;
+
+<span class="kw">export const</span> <span class="fn">getAll</span> = <span class="kw">async</span> (<span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+    <span class="kw">try</span> {
+        <span class="kw">const</span> <span class="var">users</span> = <span class="kw">await</span> <span class="var">UserService</span>.<span class="met">findAll</span>();
+        <span class="var">res</span>.<span class="met">json</span>(<span class="var">users</span>);
+    } <span class="kw">catch</span> (<span class="var">err</span>) { <span class="fn">next</span>(<span class="var">err</span>); }
+};
+
+<span class="kw">export const</span> <span class="fn">getById</span> = <span class="kw">async</span> (<span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+    <span class="kw">try</span> {
+        <span class="kw">const</span> <span class="var">user</span> = <span class="kw">await</span> <span class="var">UserService</span>.<span class="met">findById</span>(<span class="var">req</span>.<span class="var">params</span>.<span class="var">id</span>);
+        <span class="kw">if</span> (!<span class="var">user</span>) <span class="kw">return</span> <span class="var">res</span>.<span class="met">status</span>(<span class="num">404</span>).<span class="met">json</span>({ erreur: <span class="str">'Non trouvé'</span> });
+        <span class="var">res</span>.<span class="met">json</span>(<span class="var">user</span>);
+    } <span class="kw">catch</span> (<span class="var">err</span>) { <span class="fn">next</span>(<span class="var">err</span>); }
+};
+
+<span class="kw">export const</span> <span class="fn">create</span> = <span class="kw">async</span> (<span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+    <span class="kw">try</span> {
+        <span class="kw">const</span> <span class="var">newUser</span> = <span class="kw">await</span> <span class="var">UserService</span>.<span class="met">create</span>(<span class="var">req</span>.<span class="var">body</span>);
+        <span class="var">res</span>.<span class="met">status</span>(<span class="num">201</span>).<span class="met">json</span>(<span class="var">newUser</span>);
+    } <span class="kw">catch</span> (<span class="var">err</span>) { <span class="fn">next</span>(<span class="var">err</span>); }
+};</code></pre>
+        </div>
+    </section>
+
+    <!-- 10 — MYSQL -->
+    <section class="section" id="mysql">
+        <div class="section-header">
+            <div class="section-num">10</div>
+            <h2>Connexion MySQL avec mysql2</h2>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">src/db.js — pool de connexions MySQL</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code><span class="cmt"># Installer mysql2</span>
+<span class="met">npm</span> i mysql2
+
+<span class="cmt">// src/db.js</span>
+<span class="kw">import</span> <span class="var">mysql</span> <span class="kw">from</span> <span class="str">'mysql2/promise'</span>;
+
+<span class="kw">export const</span> <span class="var">pool</span> = <span class="var">mysql</span>.<span class="met">createPool</span>({
+    host:     <span class="var">process</span>.<span class="var">env</span>.<span class="var">DB_HOST</span>,
+    port:     <span class="var">process</span>.<span class="var">env</span>.<span class="var">DB_PORT</span>,
+    database: <span class="var">process</span>.<span class="var">env</span>.<span class="var">DB_NAME</span>,
+    user:     <span class="var">process</span>.<span class="var">env</span>.<span class="var">DB_USER</span>,
+    password: <span class="var">process</span>.<span class="var">env</span>.<span class="var">DB_PASS</span>,
+    waitForConnections: <span class="kw">true</span>,
+    connectionLimit: <span class="num">10</span>,
+});</code></pre>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">services/users.service.js — requêtes SQL</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code><span class="kw">import</span> { <span class="var">pool</span> } <span class="kw">from</span> <span class="str">'../db.js'</span>;
+
+<span class="kw">export const</span> <span class="fn">findAll</span> = <span class="kw">async</span> () => {
+    <span class="kw">const</span> [<span class="var">rows</span>] = <span class="kw">await</span> <span class="var">pool</span>.<span class="met">query</span>(<span class="str">'SELECT * FROM utilisateurs'</span>);
+    <span class="kw">return</span> <span class="var">rows</span>;
+};
+
+<span class="kw">export const</span> <span class="fn">findById</span> = <span class="kw">async</span> (<span class="var">id</span>) => {
+    <span class="cmt">// Requête préparée — protection injection SQL</span>
+    <span class="kw">const</span> [<span class="var">rows</span>] = <span class="kw">await</span> <span class="var">pool</span>.<span class="met">query</span>(
+        <span class="str">'SELECT * FROM utilisateurs WHERE id = ?'</span>, [<span class="var">id</span>]
+    );
+    <span class="kw">return</span> <span class="var">rows</span>[<span class="num">0</span>] || <span class="kw">null</span>;
+};
+
+<span class="kw">export const</span> <span class="fn">create</span> = <span class="kw">async</span> ({ <span class="var">nom</span>, <span class="var">email</span>, <span class="var">motDePasse</span> }) => {
+    <span class="kw">const</span> [<span class="var">result</span>] = <span class="kw">await</span> <span class="var">pool</span>.<span class="met">query</span>(
+        <span class="str">'INSERT INTO utilisateurs (nom, email, mot_de_passe) VALUES (?, ?, ?)'</span>,
+        [<span class="var">nom</span>, <span class="var">email</span>, <span class="var">motDePasse</span>]
+    );
+    <span class="kw">return</span> { id: <span class="var">result</span>.<span class="var">insertId</span>, <span class="var">nom</span>, <span class="var">email</span> };
+};
+
+<span class="kw">export const</span> <span class="fn">update</span> = <span class="kw">async</span> (<span class="var">id</span>, <span class="var">data</span>) => {
+    <span class="kw">await</span> <span class="var">pool</span>.<span class="met">query</span>(
+        <span class="str">'UPDATE utilisateurs SET nom = ?, email = ? WHERE id = ?'</span>,
+        [<span class="var">data</span>.<span class="var">nom</span>, <span class="var">data</span>.<span class="var">email</span>, <span class="var">id</span>]
+    );
+    <span class="kw">return</span> <span class="fn">findById</span>(<span class="var">id</span>);
+};
+
+<span class="kw">export const</span> <span class="fn">remove</span> = <span class="kw">async</span> (<span class="var">id</span>) => {
+    <span class="kw">const</span> [<span class="var">result</span>] = <span class="kw">await</span> <span class="var">pool</span>.<span class="met">query</span>(<span class="str">'DELETE FROM utilisateurs WHERE id = ?'</span>, [<span class="var">id</span>]);
+    <span class="kw">return</span> <span class="var">result</span>.<span class="var">affectedRows</span> > <span class="num">0</span>;
+};</code></pre>
+        </div>
+    </section>
+
+    <!-- 11 — STRUCTURE -->
+    <section class="section" id="structure">
+        <div class="section-header">
+            <div class="section-num">11</div>
+            <h2>Structure de projet recommandée</h2>
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-header"><div class="cb-dots"><div class="cb-dot r"></div><div class="cb-dot o"></div><div class="cb-dot g"></div></div><span class="cb-filename">arborescence — API Express production</span><button class="cb-copy" onclick="copyCode(this)">copier</button></div>
+            <pre><code>mon-api/
+<span class="var">├── src/</span>
+<span class="var">│   ├── app.js</span>              <span class="cmt">← config Express, middlewares globaux</span>
+<span class="var">│   ├── server.js</span>           <span class="cmt">← démarrage du serveur (listen)</span>
+<span class="var">│   ├── db.js</span>               <span class="cmt">← pool de connexions MySQL</span>
+<span class="var">│   ├── routes/</span>
+<span class="var">│   │   ├── users.routes.js</span>
+<span class="var">│   │   └── articles.routes.js</span>
+<span class="var">│   ├── controllers/</span>
+<span class="var">│   │   ├── users.controller.js</span>
+<span class="var">│   │   └── articles.controller.js</span>
+<span class="var">│   ├── services/</span>           <span class="cmt">← accès BDD</span>
+<span class="var">│   │   └── users.service.js</span>
+<span class="var">│   └── middlewares/</span>
+<span class="var">│       ├── auth.middleware.js</span>
+<span class="var">│       └── error.middleware.js</span>
+<span class="var">├── .env</span>                    <span class="cmt">← dans .gitignore</span>
+<span class="var">├── .env.example</span>            <span class="cmt">← commité</span>
+<span class="var">├── .gitignore</span>
+<span class="var">└── package.json</span></code></pre>
+        </div>
+    </section>
+
+    <!-- 12 — CHEAT SHEET -->
+    <section class="section" id="cheatsheet">
+        <div class="section-header">
+            <div class="section-num">12</div>
+            <h2>Cheat Sheet Express.js</h2>
+            <span class="section-badge">Référence rapide</span>
+        </div>
+        <div class="cheat-wrap">
+            <table class="cheat-table">
+                <thead><tr><th>API / Pattern</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td class="tc">express()</td><td class="td">Créer une instance d'application Express</td></tr>
+                    <tr><td class="tc">app.use(middleware)</td><td class="td">Appliquer un middleware à toutes les routes</td></tr>
+                    <tr><td class="tc">app.use('/path', router)</td><td class="td">Monter un Router sur un préfixe de chemin</td></tr>
+                    <tr><td class="tc">app.get / post / put / delete</td><td class="td">Définir une route pour une méthode HTTP</td></tr>
+                    <tr><td class="tc">express.Router()</td><td class="td">Créer un mini-routeur isolé</td></tr>
+                    <tr><td class="tc">express.json()</td><td class="td">Parser automatiquement les body JSON</td></tr>
+                    <tr><td class="tc">express.static('public')</td><td class="td">Servir des fichiers statiques</td></tr>
+                    <tr><td class="tc">req.params.id</td><td class="td">Paramètre de route dynamique (:id)</td></tr>
+                    <tr><td class="tc">req.query.page</td><td class="td">Paramètre query string (?page=2)</td></tr>
+                    <tr><td class="tc">req.body</td><td class="td">Corps de la requête (POST/PUT)</td></tr>
+                    <tr><td class="tc">req.headers['authorization']</td><td class="td">Lire un header HTTP</td></tr>
+                    <tr><td class="tc">res.json(data)</td><td class="td">Répondre avec du JSON (Content-Type auto)</td></tr>
+                    <tr><td class="tc">res.status(404).json(…)</td><td class="td">Répondre avec un code HTTP spécifique</td></tr>
+                    <tr><td class="tc">res.send('texte')</td><td class="td">Répondre avec du texte brut</td></tr>
+                    <tr><td class="tc">res.status(204).send()</td><td class="td">Réponse sans contenu (DELETE réussi)</td></tr>
+                    <tr><td class="tc">next()</td><td class="td">Passer au middleware suivant</td></tr>
+                    <tr><td class="tc">next(err)</td><td class="td">Transmettre une erreur au gestionnaire d'erreurs</td></tr>
+                    <tr><td class="tc">(err,req,res,next) =></td><td class="td">Signature du middleware de gestion d'erreurs (4 params)</td></tr>
+                    <tr><td class="tc">app.listen(PORT, cb)</td><td class="td">Démarrer le serveur sur le port spécifié</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 13 — QUIZ -->
+    <section class="section" id="quiz">
+        <div class="section-header">
+            <div class="section-num">13</div>
+            <h2>Quiz de révision</h2>
+            <span class="section-badge">Auto-évaluation</span>
+        </div>
+
+        <div class="quiz-card">
+            <div class="quiz-q"><span class="qnum">Q1.</span> Quelle est la signature obligatoire d'un middleware de gestion d'erreurs Express ?</div>
+            <div class="quiz-options">
+                <button class="quiz-opt" onclick="answer(this,'q1',false)">(req, res, next) =></button>
+                <button class="quiz-opt" onclick="answer(this,'q1',true)">(err, req, res, next) =></button>
+                <button class="quiz-opt" onclick="answer(this,'q1',false)">(error, response) =></button>
+                <button class="quiz-opt" onclick="answer(this,'q1',false)">(req, res) =></button>
+            </div>
+            <div class="quiz-feedback" id="fb-q1"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="quiz-q"><span class="qnum">Q2.</span> Que retourne <code>req.params.id</code> pour la route <code>/users/42</code> ?</div>
+            <div class="quiz-options">
+                <button class="quiz-opt" onclick="answer(this,'q2',false)">Le nombre 42</button>
+                <button class="quiz-opt" onclick="answer(this,'q2',true)">La chaîne '42'</button>
+                <button class="quiz-opt" onclick="answer(this,'q2',false)">Un objet {id: 42}</button>
+                <button class="quiz-opt" onclick="answer(this,'q2',false)">undefined</button>
+            </div>
+            <div class="quiz-feedback" id="fb-q2"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="quiz-q"><span class="qnum">Q3.</span> Pourquoi appeler <code>next()</code> dans un middleware ?</div>
+            <div class="quiz-options">
+                <button class="quiz-opt" onclick="answer(this,'q3',false)">Pour envoyer la réponse au client</button>
+                <button class="quiz-opt" onclick="answer(this,'q3',false)">Pour terminer la requête</button>
+                <button class="quiz-opt" onclick="answer(this,'q3',true)">Pour passer la main au middleware ou route suivant dans la chaîne</button>
+                <button class="quiz-opt" onclick="answer(this,'q3',false)">Pour mettre la requête en file d'attente</button>
+            </div>
+            <div class="quiz-feedback" id="fb-q3"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="quiz-q"><span class="qnum">Q4.</span> Quel middleware permet à un front React (port 5173) d'appeler une API Express (port 3000) ?</div>
+            <div class="quiz-options">
+                <button class="quiz-opt" onclick="answer(this,'q4',false)">helmet</button>
+                <button class="quiz-opt" onclick="answer(this,'q4',false)">morgan</button>
+                <button class="quiz-opt" onclick="answer(this,'q4',true)">cors</button>
+                <button class="quiz-opt" onclick="answer(this,'q4',false)">express.json()</button>
+            </div>
+            <div class="quiz-feedback" id="fb-q4"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="quiz-q"><span class="qnum">Q5.</span> Quel code HTTP retourner après un DELETE réussi sans contenu ?</div>
+            <div class="quiz-options">
+                <button class="quiz-opt" onclick="answer(this,'q5',false)">200 OK</button>
+                <button class="quiz-opt" onclick="answer(this,'q5',false)">201 Created</button>
+                <button class="quiz-opt" onclick="answer(this,'q5',true)">204 No Content</button>
+                <button class="quiz-opt" onclick="answer(this,'q5',false)">404 Not Found</button>
+            </div>
+            <div class="quiz-feedback" id="fb-q5"></div>
+        </div>
+
+        <div id="quiz-score" style="display:none;text-align:center;padding:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;margin-top:8px;">
+            <div style="font-size:2rem;margin-bottom:8px;" id="score-emoji">🎉</div>
+            <div style="font-family:var(--font-mono);font-size:1rem;color:var(--text-primary);" id="score-text"></div>
+        </div>
+    </section>
+
+</main>
+</div>
+
+<script>
+function copyCode(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='✓ copié';btn.classList.add('copied');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('copied');},2000);});}
+function setActive(el){document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));el.classList.add('active');}
+window.addEventListener('scroll',()=>{const pct=Math.round((document.documentElement.scrollTop/(document.documentElement.scrollHeight-document.documentElement.clientHeight))*100);document.getElementById('progressFill').style.width=pct+'%';document.getElementById('progressPct').textContent=pct+'%';});
+document.querySelectorAll('section[id]').forEach(s=>new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)document.querySelectorAll('.nav-link[href^="#"]').forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id));});},{rootMargin:'-40% 0px -50% 0px'}).observe(s));
+
+const feedbacks={
+    q1:{ok:'Exact ! Express reconnaît le gestionnaire d\'erreurs à ses <strong>4 paramètres</strong>. Sans le premier <code>err</code>, il serait traité comme un middleware normal.',ko:'Non. Express identifie le gestionnaire d\'erreurs grâce à la signature à <strong>4 paramètres</strong> : <code>(err, req, res, next)</code>.'},
+    q2:{ok:'Correct ! Les paramètres de route sont toujours des <strong>chaînes</strong>. Pense à convertir avec <code>Number(req.params.id)</code> ou <code>parseInt()</code>.',ko:'Non. <code>req.params.id</code> retourne toujours une <strong>chaîne</strong> — même si c\'est un nombre dans l\'URL.'},
+    q3:{ok:'Parfait ! Sans <code>next()</code>, la requête reste bloquée dans le middleware. La réponse ne sera jamais envoyée.',ko:'Non. <code>next()</code> passe la main au prochain middleware ou handler. Sans ça, la requête reste bloquée.'},
+    q4:{ok:'Exactement ! CORS (Cross-Origin Resource Sharing) autorise les requêtes entre différentes origines (domaines/ports). Indispensable pour une API séparée du front.',ko:'Non. C\'est le middleware <code>cors</code> qui gère les requêtes cross-origin entre le front (5173) et l\'API (3000).'},
+    q5:{ok:'Parfait ! <strong>204 No Content</strong> signifie "opération réussie, pas de contenu à retourner". C\'est le code standard pour un DELETE réussi.',ko:'Non. Pour un DELETE réussi sans contenu, on utilise <strong>204 No Content</strong>. 200 implique un corps de réponse.'},
+};
+const answers={};
+function answer(btn,qid,correct){
+    if(answers[qid]!==undefined)return;
+    answers[qid]=correct;
+    btn.closest('.quiz-card').querySelectorAll('.quiz-opt').forEach(o=>o.disabled=true);
+    btn.classList.add(correct?'correct':'wrong');
+    if(!correct)btn.closest('.quiz-card').querySelectorAll('.quiz-opt').forEach(o=>{if(o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+    const fb=document.getElementById('fb-'+qid);
+    fb.innerHTML=feedbacks[qid][correct?'ok':'ko'];
+    fb.className='quiz-feedback show '+(correct?'ok':'ko');
+    if(Object.keys(answers).length===5){
+        const good=Object.values(answers).filter(Boolean).length;
+        const el=document.getElementById('quiz-score');
+        el.style.display='block';
+        document.getElementById('score-emoji').textContent=['😅','😐','🙂','😊','🎉'][good];
+        document.getElementById('score-text').innerHTML=`Score : <strong style="color:var(--accent-2)">${good}/5</strong> — ${good===5?'Excellent ! Tu maîtrises Express 🚀':good>=3?'Bon score ! Relis les sections ratées.':'Reprends depuis le début 💪'}`;
+        el.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+}
+</script>
+
+<script src="../cursor.js"></script>
+
+</body>
+</html>
