@@ -93,7 +93,7 @@
 <div class="container">
 
 <header>
-    <h1>🏗️ Formation PHP — Partie 4</h1>
+    <h1>Formation PHP — Partie 4</h1>
     <p>Le Pattern MVC en PHP pur — de zéro à une application complète</p>
     <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="100" alt="Real Conseil">
 </header>
@@ -111,18 +111,18 @@
 
 <div class="content">
 
-<!-- ═══════════════════════════════════ MODULE 27 ═══ -->
+<!-- MODULE 27  -->
 <section id="module27">
 <h2>Module 27 : Qu'est-ce que le pattern MVC ?</h2>
 
 <div class="info-box">
-    <strong>🎯 Objectif :</strong> Comprendre pourquoi MVC existe, ce que chaque couche fait et comment elles communiquent.
+    <strong>Objectif :</strong> Comprendre pourquoi MVC existe, ce que chaque couche fait et comment elles communiquent.
     C'est la base de <strong>tous les frameworks modernes</strong> : Symfony, Laravel, CodeIgniter…
 </div>
 
 <h3>Le problème sans MVC — le code spaghetti</h3>
 <div class="danger-box">
-    <strong>❌ Sans architecture : tout dans un seul fichier</strong>
+    <strong>Sans architecture : tout dans un seul fichier</strong>
     <div class="code-block" style="margin-top:10px"><code><span class="cmt">// users.php — un désastre : SQL + logique + HTML mélangés</span>
 <span class="var">$pdo</span> = <span class="kw">new</span> <span class="cls">PDO</span>(<span class="str">"mysql:host=localhost;dbname=test"</span>, <span class="str">"root"</span>, <span class="str">""</span>);
 <span class="kw">if</span> (<span class="var">$_POST</span>[<span class="str">'action'</span>] === <span class="str">'delete'</span>) {
@@ -139,56 +139,56 @@
 <h3>La solution : 3 couches, 3 responsabilités</h3>
 <div class="mvc-schema">
     <div class="mvc-col m">
-        <span class="icon">🗄️</span>
+        <span class="icon"></span>
         <h4>Model</h4>
         <ul>
             <li>SQL et BDD</li>
             <li>Logique métier</li>
             <li>Validation</li>
-            <li>❌ Pas de HTML</li>
-            <li>❌ Pas de $_GET</li>
+            <li>Pas de HTML</li>
+            <li>Pas de $_GET</li>
         </ul>
     </div>
     <div class="mvc-col v">
-        <span class="icon">🖥️</span>
+        <span class="icon"></span>
         <h4>View</h4>
         <ul>
             <li>HTML + CSS</li>
             <li>Affichage seul</li>
             <li>Reçoit des variables</li>
-            <li>❌ Pas de SQL</li>
-            <li>❌ Pas de logique</li>
+            <li>Pas de SQL</li>
+            <li>Pas de logique</li>
         </ul>
     </div>
     <div class="mvc-col c">
-        <span class="icon">🎮</span>
+        <span class="icon"></span>
         <h4>Controller</h4>
         <ul>
             <li>Chef d'orchestre</li>
             <li>Lit $_GET / $_POST</li>
             <li>Appelle le Model</li>
             <li>Charge la View</li>
-            <li>❌ Pas de SQL direct</li>
+            <li>Pas de SQL direct</li>
         </ul>
     </div>
 </div>
 
 <h3>Le flux d'une requête</h3>
 <div class="flux">
-    <div class="flux-box">👤 Navigateur</div>
+    <div class="flux-box">Navigateur</div>
     <div class="flux-arr">→</div>
-    <div class="flux-box r">🔀 Routeur</div>
+    <div class="flux-box r">Routeur</div>
     <div class="flux-arr">→</div>
-    <div class="flux-box">🎮 Controller</div>
+    <div class="flux-box">Controller</div>
     <div class="flux-arr">→</div>
-    <div class="flux-box m">🗄️ Model</div>
+    <div class="flux-box m">Model</div>
     <div class="flux-arr">→</div>
-    <div class="flux-box db">💾 BDD</div>
+    <div class="flux-box db">BDD</div>
 </div>
 <div class="flux" style="margin-top:6px">
     <div style="width:90px"></div>
     <div style="width:30px"></div>
-    <div class="flux-box v" style="margin-left:140px">🖥️ View ← données</div>
+    <div class="flux-box v" style="margin-left:140px">View ← données</div>
 </div>
 <p style="text-align:center;color:#888;font-size:0.85em;margin-top:8px">
     Controller → appelle Model → reçoit données → passe à la View → affiche HTML
@@ -226,13 +226,13 @@
 └── <span class="f">composer.json</span></div>
 
 <div class="info-box">
-    <strong>💡 Règle d'or :</strong> Le dossier <code>public/</code> est le <strong>seul</strong> accessible depuis un navigateur.
+    <strong>Règle d'or :</strong> Le dossier <code>public/</code> est le <strong>seul</strong> accessible depuis un navigateur.
     Tout le reste (app/, core/, config/) est hors portée du web.
     Vos classes PHP, vos configs et votre BDD sont ainsi protégés.
 </div>
 
 <table>
-    <thead><tr><th>Couche</th><th>✅ Peut faire</th><th>❌ Ne doit PAS faire</th></tr></thead>
+    <thead><tr><th>Couche</th><th>Peut faire</th><th>Ne doit PAS faire</th></tr></thead>
     <tbody>
         <tr><td><strong>Model</strong></td><td>SQL, logique métier, validation</td><td>HTML, echo, $_GET, $_POST</td></tr>
         <tr><td><strong>View</strong></td><td>HTML, CSS, boucles d'affichage</td><td>SQL, new PDO(), logique complexe</td></tr>
@@ -242,17 +242,17 @@
 </table>
 </section>
 
-<!-- ═══════════════════════════════════ MODULE 28 ═══ -->
+<!--  MODULE 28  -->
 <section id="module28">
 <h2>Module 28 : Le Routeur</h2>
 
 <div class="info-box">
-    <strong>🎯 Rôle :</strong> Le Routeur analyse l'URL (<code>/users</code>, <code>/users/5/edit</code>…)
+    <strong>Rôle :</strong> Le Routeur analyse l'URL (<code>/users</code>, <code>/users/5/edit</code>…)
     et appelle le bon contrôleur avec les bons paramètres.
 </div>
 
 <h3>Étape 1 — Tout passer par un seul fichier (.htaccess)</h3>
-<div class="fichier">📄 .htaccess (à la racine du projet)</div>
+<div class="fichier">.htaccess (à la racine du projet)</div>
 <div class="code-block"><code>Options -MultiViews
 RewriteEngine On
 <span class="cmt"># Si le fichier existe physiquement (CSS, images...) : le servir directement</span>
@@ -261,7 +261,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 <span class="cmt"># Sinon : tout rediriger vers public/index.php</span>
 RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 
-<div class="fichier">📄 public/index.php — Point d'entrée unique</div>
+<div class="fichier">public/index.php — Point d'entrée unique</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span>
 <span class="fn">session_start</span>();
 <span class="kw">declare</span>(strict_types=<span class="num">1</span>);
@@ -274,7 +274,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 
 <span class="var">$router</span> = <span class="kw">new</span> <span class="cls">Router</span>();
 
-<span class="cmt">// ── Déclaration de toutes les routes ──────────────────────</span>
+<span class="cmt">// ── Déclaration de toutes les routes ─</span>
 <span class="var">$router</span>-><span class="fn">get</span>(<span class="str">'/'</span>,                     <span class="str">'HomeController'</span>,    <span class="str">'index'</span>);
 <span class="var">$router</span>-><span class="fn">get</span>(<span class="str">'/users'</span>,              <span class="str">'UserController'</span>,    <span class="str">'index'</span>);
 <span class="var">$router</span>-><span class="fn">get</span>(<span class="str">'/users/create'</span>,      <span class="str">'UserController'</span>,    <span class="str">'create'</span>);
@@ -287,7 +287,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 <span class="var">$router</span>-><span class="fn">dispatch</span>(<span class="var">$url</span>, <span class="var">$method</span>);</code></div>
 
 <h3>Étape 2 — La classe Router</h3>
-<div class="fichier">📄 core/Router.php</div>
+<div class="fichier">core/Router.php</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span>
 <span class="kw">namespace</span> Core;
 
@@ -341,13 +341,13 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 }</code></div>
 
 <div class="success-box">
-    <strong>💡 Exemple concret :</strong>
+    <strong>Exemple concret :</strong>
     URL <code>/users/42/edit</code> → regex <code>#^/users/([^/]+)/edit$#</code> capture <code>"42"</code>
     → Router appelle <code>UserController::edit("42")</code>
 </div>
 </section>
 
-<!-- ═══════════════════════════════════ MODULE 29 ═══ -->
+<!--  MODULE 29  -->
 <section id="module29">
 <h2>Module 29 : Les Modèles</h2>
 
@@ -356,9 +356,9 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
     Il contient toutes les requêtes SQL et la logique métier.
 </div>
 
-<div class="fichier">📄 config/database.php</div>
+<div class="fichier">config/database.php</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span>
-<span class="cmt">// ⚠️ Ajouter ce fichier dans .gitignore — ne jamais commiter les identifiants !</span>
+<span class="cmt">// Ajouter ce fichier dans .gitignore — ne jamais commiter les identifiants !</span>
 <span class="kw">return</span> [
     <span class="str">'host'</span>   => <span class="str">'localhost'</span>,
     <span class="str">'dbname'</span> => <span class="str">'ma_base'</span>,
@@ -366,7 +366,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
     <span class="str">'pass'</span>   => <span class="str">''</span>,
 ];</code></div>
 
-<div class="fichier">📄 core/Database.php — Singleton PDO</div>
+<div class="fichier">core/Database.php — Singleton PDO</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span>
 <span class="kw">namespace</span> Core;
 <span class="kw">use</span> PDO;
@@ -400,7 +400,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
     <span class="kw">private function</span> <span class="fn">__clone</span>() {}
 }</code></div>
 
-<div class="fichier">📄 core/Model.php — Classe de base avec CRUD générique</div>
+<div class="fichier">core/Model.php — Classe de base avec CRUD générique</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span>
 <span class="kw">namespace</span> Core;
 <span class="kw">use</span> PDO;
@@ -439,7 +439,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
     }
 }</code></div>
 
-<div class="fichier">📄 app/Model/UserModel.php</div>
+<div class="fichier">app/Model/UserModel.php</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span>
 <span class="kw">namespace</span> App\Model;
 <span class="kw">use</span> Core\<span class="cls">Model</span>;
@@ -495,17 +495,17 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
     }
 }</code></div>
 </section>
-<!-- ═══════════════════════════════════ MODULE 30 ═══ -->
+<!--  MODULE 30  -->
 <section id="module30">
 <h2>Module 30 : Les Vues</h2>
 
 <div class="info-box">
-    <strong>🎯 Règle absolue :</strong> Une Vue ne fait <strong>que</strong> de l'affichage.
+    <strong>Règle absolue :</strong> Une Vue ne fait <strong>que</strong> de l'affichage.
     Pas de SQL, pas de logique métier. Elle reçoit des variables et les intègre dans du HTML.
 </div>
 
 <h3>La classe Controller de base (méthode render)</h3>
-<div class="fichier">📄 core/Controller.php</div>
+<div class="fichier">core/Controller.php</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span>
 <span class="kw">namespace</span> Core;
 
@@ -517,7 +517,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
         <span class="fn">extract</span>(<span class="var">$data</span>); <span class="cmt">// ['users'=>[...]] devient $users = [...]</span>
         <span class="var">$base</span> = <span class="fn">dirname</span>(<span class="kw">__DIR__</span>) . <span class="str">'/app/View/'</span>;
         <span class="kw">require</span> <span class="var">$base</span> . <span class="str">'layout/header.php'</span>;
-        <span class="kw">require</span> <span class="var">$base</span> . <span class="var">$vue</span> . <span class="str">'.php'</span>;        <span class="cmt">// ex: "user/index" → View/user/index.php</span>
+        <span class="kw">require</span> <span class="var">$base</span> . <span class="var">$vue</span> . <span class="str">'.php'</span>; <span class="cmt">// ex: "user/index" → View/user/index.php</span>
         <span class="kw">require</span> <span class="var">$base</span> . <span class="str">'layout/footer.php'</span>;
     }
 
@@ -535,7 +535,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 }</code></div>
 
 <h3>Le layout partagé</h3>
-<div class="fichier">📄 app/View/layout/header.php</div>
+<div class="fichier">app/View/layout/header.php</div>
 <div class="code-block"><code><span class="tag">&lt;!DOCTYPE html&gt;</span>
 <span class="tag">&lt;html</span> <span class="atr">lang</span>=<span class="str">"fr"</span><span class="tag">&gt;</span>
 <span class="tag">&lt;head&gt;</span>
@@ -556,13 +556,13 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
     <span class="tag">&lt;?php</span> <span class="fn">unset</span>(<span class="var">$_SESSION</span>[<span class="str">'flash'</span>]); <span class="kw">endif</span>; <span class="tag">?&gt;</span>
 <span class="tag">&lt;main</span> <span class="atr">class</span>=<span class="str">"container"</span><span class="tag">&gt;</span></code></div>
 
-<div class="fichier">📄 app/View/layout/footer.php</div>
+<div class="fichier">app/View/layout/footer.php</div>
 <div class="code-block"><code><span class="tag">&lt;/main&gt;</span>
 <span class="tag">&lt;footer&gt;</span><span class="tag">&lt;p&gt;</span>&amp;copy; <span class="tag">&lt;?=</span> <span class="fn">date</span>(<span class="str">'Y'</span>) <span class="tag">?&gt;</span> — Formation DWWM<span class="tag">&lt;/p&gt;</span><span class="tag">&lt;/footer&gt;</span>
 <span class="tag">&lt;/body&gt;&lt;/html&gt;</span></code></div>
 
 <h3>Vues concrètes — gestion des utilisateurs</h3>
-<div class="fichier">📄 app/View/user/index.php</div>
+<div class="fichier">app/View/user/index.php</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span> <span class="var">$title</span> = <span class="str">"Utilisateurs"</span>; <span class="tag">?&gt;</span>
 <span class="tag">&lt;div</span> <span class="atr">class</span>=<span class="str">"header-row"</span><span class="tag">&gt;</span>
     <span class="tag">&lt;h1&gt;</span>Utilisateurs (<span class="tag">&lt;?=</span> <span class="fn">count</span>(<span class="var">$users</span>) <span class="tag">?&gt;</span>)<span class="tag">&lt;/h1&gt;</span>
@@ -593,7 +593,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
     <span class="tag">&lt;/table&gt;</span>
 <span class="tag">&lt;?php</span> <span class="kw">endif</span>; <span class="tag">?&gt;</span></code></div>
 
-<div class="fichier">📄 app/View/user/create.php</div>
+<div class="fichier">app/View/user/create.php</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span> <span class="var">$title</span> = <span class="str">"Créer un utilisateur"</span>; <span class="tag">?&gt;</span>
 <span class="tag">&lt;h1&gt;</span>Nouvel utilisateur<span class="tag">&lt;/h1&gt;</span>
 
@@ -622,22 +622,22 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 <span class="tag">&lt;/form&gt;</span></code></div>
 
 <div class="warning-box">
-    <strong>⚠️ Toujours <code>htmlspecialchars()</code> dans les vues !</strong>
+    <strong>Toujours <code>htmlspecialchars()</code> dans les vues !</strong>
     C'est la protection de base contre les attaques <strong>XSS</strong>.
     Chaque donnée venant de la BDD ou de l'utilisateur doit être échappée avant affichage.
 </div>
 </section>
 
-<!-- ═══════════════════════════════════ MODULE 31 ═══ -->
+<!--  MODULE 31  -->
 <section id="module31">
 <h2>Module 31 : Les Contrôleurs</h2>
 
 <div class="info-box">
-    <strong>🎯 Rôle :</strong> Le Controller est le chef d'orchestre. Il lit la requête HTTP,
+    <strong>Rôle :</strong> Le Controller est le chef d'orchestre. Il lit la requête HTTP,
     interroge le Model, et décide quelle Vue afficher — ou vers quelle URL rediriger.
 </div>
 
-<div class="fichier">📄 app/Controller/UserController.php — CRUD complet</div>
+<div class="fichier">app/Controller/UserController.php — CRUD complet</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span>
 <span class="kw">namespace</span> App\Controller;
 <span class="kw">use</span> Core\<span class="cls">Controller</span>;
@@ -749,18 +749,18 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 </table>
 
 <div class="info-box">
-    <strong>💡 Pourquoi POST pour delete ?</strong> Les navigateurs ne font que GET et POST en HTML pur.
+    <strong>Pourquoi POST pour delete ?</strong> Les navigateurs ne font que GET et POST en HTML pur.
     On utilise donc POST pour toutes les actions qui modifient des données (créer, modifier, supprimer).
     En JavaScript ou avec une API REST, on utiliserait DELETE et PUT.
 </div>
 </section>
 
-<!-- ═══════════════════════════════════ MODULE 32 ═══ -->
+<!--  MODULE 32  -->
 <section id="module32">
 <h2>Module 32 : Projet — Mini Blog MVC complet</h2>
 
 <div class="info-box">
-    <strong>🎯 Objectif :</strong> Construire un mini blog PHP MVC de A à Z :
+    <strong>Objectif :</strong> Construire un mini blog PHP MVC de A à Z :
     affichage des articles, espace admin avec CRUD, authentification et protection des routes.
     Ce projet prépare directement l'ECF DWWM.
 </div>
@@ -768,7 +768,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 <h3>Fonctionnalités attendues</h3>
 <div class="two-cols">
     <div class="success-box">
-        <strong>🌐 Partie publique</strong>
+        <strong>Partie publique</strong>
         <ul>
             <li>Page d'accueil → derniers articles</li>
             <li>Page article → affichage complet</li>
@@ -776,7 +776,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
         </ul>
     </div>
     <div class="info-box" style="margin:0">
-        <strong>🔐 Partie admin (connexion requise)</strong>
+        <strong>Partie admin (connexion requise)</strong>
         <ul>
             <li>CRUD complet sur les articles</li>
             <li>Gestion des catégories</li>
@@ -814,7 +814,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 );</code></div>
 
 <h3>AuthController — connexion / déconnexion</h3>
-<div class="fichier">📄 app/Controller/AuthController.php</div>
+<div class="fichier">app/Controller/AuthController.php</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span>
 <span class="kw">namespace</span> App\Controller;
 <span class="kw">use</span> Core\<span class="cls">Controller</span>;
@@ -861,7 +861,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 }</code></div>
 
 <h3>Protection des routes admin (middleware)</h3>
-<div class="fichier">📄 core/Controller.php — ajouter la méthode requireAuth()</div>
+<div class="fichier">core/Controller.php — ajouter la méthode requireAuth()</div>
 <div class="code-block"><code><span class="cmt">// Dans la classe Controller de base, ajouter :</span>
 
 <span class="kw">protected function</span> <span class="fn">requireAuth</span>(<span class="kw">string</span> <span class="var">$role</span> = <span class="str">'user'</span>): <span class="kw">void</span>
@@ -888,7 +888,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 }</code></div>
 
 <h3>ArticleModel — avec JOIN et slug</h3>
-<div class="fichier">📄 app/Model/ArticleModel.php</div>
+<div class="fichier">app/Model/ArticleModel.php</div>
 <div class="code-block"><code><span class="tag">&lt;?php</span>
 <span class="kw">namespace</span> App\Model;
 <span class="kw">use</span> Core\<span class="cls">Model</span>;
@@ -957,7 +957,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 
 <h3>Récapitulatif du projet</h3>
 <div class="success-box">
-    <strong>✅ Ce projet intègre :</strong>
+    <strong>Ce projet intègre :</strong>
     <ul>
         <li><strong>MVC complet</strong> : Router, Controllers, Models, Views, Layout partagé</li>
         <li><strong>Autoloading PSR-4</strong> via Composer</li>
@@ -984,7 +984,7 @@ RewriteRule ^(.*)$ public/index.php [QSA,L]</code></div>
 </table>
 
 <div class="info-box" style="margin-top:25px">
-    <strong>🗺 Prochaine étape — Partie 5 : API REST en PHP pur</strong><br>
+    <strong>Prochaine étape — Partie 5 : API REST en PHP pur</strong><br>
     Vous savez maintenant organiser une application web PHP avec MVC.
     La prochaine partie ajoute une couche API JSON pour que votre application puisse
     communiquer avec JavaScript (fetch) ou une application mobile.
