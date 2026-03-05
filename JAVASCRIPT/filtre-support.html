@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier · Système de Filtres JavaScript · Formation Avancée</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        /* Navigation de cours */
+        .course-header {
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #3b82f6;
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .course-header h1 {
+            max-width: 1400px;
+            margin: 0 auto;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Cartes de concept */
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .concept-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            border: 1px solid #334155;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .concept-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        }
+
+        .concept-card:hover {
+            transform: translateY(-5px);
+            border-color: #3b82f6;
+            box-shadow: 0 20px 30px -15px #00000080;
+        }
+
+        .concept-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .concept-card h3 {
+            font-size: 1.5rem;
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+        }
+
+        .concept-card p {
+            color: #94a3b8;
+        }
+
+        /* Section code explicative */
+        .code-master {
+            background: #0f172a;
+            padding: 2.5rem;
+            margin: 3rem 0;
+            border: 2px solid #334155;
+            position: relative;
+        }
+
+        .code-master::after {
+            position: absolute;
+            top: -12px;
+            left: 2rem;
+            background: #3b82f6;
+            color: white;
+            padding: 0.3rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background: #020617;
+            padding: 2rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #cbd5e1;
+            border-left: 6px solid #3b82f6;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .code-highlight {
+            background: #1e293b;
+            color: #fbbf24;
+            padding: 0.2rem 0.4rem;
+          
+        }
+
+        /* Démonstration interactive */
+        .demo-section {
+            background: rgba(15, 23, 42, 0.9);
+            padding: 3rem;
+            margin: 4rem 0;
+            border: 2px solid #3b82f6;
+        }
+
+        .demo-title {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .filter-controls {
+            background: #1e293b;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .filter-select {
+            background: #0f172a;
+            border: 2px solid #334155;
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1rem;
+            min-width: 200px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-select:hover {
+            border-color: #3b82f6;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px #8b5cf633;
+        }
+
+        .price-range {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .price-input {
+            background: #0f172a;
+            border: 2px solid #334155;
+            padding: 0.8rem 1.5rem;
+            color: white;
+            width: 120px;
+        }
+
+        .active-filters {
+            background: #0f172a;
+            padding: 1rem 2rem;
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-tag {
+            background: #3b82f6;
+            color: white;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-tag button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .results-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            padding: 1rem 0;
+            border-bottom: 2px solid #334155;
+        }
+
+        /* Grille d'articles */
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .article-card {
+            background: #1e293b;
+            padding: 2rem;
+            border: 2px solid #334155;
+            transition: all 0.3s;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .article-card:hover {
+            border-color: #3b82f6;
+            transform: scale(1.02);
+        }
+
+        .article-category {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .article-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #f1f5f9;
+        }
+
+        .article-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fbbf24;
+            margin: 1rem 0;
+        }
+
+        .article-rating {
+            color: #fbbf24;
+            margin: 0.5rem 0;
+        }
+
+        .article-stock {
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            font-size: 0.8rem;
+            background: #059669;
+            color: white;
+        }
+
+        .article-stock.low {
+            background: #b91c1c;
+        }
+
+        /* Explication pas à pas */
+        .step-explanation {
+            padding: 2.5rem;
+            margin: 3rem 0;
+        }
+
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .step-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            background: #3b82f6;
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        /* Boutons */
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+         
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+
+        .btn-outline:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+            border-top: 2px solid #334155;
+            margin-top: 4rem;
+        }
+     
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            
+        }
+    </style>
+</head>
+<body>
+    <header class="course-header">
+
+<img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="60" alt="" srcset="">
+
+        <h1>
+            <span></span> 
+            Système de Filtres en JavaScript · Du concept à la pratique
+        </h1>
+    </header>
+
+    <div class="container">
+        <!-- INTRODUCTION PÉDAGOGIQUE -->
+        <div class="concept-grid">
+            <div class="concept-card">
+                <div class="concept-icon"></div>
+                <h3>Pourquoi des filtres ?</h3>
+                <p>Les filtres permettent aux utilisateurs de naviguer dans de grandes collections de données (produits, articles, utilisateurs) en affinant les résultats selon leurs critères.</p>
+            </div>
+            <div class="concept-card">
+                <div class="concept-icon"></div>
+                <h3>Filtrage côté client</h3>
+                <p>Idéal pour des données statiques ou modérées. Réactif, sans rechargement de page, avec une expérience utilisateur fluide.</p>
+            </div>
+            <div class="concept-card">
+                <div class="concept-icon"></div>
+                <h3>Les 3 piliers</h3>
+                <p>1. Collecter les critères · 2. Filtrer les données · 3. Rafraîchir l'affichage</p>
+            </div>
+        </div>
+
+        <!-- EXPLICATION ALGORITHMIQUE -->
+        <div class="code-master">
+            <h2 style="margin-bottom: 2rem; color: #f1f5f9;">L'algorithme de filtrage expliqué</h2>
+            
+            <div class="code-block">
+                <span class="code-comment">// LOGIQUE DE FILTRAGE PAS À PAS</span><br><br>
+                
+                <span class="code-comment">// 1. Données sources (notre catalogue)</span><br>
+                const produits = [<br>
+                &nbsp;&nbsp;{ id: 1, nom: "Laptop Pro", categorie: "informatique", prix: 1200, stock: 5, note: 4.5 },<br>
+                &nbsp;&nbsp;{ id: 2, nom: "Souris sans fil", categorie: "accessoires", prix: 30, stock: 50, note: 4.2 },<br>
+                &nbsp;&nbsp;// ...<br>
+                ];<br><br>
+                
+                <span class="code-comment">// 2. État des filtres (ce que l'utilisateur a choisi)</span><br>
+                <span class="code-highlight">const filtresActifs = {</span><br>
+                &nbsp;&nbsp;categorie: "informatique",<br>
+                &nbsp;&nbsp;prixMin: 500,<br>
+                &nbsp;&nbsp;prixMax: 2000,<br>
+                &nbsp;&nbsp;enStock: true,<br>
+                &nbsp;&nbsp;noteMin: 4<br>
+                <span class="code-highlight">};</span><br><br>
+                
+                <span class="code-comment">// 3. Fonction de filtrage (le cœur du système)</span><br>
+                <span class="code-highlight">function filtrerProduits(produits, filtres) {</span><br>
+                &nbsp;&nbsp;return produits.filter(produit => {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// On teste CHAQUE condition</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const correspondCategorie = !filtres.categorie || produit.categorie === filtres.categorie;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const correspondPrix = produit.prix >= (filtres.prixMin || 0) && produit.prix <= (filtres.prixMax || Infinity);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const correspondStock = !filtres.enStock || produit.stock > 0;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;const correspondNote = produit.note >= (filtres.noteMin || 0);<br><br>
+                
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// Toutes les conditions doivent être vraies (ET logique)</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;return correspondCategorie && correspondPrix && correspondStock && correspondNote;<br>
+                &nbsp;&nbsp;});<br>
+                <span class="code-highlight">}</span><br><br>
+                
+                <span class="code-comment">// 4. Utilisation</span><br>
+                const resultats = filtrerProduits(produits, filtresActifs);<br>
+                <span class="code-comment">// Résultat : tous les produits qui satisfont TOUS les critères</span>
+            </div>
+
+            <p style="color: #94a3b8; margin-top: 1rem;">
+            <strong>Principe fondamental :</strong> On utilise <code>.filter()</code> pour créer un nouveau tableau avec uniquement les éléments qui passent tous les tests.
+            </p>
+        </div>
+
+        <!-- DÉMONSTRATION INTERACTIVE -->
+        <div class="demo-section">
+            <div class="demo-title">
+                Atelier pratique : Filtrage de produits en direct
+            </div>
+
+            <!-- Contrôles de filtres -->
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <select class="filter-select" id="categorieFilter">
+                        <option value="">Toutes catégories</option>
+                        <option value="informatique">Informatique</option>
+                        <option value="accessoires">Accessoires</option>
+                        <option value="audio">Audio</option>
+                        <option value="mobilier">Mobilier</option>
+                    </select>
+
+                    <div class="price-range">
+                        <span>Prix :</span>
+                        <input type="number" id="prixMin" class="price-input" placeholder="Min" value="0" min="0">
+                        <span>à</span>
+                        <input type="number" id="prixMax" class="price-input" placeholder="Max" value="2000" min="0">
+                    </div>
+
+                    <select class="filter-select" id="noteFilter">
+                        <option value="0">Toutes notes</option>
+                        <option value="4">4+ étoiles</option>
+                        <option value="4.5">4.5+ étoiles</option>
+                    </select>
+
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="stockFilter"> 
+                        <span>En stock uniquement</span>
+                    </label>
+
+                    <button class="btn" id="appliquerFiltres">Appliquer les filtres</button>
+                    <button class="btn btn-outline" id="resetFiltres">↺ Réinitialiser</button>
+                </div>
+
+                <!-- Filtres actifs -->
+                <div class="active-filters" id="activeFilters">
+                    <span style="color: #94a3b8;">Filtres actifs :</span>
+                    <!-- Les tags apparaîtront ici dynamiquement -->
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="results-stats">
+                <span id="resultCount">12 articles trouvés</span>
+                <span id="filterDescription">Aucun filtre appliqué</span>
+            </div>
+
+            <!-- Grille d'articles -->
+            <div class="articles-grid" id="articlesGrid">
+                <!-- Les articles seront injectés ici -->
+            </div>
+        </div>
+
+        <!-- EXPLICATION DÉTAILLÉE DES TECHNIQUES -->
+        <div class="step-explanation">
+            <h2 style="margin-bottom: 2rem;">Les techniques de filtrage avancées</h2>
+            
+            <div class="step-grid">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h4>Filter()</h4>
+                    <p>Méthode native JS qui crée un nouveau tableau avec les éléments satisfaisant une condition</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h4>ET/OU logique</h4>
+                    <p>Combinaison de conditions : && pour ET, || pour OU dans les fonctions de filtrage</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h4>Valeurs par défaut</h4>
+                    <p>Gérer les filtres vides avec || ou ?? pour ne pas bloquer l'affichage</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <h4>Performance</h4>
+                    <p>Pour de grands tableaux, pensez à indexer ou utiliser Web Workers</p>
+                </div>
+            </div>
+
+            <!-- Exemples concrets de conditions -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem;">
+                <div style="background: #1e293b; padding: 1.8rem;">
+                    <h4 style="color: #fbbf24; margin-bottom: 1rem;">Filtre simple (une condition)</h4>
+                    <code style="color: #cbd5e1;">
+                        produits.filter(p => p.categorie === "informatique");
+                    </code>
+                </div>
+                <div style="background: #1e293b; padding: 1.8rem;">
+                    <h4 style="color: #fbbf24; margin-bottom: 1rem;">Filtre multiple (ET)</h4>
+                    <code style="color: #cbd5e1;">
+                        produits.filter(p => <br>
+                        &nbsp;&nbsp;p.categorie === "informatique" && <br>
+                        &nbsp;&nbsp;p.prix < 1000 && <br>
+                        &nbsp;&nbsp;p.stock > 0<br>
+                        );
+                    </code>
+                </div>
+                <div style="background: #1e293b; padding: 1.8rem;">
+                    <h4 style="color: #fbbf24; margin-bottom: 1rem;">Filtre avec OR</h4>
+                    <code style="color: #cbd5e1;">
+                        produits.filter(p => <br>
+                        &nbsp;&nbsp;p.categorie === "informatique" || <br>
+                        &nbsp;&nbsp;p.categorie === "accessoires"<br>
+                        );
+                    </code>
+                </div>
+                <div style="background: #1e293b;   padding: 1.8rem;">
+                    <h4 style="color: #fbbf24; margin-bottom: 1rem;">Combinaison complexe</h4>
+                    <code style="color: #cbd5e1;">
+                        produits.filter(p => <br>
+                        &nbsp;&nbsp;(p.categorie === "audio" && p.prix < 200) || <br>
+                        &nbsp;&nbsp;(p.note > 4.5 && p.stock > 0)<br>
+                        );
+                    </code>
+                </div>
+            </div>
+        </div>
+
+        <!-- BONNES PRATIQUES -->
+        <div style="background: linear-gradient(145deg, #0f172a, #1a1f2e); padding: 2.5rem; margin: 3rem 0;">
+            <h2 style="margin-bottom: 2rem;">Bonnes pratiques pour des filtres professionnels</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+                <div>
+                    <h4 style="color: #3b82f6;">1. Immutabilité</h4>
+                    <p>Ne modifiez jamais les données originales. Utilisez <code>.filter()</code> qui retourne un nouveau tableau.</p>
+                </div>
+                <div>
+                    <h4 style="color: #3b82f6;">2. Debouncing</h4>
+                    <p>Pour les filtres en temps réel (input), attendez que l'utilisateur arrête de taper avant de filtrer.</p>
+                </div>
+                <div>
+                    <h4 style="color: #3b82f6;">3. URL sync</h4>
+                    <p>Synchronisez les filtres avec l'URL pour permettre le partage et le retour en arrière.</p>
+                </div>
+                <div>
+                    <h4 style="color: #3b82f6;">4. Feedback visuel</h4>
+                    <p>Indiquez toujours combien de résultats sont trouvés et quels filtres sont actifs.</p>
+                </div>
+                <div>
+                    <h4 style="color: #3b82f6;">5. Gestion des erreurs</h4>
+                    <p>Prévoyez un message "Aucun résultat" et des valeurs par défaut pour les filtres vides.</p>
+                </div>
+                <div>
+                    <h4 style="color: #3b82f6;">6. Performance</h4>
+                    <p>Pour +5000 items, envisagez la virtualisation ou le filtrage côté serveur.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        (function() {
+            //  DONNÉES EXEMPLES 
+            const produits = [
+                { id: 1, nom: "MacBook Pro 16\"", categorie: "informatique", prix: 2499, stock: 8, note: 4.8, image: "" },
+                { id: 2, nom: "Casque Sony WH-1000XM4", categorie: "audio", prix: 350, stock: 15, note: 4.9, image: "" },
+                { id: 3, nom: "Souris Logitech MX Master 3", categorie: "accessoires", prix: 89, stock: 42, note: 4.7, image: "" },
+                { id: 4, nom: "Clavier mécanique Keychron", categorie: "accessoires", prix: 159, stock: 0, note: 4.6, image: "" },
+                { id: 5, nom: "Écran Dell UltraSharp 27\"", categorie: "informatique", prix: 599, stock: 3, note: 4.5, image: "" },
+                { id: 6, nom: "Chaise de bureau ergonomique", categorie: "mobilier", prix: 450, stock: 7, note: 4.3, image: "" },
+                { id: 7, nom: "Enceinte Sonos One", categorie: "audio", prix: 220, stock: 12, note: 4.6, image: "" },
+                { id: 8, nom: "Tablette graphique Wacom", categorie: "accessoires", prix: 299, stock: 5, note: 4.4, image: "" },
+                { id: 9, nom: "Bureau motorisé ajustable", categorie: "mobilier", prix: 899, stock: 2, note: 4.7, image: "" },
+                { id: 10, nom: "iPad Air", categorie: "informatique", prix: 699, stock: 11, note: 4.8, image: "" },
+                { id: 11, nom: "AirPods Pro", categorie: "audio", prix: 250, stock: 23, note: 4.7, image: "" },
+                { id: 12, nom: "Support d'écran ajustable", categorie: "accessoires", prix: 45, stock: 67, note: 4.2, image: "" },
+            ];
+
+            //  ÉLÉMENTS DOM 
+            const categorieFilter = document.getElementById('categorieFilter');
+            const prixMin = document.getElementById('prixMin');
+            const prixMax = document.getElementById('prixMax');
+            const noteFilter = document.getElementById('noteFilter');
+            const stockFilter = document.getElementById('stockFilter');
+            const appliquerBtn = document.getElementById('appliquerFiltres');
+            const resetBtn = document.getElementById('resetFiltres');
+            const articlesGrid = document.getElementById('articlesGrid');
+            const resultCount = document.getElementById('resultCount');
+            const filterDescription = document.getElementById('filterDescription');
+            const activeFiltersDiv = document.getElementById('activeFilters');
+
+            //  FONCTION DE FILTRAGE 
+            function appliquerFiltres() {
+                // Récupération des valeurs
+                const categorie = categorieFilter.value;
+                const minPrix = parseFloat(prixMin.value) || 0;
+                const maxPrix = parseFloat(prixMax.value) || Infinity;
+                const noteMin = parseFloat(noteFilter.value) || 0;
+                const stockOnly = stockFilter.checked;
+
+                // Construction du tableau des filtres actifs pour l'affichage
+                const filtresActifs = [];
+                if (categorie) filtresActifs.push(`Catégorie: ${categorie}`);
+                if (minPrix > 0) filtresActifs.push(`Prix ≥ ${minPrix}€`);
+                if (maxPrix < Infinity) filtresActifs.push(`Prix ≤ ${maxPrix}€`);
+                if (noteMin > 0) filtresActifs.push(`Note ≥ ${noteMin}`);
+                if (stockOnly) filtresActifs.push(`En stock uniquement`);
+
+                // Mise à jour de l'affichage des filtres actifs
+                if (filtresActifs.length > 0) {
+                    activeFiltersDiv.innerHTML = `
+                        <span style="color: #94a3b8;">Filtres actifs :</span>
+                        ${filtresActifs.map(f => `<span class="filter-tag">${f}</span>`).join('')}
+                        <button class="btn-outline" style="padding: 0.3rem 1rem; font-size: 0.9rem;" onclick="document.getElementById('resetFiltres').click()">✕ Tout effacer</button>
+                    `;
+                } else {
+                    activeFiltersDiv.innerHTML = `<span style="color: #94a3b8;">Filtres actifs : Aucun</span>`;
+                }
+
+                // ALGORITHME DE FILTRAGE (le cœur du système)
+                const resultats = produits.filter(produit => {
+                    // Filtre par catégorie
+                    if (categorie && produit.categorie !== categorie) return false;
+                    
+                    // Filtre par prix
+                    if (produit.prix < minPrix || produit.prix > maxPrix) return false;
+                    
+                    // Filtre par note
+                    if (produit.note < noteMin) return false;
+                    
+                    // Filtre stock
+                    if (stockOnly && produit.stock <= 0) return false;
+                    
+                    return true; // Tous les filtres sont passés
+                });
+
+                // Mise à jour des statistiques
+                resultCount.textContent = `${resultats.length} article${resultats.length > 1 ? 's' : ''} trouvé${resultats.length > 1 ? 's' : ''}`;
+                
+                if (filtresActifs.length > 0) {
+                    filterDescription.textContent = `Filtré par : ${filtresActifs.join(' · ')}`;
+                } else {
+                    filterDescription.textContent = `Affichage de tous les articles`;
+                }
+
+                // Affichage des résultats
+                afficherArticles(resultats);
+            }
+
+            //  FONCTION D'AFFICHAGE 
+            function afficherArticles(articles) {
+                if (articles.length === 0) {
+                    articlesGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 4rem; background: #1e293b;">
+                            <span style="font-size: 4rem;"></span>
+                            <h3 style="margin: 1rem 0;">Aucun article trouvé</h3>
+                            <p style="color: #94a3b8;">Essayez de modifier vos filtres</p>
+                            <button class="btn" onclick="document.getElementById('resetFiltres').click()" style="margin-top: 1rem;">↺ Réinitialiser les filtres</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                articles.forEach(produit => {
+                    const stockClass = produit.stock > 5 ? '' : 'low';
+                    html += `
+                        <div class="article-card">
+                            <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">${produit.image}</div>
+                            <span class="article-category">${produit.categorie}</span>
+                            <h3 class="article-title">${produit.nom}</h3>
+                            <div class="article-price">${produit.prix} €</div>
+                            <div class="article-rating">${''.repeat(Math.floor(produit.note))} ${produit.note}</div>
+                            <div class="article-stock ${stockClass}">
+                                ${produit.stock > 0 ? ` Stock: ${produit.stock} unités` : ' Rupture de stock'}
+                            </div>
+                        </div>
+                    `;
+                });
+                articlesGrid.innerHTML = html;
+            }
+
+            //  RÉINITIALISATION 
+            function resetFiltres() {
+                categorieFilter.value = '';
+                prixMin.value = '0';
+                prixMax.value = '2000';
+                noteFilter.value = '0';
+                stockFilter.checked = false;
+                appliquerFiltres();
+            }
+
+            //  EVENT LISTENERS 
+            appliquerBtn.addEventListener('click', appliquerFiltres);
+            resetBtn.addEventListener('click', resetFiltres);
+
+            // Filtrage automatique optionnel (pour une expérience plus fluide)
+            [categorieFilter, prixMin, prixMax, noteFilter, stockFilter].forEach(input => {
+                input.addEventListener('change', appliquerFiltres);
+            });
+
+            // Filtrage en temps réel pour les champs de prix (avec debounce simple)
+            let timeout;
+            [prixMin, prixMax].forEach(input => {
+                input.addEventListener('input', () => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(appliquerFiltres, 500);
+                });
+            });
+
+            // Initialisation
+            resetFiltres();
+
+            // Exposer pour le bouton "Tout effacer"
+            window.resetFiltres = resetFiltres;
+        })();
+    </script>
+    <script src="../cursor.js"></script>
+</body>
+</html>

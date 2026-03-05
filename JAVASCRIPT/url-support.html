@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier complet · URLSearchParams · Module Avancé</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(165deg, #0a1428 0%, #1a2f4a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            color: #eef4ff;
+        }
+
+        .lab-card {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(12, 22, 38, 0.85);
+            padding: 3rem 3rem;
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: #00d4c0;
+            color: #031016;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 1.2px;
+            padding: 0.35rem 1.2rem;
+            text-transform: uppercase;
+            margin-bottom: 1.8rem;
+            border: 1px solid #7ff0e6;
+           
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #9ac7ff, #6ab0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.2rem;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            border-left: 6px solid #3b82f6;
+            padding-left: 2rem;
+        }
+
+        .description-lead {
+            font-size: 1.3rem;
+            color: #bfd9ff;
+            margin-bottom: 3rem;
+            padding-left: 2.5rem;
+            border-left: 2px solid #3b6ea5;
+            font-weight: 300;
+        }
+
+        /* Grille principale à 2 colonnes */
+        .pedagogy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.2rem;
+            margin: 3rem 0 2.5rem;
+        }
+
+        .concept-block {
+            background: rgba(6, 17, 30, 0.7);
+            padding: 2rem;
+            border: 1px solid #2d4b75;
+            transition: all 0.3s ease;
+        }
+
+        .concept-block:hover {
+            border-color: #3b82f6;
+            background: rgba(10, 24, 42, 0.8);
+            transform: translateY(-4px);
+        }
+
+        .block-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            color: #aad0ff;
+            border-bottom: 2px dashed #3b6ea5;
+            padding-bottom: 0.8rem;
+        }
+
+        .block-title span {
+            background: #2d4b75;
+            font-size: 1rem;
+            padding: 0.2rem 1rem;
+            color: white;
+        }
+
+        .anatomy-url {
+            background: #0a1428;
+            padding: 1.2rem 1.8rem;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 1.3rem;
+            word-break: break-all;
+            border: 2px solid #3b82f6;
+            color: #b8e2ff;
+            margin-bottom: 2rem;
+            text-align: center;
+           
+        }
+
+        .anatomy-parts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.2rem;
+            margin-top: 2rem;
+        }
+
+        .part-item {
+            background: #13273f;
+            padding: 1.2rem 1.2rem;
+            border: 1px solid #2d5f8b;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .part-item:hover {
+            background: #1b3452;
+            border-color: #3b82f6;
+        }
+
+        .part-symbol {
+            background: #3b82f6;
+            color: white;
+            font-weight: bold;
+            font-size: 1.8rem;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .method-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+        .method-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #264a6e;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .method-tag {
+            background: #00adb5;
+            color: #02111b;
+            font-weight: 600;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        /* Bloc de code enrichi */
+        .code-block {
+            background: #0b1424;
+            padding: 2rem;
+            border: 1px solid #3b82f6;
+            box-shadow: 0 15px 25px -12px black, 0 0 0 2px #1e3a8a inset;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #e2edff;
+            margin: 2.5rem 0 2rem;
+            white-space: pre-wrap;
+            border-left: 8px solid #00adb5;
+        }
+
+        .code-comment {
+            color: #7aa5c2;
+            font-style: italic;
+        }
+        .code-highlight {
+            background: #1e3a5f;
+            padding: 0.2rem 0.4rem;
+            color: #ffd966;
+        }
+
+        /* Simulateur avancé */
+        .simulator {
+            background: rgba(0, 15, 30, 0.9);
+            padding: 2.5rem;
+            border: 2px solid #3b82f6;
+            margin: 3rem 0 2rem;
+            
+        }
+
+        .simu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .simu-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(145deg, #d4e6ff, white);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .url-simu-input {
+            background: #102433;
+            padding: 1rem 2rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            border: 2px solid #3b82f6;
+            color: #b3d9ff;
+            width: 100%;
+            max-width: 600px;
+        }
+        .url-simu-input:focus {
+            outline: none;
+            border-color: #00adb5;
+            box-shadow: 0 0 0 3px #00adb533;
+        }
+
+        .extracted-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            background: #0b1d30;
+            padding: 2rem;
+            border: 1px solid #3b6ea5;
+        }
+
+        .extracted-card {
+            text-align: center;
+            background: #112b42;
+            padding: 1.5rem 1rem;
+            border: 1px solid #4b7cb6;
+        }
+        .extracted-label {
+            font-size: 1rem;
+            text-transform: uppercase;
+            color: #aac8ff;
+            letter-spacing: 1px;
+        }
+        .extracted-value {
+            font-size: 3rem;
+            font-weight: 800;
+            background: #002c4f;
+            padding: 0.2rem 1rem;
+            border: 2px solid #3b82f6;
+            color: #b9e2ff;
+            margin-top: 0.5rem;
+            word-break: break-word;
+        }
+
+        .param-pairs {
+            background: #11263b;
+            padding: 1.8rem;
+            margin-top: 2.5rem;
+        }
+
+        .param-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.3rem;
+            padding: 0.7rem 1.2rem;
+            border-bottom: 1px solid #28537a;
+        }
+        .param-key {
+            background: #2d4b75;
+            padding: 0.3rem 1.2rem;
+            color: white;
+            font-weight: 600;
+        }
+        .param-value {
+            background: #023b66;
+            padding: 0.3rem 1.5rem;
+            border: 1px solid #4a90e2;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: #10403b;
+            padding: 0.3rem 1rem;
+            font-size: 0.9rem;
+            border: 1px solid #00b8b8;
+        }
+
+        /* Section cas pratiques */
+        .use-cases {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 3rem 0 2rem;
+        }
+        .case-card {
+            background: #102b3f;
+            padding: 1.8rem;
+            border-left: 6px solid #00d4c0;
+        }
+        .case-card h3 {
+            color: #8bcbff;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .next-step {
+            padding: 2rem 2.5rem;
+            margin: 2.5rem 0 2rem;
+            border-left: 12px solid #00b8b8;
+            font-size: 1.3rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .next-step code {
+            background: #021c24;
+            padding: 0.5rem 1.5rem;
+            color: #8dd0ff;
+            font-size: 1.2rem;
+        }
+
+        button {
+            background: #3b82f6;
+            border: none;
+            color: white;
+            font-weight: 700;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #a0c8ff;
+           
+        }
+        button:hover {
+            background: #2563eb;
+            transform: translateY(-3px);
+            
+        }
+        button:active {
+            transform: translateY(5px);
+            box-shadow: 0 4px 0 #1e3a8a;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            color: #628bb4;
+            border-top: 1px solid #284b6e;
+            padding-top: 2rem;
+        }
+
+        hr {
+            border: 1px solid #1d4063;
+            margin: 3rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="lab-card">
+        <!-- En-tête -->
+       <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" width="60" alt="" srcset="">
+        <h1>Récupérer et exploiter <br>les données d'URL</h1>
+        <p class="description-lead">
+            De la théorie à la pratique : maîtrisez <code style="background:#1e3a5f; padding:0.2rem 0.8rem; ">URLSearchParams</code> et ses 12 méthodes pour créer des applications réactives et maintenables.
+        </p>
+
+        <!-- SECTION 1 : ANATOMIE COMPLÈTE -->
+        <div class="pedagogy-grid">
+            <div class="concept-block">
+                <div class="block-title">1. Anatomie détaillée d'une URL <span>foundation</span></div>
+                <div class="anatomy-url">
+                    https://shop.app/produits/liste.html?id=42&mode=edit&lang=fr&promo=ete2025#section-avis
+                </div>
+                <div class="anatomy-parts">
+                    <div class="part-item">
+                        <div class="part-symbol">?</div>
+                        <div class="part-label">Délimiteur</div>
+                        <div>Marque le début des paramètres</div>
+                    </div>
+                    <div class="part-item">
+                        <div class="part-symbol">&</div>
+                        <div class="part-label">Séparateur</div>
+                        <div>Entre chaque paire clé=valeur</div>
+                    </div>
+                    <div class="part-item">
+                        <div class="part-symbol">=</div>
+                        <div class="part-label">Assignation</div>
+                        <div>Lie la clé à sa valeur</div>
+                    </div>
+                    <div class="part-item">
+                        <div class="part-symbol">#</div>
+                        <div class="part-label">Fragment</div>
+                        <div>Ancre (non lue par URLSearchParams)</div>
+                    </div>
+                </div>
+                <p style="margin-top:1.8rem; background:#0d2b41; padding:1rem;">
+                 <strong>Rappel :</strong> <code>window.location.search</code> capture <strong>uniquement</strong> la partie après le ? jusqu'au # (exclu). Le fragment est géré par <code>window.location.hash</code>.
+                </p>
+            </div>
+
+            <div class="concept-block">
+                <div class="block-title"> 2. API URLSearchParams <span>12 méthodes</span></div>
+                <p>Toutes les méthodes de l'objet <code style="background:#1e3a5f;">URLSearchParams</code> :</p>
+                <ul class="method-list">
+                    <li><span class="method-tag">.get(clé)</span> Retourne la première valeur (ou null)</li>
+                    <li><span class="method-tag">.getAll(clé)</span> Tableau de toutes les valeurs (pour ?tag=js&tag=css)</li>
+                    <li><span class="method-tag">.has(clé)</span> true/false si la clé existe</li>
+                    <li><span class="method-tag">.set(clé, valeur)</span> Modifie ou ajoute une paire</li>
+                    <li><span class="method-tag">.append(clé, valeur)</span> Ajoute une valeur supplémentaire</li>
+                    <li><span class="method-tag">.delete(clé)</span> Supprime toutes les occurrences</li>
+                    <li><span class="method-tag">.keys() / .values() / .entries()</span> Itérateurs</li>
+                    <li><span class="method-tag">.forEach(callback)</span> Parcours simple</li>
+                    <li><span class="method-tag">.sort()</span> Trie les paires par clé</li>
+                    <li><span class="method-tag">.toString()</span> Reconstruit la query string</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECTION CODE ULTRA DÉTAILLÉ -->
+        <div class="code-block">
+            <span class="code-comment">// EXEMPLE COMPLET </span><br>
+            <span class="code-comment">// 1. Récupération de la chaîne (ex: "?produit=42&couleur=rouge&couleur=bleu&promo=true")</span><br>
+            <span class="code-highlight">const queryString = window.location.search;</span><br><br>
+            
+            <span class="code-comment">// 2. Instanciation</span><br>
+            <span class="code-highlight">const params = new URLSearchParams(queryString);</span><br><br>
+            
+            <span class="code-comment">// 3. Extraction sécurisée</span><br>
+            const productId = params.get('produit') ?? <span class="code-comment">'default-123'</span>;  <span class="code-comment">// utilise || ou ??</span><br>
+            const hasPromo = params.has('promo'); <span class="code-comment">// true</span><br>
+            const couleurs = params.getAll('couleur'); <span class="code-comment">// ['rouge','bleu']</span><br><br>
+            
+            <span class="code-comment">// 4. Modification (utile pour changer l'URL sans recharger)</span><br>
+            params.set('page', '2');<br>
+            params.append('tag', 'nouveau');<br>
+            params.delete('couleur');<br>
+            <span class="code-comment">// Nouvelle query : "produit=42&promo=true&page=2&tag=nouveau"</span><br>
+            const newUrl = `${window.location.pathname}?${params.toString()}`;<br>
+            <span class="code-comment">// window.history.pushState({}, '', newUrl);  → met à jour l'URL sans recharger</span>
+        </div>
+
+        <!-- SIMULATEUR ENRICHISIME -->
+        <div class="simulator">
+            <div class="simu-header">
+                <span class="simu-title">Éditeur de query string</span>
+                <span class="info-badge" id="paramCount">2 paires</span>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; margin-bottom: 2rem;">
+                <span style="font-weight: 500; font-size:1.2rem;">URL simulée :</span>
+                <input type="text" id="urlSimu" class="url-simu-input" value="?id=42&category=tech&page=2&tag=js&tag=react&sort=asc" placeholder="?key1=value1&key2=value2...">
+                <button id="updateBtn">⟳ Mettre à jour</button>
+                <button id="resetBtn" style="background:#4b5563; box-shadow:0 8px 0 #1f2937;">↺ Réinitialiser</button>
+            </div>
+
+            <!-- Grille des valeurs extraites -->
+            <div class="extracted-grid" id="extractedGrid">
+                <!-- Dynamiquement généré par JS -->
+            </div>
+
+            <!-- Liste détaillée -->
+            <div class="param-pairs">
+                <div style="font-weight: 700; font-size:1.4rem; margin-bottom: 1.5rem;">Tous les paramètres détectés :</div>
+                <div id="paramList"></div>
+                <div style="margin-top: 1.5rem; background:#0e2842; padding:0.8rem 1.5rem;" id="paramStats"></div>
+            </div>
+
+            <!-- Visualisation toString -->
+            <div style="background:#002842;padding:1rem 2rem; margin-top:2rem; font-family:monospace; font-size:1.2rem; border:1px dashed #3b82f6;" id="stringRepresentation">
+                ?id=42&category=tech&page=2&tag=js&tag=react&sort=asc
+            </div>
+        </div>
+
+        <!-- CAS D'USAGE CONCRETS -->
+        <h2 style="font-size:2.2rem; margin:3rem 0 1.5rem;">Applications réelles</h2>
+        <div class="use-cases">
+            <div class="case-card">
+                <h3>Filtres e-commerce</h3>
+                <p><code>?categorie=chaussures&couleur=noir&taille=42&prix_max=100</code> → lecture pour afficher les produits filtrés.</p>
+                <p style="margin-top:1rem;">Possibilité de partager l'URL filtrée.</p>
+            </div>
+            <div class="case-card">
+                <h3>Pagination</h3>
+                <p><code>?page=3&limit=20</code> → extraire <code>page</code> et <code>limit</code> pour requête SQL/API.</p>
+                <p style="margin-top:1rem;">Génération des liens "suivant/précédent".</p>
+            </div>
+            <div class="case-card">
+                <h3>Authentification</h3>
+                <p><code>?token=abc123&redirect=/dashboard</code> → récupération après redirection OAuth.</p>
+                <p style="margin-top:1rem;">Nettoyer l'URL après extraction.</p>
+            </div>
+            <div class="case-card">
+                <h3>Tableaux de bord</h3>
+                <p><code>?periode=2025-03&vue=graphique&region=EU</code> → sauvegarde de l'état utilisateur.</p>
+            </div>
+            <div class="case-card">
+                <h3>Moteurs de recherche</h3>
+                <p><code>?q=javascript+avancé&page=2&tri=date</code> → paramètres de recherche avancée.</p>
+            </div>
+            <div class="case-card">
+                <h3>A/B Testing</h3>
+                <p><code>?variant=B&campaign=ete2025</code> → afficher une version spécifique.</p>
+            </div>
+        </div>
+
+        <!-- NEXT STEP -->
+        <div class="next-step">
+            <span><strong>Prochaine étape :</strong> combiner avec fetch() pour charger des données dynamiques</span>
+            <code>fetch(`/api/produits/${params.get('id')}?${params.toString()}`)</code>
+        </div>
+
+        <!-- ENCADRÉ BONUS : Gestion erreurs & bonnes pratiques -->
+        <hr>
+        <div style="display: grid; grid-template-columns: repeat(3,1fr); gap:2.5rem; margin:3rem 0;">
+            <div>
+                <h3 style="color:#79b8ff; font-size:1.5rem;">Gestion des erreurs</h3>
+                <ul style="list-style-type: none; margin-top:1rem;">
+                    <li>• <code>get()</code> peut retourner <strong>null</strong> → toujours prévoir une valeur par défaut</li>
+                    <li>• Attention aux <strong>espaces</strong> : <code>?name=John+Doe</code> → décodé automatiquement</li>
+                    <li>• <code>decodeURIComponent()</code> si besoin manuel</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="color:#79b8ff; font-size:1.5rem;">Sécurité</h3>
+                <ul style="list-style-type: none; margin-top:1rem;">
+                    <li>• Ne <strong>jamais</strong> faire confiance aux données URL pour des actions critiques (ex: admin=1)</li>
+                    <li>• Valider côté serveur également</li>
+                    <li>• Échapper l'affichage HTML (risque XSS)</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="color:#79b8ff; font-size:1.5rem;">URLSearchParams vs Objet</h3>
+                <ul style="list-style-type: none; margin-top:1rem;">
+                    <li>• <code>Object.fromEntries(params)</code> convertit en objet simple</li>
+                    <li>• Attention : écrase les clés multiples</li>
+                    <li>• <code>[...params]</code> donne tableau de paires</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        (function() {
+            const urlInput = document.getElementById('urlSimu');
+            const updateBtn = document.getElementById('updateBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const extractedGrid = document.getElementById('extractedGrid');
+            const paramList = document.getElementById('paramList');
+            const paramCount = document.getElementById('paramCount');
+            const paramStats = document.getElementById('paramStats');
+            const stringRep = document.getElementById('stringRepresentation');
+
+            const DEFAULT_QUERY = '?id=42&category=tech&page=2&tag=js&tag=react&sort=asc';
+
+            function escapeHTML(str) {
+                return String(str).replace(/[&<>"]/g, function(m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            function updateDisplay() {
+                let rawQuery = urlInput.value.trim();
+                if (rawQuery === '' || rawQuery === '?') {
+                    rawQuery = '?';
+                }
+                if (!rawQuery.startsWith('?')) {
+                    rawQuery = '?' + rawQuery;
+                }
+
+                const params = new URLSearchParams(rawQuery);
+                
+                // 1. Générer les cartes pour les clés courantes (id, category, page, tag, sort) + autres dynamiques
+                const importantKeys = ['id', 'category', 'page', 'tag', 'sort'];
+                let gridHtml = '';
+                
+                // On montre d'abord les clés importantes si elles existent
+                importantKeys.forEach(key => {
+                    if (params.has(key)) {
+                        const values = params.getAll(key);
+                        const displayValue = values.length > 1 ? `[${values.join(', ')}]` : (values[0] || '(vide)');
+                        gridHtml += `
+                            <div class="extracted-card">
+                                <div class="extracted-label">${key}</div>
+                                <div class="extracted-value" title="${escapeHTML(values.join(', '))}">${escapeHTML(displayValue)}</div>
+                                ${values.length > 1 ? `<span style="font-size:0.8rem; color:#aac8ff;">${values.length} valeurs</span>` : ''}
+                            </div>
+                        `;
+                    }
+                });
+
+                // Ajouter un extra pour les autres clés non listées
+                const allKeys = [...new Set([...params.keys()])];
+                const otherKeys = allKeys.filter(k => !importantKeys.includes(k));
+                if (otherKeys.length > 0) {
+                    gridHtml += `
+                        <div class="extracted-card">
+                            <div class="extracted-label">autres (${otherKeys.length})</div>
+                            <div class="extracted-value" style="font-size:2rem;">${escapeHTML(otherKeys.join(', '))}</div>
+                        </div>
+                    `;
+                }
+
+                if (allKeys.length === 0) {
+                    gridHtml = '<div class="extracted-card" style="grid-column:1/-1;">Aucun paramètre détecté</div>';
+                }
+                extractedGrid.innerHTML = gridHtml;
+
+                // 2. Liste détaillée de tous les paramètres
+                let listHtml = '';
+                let countPairs = 0;
+                for (let [key, value] of params.entries()) {
+                    listHtml += `
+                        <div class="param-row">
+                            <span class="param-key">${escapeHTML(key)}</span>
+                            <span class="param-equal">=</span>
+                            <span class="param-value">${escapeHTML(value)}</span>
+                        </div>
+                    `;
+                    countPairs++;
+                }
+                if (countPairs === 0) {
+                    listHtml = '<div class="param-row">Aucune paire clé=valeur</div>';
+                }
+                paramList.innerHTML = listHtml;
+
+                // 3. Statistiques
+                const uniqueKeys = [...new Set([...params.keys()])].length;
+                paramCount.textContent = `${countPairs} paire${countPairs > 1 ? 's' : ''}`;
+                paramStats.innerHTML = `
+                    <strong>Statistiques :</strong> ${countPairs} paire${countPairs > 1 ? 's' : ''} · 
+                    ${uniqueKeys} clé${uniqueKeys > 1 ? 's' : ''} unique${uniqueKeys > 1 ? 's' : ''} · 
+                    ${params.getAll('tag').length > 0 ? `tag présent ${params.getAll('tag').length} fois` : ''}
+                `;
+
+                // 4. Représentation toString
+                stringRep.textContent = '?' + params.toString();
+            }
+
+            updateBtn.addEventListener('click', updateDisplay);
+            resetBtn.addEventListener('click', () => {
+                urlInput.value = DEFAULT_QUERY;
+                updateDisplay();
+            });
+            urlInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') updateDisplay();
+            });
+
+            // Initialisation
+            urlInput.value = DEFAULT_QUERY;
+            updateDisplay();
+        })();
+    </script>
+<script src="../cursor.js"></script>
+
+</body>
+</html>
