@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Import / Export — Header, Footer & Architecture</title>
+<style>
+:root {
+    --bg:#080b0f; --card:#0d1117; --surface:#111820;
+    --border:#1e2d3d; --accent:#f7df1e; --green:#44D62C;
+    --red:#ff7b72; --blue:#61dafb; --purple:#c084fc;
+    --text:#e6edf3; --muted:#7d8590; --dim:#3d444d;
+    --title:#161b22; --mono:'SF Mono','Fira Code','Consolas',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:48px 24px 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(247,223,30,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(247,223,30,.015) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+
+.wrap{max-width:780px;margin:0 auto;position:relative;z-index:1;}
+
+/* HEADER */
+.page-header{margin-bottom:48px;}
+.page-header h1{font-size:2.2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:10px;}
+.hl{background:linear-gradient(135deg,var(--accent),#ffe94d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.65;}
+.htags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.htag{font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.htag.y{background:rgba(247,223,30,.08);border-color:rgba(247,223,30,.3);color:var(--accent);}
+.htag.g{background:rgba(68,214,44,.08);border-color:rgba(68,214,44,.3);color:var(--green);}
+
+/* STEP */
+.step{margin-bottom:44px;}
+.step-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.step h2{font-size:1.15rem;font-weight:700;margin-bottom:14px;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.7;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(255,255,255,.07);border:1px solid var(--border);padding:1px 6px;border-radius:3px;color:var(--accent);}
+
+/* CALLOUT */
+.callout{border-radius:9px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.callout.tip{background:rgba(247,223,30,.07);border:1px solid rgba(247,223,30,.2);color:#e8d86a;}
+.callout.info{background:rgba(97,218,251,.07);border:1px solid rgba(97,218,251,.2);color:#a0d8ef;}
+.callout.warn{background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.2);color:#ffb07a;}
+.callout strong{color:inherit;}
+.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.2);padding:1px 5px;border-radius:3px;}
+
+/* CODE */
+.code-block{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.cb-head{background:var(--title);padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.dots{display:flex;gap:5px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:var(--muted);flex:1;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--dim);font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(247,223,30,.1);border-color:rgba(247,223,30,.3);color:var(--accent);}
+.cb-copy.ok{color:var(--green);border-color:rgba(68,214,44,.4);}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.9;}
+.kw{color:#ff7b72;font-weight:600;}
+.fn{color:#d2a8ff;}
+.str{color:#a5d6ff;}
+.num{color:#f8c555;}
+.cmt{color:var(--dim);font-style:italic;}
+.vr{color:#79c0ff;}
+
+/* FOLDER TREE */
+.tree{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 22px;font-family:var(--mono);font-size:.82rem;line-height:2.1;margin-bottom:14px;overflow-x:auto;}
+.tree .folder{color:var(--blue);}
+.tree .fjs{color:var(--accent);}
+.tree .fcss{color:var(--purple);}
+.tree .fhtml{color:#ffa657;}
+.tree .dim{color:var(--dim);}
+.tree .arrow{color:var(--green);}
+
+/* BEFORE/AFTER */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.compare-box{background:var(--card);border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.compare-box.bad{border-color:rgba(255,123,114,.2);}
+.compare-box.good{border-color:rgba(68,214,44,.2);}
+.compare-head{padding:8px 14px;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;border-bottom:1px solid var(--border);}
+.compare-box.bad .compare-head{background:rgba(255,123,114,.06);color:var(--red);}
+.compare-box.good .compare-head{background:rgba(68,214,44,.06);color:var(--green);}
+.compare-body{padding:14px;font-family:var(--mono);font-size:.78rem;color:var(--muted);line-height:1.9;}
+
+/* DEMO PREVIEW */
+.preview-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;}
+.preview-bar{background:var(--title);padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.preview-title{font-family:var(--mono);font-size:.72rem;color:var(--muted);flex:1;}
+.tabs-wrap{display:flex;border-bottom:1px solid var(--border);}
+.tab{font-family:var(--mono);font-size:.73rem;padding:8px 16px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-content{display:none;}
+.tab-content.show{display:block;}
+
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(247,223,30,.3);color:var(--text);}
+.opt.correct{border-color:rgba(68,214,44,.5);background:rgba(68,214,44,.08);color:var(--green);}
+.opt.wrong{border-color:rgba(255,123,114,.4);background:rgba(255,123,114,.06);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(68,214,44,.08);border:1px solid rgba(68,214,44,.2);color:#9fdb8a;}
+.fb.ko{background:rgba(255,123,114,.07);border:1px solid rgba(255,123,114,.2);color:var(--red);}
+
+.divider{height:1px;background:var(--border);margin:40px 0;}
+::-webkit-scrollbar{width:5px;height:5px;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@media(max-width:600px){.compare{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <div class="page-header">
+        <h1>Import / Export<br><span class="hl">Header, Footer & Architecture</span></h1>
+        <p>Découper une page HTML en composants réutilisables, et organiser ses fichiers proprement.</p>
+        <div class="htags">
+            <span class="htag y">export / import</span>
+            <span class="htag y">Header · Footer</span>
+            <span class="htag g">Architecture</span>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 1 — POURQUOI -->
+    <div class="step">
+        <div class="step-label">Étape 1</div>
+        <h2>Le problème — tout dans un seul fichier</h2>
+        <p class="prose">Sur un site de 5 pages, le <strong>Header</strong> et le <strong>Footer</strong> sont identiques partout. Sans modules, tu copies-colles le même HTML 5 fois. Dès que tu modifies un lien du menu, tu dois modifier 5 fichiers.</p>
+
+        <div class="compare">
+            <div class="compare-box bad">
+                <div class="compare-head">Sans modules</div>
+                <div class="compare-body">
+                    index.html<br>
+                    &nbsp;&nbsp;← header complet<br>
+                    &nbsp;&nbsp;← contenu<br>
+                    &nbsp;&nbsp;← footer complet<br>
+                    <br>
+                    about.html<br>
+                    &nbsp;&nbsp;← header copié-collé<br>
+                    &nbsp;&nbsp;← contenu<br>
+                    &nbsp;&nbsp;← footer copié-collé<br>
+                    <br>
+                    <span style="color:var(--red)">Modifier = changer 5 fichiers</span>
+                </div>
+            </div>
+            <div class="compare-box good">
+                <div class="compare-head">Avec modules</div>
+                <div class="compare-body">
+                    components/<br>
+                    &nbsp;&nbsp;header.js  ← 1 seule fois<br>
+                    &nbsp;&nbsp;footer.js  ← 1 seule fois<br>
+                    <br>
+                    index.js<br>
+                    &nbsp;&nbsp;← import Header<br>
+                    &nbsp;&nbsp;← import Footer<br>
+                    <br>
+                    <span style="color:var(--green)">Modifier = changer 1 fichier</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 2 — ARCHITECTURE -->
+    <div class="step">
+        <div class="step-label">Étape 2</div>
+        <h2>L'architecture des dossiers</h2>
+        <p class="prose">Voici l'organisation recommandée. Chaque fichier a <strong>un seul rôle</strong>.</p>
+
+        <div class="tree">
+<span class="folder">mon-projet/</span>
+├── <span class="folder">components/</span>         <span class="dim">← composants réutilisables</span>
+│   ├── <span class="fjs">header.js</span>           <span class="dim">← génère le &lt;header&gt;</span>
+│   └── <span class="fjs">footer.js</span>           <span class="dim">← génère le &lt;footer&gt;</span>
+│
+├── <span class="folder">pages/</span>              <span class="dim">← une page = un fichier</span>
+│   ├── <span class="fjs">home.js</span>
+│   ├── <span class="fjs">about.js</span>
+│   └── <span class="fjs">contact.js</span>
+│
+├── <span class="folder">styles/</span>
+│   ├── <span class="fcss">main.css</span>            <span class="dim">← styles globaux</span>
+│   └── <span class="fcss">components.css</span>      <span class="dim">← styles header/footer</span>
+│
+├── <span class="fhtml">index.html</span>           <span class="dim">← point d'entrée unique</span>
+└── <span class="fjs">main.js</span>             <span class="dim">← orchestre tout</span>
+        </div>
+
+        <div class="callout tip">
+            <span></span>
+            <div><strong>Règle d'or :</strong> 1 composant = 1 fichier. Le dossier <code>components/</code> ne contient que des fonctions qui retournent du HTML. Les pages dans <code>pages/</code> assemblent ces composants.</div>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 3 — CRÉER LES COMPOSANTS -->
+    <div class="step">
+        <div class="step-label">Étape 3</div>
+        <h2>Créer le Header et le Footer</h2>
+        <p class="prose">Chaque composant est une <strong>fonction qui retourne une chaîne HTML</strong>. On l'exporte pour pouvoir l'importer ailleurs.</p>
+
+        <div class="preview-wrap">
+            <div class="preview-bar"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="preview-title">composants</span></div>
+            <div class="tabs-wrap">
+                <button class="tab active" onclick="switchTab(this,'header')">header.js</button>
+                <button class="tab" onclick="switchTab(this,'footer')">footer.js</button>
+            </div>
+
+            <div class="tab-content show" id="tab-header">
+                <pre style="padding:18px 20px;font-family:var(--mono);font-size:.82rem;line-height:1.9;"><code><span class="cmt">// components/header.js</span>
+
+<span class="kw">export function</span> <span class="fn">createHeader</span>() {
+    <span class="kw">return</span> <span class="str">`
+    &lt;header class="site-header"&gt;
+        &lt;div class="logo"&gt;MonSite&lt;/div&gt;
+        &lt;nav&gt;
+            &lt;a href="/"&gt;Accueil&lt;/a&gt;
+            &lt;a href="/about"&gt;À propos&lt;/a&gt;
+            &lt;a href="/contact"&gt;Contact&lt;/a&gt;
+        &lt;/nav&gt;
+    &lt;/header&gt;
+    `</span>;
+}
+
+<span class="cmt">// Variante : header avec paramètre (page active)</span>
+<span class="kw">export function</span> <span class="fn">createHeaderWithActive</span>(pageActive) {
+    <span class="kw">const</span> <span class="vr">links</span> = [
+        { <span class="vr">href</span>: <span class="str">'/'</span>,        <span class="vr">label</span>: <span class="str">'Accueil'</span>  },
+        { <span class="vr">href</span>: <span class="str">'/about'</span>,   <span class="vr">label</span>: <span class="str">'À propos'</span> },
+        { <span class="vr">href</span>: <span class="str">'/contact'</span>, <span class="vr">label</span>: <span class="str">'Contact'</span>  },
+    ];
+
+    <span class="kw">const</span> <span class="vr">nav</span> = <span class="vr">links</span>.<span class="fn">map</span>(link => <span class="str">`
+        &lt;a href="<span class="vr">${link.href}</span>" class="<span class="vr">${link.href === pageActive ? 'active' : ''}</span>"&gt;
+            <span class="vr">${link.label}</span>
+        &lt;/a&gt;`</span>).<span class="fn">join</span>(<span class="str">''</span>);
+
+    <span class="kw">return</span> <span class="str">`&lt;header class="site-header"&gt;&lt;nav&gt;<span class="vr">${nav}</span>&lt;/nav&gt;&lt;/header&gt;`</span>;
+}</code></pre>
+            </div>
+
+            <div class="tab-content" id="tab-footer">
+                <pre style="padding:18px 20px;font-family:var(--mono);font-size:.82rem;line-height:1.9;"><code><span class="cmt">// components/footer.js</span>
+
+<span class="kw">export function</span> <span class="fn">createFooter</span>() {
+    <span class="kw">const</span> <span class="vr">annee</span> = <span class="kw">new</span> <span class="fn">Date</span>().<span class="fn">getFullYear</span>(); <span class="cmt">// année dynamique !</span>
+
+    <span class="kw">return</span> <span class="str">`
+    &lt;footer class="site-footer"&gt;
+        &lt;p&gt;© <span class="vr">${annee}</span> MonSite — Tous droits réservés&lt;/p&gt;
+        &lt;ul&gt;
+            &lt;li&gt;&lt;a href="/mentions"&gt;Mentions légales&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="/cgv"&gt;CGV&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/footer&gt;
+    `</span>;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 4 — UTILISER -->
+    <div class="step">
+        <div class="step-label">Étape 4</div>
+        <h2>Importer et injecter dans la page</h2>
+        <p class="prose">On importe les composants dans <code>main.js</code> et on les injecte dans le DOM avec <code>innerHTML</code>.</p>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">main.js</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+            <pre><code><span class="kw">import</span> { <span class="fn">createHeader</span> } <span class="kw">from</span> <span class="str">'./components/header.js'</span>;
+<span class="kw">import</span> { <span class="fn">createFooter</span> } <span class="kw">from</span> <span class="str">'./components/footer.js'</span>;
+
+<span class="cmt">// Injecter dans le DOM</span>
+document.<span class="fn">getElementById</span>(<span class="str">'header'</span>).<span class="vr">innerHTML</span> = <span class="fn">createHeader</span>();
+document.<span class="fn">getElementById</span>(<span class="str">'footer'</span>).<span class="vr">innerHTML</span> = <span class="fn">createFooter</span>();
+
+<span class="cmt">// Ou en passant la page active :</span>
+<span class="kw">import</span> { <span class="fn">createHeaderWithActive</span> } <span class="kw">from</span> <span class="str">'./components/header.js'</span>;
+document.<span class="fn">getElementById</span>(<span class="str">'header'</span>).<span class="vr">innerHTML</span> = <span class="fn">createHeaderWithActive</span>(<span class="str">'/'</span>);</code></pre>
+        </div>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">index.html — structure minimaliste</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+            <pre><code><span class="kw">&lt;!DOCTYPE html&gt;</span>
+<span class="kw">&lt;html</span> lang=<span class="str">"fr"</span><span class="kw">&gt;</span>
+<span class="kw">&lt;head&gt;</span>
+    <span class="kw">&lt;meta</span> charset=<span class="str">"UTF-8"</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;link</span> rel=<span class="str">"stylesheet"</span> href=<span class="str">"styles/main.css"</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;title&gt;</span>Mon Site<span class="kw">&lt;/title&gt;</span>
+<span class="kw">&lt;/head&gt;</span>
+<span class="kw">&lt;body&gt;</span>
+
+    <span class="cmt">&lt;!-- Conteneurs vides, remplis par JS --&gt;</span>
+    <span class="kw">&lt;div</span> id=<span class="str">"header"</span><span class="kw">&gt;&lt;/div&gt;</span>
+
+    <span class="kw">&lt;main</span> id=<span class="str">"app"</span><span class="kw">&gt;</span>
+        <span class="cmt">&lt;!-- contenu de la page --&gt;</span>
+    <span class="kw">&lt;/main&gt;</span>
+
+    <span class="kw">&lt;div</span> id=<span class="str">"footer"</span><span class="kw">&gt;&lt;/div&gt;</span>
+
+    <span class="cmt">&lt;!-- type="module" obligatoire pour les import/export --&gt;</span>
+    <span class="kw">&lt;script</span> type=<span class="str">"module"</span> src=<span class="str">"main.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+
+<span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></code></pre>
+        </div>
+
+        <div class="callout warn">
+            <span></span>
+            <div><strong>Important :</strong> <code>type="module"</code> est <strong>obligatoire</strong> dans la balise <code>&lt;script&gt;</code> pour utiliser <code>import/export</code>. Sans ça, le navigateur ne comprend pas les modules ES.</div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ÉTAPE 5 — PLUSIEURS PAGES -->
+    <div class="step">
+        <div class="step-label">Étape 5</div>
+        <h2>Gérer plusieurs pages</h2>
+        <p class="prose">Chaque page a son propre fichier JS qui importe les composants communs et ajoute son propre contenu.</p>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">pages/about.js</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+            <pre><code><span class="kw">import</span> { <span class="fn">createHeader</span> } <span class="kw">from</span> <span class="str">'../components/header.js'</span>;
+<span class="kw">import</span> { <span class="fn">createFooter</span> } <span class="kw">from</span> <span class="str">'../components/footer.js'</span>;
+
+<span class="cmt">// Composants communs</span>
+document.<span class="fn">getElementById</span>(<span class="str">'header'</span>).<span class="vr">innerHTML</span> = <span class="fn">createHeader</span>();
+document.<span class="fn">getElementById</span>(<span class="str">'footer'</span>).<span class="vr">innerHTML</span> = <span class="fn">createFooter</span>();
+
+<span class="cmt">// Contenu spécifique à la page About</span>
+document.<span class="fn">getElementById</span>(<span class="str">'app'</span>).<span class="vr">innerHTML</span> = <span class="str">`
+    &lt;section class="about"&gt;
+        &lt;h1&gt;À propos&lt;/h1&gt;
+        &lt;p&gt;Notre histoire…&lt;/p&gt;
+    &lt;/section&gt;
+`</span>;</code></pre>
+        </div>
+
+        <div class="tree">
+<span class="dim">Résultat dans le navigateur pour about.html :</span>
+
+<span class="arrow">┌─────────────────────────────────────────────┐</span>
+<span class="arrow">│</span> <span class="fjs">createHeader()</span>  ← <span class="dim">components/header.js</span>     <span class="arrow">│</span>
+<span class="arrow">├─────────────────────────────────────────────┤</span>
+<span class="arrow">│</span>                                             <span class="arrow">│</span>
+<span class="arrow">│</span>  <span class="fhtml">Contenu About</span>  ← <span class="dim">pages/about.js</span>          <span class="arrow">│</span>
+<span class="arrow">│</span>                                             <span class="arrow">│</span>
+<span class="arrow">├─────────────────────────────────────────────┤</span>
+<span class="arrow">│</span> <span class="fjs">createFooter()</span>  ← <span class="dim">components/footer.js</span>     <span class="arrow">│</span>
+<span class="arrow">└─────────────────────────────────────────────┘</span>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 6 — BARREL -->
+    <div class="step">
+        <div class="step-label">Étape 6 — Bonus</div>
+        <h2>Simplifier les imports avec un index.js</h2>
+        <p class="prose">Quand le dossier <code>components/</code> grandit, on crée un <code>index.js</code> qui regroupe tous les exports. Ça évite des lignes d'import à rallonge.</p>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">components/index.js — barrel file</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+            <pre><code><span class="cmt">// On re-exporte tout depuis un seul endroit</span>
+<span class="kw">export</span> { <span class="fn">createHeader</span>, <span class="fn">createHeaderWithActive</span> } <span class="kw">from</span> <span class="str">'./header.js'</span>;
+<span class="kw">export</span> { <span class="fn">createFooter</span> }                          <span class="kw">from</span> <span class="str">'./footer.js'</span>;
+<span class="kw">export</span> { <span class="fn">createNav</span> }                             <span class="kw">from</span> <span class="str">'./nav.js'</span>;
+<span class="kw">export</span> { <span class="fn">createCard</span> }                            <span class="kw">from</span> <span class="str">'./card.js'</span>;</code></pre>
+        </div>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Avant / Après</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+            <pre><code><span class="cmt">// Avant — un import par fichier</span>
+<span class="kw">import</span> { <span class="fn">createHeader</span> } <span class="kw">from</span> <span class="str">'./components/header.js'</span>;
+<span class="kw">import</span> { <span class="fn">createFooter</span> } <span class="kw">from</span> <span class="str">'./components/footer.js'</span>;
+<span class="kw">import</span> { <span class="fn">createNav</span> }    <span class="kw">from</span> <span class="str">'./components/nav.js'</span>;
+<span class="kw">import</span> { <span class="fn">createCard</span> }   <span class="kw">from</span> <span class="str">'./components/card.js'</span>;
+
+<span class="cmt">// Après — tout depuis l'index</span>
+<span class="kw">import</span> { <span class="fn">createHeader</span>, <span class="fn">createFooter</span>, <span class="fn">createNav</span>, <span class="fn">createCard</span> }
+    <span class="kw">from</span> <span class="str">'./components/index.js'</span>;</code></pre>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- QUIZ -->
+    <div class="step">
+        <div class="step-label">Quiz</div>
+        <h2>Vérifie ta compréhension</h2>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q1.</span> Pourquoi met-on <code>type="module"</code> dans la balise script ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q1',false)">Pour charger le script plus vite</button>
+                <button class="opt" onclick="ans(this,'q1',true)">Pour activer la syntaxe import/export dans le navigateur</button>
+                <button class="opt" onclick="ans(this,'q1',false)">Pour éviter les erreurs CSS</button>
+            </div>
+            <div class="fb" id="fb-q1"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q2.</span> Dans l'import <code>from '../components/header.js'</code>, à quoi sert le <code>../</code> ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q2',false)">C'est une convention de nommage, ça ne change rien</button>
+                <button class="opt" onclick="ans(this,'q2',true)">Remonter d'un dossier — depuis pages/ vers la racine</button>
+                <button class="opt" onclick="ans(this,'q2',false)">Accéder à un fichier caché</button>
+            </div>
+            <div class="fb" id="fb-q2"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q3.</span> À quoi sert un <code>index.js</code> dans le dossier <code>components/</code> ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q3',false)">C'est le fichier chargé en premier par le navigateur</button>
+                <button class="opt" onclick="ans(this,'q3',false)">Il contient la logique principale de l'application</button>
+                <button class="opt" onclick="ans(this,'q3',true)">Il regroupe tous les exports du dossier pour simplifier les imports</button>
+            </div>
+            <div class="fb" id="fb-q3"></div>
+        </div>
+
+        <div id="score-box" style="display:none;text-align:center;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-top:8px;">
+            <div id="s-emoji" style="font-size:2rem;margin-bottom:8px;"></div>
+            <div id="s-text" style="font-family:var(--mono);font-size:.92rem;color:var(--text);"></div>
+        </div>
+    </div>
+
+</div>
+<script>
+function switchTab(btn, id) {
+    btn.closest('.preview-wrap').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    btn.closest('.preview-wrap').querySelectorAll('.tab-content').forEach(c => c.classList.remove('show'));
+    document.getElementById('tab-' + id).classList.add('show');
+}
+
+function cp(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = '✓'; btn.classList.add('ok');
+        setTimeout(() => { btn.textContent = 'copier'; btn.classList.remove('ok'); }, 1800);
+    });
+}
+
+const fbs = {
+    q1: { ok: 'Exact ! Sans type="module", le navigateur ne reconnaît pas import/export et lance une erreur.', ko: 'Non. type="module" active le système de modules ES dans le navigateur, indispensable pour utiliser import/export.' },
+    q2: { ok: 'Exact ! ../ remonte d\'un niveau dans l\'arborescence. Depuis pages/about.js, ../ pointe vers la racine du projet.', ko: 'Non. ../ signifie "remonter d\'un dossier". Depuis pages/, on remonte à la racine pour atteindre components/.' },
+    q3: { ok: 'Exact ! C\'est un "barrel file" — il centralise tous les exports du dossier pour qu\'on puisse tout importer depuis un seul chemin.', ko: 'Non. index.js dans components/ est un barrel file : il re-exporte tous les composants du dossier pour simplifier les imports.' },
+};
+const rep = {};
+function ans(btn, qid, ok) {
+    if (rep[qid] !== undefined) return;
+    rep[qid] = ok;
+    btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => o.disabled = true);
+    btn.classList.add(ok ? 'correct' : 'wrong');
+    if (!ok) btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => { if (o.onclick?.toString().includes(',true)')) o.classList.add('correct'); });
+    const fb = document.getElementById('fb-' + qid);
+    fb.innerHTML = fbs[qid][ok ? 'ok' : 'ko'];
+    fb.className = 'fb show ' + (ok ? 'ok' : 'ko');
+    if (Object.keys(rep).length === 3) {
+        const g = Object.values(rep).filter(Boolean).length;
+        const box = document.getElementById('score-box');
+        box.style.display = 'block';
+        document.getElementById('s-emoji').textContent = ['', '', '', ''][g];
+        document.getElementById('s-text').innerHTML = `Score : <strong style="color:var(--green)">${g}/3</strong> — ${g === 3 ? 'Parfait, tu maîtrises l\'architecture ' : g === 2 ? 'Presque ! Relis la partie ratée.' : 'Reprends depuis le début '}`;
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+</script>
+
+<script src="../cursor.js"></script>
+
+</body>
+</html>

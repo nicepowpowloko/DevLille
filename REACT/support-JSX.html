@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSX — Formation DWWM</title>
+<style>
+:root {
+    --bg:#080b0f; --card:#0d1117; --surface:#111820;
+    --border:#1e2d3d; --accent:#61dafb; --accent2:#a8efff;
+    --green:#44D62C; --yellow:#f7df1e; --red:#ff7b72;
+    --text:#e6edf3; --muted:#7d8590; --dim:#3d444d;
+    --title:#161b22; --mono:'SF Mono','Fira Code','Consolas',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:48px 24px 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(97,218,251,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(97,218,251,.012) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+.orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;}
+.o1{width:500px;height:500px;background:radial-gradient(circle,#61dafb,transparent);top:-150px;right:-100px;opacity:.05;animation:oF 24s ease-in-out infinite;}
+.o2{width:350px;height:350px;background:radial-gradient(circle,#a8efff,transparent);bottom:-80px;left:-80px;opacity:.04;animation:oF 30s ease-in-out infinite reverse;}
+@keyframes oF{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-20px)}}
+
+.wrap{max-width:780px;margin:0 auto;position:relative;z-index:1;}
+
+/* HEADER */
+.page-header{margin-bottom:48px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;margin-bottom:10px;line-height:1.15;}
+.hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.65;}
+.htags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.htag{font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.htag.b{background:rgba(97,218,251,.08);border-color:rgba(97,218,251,.3);color:var(--accent);}
+.htag.g{background:rgba(68,214,44,.08);border-color:rgba(68,214,44,.3);color:var(--green);}
+.htag.y{background:rgba(247,223,30,.08);border-color:rgba(247,223,30,.3);color:var(--yellow);}
+
+/* STEP */
+.step{margin-bottom:44px;}
+.step-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.step h2{font-size:1.15rem;font-weight:700;margin-bottom:14px;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.7;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(255,255,255,.07);border:1px solid var(--border);padding:1px 6px;border-radius:3px;color:var(--accent);}
+
+/* CALLOUT */
+.callout{border-radius:9px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.callout.info{background:rgba(97,218,251,.07);border:1px solid rgba(97,218,251,.2);color:#a0d8ef;}
+.callout.tip{background:rgba(247,223,30,.07);border:1px solid rgba(247,223,30,.2);color:#e8d86a;}
+.callout.warn{background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.2);color:#ffb07a;}
+.callout.danger{background:rgba(255,123,114,.07);border:1px solid rgba(255,123,114,.2);color:#ff9f9a;}
+.callout strong{color:inherit;}
+.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.2);padding:1px 5px;border-radius:3px;}
+
+/* CODE */
+.code-block{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.cb-head{background:var(--title);padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.dots{display:flex;gap:5px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:var(--muted);flex:1;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--dim);font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(97,218,251,.1);border-color:rgba(97,218,251,.3);color:var(--accent);}
+.cb-copy.ok{color:var(--green);border-color:rgba(68,214,44,.4);}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.9;}
+
+/* Syntax */
+.kw {color:#ff7b72;font-weight:600;}
+.fn {color:#d2a8ff;}
+.str{color:#a5d6ff;}
+.num{color:#f8c555;}
+.cmt{color:var(--dim);font-style:italic;}
+.vr {color:#79c0ff;}
+.tag{color:var(--accent);}        /* JSX tags */
+.attr{color:#ffa657;}             /* JSX attributes */
+.jsx{color:var(--accent2);}       /* JSX expressions {} */
+
+/* BEFORE/AFTER */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.cbox{background:var(--card);border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.cbox.bad{border-color:rgba(255,123,114,.2);}
+.cbox.good{border-color:rgba(97,218,251,.2);}
+.chead{padding:8px 14px;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;border-bottom:1px solid var(--border);}
+.cbox.bad .chead{background:rgba(255,123,114,.06);color:var(--red);}
+.cbox.good .chead{background:rgba(97,218,251,.06);color:var(--accent);}
+.cbody{padding:14px;font-family:var(--mono);font-size:.79rem;color:var(--muted);line-height:1.9;}
+
+/* TABS */
+.tabs-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.tabs-bar{background:var(--title);display:flex;border-bottom:1px solid var(--border);}
+.tab{font-family:var(--mono);font-size:.73rem;padding:9px 16px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-content{display:none;}
+.tab-content.show{display:block;}
+
+/* RULES GRID */
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.rule{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.rule-title{font-family:var(--mono);font-size:.75rem;color:var(--accent);margin-bottom:6px;font-weight:700;}
+.rule-desc{font-size:.8rem;color:var(--muted);line-height:1.6;}
+.rule-desc code{font-family:var(--mono);font-size:.76rem;color:var(--accent);background:rgba(97,218,251,.07);padding:1px 5px;border-radius:3px;}
+
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(97,218,251,.3);color:var(--text);}
+.opt.correct{border-color:rgba(68,214,44,.5);background:rgba(68,214,44,.08);color:var(--green);}
+.opt.wrong{border-color:rgba(255,123,114,.4);background:rgba(255,123,114,.06);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(68,214,44,.08);border:1px solid rgba(68,214,44,.2);color:#9fdb8a;}
+.fb.ko{background:rgba(255,123,114,.07);border:1px solid rgba(255,123,114,.2);color:var(--red);}
+
+.divider{height:1px;background:var(--border);margin:40px 0;}
+::-webkit-scrollbar{width:5px;height:5px;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@media(max-width:600px){.compare,.rules{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <div class="page-header">
+        <h1><span class="hl">JSX</span><br>JavaScript + XML</h1>
+        <p>Comprendre la syntaxe JSX, ses règles, et comment React transforme ce code en vrai HTML.</p>
+        <div class="htags">
+            <span class="htag b">JSX</span>
+            <span class="htag b">React</span>
+            <span class="htag y">Babel</span>
+            <span class="htag g">Composants</span>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 1 — C'EST QUOI -->
+    <div class="step">
+        <div class="step-label">Étape 1</div>
+        <h2>C'est quoi JSX ?</h2>
+        <p class="prose">JSX c'est du <strong>HTML écrit dans du JavaScript</strong>. Ce n'est pas du vrai HTML — c'est une extension de syntaxe que <strong>Babel</strong> transforme en appels <code>React.createElement()</code> avant que le navigateur l'exécute.</p>
+
+        <div class="compare">
+            <div class="cbox bad">
+                <div class="chead">Sans JSX (verbeux)</div>
+                <div class="cbody">
+                    React.createElement(<br>
+                    &nbsp;&nbsp;'h1',<br>
+                    &nbsp;&nbsp;{ className: 'title' },<br>
+                    &nbsp;&nbsp;'Bonjour'<br>
+                    )
+                </div>
+            </div>
+            <div class="cbox good">
+                <div class="chead">Avec JSX (lisible)</div>
+                <div class="cbody">
+                    <span style="color:var(--accent)">&lt;h1</span> <span style="color:#ffa657">className</span>=<span style="color:#a5d6ff">"title"</span><span style="color:var(--accent)">&gt;</span><br>
+                    &nbsp;&nbsp;Bonjour<br>
+                    <span style="color:var(--accent)">&lt;/h1&gt;</span><br>
+                    <br>
+                    <span style="color:var(--dim)">← même résultat, bien plus clair</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout info">
+            <span></span>
+            <div><strong>JSX n'est pas obligatoire</strong> en React, mais tout le monde l'utilise. C'est tellement plus lisible que d'écrire <code>React.createElement</code> à la main que c'est devenu le standard.</div>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 2 — LES RÈGLES -->
+    <div class="step">
+        <div class="step-label">Étape 2</div>
+        <h2>Les règles JSX à connaître</h2>
+
+        <div class="rules">
+            <div class="rule">
+                <div class="rule-title">1 — Un seul élément racine</div>
+                <div class="rule-desc">Le return ne peut retourner qu'<strong>un seul élément</strong>. Utilise <code>&lt;div&gt;</code> ou <code>&lt;&gt;&lt;/&gt;</code> (Fragment) pour en envelopper plusieurs.</div>
+            </div>
+            <div class="rule">
+                <div class="rule-title">2 — Toutes les balises fermées</div>
+                <div class="rule-desc">En HTML <code>&lt;br&gt;</code> est valide. En JSX il faut <code>&lt;br /&gt;</code>. Toutes les balises doivent être explicitement fermées.</div>
+            </div>
+            <div class="rule">
+                <div class="rule-title">3 — className, pas class</div>
+                <div class="rule-desc"><code>class</code> est un mot réservé en JS. En JSX on écrit <code>className</code>. Pareil pour <code>for</code> → <code>htmlFor</code>.</div>
+            </div>
+            <div class="rule">
+                <div class="rule-title">4 — {} pour le JavaScript</div>
+                <div class="rule-desc">Les accolades <code>{}</code> permettent d'insérer n'importe quelle expression JS dans le JSX : variable, fonction, calcul…</div>
+            </div>
+            <div class="rule">
+                <div class="rule-title">5 — camelCase pour les attributs</div>
+                <div class="rule-desc"><code>onclick</code> → <code>onClick</code>, <code>onchange</code> → <code>onChange</code>, <code>tabindex</code> → <code>tabIndex</code>…</div>
+            </div>
+            <div class="rule">
+                <div class="rule-title">6 — Les composants en majuscule</div>
+                <div class="rule-desc"><code>&lt;div&gt;</code> = balise HTML native. <code>&lt;Button&gt;</code> = composant React. La majuscule initiale est obligatoire.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 3 — SYNTAXE -->
+    <div class="step">
+        <div class="step-label">Étape 3</div>
+        <h2>La syntaxe en pratique</h2>
+
+        <div class="tabs-wrap">
+            <div class="tabs-bar">
+                <button class="tab active" onclick="sw(this,'t1')">Bases JSX</button>
+                <button class="tab" onclick="sw(this,'t2')">Expressions {}</button>
+                <button class="tab" onclick="sw(this,'t3')">Conditions</button>
+                <button class="tab" onclick="sw(this,'t4')">Listes</button>
+            </div>
+
+            <div class="tab-content show" id="t1">
+                <pre><code><span class="cmt">// Un composant React = une fonction qui retourne du JSX</span>
+<span class="kw">function</span> <span class="fn">Carte</span>() {
+    <span class="kw">return</span> (
+        <span class="cmt">// Parenthèses pour le multi-ligne</span>
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"carte"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;h2</span><span class="tag">&gt;</span>Titre<span class="tag">&lt;/h2&gt;</span>
+            <span class="tag">&lt;p</span><span class="tag">&gt;</span>Description<span class="tag">&lt;/p&gt;</span>
+            <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="str">"photo.jpg"</span> <span class="attr">alt</span>=<span class="str">"photo"</span> <span class="tag">/&gt;</span>  <span class="cmt">// balise auto-fermante</span>
+            <span class="tag">&lt;br</span> <span class="tag">/&gt;</span><span class="cmt">// pas &lt;br&gt; tout seul !</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}
+
+<span class="cmt">// Fragment — évite un div inutile dans le DOM</span>
+<span class="kw">function</span> <span class="fn">Duo</span>() {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;&gt;</span>
+            <span class="tag">&lt;h1</span><span class="tag">&gt;</span>Titre<span class="tag">&lt;/h1&gt;</span>
+            <span class="tag">&lt;p</span><span class="tag">&gt;</span>Paragraphe<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;/&gt;</span>
+    );
+}</code></pre>
+            </div>
+
+            <div class="tab-content" id="t2">
+                <pre><code><span class="cmt">// {} = "sortir du HTML, entrer en JS"</span>
+<span class="kw">const</span> <span class="vr">prenom</span> = <span class="str">"Alice"</span>;
+<span class="kw">const</span> <span class="vr">age</span>    = <span class="num">28</span>;
+
+<span class="kw">function</span> <span class="fn">Profil</span>() {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+            <span class="cmt">{/* Afficher une variable */}</span>
+            <span class="tag">&lt;h2</span><span class="tag">&gt;</span><span class="jsx">{prenom}</span><span class="tag">&lt;/h2&gt;</span>
+
+            <span class="cmt">{/* Expression JS dans {} */}</span>
+            <span class="tag">&lt;p</span><span class="tag">&gt;</span>Elle a <span class="jsx">{age}</span> ans (<span class="jsx">{2024 - age}</span> de naissance)<span class="tag">&lt;/p&gt;</span>
+
+            <span class="cmt">{/* Dans un attribut aussi */}</span>
+            <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="jsx">{`/avatars/${prenom.toLowerCase()}.jpg`}</span> <span class="attr">alt</span>=<span class="jsx">{prenom}</span> <span class="tag">/&gt;</span>
+
+            <span class="cmt">{/* Appel de fonction */}</span>
+            <span class="tag">&lt;span</span><span class="tag">&gt;</span><span class="jsx">{prenom.toUpperCase()}</span><span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}</code></pre>
+            </div>
+
+            <div class="tab-content" id="t3">
+                <pre><code><span class="kw">const</span> <span class="vr">estConnecté</span> = <span class="kw">true</span>;
+<span class="kw">const</span> <span class="vr">score</span>      = <span class="num">42</span>;
+
+<span class="kw">function</span> <span class="fn">Dashboard</span>() {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+
+            <span class="cmt">{/* Ternaire — si/sinon */}</span>
+            <span class="jsx">{estConnecté
+                ? <span class="tag">&lt;p</span><span class="tag">&gt;</span>Bienvenue !<span class="tag">&lt;/p&gt;</span>
+                : <span class="tag">&lt;p</span><span class="tag">&gt;</span>Connecte-toi<span class="tag">&lt;/p&gt;</span>
+            }</span>
+
+            <span class="cmt">{/* && — afficher seulement si vrai */}</span>
+            <span class="jsx">{score > 40 && <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"badge"</span><span class="tag">&gt;</span>Champion !<span class="tag">&lt;/span&gt;</span>}</span>
+
+            <span class="cmt">{/* Variable JSX — calculer avant le return */}</span>
+            <span class="jsx">{(() => {
+                <span class="kw">if</span> (score >= <span class="num">90</span>) <span class="kw">return</span> <span class="tag">&lt;span</span><span class="tag">&gt;</span>Expert<span class="tag">&lt;/span&gt;</span>;
+                <span class="kw">if</span> (score >= <span class="num">50</span>) <span class="kw">return</span> <span class="tag">&lt;span</span><span class="tag">&gt;</span>Intermédiaire<span class="tag">&lt;/span&gt;</span>;
+                <span class="kw">return</span> <span class="tag">&lt;span</span><span class="tag">&gt;</span>Débutant<span class="tag">&lt;/span&gt;</span>;
+            })()}</span>
+
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}</code></pre>
+            </div>
+
+            <div class="tab-content" id="t4">
+                <pre><code><span class="kw">const</span> <span class="vr">fruits</span> = [<span class="str">"Pomme"</span>, <span class="str">"Banane"</span>, <span class="str">"Cerise"</span>];
+
+<span class="kw">const</span> <span class="vr">devs</span> = [
+    { <span class="vr">id</span>: <span class="num">1</span>, <span class="vr">nom</span>: <span class="str">"Alice"</span>,  <span class="vr">poste</span>: <span class="str">"Frontend"</span> },
+    { <span class="vr">id</span>: <span class="num">2</span>, <span class="vr">nom</span>: <span class="str">"Bob"</span>,    <span class="vr">poste</span>: <span class="str">"Backend"</span>  },
+    { <span class="vr">id</span>: <span class="num">3</span>, <span class="vr">nom</span>: <span class="str">"Chloé"</span>,  <span class="vr">poste</span>: <span class="str">"Fullstack"</span>},
+];
+
+<span class="kw">function</span> <span class="fn">Liste</span>() {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+            <span class="cmt">{/* .map() pour générer une liste */}</span>
+            <span class="tag">&lt;ul</span><span class="tag">&gt;</span>
+                <span class="jsx">{fruits.<span class="fn">map</span>(fruit => (
+                    <span class="tag">&lt;li</span> <span class="attr">key</span>=<span class="jsx">{fruit}</span><span class="tag">&gt;</span><span class="jsx">{fruit}</span><span class="tag">&lt;/li&gt;</span>
+                ))}</span>
+            <span class="tag">&lt;/ul&gt;</span>
+
+            <span class="cmt">{/* Objets — key sur l'id unique */}</span>
+            <span class="tag">&lt;ul</span><span class="tag">&gt;</span>
+                <span class="jsx">{devs.<span class="fn">map</span>(dev => (
+                    <span class="tag">&lt;li</span> <span class="attr">key</span>=<span class="jsx">{dev.id}</span><span class="tag">&gt;</span>
+                        <span class="jsx">{dev.nom}</span> — <span class="jsx">{dev.poste}</span>
+                    <span class="tag">&lt;/li&gt;</span>
+                ))}</span>
+            <span class="tag">&lt;/ul&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="callout warn">
+            <span></span>
+            <div><strong>La prop key est obligatoire</strong> dans les listes. React l'utilise pour identifier chaque élément et optimiser les mises à jour du DOM. Utilise toujours un <code>id</code> unique — jamais l'index du tableau si la liste peut changer.</div>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 4 — PROPS -->
+    <div class="step">
+        <div class="step-label">Étape 4</div>
+        <h2>Passer des données avec les Props</h2>
+        <p class="prose">Les <strong>props</strong> sont les attributs des composants React. C'est comme ça qu'on passe des données d'un composant parent à un composant enfant.</p>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Props — passer et recevoir</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+            <pre><code><span class="cmt">// ── Définir le composant avec des props ──</span>
+<span class="kw">function</span> <span class="fn">CarteDevs</span>(<span class="vr">props</span>) {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"carte"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;h2</span><span class="tag">&gt;</span><span class="jsx">{props.nom}</span><span class="tag">&lt;/h2&gt;</span>
+            <span class="tag">&lt;p</span><span class="tag">&gt;</span><span class="jsx">{props.poste}</span><span class="tag">&lt;/p&gt;</span>
+            <span class="tag">&lt;span</span><span class="tag">&gt;</span><span class="jsx">{props.salaire.toLocaleString('fr-FR')}</span> €<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}
+
+<span class="cmt">// ── Déstructuration (plus propre) ──</span>
+<span class="kw">function</span> <span class="fn">CarteDevs</span>({ <span class="vr">nom</span>, <span class="vr">poste</span>, <span class="vr">salaire</span>, <span class="vr">remote</span> = <span class="kw">false</span> }) {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"carte"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;h2</span><span class="tag">&gt;</span><span class="jsx">{nom}</span><span class="tag">&lt;/h2&gt;</span>
+            <span class="tag">&lt;p</span><span class="tag">&gt;</span><span class="jsx">{poste}</span><span class="tag">&lt;/p&gt;</span>
+            <span class="jsx">{remote && <span class="tag">&lt;span</span><span class="tag">&gt;</span>Remote<span class="tag">&lt;/span&gt;</span>}</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}
+
+<span class="cmt">// ── Utiliser le composant ──</span>
+<span class="kw">function</span> <span class="fn">App</span>() {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;CarteDevs</span> <span class="attr">nom</span>=<span class="str">"Alice"</span>  <span class="attr">poste</span>=<span class="str">"Frontend"</span>  <span class="attr">salaire</span>=<span class="jsx">{38000}</span> <span class="attr">remote</span> <span class="tag">/&gt;</span>
+            <span class="tag">&lt;CarteDevs</span> <span class="attr">nom</span>=<span class="str">"Bob"</span>    <span class="attr">poste</span>=<span class="str">"Backend"</span>   <span class="attr">salaire</span>=<span class="jsx">{44000}</span>       <span class="tag">/&gt;</span>
+            <span class="tag">&lt;CarteDevs</span> <span class="attr">nom</span>=<span class="str">"Chloé"</span>  <span class="attr">poste</span>=<span class="str">"Fullstack"</span> <span class="attr">salaire</span>=<span class="jsx">{52000}</span> <span class="attr">remote</span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}</code></pre>
+        </div>
+
+        <div class="callout tip">
+            <span></span>
+            <div><strong>Valeur par défaut :</strong> dans la déstructuration <code>{"{ remote = false }"}</code>, si la prop n'est pas passée, elle vaut <code>false</code>. Écrire <code>remote</code> tout seul dans JSX équivaut à <code>remote={"{true}"}</code>.</div>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 5 — ERREURS COMMUNES -->
+    <div class="step">
+        <div class="step-label">Étape 5</div>
+        <h2>Erreurs fréquentes à éviter</h2>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Erreurs communes JSX</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+            <pre><code><span class="cmt">// Plusieurs éléments racine — ERREUR</span>
+<span class="kw">return</span> (
+    <span class="tag">&lt;h1</span><span class="tag">&gt;</span>Titre<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p</span><span class="tag">&gt;</span>Paragraphe<span class="tag">&lt;/p&gt;</span>   <span class="cmt">// ← Erreur : 2 éléments racine</span>
+);
+
+<span class="cmt">// Solution : Fragment</span>
+<span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+        <span class="tag">&lt;h1</span><span class="tag">&gt;</span>Titre<span class="tag">&lt;/h1&gt;</span>
+        <span class="tag">&lt;p</span><span class="tag">&gt;</span>Paragraphe<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+);
+
+<span class="cmt">// class au lieu de className</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"carte"</span><span class="tag">&gt;</span>...  <span class="cmt">// ← Warning React</span>
+<span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"carte"</span><span class="tag">&gt;</span>... <span class="cmt">// </span>
+
+<span class="cmt">// Balise non fermée</span>
+<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span><span class="tag">&gt;</span>        <span class="cmt">// ← Erreur JSX</span>
+<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="tag">/&gt;</span>      <span class="cmt">// </span>
+
+<span class="cmt">// if dans le return JSX</span>
+<span class="kw">return</span> (
+    <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+        <span class="jsx">{if (ok) { ... }}</span>  <span class="cmt">// ← Erreur : if n'est pas une expression</span>
+        <span class="jsx">{ok && <span class="tag">&lt;span</span><span class="tag">&gt;</span>OK<span class="tag">&lt;/span&gt;</span>}</span>  <span class="cmt">// opérateur logique</span>
+        <span class="jsx">{ok ? <span class="tag">&lt;span</span><span class="tag">&gt;</span>Oui<span class="tag">&lt;/span&gt;</span> : <span class="tag">&lt;span</span><span class="tag">&gt;</span>Non<span class="tag">&lt;/span&gt;</span>}</span>  <span class="cmt">// ternaire</span>
+    <span class="tag">&lt;/div&gt;</span>
+);</code></pre>
+        </div>
+
+        <div class="callout danger">
+            <span></span>
+            <div><strong>Dans les {} JSX, uniquement des expressions</strong> — pas d'instructions (<code>if</code>, <code>for</code>, <code>while</code>…). Une expression retourne une valeur. Une instruction ne retourne rien. Utilise le ternaire ou <code>&&</code> à la place.</div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- QUIZ -->
+    <div class="step">
+        <div class="step-label">Quiz</div>
+        <h2>Vérifie ta compréhension</h2>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q1.</span> En JSX, comment ajoute-t-on une classe CSS à un élément ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q1',false)">&lt;div class="menu"&gt;</button>
+                <button class="opt" onclick="ans(this,'q1',true)">&lt;div className="menu"&gt;</button>
+                <button class="opt" onclick="ans(this,'q1',false)">&lt;div cssClass="menu"&gt;</button>
+            </div>
+            <div class="fb" id="fb-q1"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q2.</span> Comment afficher une variable <code>nom</code> dans du JSX ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q2',false)">&lt;p&gt;{{ nom }}&lt;/p&gt;</button>
+                <button class="opt" onclick="ans(this,'q2',true)">&lt;p&gt;{nom}&lt;/p&gt;</button>
+                <button class="opt" onclick="ans(this,'q2',false)">&lt;p&gt;$nom&lt;/p&gt;</button>
+            </div>
+            <div class="fb" id="fb-q2"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q3.</span> Je veux afficher une liste de prénoms avec <code>.map()</code>. Quelle prop est obligatoire ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q3',false)">id</button>
+                <button class="opt" onclick="ans(this,'q3',true)">key</button>
+                <button class="opt" onclick="ans(this,'q3',false)">index</button>
+            </div>
+            <div class="fb" id="fb-q3"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q4.</span> Pourquoi ne peut-on pas écrire <code>{if (ok) { ... }}</code> dans du JSX ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q4',false)">C'est une limitation de React, pas de JavaScript</button>
+                <button class="opt" onclick="ans(this,'q4',false)">Le mot-clé if est réservé en JSX</button>
+                <button class="opt" onclick="ans(this,'q4',true)">Les {} n'acceptent que des expressions, pas des instructions</button>
+            </div>
+            <div class="fb" id="fb-q4"></div>
+        </div>
+
+        <div id="score-box" style="display:none;text-align:center;padding:24px;background:var(--card);border:1px solid rgba(97,218,251,.2);border-radius:10px;margin-top:8px;">
+            <div id="s-emoji" style="font-size:2rem;margin-bottom:8px;"></div>
+            <div id="s-text" style="font-family:var(--mono);font-size:.92rem;color:var(--text);"></div>
+        </div>
+    </div>
+
+</div>
+<script>
+function sw(btn, id) {
+    btn.closest('.tabs-wrap').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    btn.closest('.tabs-wrap').querySelectorAll('.tab-content').forEach(c => c.classList.remove('show'));
+    document.getElementById(id).classList.add('show');
+}
+function cp(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = '✓'; btn.classList.add('ok');
+        setTimeout(() => { btn.textContent = 'copier'; btn.classList.remove('ok'); }, 1800);
+    });
+}
+const fbs = {
+    q1:{ ok:'Exact ! En JSX, class est un mot réservé JavaScript. On utilise className à la place.', ko:'Non. class est réservé en JS. En JSX on écrit toujours className.' },
+    q2:{ ok:'Parfait ! Une paire d\'accolades simples {nom} insère la valeur de la variable dans le JSX.', ko:'Non. JSX utilise des accolades simples {nom}. Les doubles accolades {{}} servent pour les objets (ex : style={{color:"red"}}).' },
+    q3:{ ok:'Exact ! La prop key est obligatoire dans les listes. React l\'utilise pour identifier chaque élément et optimiser le rendu.', ko:'Non. React exige la prop key sur chaque élément d\'une liste générée par .map(). Sans elle, tu auras un warning et des problèmes de performance.' },
+    q4:{ ok:'Parfait ! {} en JSX n\'accepte que des expressions JS (qui retournent une valeur). if est une instruction — utilise le ternaire ? : ou l\'opérateur &&.', ko:'Non. La raison est que {} en JSX attend une expression (qui retourne une valeur). if est une instruction, pas une expression — elle ne retourne rien.' },
+};
+const rep = {};
+function ans(btn, qid, ok) {
+    if (rep[qid] !== undefined) return;
+    rep[qid] = ok;
+    btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => o.disabled = true);
+    btn.classList.add(ok ? 'correct' : 'wrong');
+    if (!ok) btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => { if (o.onclick?.toString().includes(',true)')) o.classList.add('correct'); });
+    const fb = document.getElementById('fb-' + qid);
+    fb.innerHTML = fbs[qid][ok ? 'ok' : 'ko'];
+    fb.className = 'fb show ' + (ok ? 'ok' : 'ko');
+    if (Object.keys(rep).length === 4) {
+        const g = Object.values(rep).filter(Boolean).length;
+        const box = document.getElementById('score-box');
+        box.style.display = 'block';
+        document.getElementById('s-emoji').textContent = ['','','',''][g];
+        document.getElementById('s-text').innerHTML = `Score : <strong style="color:var(--green)">${g}/4</strong> — ${g===4?'Tu maîtrises JSX 🚀':g>=3?'Presque ! Relis la partie ratée.':'Reprends depuis le début 💪'}`;
+        box.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+}
+</script>
+<script src="../cursor.js"></script>
+</body>
+</html>

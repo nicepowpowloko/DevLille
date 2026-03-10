@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Composants React — Formation DWWM</title>
+<style>
+:root {
+    --bg:#080b0f; --card:#0d1117; --surface:#111820;
+    --border:#1e2d3d; --accent:#61dafb; --accent2:#a8efff;
+    --green:#44D62C; --yellow:#f7df1e; --red:#ff7b72; --purple:#c084fc;
+    --text:#e6edf3; --muted:#7d8590; --dim:#3d444d;
+    --title:#161b22; --mono:'SF Mono','Fira Code','Consolas',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:48px 24px 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(97,218,251,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(97,218,251,.012) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+.orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;}
+.o1{width:500px;height:500px;background:radial-gradient(circle,#61dafb,transparent);top:-150px;right:-100px;opacity:.05;animation:oF 24s ease-in-out infinite;}
+.o2{width:350px;height:350px;background:radial-gradient(circle,#a8efff,transparent);bottom:-80px;left:-80px;opacity:.04;animation:oF 30s ease-in-out infinite reverse;}
+@keyframes oF{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-20px)}}
+
+.wrap{max-width:780px;margin:0 auto;position:relative;z-index:1;}
+
+.page-header{margin-bottom:48px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;margin-bottom:10px;line-height:1.15;}
+.hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.65;}
+.htags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.htag{font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.htag.b{background:rgba(97,218,251,.08);border-color:rgba(97,218,251,.3);color:var(--accent);}
+.htag.g{background:rgba(68,214,44,.08);border-color:rgba(68,214,44,.3);color:var(--green);}
+.htag.p{background:rgba(192,132,252,.08);border-color:rgba(192,132,252,.3);color:var(--purple);}
+
+.step{margin-bottom:44px;}
+.step-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.step h2{font-size:1.15rem;font-weight:700;margin-bottom:14px;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.7;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(255,255,255,.07);border:1px solid var(--border);padding:1px 6px;border-radius:3px;color:var(--accent);}
+
+.callout{border-radius:9px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.callout.info{background:rgba(97,218,251,.07);border:1px solid rgba(97,218,251,.2);color:#a0d8ef;}
+.callout.tip{background:rgba(247,223,30,.07);border:1px solid rgba(247,223,30,.2);color:#e8d86a;}
+.callout.warn{background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.2);color:#ffb07a;}
+.callout strong{color:inherit;}
+.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.2);padding:1px 5px;border-radius:3px;}
+
+.code-block{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.cb-head{background:var(--title);padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.dots{display:flex;gap:5px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:var(--muted);flex:1;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--dim);font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(97,218,251,.1);border-color:rgba(97,218,251,.3);color:var(--accent);}
+.cb-copy.ok{color:var(--green);border-color:rgba(68,214,44,.4);}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.9;}
+.kw{color:#ff7b72;font-weight:600;}
+.fn{color:#d2a8ff;}
+.str{color:#a5d6ff;}
+.num{color:#f8c555;}
+.cmt{color:var(--dim);font-style:italic;}
+.vr{color:#79c0ff;}
+.tag{color:var(--accent);}
+.attr{color:#ffa657;}
+.jsx{color:var(--accent2);}
+
+/* ARBRE PARENT/ENFANT */
+.tree-comp{background:var(--card);border:1px solid rgba(97,218,251,.2);border-radius:10px;padding:20px 24px;font-family:var(--mono);font-size:.82rem;line-height:2.2;margin-bottom:14px;}
+.tc-parent{color:var(--accent);font-weight:700;}
+.tc-child{color:var(--accent2);}
+.tc-leaf{color:var(--muted);}
+.tc-dim{color:var(--dim);}
+
+/* SCHÉMA FLUX PROPS */
+.flux{display:flex;flex-direction:column;gap:0;margin-bottom:14px;}
+.flux-node{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 18px;display:flex;align-items:center;gap:12px;}
+.flux-node.parent{border-color:rgba(97,218,251,.3);background:rgba(97,218,251,.04);}
+.flux-node.child{border-color:rgba(168,239,255,.2);background:rgba(168,239,255,.03);margin-left:40px;}
+.flux-node.leaf{border-color:rgba(192,132,252,.2);background:rgba(192,132,252,.03);margin-left:80px;}
+.flux-arrow{text-align:left;padding:4px 0 4px 18px;font-family:var(--mono);font-size:.72rem;color:var(--dim);}
+.flux-arrow.c{padding-left:58px;}
+.flux-arrow.l{padding-left:98px;}
+.node-icon{font-size:1.1rem;flex-shrink:0;}
+.node-info{flex:1;}
+.node-name{font-family:var(--mono);font-size:.82rem;font-weight:700;}
+.node-name.p{color:var(--accent);}
+.node-name.c{color:var(--accent2);}
+.node-name.l{color:var(--purple);}
+.node-desc{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.node-badge{font-family:var(--mono);font-size:.6rem;padding:2px 7px;border-radius:3px;white-space:nowrap;}
+.node-badge.props{background:rgba(97,218,251,.1);border:1px solid rgba(97,218,251,.2);color:var(--accent);}
+.node-badge.state{background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.2);color:var(--purple);}
+
+/* TABS */
+.tabs-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.tabs-bar{background:var(--title);display:flex;border-bottom:1px solid var(--border);overflow-x:auto;}
+.tab{font-family:var(--mono);font-size:.73rem;padding:9px 16px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-content{display:none;}
+.tab-content.show{display:block;}
+
+/* COMPARE */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.cbox{background:var(--card);border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.cbox.bad{border-color:rgba(255,123,114,.2);}
+.cbox.good{border-color:rgba(97,218,251,.2);}
+.chead{padding:8px 14px;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;border-bottom:1px solid var(--border);}
+.cbox.bad .chead{background:rgba(255,123,114,.06);color:var(--red);}
+.cbox.good .chead{background:rgba(97,218,251,.06);color:var(--accent);}
+.cbody{padding:0;}
+
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(97,218,251,.3);color:var(--text);}
+.opt.correct{border-color:rgba(68,214,44,.5);background:rgba(68,214,44,.08);color:var(--green);}
+.opt.wrong{border-color:rgba(255,123,114,.4);background:rgba(255,123,114,.06);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(68,214,44,.08);border:1px solid rgba(68,214,44,.2);color:#9fdb8a;}
+.fb.ko{background:rgba(255,123,114,.07);border:1px solid rgba(255,123,114,.2);color:var(--red);}
+
+.divider{height:1px;background:var(--border);margin:40px 0;}
+::-webkit-scrollbar{width:5px;height:5px;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@media(max-width:600px){.compare{grid-template-columns:1fr;}.flux-node.child{margin-left:20px;}.flux-node.leaf{margin-left:40px;}.flux-arrow.c{padding-left:38px;}.flux-arrow.l{padding-left:58px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <div class="page-header">
+        <h1><span class="hl">Composants</span><br>React</h1>
+        <p>Créer, découper et assembler des composants React — la base de toute application.</p>
+        <div class="htags">
+            <span class="htag b">Composants</span>
+            <span class="htag b">Props</span>
+            <span class="htag p">State</span>
+            <span class="htag g">Architecture</span>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 1 — C'EST QUOI -->
+    <div class="step">
+        <div class="step-label">Étape 1</div>
+        <h2>C'est quoi un composant ?</h2>
+        <p class="prose">Un composant c'est une <strong>fonction JavaScript qui retourne du JSX</strong>. C'est une brique réutilisable de l'interface — un bouton, une carte, un formulaire, une page entière. On les assemble comme des Lego.</p>
+
+        <div class="callout info">
+            <span></span>
+            <div><strong>Règle d'or :</strong> 1 composant = 1 fichier = 1 responsabilité. Un composant <code>Carte</code> affiche une carte. Pas plus. Si ça fait trop de choses, on découpe.</div>
+        </div>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">MonPremierComposant.jsx</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+            <pre><code><span class="cmt">// Un composant = une fonction qui retourne du JSX</span>
+<span class="kw">function</span> <span class="fn">Bonjour</span>() {
+    <span class="kw">return</span> <span class="tag">&lt;h1</span><span class="tag">&gt;</span>Bonjour tout le monde !<span class="tag">&lt;/h1&gt;</span>;
+}
+
+<span class="cmt">// On l'utilise comme une balise HTML</span>
+<span class="kw">function</span> <span class="fn">App</span>() {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;Bonjour</span> <span class="tag">/&gt;</span>   <span class="cmt">// ← composant</span>
+            <span class="tag">&lt;Bonjour</span> <span class="tag">/&gt;</span>   <span class="cmt">// ← réutilisé 3 fois</span>
+            <span class="tag">&lt;Bonjour</span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}
+
+<span class="kw">export default</span> <span class="fn">App</span>; <span class="cmt">// ← toujours exporter</span></code></pre>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 2 — ARBRE -->
+    <div class="step">
+        <div class="step-label">Étape 2</div>
+        <h2>L'arbre de composants</h2>
+        <p class="prose">Une app React c'est un arbre. <code>App</code> est la racine. Elle contient des composants, qui en contiennent d'autres. Les données descendent du parent vers l'enfant via les <strong>props</strong>.</p>
+
+        <div class="flux">
+            <div class="flux-node parent">
+                <span class="node-icon"></span>
+                <div class="node-info">
+                    <div class="node-name p">&lt;App /&gt;</div>
+                    <div class="node-desc">Racine — orchestre tout</div>
+                </div>
+                <span class="node-badge state">state</span>
+            </div>
+            <div class="flux-arrow">↓ props</div>
+            <div class="flux-node child">
+                <span class="node-icon"></span>
+                <div class="node-info">
+                    <div class="node-name c">&lt;Header /&gt;</div>
+                    <div class="node-desc">Barre de navigation</div>
+                </div>
+                <span class="node-badge props">props: user</span>
+            </div>
+            <div class="flux-arrow">↓ props</div>
+            <div class="flux-node child">
+                <span class="node-icon">🧩</span>
+                <div class="node-info">
+                    <div class="node-name c">&lt;ListeDevs /&gt;</div>
+                    <div class="node-desc">Affiche la liste</div>
+                </div>
+                <span class="node-badge props">props: devs[]</span>
+            </div>
+            <div class="flux-arrow c">↓ props</div>
+            <div class="flux-node leaf">
+                <span class="node-icon"></span>
+                <div class="node-info">
+                    <div class="node-name l">&lt;CarteDevs /&gt;</div>
+                    <div class="node-desc">Une carte par développeur</div>
+                </div>
+                <span class="node-badge props">props: nom, poste</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 3 — PROPS -->
+    <div class="step">
+        <div class="step-label">Étape 3</div>
+        <h2>Les Props — passer des données</h2>
+        <p class="prose">Les props c'est le mécanisme pour passer des données <strong>du parent vers l'enfant</strong>. C'est en lecture seule — un enfant ne peut jamais modifier les props qu'il reçoit.</p>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Props — exemple complet</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+            <pre><code><span class="cmt">// ── Composant enfant — reçoit des props ──</span>
+<span class="kw">function</span> <span class="fn">CarteDevs</span>({ <span class="vr">nom</span>, <span class="vr">poste</span>, <span class="vr">salaire</span>, <span class="vr">remote</span> = <span class="kw">false</span> }) {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"carte"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;h3</span><span class="tag">&gt;</span><span class="jsx">{nom}</span><span class="tag">&lt;/h3&gt;</span>
+            <span class="tag">&lt;p</span><span class="tag">&gt;</span><span class="jsx">{poste}</span><span class="tag">&lt;/p&gt;</span>
+            <span class="tag">&lt;p</span><span class="tag">&gt;</span><span class="jsx">{salaire.toLocaleString('fr-FR')}</span> €<span class="tag">&lt;/p&gt;</span>
+            <span class="jsx">{remote && <span class="tag">&lt;span</span><span class="tag">&gt;</span>🏠 Remote<span class="tag">&lt;/span&gt;</span>}</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}
+
+<span class="cmt">// ── Composant parent — passe des props ──</span>
+<span class="kw">const</span> <span class="vr">devs</span> = [
+    { <span class="vr">id</span>:<span class="num">1</span>, <span class="vr">nom</span>:<span class="str">"Alice"</span>,  <span class="vr">poste</span>:<span class="str">"Frontend"</span>,  <span class="vr">salaire</span>:<span class="num">38000</span>, <span class="vr">remote</span>:<span class="kw">true</span>  },
+    { <span class="vr">id</span>:<span class="num">2</span>, <span class="vr">nom</span>:<span class="str">"Bob"</span>,    <span class="vr">poste</span>:<span class="str">"Backend"</span>,   <span class="vr">salaire</span>:<span class="num">44000</span>, <span class="vr">remote</span>:<span class="kw">false</span> },
+    { <span class="vr">id</span>:<span class="num">3</span>, <span class="vr">nom</span>:<span class="str">"Chloé"</span>,  <span class="vr">poste</span>:<span class="str">"Fullstack"</span>, <span class="vr">salaire</span>:<span class="num">52000</span>, <span class="vr">remote</span>:<span class="kw">true</span>  },
+];
+
+<span class="kw">function</span> <span class="fn">ListeDevs</span>() {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+            <span class="jsx">{devs.<span class="fn">map</span>(dev => (
+                <span class="tag">&lt;CarteDevs</span>
+                    <span class="attr">key</span>=<span class="jsx">{dev.id}</span>
+                    <span class="attr">nom</span>=<span class="jsx">{dev.nom}</span>
+                    <span class="attr">poste</span>=<span class="jsx">{dev.poste}</span>
+                    <span class="attr">salaire</span>=<span class="jsx">{dev.salaire}</span>
+                    <span class="attr">remote</span>=<span class="jsx">{dev.remote}</span>
+                <span class="tag">/&gt;</span>
+            ))}</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}</code></pre>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 4 — STATE -->
+    <div class="step">
+        <div class="step-label">Étape 4</div>
+        <h2>Le State — données qui changent</h2>
+        <p class="prose">Le <strong>state</strong> c'est la mémoire d'un composant. Quand le state change, React <strong>re-rend automatiquement</strong> le composant. On le crée avec le hook <code>useState</code>.</p>
+
+        <div class="compare">
+            <div class="cbox bad">
+                <div class="chead">Variable classique</div>
+                <pre style="padding:14px;font-family:var(--mono);font-size:.78rem;line-height:1.8;color:var(--muted);"><code><span class="kw">let</span> <span class="vr">count</span> = <span class="num">0</span>;
+
+<span class="kw">function</span> <span class="fn">Compteur</span>() {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>=<span class="jsx">{() => count++}</span><span class="tag">&gt;</span>
+            <span class="jsx">{count}</span>
+        <span class="tag">&lt;/button&gt;</span>
+    );
+}
+<span class="cmt">// count change mais React
+// ne re-rend pas → rien ne
+// s'affiche !</span></code></pre>
+            </div>
+            <div class="cbox good">
+                <div class="chead">Avec useState</div>
+                <pre style="padding:14px;font-family:var(--mono);font-size:.78rem;line-height:1.8;color:var(--muted);"><code><span class="kw">import</span> { <span class="fn">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Compteur</span>() {
+    <span class="kw">const</span> [<span class="vr">count</span>, <span class="fn">setCount</span>]
+        = <span class="fn">useState</span>(<span class="num">0</span>);
+
+    <span class="kw">return</span> (
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>=<span class="jsx">{() => setCount(count + 1)}</span><span class="tag">&gt;</span>
+            <span class="jsx">{count}</span>
+        <span class="tag">&lt;/button&gt;</span>
+    );
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">useState — exemples variés</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+            <pre><code><span class="kw">import</span> { <span class="fn">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Exemples</span>() {
+    <span class="cmt">// [valeur, fonction pour la changer] = useState(valeur initiale)</span>
+    <span class="kw">const</span> [<span class="vr">count</span>,   <span class="fn">setCount</span>]   = <span class="fn">useState</span>(<span class="num">0</span>);
+    <span class="kw">const</span> [<span class="vr">nom</span>,     <span class="fn">setNom</span>]     = <span class="fn">useState</span>(<span class="str">""</span>);
+    <span class="kw">const</span> [<span class="vr">visible</span>, <span class="fn">setVisible</span>] = <span class="fn">useState</span>(<span class="kw">true</span>);
+    <span class="kw">const</span> [<span class="vr">devs</span>,    <span class="fn">setDevs</span>]    = <span class="fn">useState</span>([]);
+
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+            <span class="cmt">{/* Incrémenter */}</span>
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>=<span class="jsx">{() => setCount(count + 1)}</span><span class="tag">&gt;</span><span class="jsx">{count}</span><span class="tag">&lt;/button&gt;</span>
+
+            <span class="cmt">{/* Lier à un input */}</span>
+            <span class="tag">&lt;input</span>
+                <span class="attr">value</span>=<span class="jsx">{nom}</span>
+                <span class="attr">onChange</span>=<span class="jsx">{e => setNom(e.target.value)}</span>
+            <span class="tag">/&gt;</span>
+            <span class="tag">&lt;p</span><span class="tag">&gt;</span>Bonjour <span class="jsx">{nom}</span> !<span class="tag">&lt;/p&gt;</span>
+
+            <span class="cmt">{/* Afficher / cacher */}</span>
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>=<span class="jsx">{() => setVisible(!visible)}</span><span class="tag">&gt;</span>Toggle<span class="tag">&lt;/button&gt;</span>
+            <span class="jsx">{visible && <span class="tag">&lt;p</span><span class="tag">&gt;</span>Je suis visible !<span class="tag">&lt;/p&gt;</span>}</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}</code></pre>
+        </div>
+
+        <div class="callout warn">
+            <span></span>
+            <div><strong>Ne jamais modifier le state directement :</strong> <code>count++</code> ou <code>devs.push(x)</code> ne déclenchent pas de re-rendu. Toujours passer par <code>setCount</code> / <code>setDevs</code>.</div>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 5 — EXEMPLES COMPLETS -->
+    <div class="step">
+        <div class="step-label">Étape 5</div>
+        <h2>Exemples concrets</h2>
+
+        <div class="tabs-wrap">
+            <div class="tabs-bar">
+                <button class="tab active" onclick="sw(this,'ex1')">Filtre live</button>
+                <button class="tab" onclick="sw(this,'ex2')">Formulaire</button>
+                <button class="tab" onclick="sw(this,'ex3')">Props + State</button>
+            </div>
+
+            <div class="tab-content show" id="ex1">
+                <pre><code><span class="cmt">// Composant avec filtre en temps réel</span>
+<span class="kw">import</span> { <span class="fn">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">const</span> <span class="vr">devs</span> = [
+    { <span class="vr">id</span>:<span class="num">1</span>, <span class="vr">nom</span>:<span class="str">"Alice"</span>,  <span class="vr">poste</span>:<span class="str">"Frontend"</span>  },
+    { <span class="vr">id</span>:<span class="num">2</span>, <span class="vr">nom</span>:<span class="str">"Bob"</span>,    <span class="vr">poste</span>:<span class="str">"Backend"</span>   },
+    { <span class="vr">id</span>:<span class="num">3</span>, <span class="vr">nom</span>:<span class="str">"Chloé"</span>,  <span class="vr">poste</span>:<span class="str">"Fullstack"</span> },
+];
+
+<span class="kw">function</span> <span class="fn">RechercheDev</span>() {
+    <span class="kw">const</span> [<span class="vr">recherche</span>, <span class="fn">setRecherche</span>] = <span class="fn">useState</span>(<span class="str">""</span>);
+
+    <span class="kw">const</span> <span class="vr">résultats</span> = <span class="vr">devs</span>.<span class="fn">filter</span>(dev =>
+        dev.<span class="vr">nom</span>.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(<span class="vr">recherche</span>.<span class="fn">toLowerCase</span>())
+    );
+
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;input</span>
+                <span class="attr">placeholder</span>=<span class="str">"Rechercher…"</span>
+                <span class="attr">value</span>=<span class="jsx">{recherche}</span>
+                <span class="attr">onChange</span>=<span class="jsx">{e => setRecherche(e.target.value)}</span>
+            <span class="tag">/&gt;</span>
+
+            <span class="tag">&lt;ul</span><span class="tag">&gt;</span>
+                <span class="jsx">{résultats.<span class="fn">map</span>(dev => (
+                    <span class="tag">&lt;li</span> <span class="attr">key</span>=<span class="jsx">{dev.id}</span><span class="tag">&gt;</span>
+                        <span class="jsx">{dev.nom}</span> — <span class="jsx">{dev.poste}</span>
+                    <span class="tag">&lt;/li&gt;</span>
+                ))}</span>
+            <span class="tag">&lt;/ul&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}</code></pre>
+            </div>
+
+            <div class="tab-content" id="ex2">
+                <pre><code><span class="cmt">// Formulaire contrôlé — chaque champ lié au state</span>
+<span class="kw">import</span> { <span class="fn">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">FormulaireContact</span>() {
+    <span class="kw">const</span> [<span class="vr">form</span>, <span class="fn">setForm</span>] = <span class="fn">useState</span>({
+        <span class="vr">nom</span>: <span class="str">""</span>,
+        <span class="vr">email</span>: <span class="str">""</span>,
+        <span class="vr">message</span>: <span class="str">""</span>,
+    });
+
+    <span class="cmt">// Mise à jour générique — fonctionne pour tous les champs</span>
+    <span class="kw">const</span> <span class="fn">handleChange</span> = (e) => {
+        <span class="fn">setForm</span>({ ...<span class="vr">form</span>, [e.<span class="vr">target</span>.<span class="vr">name</span>]: e.<span class="vr">target</span>.<span class="vr">value</span> });
+    };
+
+    <span class="kw">const</span> <span class="fn">handleSubmit</span> = (e) => {
+        e.<span class="fn">preventDefault</span>();
+        console.<span class="fn">log</span>(<span class="str">'Envoyé :'</span>, <span class="vr">form</span>);
+    };
+
+    <span class="kw">return</span> (
+        <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>=<span class="jsx">{handleSubmit}</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;input</span>  <span class="attr">name</span>=<span class="str">"nom"</span>     <span class="attr">value</span>=<span class="jsx">{form.nom}</span>     <span class="attr">onChange</span>=<span class="jsx">{handleChange}</span> <span class="tag">/&gt;</span>
+            <span class="tag">&lt;input</span>  <span class="attr">name</span>=<span class="str">"email"</span>   <span class="attr">value</span>=<span class="jsx">{form.email}</span>   <span class="attr">onChange</span>=<span class="jsx">{handleChange}</span> <span class="tag">/&gt;</span>
+            <span class="tag">&lt;textarea</span> <span class="attr">name</span>=<span class="str">"message"</span> <span class="attr">value</span>=<span class="jsx">{form.message}</span> <span class="attr">onChange</span>=<span class="jsx">{handleChange}</span> <span class="tag">/&gt;</span>
+            <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"submit"</span><span class="tag">&gt;</span>Envoyer<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/form&gt;</span>
+    );
+}</code></pre>
+            </div>
+
+            <div class="tab-content" id="ex3">
+                <pre><code><span class="cmt">// Props + State ensemble — cas réel</span>
+<span class="kw">import</span> { <span class="fn">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Composant enfant — reçoit une prop "label" et gère son propre state</span>
+<span class="kw">function</span> <span class="fn">BoutonCompteur</span>({ <span class="vr">label</span>, <span class="vr">couleur</span> = <span class="str">"blue"</span> }) {
+    <span class="kw">const</span> [<span class="vr">clics</span>, <span class="fn">setClics</span>] = <span class="fn">useState</span>(<span class="num">0</span>);
+
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;button</span>
+                <span class="attr">style</span>=<span class="jsx">{{ background: couleur }}</span>
+                <span class="attr">onClick</span>=<span class="jsx">{() => setClics(clics + 1)}</span>
+            <span class="tag">&gt;</span>
+                <span class="jsx">{label}</span> — cliqué <span class="jsx">{clics}</span> fois
+            <span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}
+
+<span class="cmt">// Composant parent — passe des props différentes à chaque instance</span>
+<span class="kw">function</span> <span class="fn">App</span>() {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;BoutonCompteur</span> <span class="attr">label</span>=<span class="str">"Frontend"</span> <span class="attr">couleur</span>=<span class="str">"#61dafb"</span> <span class="tag">/&gt;</span>
+            <span class="tag">&lt;BoutonCompteur</span> <span class="attr">label</span>=<span class="str">"Backend"</span>  <span class="attr">couleur</span>=<span class="str">"#44D62C"</span> <span class="tag">/&gt;</span>
+            <span class="tag">&lt;BoutonCompteur</span> <span class="attr">label</span>=<span class="str">"Fullstack"</span><span class="attr">couleur</span>=<span class="str">"#c084fc"</span> <span class="tag">/&gt;</span>
+            <span class="cmt">{/* Chaque instance a son propre state "clics" */}</span>
+        <span class="tag">&lt;/div&gt;</span>
+    );
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 6 — ERREURS -->
+    <div class="step">
+        <div class="step-label">Étape 6</div>
+        <h2>Les erreurs classiques</h2>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Pièges fréquents</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+            <pre><code><span class="cmt">//  Composant en minuscule — React pense que c'est une balise HTML</span>
+<span class="kw">function</span> <span class="fn">maCarteDevs</span>() { ... }     <span class="cmt">// ne marche pas</span>
+<span class="kw">function</span> <span class="fn">MaCarteDevs</span>() { ... }     <span class="cmt">// toujours en majuscule</span>
+
+
+<span class="cmt">// Modifier le state directement</span>
+<span class="kw">const</span> [<span class="vr">devs</span>, <span class="fn">setDevs</span>] = <span class="fn">useState</span>([]);
+<span class="vr">devs</span>.<span class="fn">push</span>({ <span class="vr">nom</span>: <span class="str">"Alice"</span> });       <span class="cmt">//  pas de re-rendu !</span>
+<span class="fn">setDevs</span>([...<span class="vr">devs</span>, { <span class="vr">nom</span>: <span class="str">"Alice"</span> }]); <span class="cmt">// spread + setDevs</span>
+
+
+<span class="cmt">// Oublier la prop key dans .map()</span>
+<span class="vr">devs</span>.<span class="fn">map</span>(dev => <span class="tag">&lt;CarteDevs</span> <span class="attr">nom</span>=<span class="jsx">{dev.nom}</span> <span class="tag">/&gt;</span>);         <span class="cmt">// warning</span>
+<span class="vr">devs</span>.<span class="fn">map</span>(dev => <span class="tag">&lt;CarteDevs</span> <span class="attr">key</span>=<span class="jsx">{dev.id}</span> <span class="attr">nom</span>=<span class="jsx">{dev.nom}</span> <span class="tag">/&gt;</span>); <span class="cmt">// </span>
+
+
+<span class="cmt">// Passer une fonction comme prop sans la wrapper</span>
+<span class="tag">&lt;button</span> <span class="attr">onClick</span>=<span class="jsx">{handleClick()}</span><span class="tag">&gt;</span>  <span class="cmt">// s'exécute immédiatement !</span>
+<span class="tag">&lt;button</span> <span class="attr">onClick</span>=<span class="jsx">{handleClick}</span><span class="tag">&gt;</span>   <span class="cmt">// passe la référence</span>
+<span class="tag">&lt;button</span> <span class="attr">onClick</span>=<span class="jsx">{() => handleClick(id)}</span><span class="tag">&gt;</span> <span class="cmt">// avec argument</span></code></pre>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- QUIZ -->
+    <div class="step">
+        <div class="step-label">Quiz</div>
+        <h2>Vérifie ta compréhension</h2>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q1.</span> Quelle est la différence entre props et state ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q1',false)">Les props viennent du serveur, le state vient du navigateur</button>
+                <button class="opt" onclick="ans(this,'q1',true)">Les props viennent du parent (lecture seule), le state est interne au composant (modifiable)</button>
+                <button class="opt" onclick="ans(this,'q1',false)">Ce sont deux noms pour la même chose</button>
+            </div>
+            <div class="fb" id="fb-q1"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q2.</span> Pourquoi ne peut-on pas faire <code>devs.push(x)</code> pour mettre à jour un tableau en state ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q2',false)">push() ne fonctionne pas en React</button>
+                <button class="opt" onclick="ans(this,'q2',true)">React ne détecte pas la mutation directe — il faut passer par la fonction setter</button>
+                <button class="opt" onclick="ans(this,'q2',false)">C'est une limitation de JavaScript</button>
+            </div>
+            <div class="fb" id="fb-q2"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q3.</span> <code>&lt;button onClick={"{handleClick()}"}&gt;</code> — quel est le problème ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q3',false)">onClick ne s'écrit pas comme ça en JSX</button>
+                <button class="opt" onclick="ans(this,'q3',false)">Il faut mettre des guillemets autour</button>
+                <button class="opt" onclick="ans(this,'q3',true)">Les () exécutent la fonction immédiatement au rendu, pas au clic</button>
+            </div>
+            <div class="fb" id="fb-q3"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q4.</span> Peut-on avoir plusieurs <code>useState</code> dans le même composant ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q4',true)">Oui, autant qu'on veut — un par donnée</button>
+                <button class="opt" onclick="ans(this,'q4',false)">Non, un seul useState par composant</button>
+                <button class="opt" onclick="ans(this,'q4',false)">Oui, mais seulement 3 maximum</button>
+            </div>
+            <div class="fb" id="fb-q4"></div>
+        </div>
+
+        <div id="score-box" style="display:none;text-align:center;padding:24px;background:var(--card);border:1px solid rgba(97,218,251,.2);border-radius:10px;margin-top:8px;">
+            <div id="s-emoji" style="font-size:2rem;margin-bottom:8px;"></div>
+            <div id="s-text" style="font-family:var(--mono);font-size:.92rem;color:var(--text);"></div>
+        </div>
+    </div>
+
+</div>
+<script>
+function sw(btn, id) {
+    btn.closest('.tabs-wrap').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    btn.closest('.tabs-wrap').querySelectorAll('.tab-content').forEach(c => c.classList.remove('show'));
+    document.getElementById(id).classList.add('show');
+}
+function cp(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = '✓'; btn.classList.add('ok');
+        setTimeout(() => { btn.textContent = 'copier'; btn.classList.remove('ok'); }, 1800);
+    });
+}
+const fbs = {
+    q1:{ ok:'Exact ! Les props sont passées par le parent et ne peuvent pas être modifiées par l\'enfant. Le state est local au composant et peut évoluer.', ko:'Non. Les props = données reçues du parent (immuables). Le state = données internes au composant (modifiables via setter).' },
+    q2:{ ok:'Parfait ! React compare les références pour détecter un changement. push() modifie le tableau en place sans changer la référence — React ne voit rien. Il faut créer un nouveau tableau avec setDevs([...devs, x]).', ko:'Non. Le problème est que push() modifie le tableau existant sans créer une nouvelle référence. React ne détecte pas ce changement et ne re-rend pas le composant.' },
+    q3:{ ok:'Exact ! handleClick() avec les parenthèses appelle la fonction pendant le rendu, pas au clic. Il faut écrire handleClick (référence) ou () => handleClick() (wrapper).', ko:'Non. Le problème c\'est les parenthèses : handleClick() exécute la fonction immédiatement lors du rendu du composant. Il faut passer la référence : onClick={handleClick}.' },
+    q4:{ ok:'Parfait ! On peut utiliser autant de useState qu\'on veut. C\'est même recommandé de séparer les states par donnée logique plutôt que de tout mettre dans un seul objet.', ko:'Non. On peut utiliser autant de useState que nécessaire dans un composant. React les gère dans l\'ordre d\'appel.' },
+};
+const rep = {};
+function ans(btn, qid, ok) {
+    if (rep[qid] !== undefined) return;
+    rep[qid] = ok;
+    btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => o.disabled = true);
+    btn.classList.add(ok ? 'correct' : 'wrong');
+    if (!ok) btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => { if (o.onclick?.toString().includes(',true)')) o.classList.add('correct'); });
+    const fb = document.getElementById('fb-' + qid);
+    fb.innerHTML = fbs[qid][ok ? 'ok' : 'ko'];
+    fb.className = 'fb show ' + (ok ? 'ok' : 'ko');
+    if (Object.keys(rep).length === 4) {
+        const g = Object.values(rep).filter(Boolean).length;
+        const box = document.getElementById('score-box');
+        box.style.display = 'block';
+        document.getElementById('s-emoji').textContent = ['','','',''][g];
+        document.getElementById('s-text').innerHTML = `Score : <strong style="color:var(--green)">${g}/4</strong> — ${g===4?'Tu maîtrises les composants React 🚀':g>=3?'Presque ! Relis la partie ratée.':'Reprends depuis le début 💪'}`;
+        box.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+}
+</script>
+</body>
+</html>
