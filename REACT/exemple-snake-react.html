@@ -25,6 +25,7 @@
       --text:        #c8d8e8;
       --text-dim:    #6b7a8d;
     }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
@@ -292,7 +293,7 @@
         <div class="etape-title">Définir les paramètres fixes du jeu</div>
       </div>
       <p>Avant de coder, on définit les <strong>valeurs qui ne changeront jamais</strong> : la taille de la grille, la vitesse... Ce sont des <strong>constantes</strong> (pas des états React).</p>
-      <div class="code-block"><span class="cmt">// ─── CONSTANTES ───────────────────────────────────</span>
+      <div class="code-block"><span class="cmt">// ─── CONSTANTES ───</span>
 <span class="cmt">// Ces valeurs ne changent JAMAIS → pas de useState</span>
 <span class="cmt">// On les définit EN DEHORS du composant</span>
 
@@ -364,7 +365,7 @@
         <div class="etape-title">Faire bouger le serpent automatiquement</div>
       </div>
       <p>Le cœur du jeu : toutes les X millisecondes, on <strong>calcule la nouvelle position</strong> de la tête et on vérifie si on a mangé ou si on est mort.</p>
-      <div class="code-block"><span class="cmt">// ─── BOUCLE DE JEU ───────────────────────────────</span>
+      <div class="code-block"><span class="cmt">// ─── BOUCLE DE JEU ──</span>
 <span class="fn">useEffect</span>(() => {
 
   <span class="cmt">// Si pas en jeu ou game over → on ne lance rien</span>
@@ -445,7 +446,7 @@
         <div class="etape-title">Changer la direction avec les flèches</div>
       </div>
       <p>Un deuxième <code>useEffect</code> s'occupe uniquement d'<strong>écouter les touches du clavier</strong>. On utilise <code>addEventListener</code> et on le nettoie proprement.</p>
-      <div class="code-block"><span class="cmt">// ─── ÉCOUTE DU CLAVIER ───────────────────────────</span>
+      <div class="code-block"><span class="cmt">// ─── ÉCOUTE DU CLAVIER ──</span>
 <span class="fn">useEffect</span>(() => {
 
   <span class="kw">const</span> <span class="fn">gererTouche</span> = (<span class="var">e</span>) => {
@@ -493,7 +494,7 @@
         <div class="etape-title">Placer la pomme sur une case libre</div>
       </div>
       <p>Quand le serpent mange la pomme, on en place une nouvelle au hasard — mais <strong>pas sur le serpent</strong> !</p>
-      <div class="code-block"><span class="cmt">// ─── FONCTION : placer la nourriture ─────────────</span>
+      <div class="code-block"><span class="cmt">// ─── FONCTION : placer la nourriture ──</span>
 <span class="kw">const</span> <span class="fn">placerNourriture</span> = () => {
 
   <span class="cmt">// On génère des positions aléatoires jusqu'à</span>
@@ -510,14 +511,14 @@
   <span class="fn">setNourriture</span>(<span class="var">pos</span>); <span class="cmt">// mise à jour de l'état → re-render</span>
 };
 
-<span class="cmt">// ─── FONCTION : (re)démarrer le jeu ──────────────</span>
+<span class="cmt">// ─── FONCTION : (re)démarrer le jeu ──</span>
 <span class="kw">const</span> <span class="fn">demarrer</span> = () => {
-  <span class="fn">setSerpent</span>(<span class="var">DEPART</span>);                    <span class="cmt">// remet le serpent au départ</span>
+  <span class="fn">setSerpent</span>(<span class="var">DEPART</span>);  <span class="cmt">// remet le serpent au départ</span>
   <span class="fn">setDirection</span>({ <span class="var">x</span>: <span class="num">1</span>, <span class="var">y</span>: <span class="num">0</span> });           <span class="cmt">// direction : droite</span>
   <span class="fn">setNourriture</span>({ <span class="var">x</span>: <span class="num">15</span>, <span class="var">y</span>: <span class="num">10</span> });        <span class="cmt">// pomme initiale</span>
-  <span class="fn">setScore</span>(<span class="num">0</span>);                            <span class="cmt">// score à 0</span>
-  <span class="fn">setGameOver</span>(<span class="kw">false</span>);                     <span class="cmt">// reset game over</span>
-  <span class="fn">setEnJeu</span>(<span class="kw">true</span>);                         <span class="cmt">// lance la boucle !</span>
+  <span class="fn">setScore</span>(<span class="num">0</span>); <span class="cmt">// score à 0</span>
+  <span class="fn">setGameOver</span>(<span class="kw">false</span>);   <span class="cmt">// reset game over</span>
+  <span class="fn">setEnJeu</span>(<span class="kw">true</span>);  <span class="cmt">// lance la boucle !</span>
 };</div>
     </div>
   </section>
@@ -532,7 +533,7 @@
         <div class="etape-title">Dessiner la grille avec .map()</div>
       </div>
       <p>On génère toutes les cases de la grille avec <code>.map()</code>. Pour chaque case, on vérifie si c'est la tête, le corps ou la nourriture pour lui donner la bonne couleur.</p>
-      <div class="code-block"><span class="cmt">// ─── AFFICHAGE (le return du composant) ──────────</span>
+      <div class="code-block"><span class="cmt">// ─── AFFICHAGE (le return du composant) ───</span>
 <span class="kw">return</span> (
   <span class="tag">&lt;div&gt;</span>
 
@@ -605,7 +606,7 @@
 <span class="kw">import</span> { <span class="fn">useState</span>, <span class="fn">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>;
 <span class="kw">import</span> <span class="str">'./App.css'</span>;
 
-<span class="cmt">// ─── CONSTANTES (en dehors du composant) ──────────</span>
+<span class="cmt">// ─── CONSTANTES (en dehors du composant) ──</span>
 <span class="kw">const</span> <span class="var">LARGEUR</span> = <span class="num">20</span>;
 <span class="kw">const</span> <span class="var">HAUTEUR</span> = <span class="num">20</span>;
 <span class="kw">const</span> <span class="var">VITESSE</span> = <span class="num">150</span>;
@@ -615,18 +616,18 @@
   { <span class="var">x</span>: <span class="num">8</span>,  <span class="var">y</span>: <span class="num">10</span> },
 ];
 
-<span class="cmt">// ─── COMPOSANT PRINCIPAL ──────────────────────────</span>
+<span class="cmt">// ─── COMPOSANT PRINCIPAL ──</span>
 <span class="kw">function</span> <span class="fn">App</span>() {
 
   <span class="cmt">// États</span>
   <span class="kw">const</span> [<span class="var">serpent</span>,    <span class="fn">setSerpent</span>]    = <span class="fn">useState</span>(<span class="var">DEPART</span>);
   <span class="kw">const</span> [<span class="var">direction</span>,  <span class="fn">setDirection</span>]  = <span class="fn">useState</span>({ <span class="var">x</span>: <span class="num">1</span>, <span class="var">y</span>: <span class="num">0</span> });
   <span class="kw">const</span> [<span class="var">nourriture</span>, <span class="fn">setNourriture</span>] = <span class="fn">useState</span>({ <span class="var">x</span>: <span class="num">15</span>, <span class="var">y</span>: <span class="num">10</span> });
-  <span class="kw">const</span> [<span class="var">score</span>,      <span class="fn">setScore</span>]      = <span class="fn">useState</span>(<span class="num">0</span>);
-  <span class="kw">const</span> [<span class="var">gameOver</span>,   <span class="fn">setGameOver</span>]   = <span class="fn">useState</span>(<span class="kw">false</span>);
-  <span class="kw">const</span> [<span class="var">enJeu</span>,      <span class="fn">setEnJeu</span>]      = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [<span class="var">score</span>,  <span class="fn">setScore</span>]      = <span class="fn">useState</span>(<span class="num">0</span>);
+  <span class="kw">const</span> [<span class="var">gameOver</span>,  <span class="fn">setGameOver</span>]   = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [<span class="var">enJeu</span>,   <span class="fn">setEnJeu</span>]      = <span class="fn">useState</span>(<span class="kw">false</span>);
 
-  <span class="cmt">// ── Boucle de jeu ─────────────────────────────</span>
+  <span class="cmt">// ── Boucle de jeu ──</span>
   <span class="fn">useEffect</span>(() => {
     <span class="kw">if</span> (!<span class="var">enJeu</span> || <span class="var">gameOver</span>) <span class="kw">return</span>;
 
@@ -660,7 +661,7 @@
     <span class="kw">return</span> () => <span class="fn">clearInterval</span>(<span class="var">timer</span>);
   }, [<span class="var">enJeu</span>, <span class="var">gameOver</span>, <span class="var">direction</span>, <span class="var">nourriture</span>]);
 
-  <span class="cmt">// ── Clavier ───────────────────────────────────</span>
+  <span class="cmt">// ── Clavier ──</span>
   <span class="fn">useEffect</span>(() => {
     <span class="kw">const</span> <span class="fn">gererTouche</span> = (<span class="var">e</span>) => {
       <span class="kw">if</span>      (<span class="var">e</span>.<span class="var">key</span> === <span class="str">'ArrowUp'</span>)    <span class="fn">setDirection</span>(<span class="var">d</span> => <span class="var">d</span>.<span class="var">y</span>===<span class="num">1</span>  ? <span class="var">d</span> : { <span class="var">x</span>:<span class="num">0</span>,  <span class="var">y</span>:-<span class="num">1</span> });
@@ -672,7 +673,7 @@
     <span class="kw">return</span> () => <span class="var">window</span>.<span class="fn">removeEventListener</span>(<span class="str">'keydown'</span>, <span class="var">gererTouche</span>);
   }, []);
 
-  <span class="cmt">// ── Fonctions utilitaires ─────────────────────</span>
+  <span class="cmt">// ── Fonctions utilitaires ──</span>
   <span class="kw">const</span> <span class="fn">placerNourriture</span> = () => {
     <span class="kw">let</span> <span class="var">pos</span>;
     <span class="kw">do</span> {
@@ -693,7 +694,7 @@
     <span class="fn">setEnJeu</span>(<span class="kw">true</span>);
   };
 
-  <span class="cmt">// ── Rendu ─────────────────────────────────────</span>
+  <span class="cmt">// ── Rendu ──</span>
   <span class="kw">return</span> (
     <span class="tag">&lt;div</span> <span class="fn">className</span>=<span class="str">"app"</span><span class="tag">&gt;</span>
       <span class="tag">&lt;h1&gt;</span>🐍 Snake<span class="tag">&lt;/h1&gt;</span>
@@ -797,9 +798,9 @@
   <p>Exemple formateur — Snake en React &nbsp;|&nbsp; <span>Real Conseil</span> &nbsp;|&nbsp; Formation DWWM</p>
 </footer>
 
-<!-- ═══════════════════════════════════════════════════
+<!-- 
      JEU REACT EMBARQUÉ (fonctionne directement dans la page)
-     ═══════════════════════════════════════════════════ -->
+      -->
 <script type="text/babel">
   const { useState, useEffect } = React;
 
@@ -812,7 +813,7 @@
     { x: 8,  y: 10 },
   ];
 
-  // ─── Calcule la taille d'une case selon la largeur d'écran ─────────────────
+  // ─── Calcule la taille d'une case selon la largeur d'écran 
   // On prend la place disponible (écran - marges), on divise par 20 cases,
   // et on plafonne à 20px max (taille desktop).
   function calculerTaille() {
@@ -829,7 +830,7 @@
     const [gameOver,   setGameOver]   = useState(false);
     const [enJeu,      setEnJeu]      = useState(false);
 
-    // ─── Taille des cases : réactive au redimensionnement ──────────────────
+    // ─── Taille des cases : réactive au redimensionnement 
     const [taille, setTaille] = useState(calculerTaille);
 
     useEffect(() => {
@@ -840,7 +841,7 @@
 
     const isMobile = taille < 20; // sous 400px de large = mobile
 
-    // ─── Boucle de jeu ─────────────────────────────────────────────────────
+    // ─── Boucle de jeu 
     useEffect(() => {
       if (!enJeu || gameOver) return;
       const timer = setInterval(() => {
@@ -878,7 +879,7 @@
       return () => clearInterval(timer);
     }, [enJeu, gameOver, direction, nourriture]);
 
-    // ─── Clavier ───────────────────────────────────────────────────────────
+    // ─── Clavier 
     useEffect(() => {
       const gererTouche = (e) => {
         if      (e.key === 'ArrowUp')    { e.preventDefault(); setDirection(d => d.y === 1  ? d : { x: 0,  y: -1 }); }
@@ -890,7 +891,7 @@
       return () => window.removeEventListener('keydown', gererTouche);
     }, []);
 
-    // ─── Fonctions utilitaires ──────────────────────────────────────────────
+    // ─── Fonctions utilitaires ───
     const placerNourriture = (corps) => {
       let pos;
       const ref = corps || serpent;
@@ -912,7 +913,7 @@
       setEnJeu(true);
     };
 
-    // ─── Bouton D-pad (mobile) ──────────────────────────────────────────────
+    // ─── Bouton D-pad (mobile) ───
     const btnDir = (dx, dy, label) => {
       const interdit = (dx === -direction.x && dy === 0) || (dy === -direction.y && dx === 0);
       return (
