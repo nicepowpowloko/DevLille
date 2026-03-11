@@ -23,7 +23,7 @@ function App() {
 
   function ajouterAuPanier(produit) {
     setPanier([...panier, produit])
-    setNotification(`✅ ${produit.nom} ajouté !`)
+    setNotification(` ${produit.nom} ajouté !`)
     setTimeout(() => setNotification(null), 2000)
   }
 

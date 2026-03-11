@@ -54,7 +54,7 @@ function Contact() {
         </div>
         <button type="submit" className="btn btn-primary">Envoyer</button>
         {envoye && (
-          <p className="contact-succes">✅ Message envoyé !</p>
+          <p className="contact-succes">Message envoyé !</p>
         )}
       </form>
     </section>

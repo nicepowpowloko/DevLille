@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Boutique — Comment ça marche ?</title>
+<style>
+:root {
+    --bg:#080b0f; --card:#0d1117; --surface:#111820;
+    --border:#1e2d3d; --accent:#61dafb; --accent2:#a8efff;
+    --green:#44D62C; --yellow:#f7df1e; --red:#ff7b72; --purple:#c084fc;
+    --orange:#ffa657;
+    --text:#e6edf3; --muted:#7d8590; --dim:#3d444d;
+    --title:#161b22; --mono:'SF Mono','Fira Code','Consolas',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(97,218,251,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(97,218,251,.012) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+/* NAV SIDEBAR */
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:220px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.82rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.68rem;color:var(--dim);margin-top:2px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-section-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:block;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(97,218,251,.06);color:var(--text);}
+.nav-link.active{background:rgba(97,218,251,.1);color:var(--accent);}
+.nav-num{font-family:var(--mono);font-size:.65rem;color:var(--dim);margin-right:6px;}
+
+.content{margin-left:220px;padding:48px 48px 80px;max-width:calc(100% - 220px);}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:56px;}
+.page-header h1{font-size:2.4rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:1rem;line-height:1.65;max-width:560px;}
+
+/* SECTION */
+.section{margin-bottom:64px;scroll-margin-top:32px;}
+.section-badge{font-family:var(--mono);font-size:.65rem;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.section-badge::after{content:'';flex:1;height:1px;background:var(--border);}
+.section h2{font-size:1.5rem;font-weight:800;margin-bottom:16px;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.75;margin-bottom:16px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(255,255,255,.07);border:1px solid var(--border);padding:1px 6px;border-radius:3px;color:var(--accent);}
+
+/* CALLOUT */
+.callout{border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:.87rem;line-height:1.65;display:flex;gap:12px;align-items:flex-start;}
+.callout.info{background:rgba(97,218,251,.07);border:1px solid rgba(97,218,251,.2);color:#a0d8ef;}
+.callout.tip{background:rgba(247,223,30,.07);border:1px solid rgba(247,223,30,.2);color:#e8d86a;}
+.callout.warn{background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.2);color:#ffb07a;}
+.callout.success{background:rgba(68,214,44,.07);border:1px solid rgba(68,214,44,.2);color:#9fdb8a;}
+.callout strong{color:inherit;}
+.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.2);padding:1px 5px;border-radius:3px;}
+.callout-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+
+/* CODE BLOCK */
+.code-block{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+.cb-head{background:var(--title);padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.dots{display:flex;gap:5px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:var(--muted);flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;}
+.cb-badge.modifier{background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.3);color:var(--orange);}
+.cb-badge.nouveau{background:rgba(68,214,44,.1);border:1px solid rgba(68,214,44,.3);color:var(--green);}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--dim);font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(97,218,251,.1);border-color:rgba(97,218,251,.3);color:var(--accent);}
+.cb-copy.ok{color:var(--green);border-color:rgba(68,214,44,.4);}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.9;}
+.kw{color:#ff7b72;font-weight:600;}
+.fn{color:#d2a8ff;}
+.str{color:#a5d6ff;}
+.num{color:#f8c555;}
+.cmt{color:var(--dim);font-style:italic;}
+.vr{color:#79c0ff;}
+.tag{color:var(--accent);}
+.attr{color:#ffa657;}
+.hl-line{background:rgba(97,218,251,.07);display:block;margin:0 -20px;padding:0 20px;border-left:2px solid var(--accent);}
+
+/* ARBRE DE FICHIERS */
+.filetree{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 24px;font-family:var(--mono);font-size:.82rem;line-height:2.2;margin-bottom:16px;overflow-x:auto;}
+.ft-folder{color:var(--accent);font-weight:600;}
+.ft-jsx{color:#61dafb;}
+.ft-js{color:var(--yellow);}
+.ft-css{color:var(--purple);}
+.ft-html{color:var(--orange);}
+.ft-json{color:var(--green);}
+.ft-dim{color:var(--dim);}
+.ft-arrow{color:var(--green);}
+.ft-badge{font-size:.62rem;padding:1px 6px;border-radius:3px;margin-left:8px;vertical-align:middle;}
+.ft-badge.entry{background:rgba(255,107,0,.12);border:1px solid rgba(255,107,0,.25);color:var(--orange);}
+.ft-badge.state{background:rgba(192,132,252,.12);border:1px solid rgba(192,132,252,.25);color:var(--purple);}
+.ft-badge.comp{background:rgba(97,218,251,.08);border:1px solid rgba(97,218,251,.2);color:var(--accent);}
+.ft-badge.data{background:rgba(247,223,30,.08);border:1px solid rgba(247,223,30,.2);color:var(--yellow);}
+
+/* FLUX DIAGRAM */
+.flux{display:flex;flex-direction:column;gap:0;margin-bottom:16px;}
+.flux-node{border-radius:8px;padding:12px 18px;display:flex;align-items:center;gap:12px;border:1px solid;}
+.flux-node.html{border-color:rgba(255,166,87,.3);background:rgba(255,166,87,.05);}
+.flux-node.entry{border-color:rgba(192,132,252,.3);background:rgba(192,132,252,.05);}
+.flux-node.root{border-color:rgba(97,218,251,.4);background:rgba(97,218,251,.07);}
+.flux-node.comp{border-color:var(--border);background:var(--surface);}
+.flux-node.comp.indent1{margin-left:32px;}
+.flux-node.comp.indent2{margin-left:64px;}
+.flux-arrow-wrap{display:flex;align-items:center;padding:3px 0 3px 20px;}
+.flux-arrow-wrap.i1{padding-left:52px;}
+.flux-arrow-wrap.i2{padding-left:84px;}
+.flux-arrow-line{font-family:var(--mono);font-size:.72rem;color:var(--dim);}
+.fn-icon{font-size:1rem;flex-shrink:0;}
+.fn-info{flex:1;}
+.fn-name{font-family:var(--mono);font-size:.85rem;font-weight:700;}
+.fn-name.orange{color:var(--orange);}
+.fn-name.purple{color:var(--purple);}
+.fn-name.blue{color:var(--accent);}
+.fn-name.white{color:var(--text);}
+.fn-desc{font-size:.74rem;color:var(--muted);margin-top:2px;}
+.fn-pill{font-family:var(--mono);font-size:.6rem;padding:2px 7px;border-radius:3px;white-space:nowrap;}
+.fn-pill.props{background:rgba(97,218,251,.1);border:1px solid rgba(97,218,251,.2);color:var(--accent);}
+.fn-pill.state{background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.2);color:var(--purple);}
+.fn-pill.none{background:rgba(61,68,77,.3);border:1px solid var(--border);color:var(--dim);}
+
+/* MANIPS STEPS */
+.manip{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+.manip-head{background:var(--title);padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
+.manip-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.78rem;font-weight:700;flex-shrink:0;}
+.manip-num.blue{background:rgba(97,218,251,.15);border:1px solid rgba(97,218,251,.3);color:var(--accent);}
+.manip-num.green{background:rgba(68,214,44,.12);border:1px solid rgba(68,214,44,.3);color:var(--green);}
+.manip-num.purple{background:rgba(192,132,252,.12);border:1px solid rgba(192,132,252,.3);color:var(--purple);}
+.manip-num.orange{background:rgba(255,166,87,.12);border:1px solid rgba(255,166,87,.3);color:var(--orange);}
+.manip-title{font-weight:700;font-size:.95rem;flex:1;}
+.manip-file{font-family:var(--mono);font-size:.7rem;color:var(--muted);background:var(--surface);padding:3px 9px;border-radius:4px;border:1px solid var(--border);}
+.manip-body{padding:20px;}
+.manip-body .prose{margin-bottom:12px;}
+
+/* RESULT PREVIEW */
+.result{display:flex;align-items:center;gap:10px;background:rgba(68,214,44,.06);border:1px solid rgba(68,214,44,.2);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:.84rem;color:#9fdb8a;}
+
+/* COMPARE */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.cbox{background:var(--card);border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.cbox.avant{border-color:rgba(255,123,114,.2);}
+.cbox.apres{border-color:rgba(68,214,44,.2);}
+.chead{padding:8px 14px;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;border-bottom:1px solid var(--border);}
+.cbox.avant .chead{background:rgba(255,123,114,.06);color:var(--red);}
+.cbox.apres .chead{background:rgba(68,214,44,.06);color:var(--green);}
+
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(97,218,251,.3);color:var(--text);}
+.opt.correct{border-color:rgba(68,214,44,.5);background:rgba(68,214,44,.08);color:var(--green);}
+.opt.wrong{border-color:rgba(255,123,114,.4);background:rgba(255,123,114,.06);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(68,214,44,.08);border:1px solid rgba(68,214,44,.2);color:#9fdb8a;}
+.fb.ko{background:rgba(255,123,114,.07);border:1px solid rgba(255,123,114,.2);color:var(--red);}
+
+/* TERMINAL */
+.term{background:#0a0a0a;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden;margin-bottom:16px;}
+.term-head{background:#1a1a1a;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a2a;}
+.term-head .dots{display:flex;gap:5px;}
+.term-title{font-family:var(--mono);font-size:.72rem;color:#666;flex:1;text-align:center;}
+.term-body{padding:18px 20px;font-family:var(--mono);font-size:.83rem;line-height:2.1;}
+.term-line{display:flex;align-items:flex-start;gap:10px;margin-bottom:2px;}
+.term-prompt{color:#44D62C;flex-shrink:0;user-select:none;}
+.term-cmd{color:#e6edf3;}
+.term-cmd .tcmd{color:#61dafb;}
+.term-cmd .targ{color:#ffa657;}
+.term-cmd .tpath{color:#c084fc;}
+.term-out{color:#555;padding-left:20px;font-size:.78rem;line-height:1.7;margin-bottom:4px;}
+.term-out.success{color:#44D62C;}
+.term-out.warn{color:#f7df1e;}
+.term-out.error{color:#ff7b72;}
+.term-copy{background:rgba(255,255,255,.04);border:1px solid #2a2a2a;color:#555;font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.term-copy:hover{color:#61dafb;border-color:#61dafb;}
+.term-copy.ok{color:#44D62C;}
+.cmd-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px;}
+.cmd-card-head{background:var(--title);padding:11px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.cmd-icon{font-size:1.1rem;flex-shrink:0;}
+.cmd-info{flex:1;}
+.cmd-title{font-size:.88rem;font-weight:700;}
+.cmd-desc{font-size:.74rem;color:var(--muted);margin-top:2px;}
+.cmd-when{font-family:var(--mono);font-size:.62rem;padding:2px 8px;border-radius:3px;background:rgba(97,218,251,.08);border:1px solid rgba(97,218,251,.2);color:var(--accent);white-space:nowrap;}
+.cmd-body{padding:14px 18px;}
+
+.divider{height:1px;background:var(--border);margin:48px 0;}
+::-webkit-scrollbar{width:5px;height:5px;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}.compare{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <span>⚛️ React Boutique</span>
+        <p>Guide complet</p>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-label">Comprendre</div>
+        <a href="#structure" class="nav-link active"><span class="nav-num">01</span>Structure du projet</a>
+        <a href="#flux" class="nav-link"><span class="nav-num">02</span>Le flux React</a>
+        <a href="#props-state" class="nav-link"><span class="nav-num">03</span>Props & State</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-label">Manipulations</div>
+        <a href="#manip1" class="nav-link"><span class="nav-num">04</span>Modifier un produit</a>
+        <a href="#manip2" class="nav-link"><span class="nav-num">05</span>Ajouter un produit</a>
+        <a href="#manip3" class="nav-link"><span class="nav-num">06</span>Modifier un composant</a>
+        <a href="#manip4" class="nav-link"><span class="nav-num">07</span>Créer un composant</a>
+        <a href="#manip5" class="nav-link"><span class="nav-num">08</span>Ajouter du state</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-label">Terminal</div>
+        <a href="#terminal" class="nav-link"><span class="nav-num">09</span>Commandes terminal</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-section-label">Vérifier</div>
+        <a href="#quiz" class="nav-link"><span class="nav-num">10</span>Quiz</a>
+    </div>
+</aside>
+
+<!-- CONTENU PRINCIPAL -->
+<main class="content">
+
+    <div class="page-header">
+        <h1>Comprendre le projet<br><span class="hl">React Boutique</span></h1>
+        <p>Ce guide explique comment le projet est organisé, comment les fichiers s'emboîtent, et toutes les manipulations à faire pour le modifier.</p>
+    </div>
+
+    <!-- ── 01 STRUCTURE ── -->
+    <section class="section" id="structure">
+        <div class="section-badge">01</div>
+        <h2>Structure du projet</h2>
+        <p class="prose">Voici tous les fichiers du projet et leur rôle. Comprendre ça, c'est comprendre 80% de React.</p>
+
+        <div class="filetree">
+<span class="ft-folder">react-boutique/</span>
+│
+├── <span class="ft-html">index.html</span>        <span class="ft-badge entry">POINT D'ENTRÉE</span>   <span class="ft-dim">← le seul vrai fichier HTML</span>
+├── <span class="ft-json">package.json</span>      <span class="ft-dim">← liste les dépendances npm</span>
+├── <span class="ft-js">vite.config.js</span>    <span class="ft-dim">← configuration de Vite</span>
+│
+└── <span class="ft-folder">src/</span>             <span class="ft-dim">← tout le code React est ici</span>
+    │
+    ├── <span class="ft-jsx">main.jsx</span>        <span class="ft-badge entry">MONTAGE REACT</span>  <span class="ft-dim">← branche React sur index.html</span>
+    ├── <span class="ft-jsx">App.jsx</span>         <span class="ft-badge state">STATE GLOBAL</span>   <span class="ft-dim">← chef d'orchestre</span>
+    │
+    ├── <span class="ft-folder">data/</span>
+    │   └── <span class="ft-js">produits.js</span>  <span class="ft-badge data">DONNÉES</span>        <span class="ft-dim">← les 6 produits</span>
+    │
+    ├── <span class="ft-folder">components/</span>    <span class="ft-dim">← un fichier = un composant</span>
+    │   ├── <span class="ft-jsx">Header.jsx</span>   <span class="ft-badge comp">COMPOSANT</span>      <span class="ft-dim">← barre de navigation</span>
+    │   ├── <span class="ft-jsx">Hero.jsx</span>     <span class="ft-badge comp">COMPOSANT</span>      <span class="ft-dim">← section d'accroche</span>
+    │   ├── <span class="ft-jsx">Filtres.jsx</span>  <span class="ft-badge comp">COMPOSANT</span>      <span class="ft-dim">← boutons de filtre</span>
+    │   ├── <span class="ft-jsx">GrilleProduits.jsx</span> <span class="ft-badge comp">COMPOSANT</span> <span class="ft-dim">← grille de cartes</span>
+    │   ├── <span class="ft-jsx">CarteProduit.jsx</span>   <span class="ft-badge comp">COMPOSANT</span> <span class="ft-dim">← une carte</span>
+    │   ├── <span class="ft-jsx">PanierSidebar.jsx</span>  <span class="ft-badge comp">COMPOSANT</span> <span class="ft-dim">← panneau panier</span>
+    │   ├── <span class="ft-jsx">APropos.jsx</span>  <span class="ft-badge comp">COMPOSANT</span>      <span class="ft-dim">← section à propos</span>
+    │   ├── <span class="ft-jsx">Contact.jsx</span>  <span class="ft-badge comp">COMPOSANT</span>      <span class="ft-dim">← formulaire</span>
+    │   └── <span class="ft-jsx">Footer.jsx</span>   <span class="ft-badge comp">COMPOSANT</span>      <span class="ft-dim">← pied de page</span>
+    │
+    └── <span class="ft-folder">styles/</span>
+        └── <span class="ft-css">index.css</span>    <span class="ft-dim">← tous les styles</span>
+        </div>
+
+        <div class="callout tip">
+            <span class="callout-icon"></span>
+            <div><strong>Règle d'or :</strong> tu ne touches jamais à <code>index.html</code>, <code>main.jsx</code> ou <code>vite.config.js</code>. Tout ton travail se passe dans <code>src/</code>.</div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── 02 FLUX ── -->
+    <section class="section" id="flux">
+        <div class="section-badge">02</div>
+        <h2>Le flux React — qui appelle qui ?</h2>
+        <p class="prose">React fonctionne comme une cascade. Chaque fichier appelle le suivant. Voici l'ordre exact de ce qui se passe quand le navigateur charge la page.</p>
+
+        <div class="flux">
+            <div class="flux-node html">
+                <span class="fn-icon"></span>
+                <div class="fn-info">
+                    <div class="fn-name orange">index.html</div>
+                    <div class="fn-desc">Le navigateur charge ce fichier en premier. Il contient juste <code style="font-family:var(--mono);font-size:.75rem;background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;">&lt;div id="root"&gt;&lt;/div&gt;</code></div>
+                </div>
+                <span class="fn-pill none">Étape 1</span>
+            </div>
+            <div class="flux-arrow-wrap"><span class="flux-arrow-line">↓ charge le script</span></div>
+
+            <div class="flux-node entry">
+                <span class="fn-icon">⚙️</span>
+                <div class="fn-info">
+                    <div class="fn-name purple">main.jsx</div>
+                    <div class="fn-desc">Trouve le <code style="font-family:var(--mono);font-size:.75rem;background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;">#root</code> et y injecte <code style="font-family:var(--mono);font-size:.75rem;background:rgba(0,0,0,.3);padding:1px 5px;border-radius:3px;">&lt;App /&gt;</code> dedans</div>
+                </div>
+                <span class="fn-pill state">Étape 2</span>
+            </div>
+            <div class="flux-arrow-wrap"><span class="flux-arrow-line">↓ rend les composants</span></div>
+
+            <div class="flux-node root">
+                <span class="fn-icon"></span>
+                <div class="fn-info">
+                    <div class="fn-name blue">App.jsx</div>
+                    <div class="fn-desc">Gère le STATE (panier, filtre). Assemble et affiche tous les composants dans l'ordre</div>
+                </div>
+                <span class="fn-pill state">STATE ici</span>
+            </div>
+            <div class="flux-arrow-wrap i1"><span class="flux-arrow-line">↓ affiche dans l'ordre du return</span></div>
+
+            <div class="flux-node comp indent1">
+                <span class="fn-icon"></span>
+                <div class="fn-info">
+                    <div class="fn-name blue">&lt;Header /&gt;</div>
+                    <div class="fn-desc">Reçoit : <code style="font-family:var(--mono);font-size:.75rem;">panier</code> (nombre) + <code style="font-family:var(--mono);font-size:.75rem;">onOuvrirPanier</code> (fonction)</div>
+                </div>
+                <span class="fn-pill props">props</span>
+            </div>
+            <div class="flux-arrow-wrap i1"><span class="flux-arrow-line">↓</span></div>
+            <div class="flux-node comp indent1">
+                <span class="fn-icon"></span>
+                <div class="fn-info">
+                    <div class="fn-name white">&lt;Hero /&gt;</div>
+                    <div class="fn-desc">Aucune prop — contenu statique</div>
+                </div>
+                <span class="fn-pill none">statique</span>
+            </div>
+            <div class="flux-arrow-wrap i1"><span class="flux-arrow-line">↓</span></div>
+            <div class="flux-node comp indent1">
+                <span class="fn-icon"></span>
+                <div class="fn-info">
+                    <div class="fn-name blue">&lt;GrilleProduits /&gt;</div>
+                    <div class="fn-desc">Reçoit les produits, fait le .filter() et le .map() → génère des CarteProduit</div>
+                </div>
+                <span class="fn-pill props">props</span>
+            </div>
+            <div class="flux-arrow-wrap i2"><span class="flux-arrow-line">↓ .map() crée une CarteProduit par produit</span></div>
+            <div class="flux-node comp indent2">
+                <span class="fn-icon"></span>
+                <div class="fn-info">
+                    <div class="fn-name blue">&lt;CarteProduit /&gt; × 6</div>
+                    <div class="fn-desc">Reçoit un objet produit complet + la fonction panier</div>
+                </div>
+                <span class="fn-pill props">props</span>
+            </div>
+        </div>
+
+        <div class="callout info">
+            <span class="callout-icon"></span>
+            <div><strong>À retenir :</strong> L'ordre des composants dans le <code>return</code> de <code>App.jsx</code> = l'ordre d'affichage sur la page. Si tu veux changer l'ordre des sections, tu bouges les lignes dans <code>App.jsx</code>.</div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── 03 PROPS & STATE ── -->
+    <section class="section" id="props-state">
+        <div class="section-badge">03</div>
+        <h2>Props & State — les deux moteurs</h2>
+
+        <div class="compare">
+            <div class="cbox avant" style="border-color:rgba(97,218,251,.3);">
+                <div class="chead" style="background:rgba(97,218,251,.06);color:var(--accent);">📦 Props — données reçues</div>
+                <div style="padding:16px;font-size:.84rem;color:var(--muted);line-height:1.75;">
+                    <strong style="color:var(--text);">Viennent du parent.</strong><br>
+                    En lecture seule — l'enfant ne peut pas les modifier.<br><br>
+                    Exemple : <code style="font-family:var(--mono);font-size:.78rem;">CarteProduit</code> reçoit <code style="font-family:var(--mono);font-size:.78rem;">nom</code>, <code style="font-family:var(--mono);font-size:.78rem;">prix</code>, <code style="font-family:var(--mono);font-size:.78rem;">image</code> depuis <code style="font-family:var(--mono);font-size:.78rem;">GrilleProduits</code>.
+                </div>
+            </div>
+            <div class="cbox apres" style="border-color:rgba(192,132,252,.3);">
+                <div class="chead" style="background:rgba(192,132,252,.06);color:var(--purple);">🔄 State — données internes</div>
+                <div style="padding:16px;font-size:.84rem;color:var(--muted);line-height:1.75;">
+                    <strong style="color:var(--text);">Vie dans le composant.</strong><br>
+                    Quand il change → React re-rend automatiquement.<br><br>
+                    Exemple : <code style="font-family:var(--mono);font-size:.78rem;">App.jsx</code> gère <code style="font-family:var(--mono);font-size:.78rem;">panier</code> et <code style="font-family:var(--mono);font-size:.78rem;">categorie</code> avec <code style="font-family:var(--mono);font-size:.78rem;">useState</code>.
+                </div>
+            </div>
+        </div>
+
+        <div class="code-block">
+            <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">App.jsx — le state global</span></div>
+            <pre><code><span class="cmt">// Les données qui "pilotent" toute l'interface</span>
+<span class="kw">const</span> [<span class="vr">panier</span>,      <span class="fn">setPanier</span>]      = <span class="fn">useState</span>([])       <span class="cmt">// tableau d'articles</span>
+<span class="kw">const</span> [<span class="vr">categorie</span>,   <span class="fn">setCategorie</span>]   = <span class="fn">useState</span>(<span class="str">'Toutes'</span>) <span class="cmt">// filtre actif</span>
+<span class="kw">const</span> [<span class="vr">panierOuvert</span>,<span class="fn">setPanierOuvert</span>] = <span class="fn">useState</span>(<span class="kw">false</span>)    <span class="cmt">// sidebar ouvert ?</span>
+
+<span class="cmt">// Ces données descendent vers les composants via les props ↓</span>
+<span class="tag">&lt;Header</span>   <span class="attr">panier</span>=<span class="jsx">{panier.length}</span>  <span class="attr">onOuvrirPanier</span>=<span class="jsx">{() => setPanierOuvert(true)}</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;Filtres</span>  <span class="attr">actif</span>=<span class="jsx">{categorie}</span>       <span class="attr">onChange</span>=<span class="jsx">{setCategorie}</span>               <span class="tag">/&gt;</span></code></pre>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── 04 MANIP 1 ── -->
+    <section class="section" id="manip1">
+        <div class="section-badge">04 — Manipulation 1</div>
+        <h2>Modifier un produit existant</h2>
+
+        <div class="manip">
+            <div class="manip-head">
+                <div class="manip-num blue">1</div>
+                <span class="manip-title">Ouvrir le fichier des données</span>
+                <span class="manip-file">src/data/produits.js</span>
+            </div>
+            <div class="manip-body">
+                <p class="prose">Tous les produits sont dans ce fichier. Chaque objet dans le tableau = une carte sur la page. Change n'importe quelle valeur → la page se met à jour instantanément.</p>
+                <div class="code-block">
+                    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">produits.js</span><span class="cb-badge modifier">à modifier</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+                    <pre><code><span class="kw">export const</span> <span class="vr">produits</span> = [
+  {
+    <span class="vr">id</span>: <span class="num">1</span>,
+    <span class="vr">nom</span>: <span class="str">"Casque Sony WH-1000XM5"</span>,   <span class="cmt">← change le nom ici</span>
+    <span class="vr">categorie</span>: <span class="str">"Audio"</span>,
+    <span class="vr">prix</span>: <span class="num">279</span>,                       <span class="cmt">← change le prix ici</span>
+    <span class="vr">description</span>: <span class="str">"Réduction de bruit..."</span>,
+    <span class="vr">image</span>: <span class="str">"🎧"</span>,                    <span class="cmt">← change l'emoji ici</span>
+    <span class="vr">stock</span>: <span class="num">12</span>,
+    <span class="vr">nouveaute</span>: <span class="kw">true</span>,               <span class="cmt">← true = badge Nouveauté</span>
+  },
+  <span class="cmt">// ... autres produits</span>
+]</code></pre>
+                </div>
+                <div class="result">Sauvegarde (CMD+S) → la page se met à jour toute seule grâce au HMR de Vite</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 05 MANIP 2 ── -->
+    <section class="section" id="manip2">
+        <div class="section-badge">05 — Manipulation 2</div>
+        <h2>Ajouter un nouveau produit</h2>
+
+        <div class="manip">
+            <div class="manip-head">
+                <div class="manip-num green">2</div>
+                <span class="manip-title">Ajouter un objet dans le tableau</span>
+                <span class="manip-file">src/data/produits.js</span>
+            </div>
+            <div class="manip-body">
+                <p class="prose">Copie-colle un objet existant à la fin du tableau, change l'<code>id</code> et les valeurs. Une nouvelle carte apparaît automatiquement.</p>
+                <div class="code-block">
+                    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">produits.js — ajouter à la fin</span><span class="cb-badge nouveau">nouveau</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+                    <pre><code><span class="kw">export const</span> <span class="vr">produits</span> = [
+  <span class="cmt">// ... produits existants ...</span>
+
+  <span class="cmt">// ← Ajoute cet objet à la fin, avant le ]</span>
+  {
+    <span class="vr">id</span>: <span class="num">7</span>,                          <span class="cmt">← id unique</span>
+    <span class="vr">nom</span>: <span class="str">"Tapis de souris XXL"</span>,
+    <span class="vr">categorie</span>: <span class="str">"Accessoires"</span>,       <span class="cmt">← doit correspondre à categories[]</span>
+    <span class="vr">prix</span>: <span class="num">34</span>,
+    <span class="vr">description</span>: <span class="str">"80x40cm, surface lisse, bords cousus."</span>,
+    <span class="vr">image</span>: <span class="str">"🖱️"</span>,
+    <span class="vr">stock</span>: <span class="num">15</span>,
+    <span class="vr">nouveaute</span>: <span class="kw">true</span>,
+  },
+]</code></pre>
+                </div>
+                <div class="result">Une 7ème carte apparaît dans la grille — le .map() la génère automatiquement</div>
+            </div>
+        </div>
+
+        <div class="callout tip">
+            <span class="callout-icon"></span>
+            <div><strong>Pourquoi ça marche tout seul ?</strong> Dans <code>GrilleProduits.jsx</code>, le <code>.map()</code> parcourt tout le tableau <code>produits</code>. Chaque objet devient une <code>CarteProduit</code>. Plus d'objets dans le tableau = plus de cartes.</div>
+        </div>
+    </section>
+
+    <!-- ── 06 MANIP 3 ── -->
+    <section class="section" id="manip3">
+        <div class="section-badge">06 — Manipulation 3</div>
+        <h2>Modifier un composant existant</h2>
+
+        <div class="manip">
+            <div class="manip-head">
+                <div class="manip-num blue">3</div>
+                <span class="manip-title">Changer le titre du Hero</span>
+                <span class="manip-file">src/components/Hero.jsx</span>
+            </div>
+            <div class="manip-body">
+                <p class="prose">Ouvre <code>Hero.jsx</code>. Tu vois du JSX — c'est du HTML dans du JS. Modifie ce qui est entre les balises.</p>
+                <div class="compare">
+                    <div class="cbox avant">
+                        <div class="chead">Avant</div>
+                        <pre style="padding:14px;font-family:var(--mono);font-size:.78rem;line-height:1.8;color:var(--muted);"><code><span class="tag">&lt;h1</span> <span class="attr">className</span>=<span class="str">"hero-titre"</span><span class="tag">&gt;</span>
+  L'équipement parfait
+  <span class="tag">&lt;br /&gt;</span>
+  pour les <span class="tag">&lt;span&gt;</span>développeurs<span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;/h1&gt;</span></code></pre>
+                    </div>
+                    <div class="cbox apres">
+                        <div class="chead">Après</div>
+                        <pre style="padding:14px;font-family:var(--mono);font-size:.78rem;line-height:1.8;color:var(--muted);"><code><span class="tag">&lt;h1</span> <span class="attr">className</span>=<span class="str">"hero-titre"</span><span class="tag">&gt;</span>
+  Le meilleur matos
+  <span class="tag">&lt;br /&gt;</span>
+  pour les <span class="tag">&lt;span&gt;</span>apprenants<span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;/h1&gt;</span></code></pre>
+                    </div>
+                </div>
+                <div class="result">Le titre change sur la page immédiatement</div>
+            </div>
+        </div>
+
+        <div class="manip" style="margin-top:16px;">
+            <div class="manip-head">
+                <div class="manip-num blue">3b</div>
+                <span class="manip-title">Changer la couleur du bouton principal</span>
+                <span class="manip-file">src/styles/index.css</span>
+            </div>
+            <div class="manip-body">
+                <p class="prose">Tous les styles sont dans <code>index.css</code>. Cherche la classe <code>.btn-primary</code> et change la couleur.</p>
+                <div class="code-block">
+                    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">index.css</span><span class="cb-badge modifier">à modifier</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+                    <pre><code><span class="fn">.btn-primary</span> {
+  background: <span class="hl-line"><span class="str">var(--accent)</span>;    <span class="cmt">← remplace par #ff6b6b par ex.</span></span>
+  color: <span class="str">#080b0f</span>;
+  border-color: <span class="str">var(--accent)</span>;
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 07 MANIP 4 ── -->
+    <section class="section" id="manip4">
+        <div class="section-badge">07 — Manipulation 4</div>
+        <h2>Créer un nouveau composant</h2>
+        <p class="prose">On va créer une section <strong>Bannière Promo</strong> qui apparaît entre le Hero et les produits. Trois étapes : créer le fichier, l'importer, l'afficher.</p>
+
+        <div class="manip">
+            <div class="manip-head">
+                <div class="manip-num green">A</div>
+                <span class="manip-title">Créer le fichier du composant</span>
+                <span class="manip-file">src/components/BannierePromo.jsx</span>
+            </div>
+            <div class="manip-body">
+                <p class="prose">Clic droit sur le dossier <code>components/</code> → Nouveau fichier → <code>BannierePromo.jsx</code></p>
+                <div class="code-block">
+                    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">BannierePromo.jsx</span><span class="cb-badge nouveau">nouveau fichier</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+                    <pre><code><span class="cmt">// Un composant = une fonction qui retourne du JSX</span>
+<span class="kw">function</span> <span class="fn">BannierePromo</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{
+      background: <span class="str">'linear-gradient(135deg, #61dafb, #a8efff)'</span>,
+      color: <span class="str">'#080b0f'</span>,
+      textAlign: <span class="str">'center'</span>,
+      padding: <span class="str">'16px'</span>,
+      fontWeight: <span class="str">'700'</span>,
+      fontSize: <span class="str">'1rem'</span>,
+    }}</span><span class="tag">&gt;</span>
+      Livraison gratuite ce weekend — code : <strong>REACT24</strong>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> <span class="fn">BannierePromo</span>  <span class="cmt">← obligatoire pour pouvoir l'importer</span></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="manip" style="margin-top:16px;">
+            <div class="manip-head">
+                <div class="manip-num green">B</div>
+                <span class="manip-title">L'importer dans App.jsx</span>
+                <span class="manip-file">src/App.jsx</span>
+            </div>
+            <div class="manip-body">
+                <div class="code-block">
+                    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">App.jsx — ajouter l'import en haut</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+                    <pre><code><span class="kw">import</span> <span class="fn">Header</span>       <span class="kw">from</span> <span class="str">'./components/Header'</span>
+<span class="kw">import</span> <span class="fn">Hero</span>         <span class="kw">from</span> <span class="str">'./components/Hero'</span>
+<span class="hl-line"><span class="kw">import</span> <span class="fn">BannierePromo</span> <span class="kw">from</span> <span class="str">'./components/BannierePromo'</span>  <span class="cmt">← ajoute cette ligne</span></span>
+<span class="kw">import</span> <span class="fn">Filtres</span>      <span class="kw">from</span> <span class="str">'./components/Filtres'</span>
+<span class="cmt">// ...</span></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="manip" style="margin-top:16px;">
+            <div class="manip-head">
+                <div class="manip-num green">C</div>
+                <span class="manip-title">L'afficher dans le return</span>
+                <span class="manip-file">src/App.jsx</span>
+            </div>
+            <div class="manip-body">
+                <div class="code-block">
+                    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">App.jsx — ajouter dans le return</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+                    <pre><code><span class="kw">return</span> (
+  <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"app"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;Header</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;Hero</span> <span class="tag">/&gt;</span>
+    <span class="hl-line"><span class="tag">&lt;BannierePromo</span> <span class="tag">/&gt;</span>    <span class="cmt">← apparaît ici sur la page</span></span>
+    <span class="tag">&lt;main</span> <span class="attr">className</span>=<span class="str">"main"</span><span class="tag">&gt;</span>
+      <span class="cmt">// ...</span>
+    <span class="tag">&lt;/main&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+)</code></pre>
+                </div>
+                <div class="result">La bannière promo s'affiche entre le Hero et les produits</div>
+            </div>
+        </div>
+
+        <div class="callout info">
+            <span class="callout-icon">⚛️</span>
+            <div><strong>La règle des 3 étapes</strong> s'applique à chaque nouveau composant : <strong>1. Créer</strong> le fichier → <strong>2. Importer</strong> dans App.jsx → <strong>3. Afficher</strong> dans le return.</div>
+        </div>
+    </section>
+
+    <!-- ── 08 MANIP 5 ── -->
+    <section class="section" id="manip5">
+        <div class="section-badge">08 — Manipulation 5</div>
+        <h2>Ajouter du state à un composant</h2>
+        <p class="prose">On va ajouter un bouton "Like" sur chaque carte produit. Chaque carte gère son propre compteur de likes indépendamment.</p>
+
+        <div class="manip">
+            <div class="manip-head">
+                <div class="manip-num purple">5</div>
+                <span class="manip-title">Ajouter useState dans CarteProduit</span>
+                <span class="manip-file">src/components/CarteProduit.jsx</span>
+            </div>
+            <div class="manip-body">
+                <div class="code-block">
+                    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">CarteProduit.jsx</span><span class="cb-badge modifier">à modifier</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+                    <pre><code><span class="cmt">// 1. Importer useState en haut du fichier</span>
+<span class="hl-line"><span class="kw">import</span> { <span class="fn">useState</span> } <span class="kw">from</span> <span class="str">'react'</span></span>
+
+<span class="kw">function</span> <span class="fn">CarteProduit</span>({ <span class="vr">produit</span>, <span class="vr">onAjouterPanier</span> }) {
+  <span class="kw">const</span> { <span class="vr">nom</span>, <span class="vr">prix</span>, <span class="vr">image</span>, ... } = <span class="vr">produit</span>
+
+  <span class="cmt">// 2. Créer le state "likes" propre à cette carte</span>
+  <span class="hl-line"><span class="kw">const</span> [<span class="vr">likes</span>, <span class="fn">setLikes</span>] = <span class="fn">useState</span>(<span class="num">0</span>)</span>
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"carte"</span><span class="tag">&gt;</span>
+      <span class="cmt">{/* ... contenu existant ... */}</span>
+
+      <span class="cmt">// 3. Ajouter le bouton Like dans le JSX</span>
+      <span class="hl-line"><span class="tag">&lt;button</span> <span class="attr">onClick</span>=<span class="jsx">{() => setLikes(likes + 1)}</span><span class="tag">&gt;</span>
+        <span class="jsx">{likes}</span>
+      <span class="tag">&lt;/button&gt;</span></span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}</code></pre>
+                </div>
+                <div class="result">Chaque carte a son propre compteur de likes — ils sont indépendants</div>
+                <div class="callout warn" style="margin-top:12px;">
+                    <span class="callout-icon"></span>
+                    <div><strong>Important :</strong> chaque instance de <code>CarteProduit</code> a son propre <code>likes</code>. Cliquer sur la carte 1 ne change pas le compteur de la carte 2. C'est le principe du state local.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── 09 TERMINAL ── -->
+    <section class="section" id="terminal">
+        <div class="section-badge">09 — Terminal</div>
+        <h2>Toutes les commandes terminal</h2>
+        <p class="prose">Voici toutes les commandes à connaître, dans quel ordre les taper, et ce qu'elles font. Le terminal s'ouvre dans VSCode avec <strong>Ctrl+ù</strong> (ou Terminal → Nouveau terminal).</p>
+
+        <!-- PREMIÈRE FOIS -->
+        <h3 style="font-size:1rem;font-weight:700;color:var(--yellow);margin-bottom:14px;margin-top:8px;">⚡ La toute première fois — installation</h3>
+
+        <div class="cmd-card">
+            <div class="cmd-card-head">
+                <span class="cmd-icon">1️⃣</span>
+                <div class="cmd-info">
+                    <div class="cmd-title">Se placer dans le bon dossier</div>
+                    <div class="cmd-desc">Avant tout, le terminal doit être "dans" le projet react-boutique</div>
+                </div>
+                <span class="cmd-when">1 fois</span>
+            </div>
+            <div class="cmd-body">
+                <div class="term">
+                    <div class="term-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="term-title">Terminal VSCode</span></div>
+                    <div class="term-body">
+                        <div class="term-line">
+                            <span class="term-prompt">$</span>
+                            <span class="term-cmd"><span class="tcmd">cd</span> <span class="tpath">~/DevLille/REACT/react-boutique</span></span>
+                        </div>
+                        <div class="term-out">↳ cd = "change directory" — se déplacer dans un dossier</div>
+                        <div class="term-out">↳ ~ = ton dossier personnel (/Users/thomasdarras)</div>
+                        <div class="term-out success">↳ Le prompt affiche maintenant "react-boutique $" </div>
+                    </div>
+                </div>
+                <div class="callout tip">
+                    <span class="callout-icon"></span>
+                    <div><strong>Astuce Mac :</strong> tape <code>cd </code> (avec un espace) puis fais glisser le dossier <code>react-boutique</code> depuis l'explorateur VSCode directement dans le terminal. Le chemin s'écrit tout seul.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div class="cmd-card-head">
+                <span class="cmd-icon">2️⃣</span>
+                <div class="cmd-info">
+                    <div class="cmd-title">Installer les dépendances</div>
+                    <div class="cmd-desc">Télécharge React, Vite et tous les packages listés dans package.json</div>
+                </div>
+                <span class="cmd-when">1 fois par projet</span>
+            </div>
+            <div class="cmd-body">
+                <div class="term">
+                    <div class="term-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="term-title">Terminal VSCode</span></div>
+                    <div class="term-body">
+                        <div class="term-line">
+                            <span class="term-prompt">$</span>
+                            <span class="term-cmd"><span class="tcmd">npm</span> <span class="targ">install</span></span>
+                        </div>
+                        <div class="term-out">added 60 packages, and audited 61 packages in 21s</div>
+                        <div class="term-out success">↳ Crée le dossier node_modules/ — ne jamais le modifier </div>
+                    </div>
+                </div>
+                <div class="callout warn">
+                    <span class="callout-icon"></span>
+                    <div><strong>Si tu vois "npm: command not found"</strong> → Node.js n'est pas installé. Ouvre le Terminal Mac (CMD+Espace → Terminal) et tape <code>brew install node</code>. Ensuite ferme et réouvre VSCode.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOUS LES JOURS -->
+        <h3 style="font-size:1rem;font-weight:700;color:var(--green);margin-bottom:14px;margin-top:28px;">Tous les jours — lancer le projet</h3>
+
+        <div class="cmd-card">
+            <div class="cmd-card-head">
+                <span class="cmd-icon">▶️</span>
+                <div class="cmd-info">
+                    <div class="cmd-title">Lancer le serveur de développement</div>
+                    <div class="cmd-desc">Démarre Vite — la page se rafraîchit toute seule à chaque modification</div>
+                </div>
+                <span class="cmd-when">à chaque session</span>
+            </div>
+            <div class="cmd-body">
+                <div class="term">
+                    <div class="term-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="term-title">Terminal VSCode</span></div>
+                    <div class="term-body">
+                        <div class="term-line">
+                            <span class="term-prompt">$</span>
+                            <span class="term-cmd"><span class="tcmd">npm</span> <span class="targ">run dev</span></span>
+                        </div>
+                        <div class="term-out" style="margin-top:4px;">  VITE v4.5.14  ready in 118 ms</div>
+                        <div class="term-out" style="color:#61dafb;">  ➜  Local:   http://localhost:5173/</div>
+                        <div class="term-out">  ➜  Network: use --host to expose</div>
+                        <div class="term-out success">↳ Clique sur http://localhost:5173/ pour ouvrir dans le navigateur </div>
+                    </div>
+                </div>
+                <div class="callout info">
+                    <span class="callout-icon"></span>
+                    <div><strong>HMR — Hot Module Replacement :</strong> quand tu sauvegardes un fichier (CMD+S), la page se met à jour instantanément dans le navigateur sans recharger. C'est la magie de Vite.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div class="cmd-card-head">
+                <span class="cmd-icon">⏹️</span>
+                <div class="cmd-info">
+                    <div class="cmd-title">Arrêter le serveur</div>
+                    <div class="cmd-desc">Stoppe Vite quand tu as fini de travailler</div>
+                </div>
+                <span class="cmd-when">pour arrêter</span>
+            </div>
+            <div class="cmd-body">
+                <div class="term">
+                    <div class="term-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="term-title">Terminal VSCode</span></div>
+                    <div class="term-body">
+                        <div class="term-line">
+                            <span class="term-prompt"></span>
+                            <span class="term-cmd" style="color:#ffa657;">Ctrl + C</span>
+                        </div>
+                        <div class="term-out success">↳ Le serveur s'arrête, localhost:5173 n'est plus accessible</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RÉSUMÉ CHAQUE JOUR -->
+        <h3 style="font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:14px;margin-top:28px;">📋 Résumé — ce que tu tapes à chaque session</h3>
+
+        <div class="term">
+            <div class="term-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="term-title">Séquence complète — copier-coller</span><button class="term-copy" onclick="tcopy(this, '1_session')">copier</button></div>
+            <div class="term-body" id="1_session">
+                <div class="term-line">
+                    <span class="term-prompt">$</span>
+                    <span class="term-cmd"><span class="tcmd">cd</span> <span class="tpath">~/DevLille/REACT/react-boutique</span></span>
+                </div>
+                <div class="term-out">↳ se placer dans le projet</div>
+                <br>
+                <div class="term-line">
+                    <span class="term-prompt">$</span>
+                    <span class="term-cmd"><span class="tcmd">npm</span> <span class="targ">run dev</span></span>
+                </div>
+                <div class="term-out">↳ démarrer le serveur</div>
+                <div class="term-out success">↳ ouvrir http://localhost:5173/ dans le navigateur</div>
+                <br>
+                <div class="term-line">
+                    <span class="term-prompt"></span>
+                    <span class="term-cmd" style="color:#555;font-style:italic;"># ... tu travailles, tu sauvegardes avec CMD+S ...</span>
+                </div>
+                <br>
+                <div class="term-line">
+                    <span class="term-prompt"></span>
+                    <span class="term-cmd" style="color:#ffa657;">Ctrl+C</span>
+                </div>
+                <div class="term-out">↳ arrêter le serveur quand tu as fini</div>
+            </div>
+        </div>
+
+        <!-- COMMANDES UTILES -->
+        <h3 style="font-size:1rem;font-weight:700;color:var(--purple);margin-bottom:14px;margin-top:28px;">🛠️ Commandes utiles à connaître</h3>
+
+        <div class="cmd-card">
+            <div class="cmd-card-head">
+                <span class="cmd-icon">📂</span>
+                <div class="cmd-info">
+                    <div class="cmd-title">Navigation dans les dossiers</div>
+                    <div class="cmd-desc">Se déplacer dans l'arborescence</div>
+                </div>
+            </div>
+            <div class="cmd-body">
+                <div class="term">
+                    <div class="term-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="term-title">Navigation</span></div>
+                    <div class="term-body">
+                        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"><span class="tcmd">pwd</span></span></div>
+                        <div class="term-out">/Users/thomasdarras/DevLille/REACT/react-boutique</div>
+                        <div class="term-out" style="color:#555;">↳ affiche où tu es en ce moment</div>
+                        <br>
+                        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"><span class="tcmd">ls</span></span></div>
+                        <div class="term-out">index.html  package.json  src/  node_modules/  vite.config.js</div>
+                        <div class="term-out" style="color:#555;">↳ liste les fichiers du dossier courant</div>
+                        <br>
+                        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"><span class="tcmd">cd</span> <span class="tpath">src/components</span></span></div>
+                        <div class="term-out" style="color:#555;">↳ aller dans un sous-dossier</div>
+                        <br>
+                        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"><span class="tcmd">cd</span> <span class="tpath">..</span></span></div>
+                        <div class="term-out" style="color:#555;">↳ remonter d'un dossier (.. = dossier parent)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div class="cmd-card-head">
+                <span class="cmd-icon"></span>
+                <div class="cmd-info">
+                    <div class="cmd-title">Installer un nouveau package npm</div>
+                    <div class="cmd-desc">Ajouter une bibliothèque externe au projet</div>
+                </div>
+            </div>
+            <div class="cmd-body">
+                <div class="term">
+                    <div class="term-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="term-title">npm install package</span></div>
+                    <div class="term-body">
+                        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"><span class="tcmd">npm</span> <span class="targ">install</span> <span class="tpath">axios</span></span></div>
+                        <div class="term-out" style="color:#555;">↳ installe axios (pour les requêtes HTTP)</div>
+                        <br>
+                        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"><span class="tcmd">npm</span> <span class="targ">install</span> <span class="tpath">react-router-dom</span></span></div>
+                        <div class="term-out" style="color:#555;">↳ installe React Router (pour la navigation)</div>
+                        <br>
+                        <div class="term-out warn">↳ Le package est ajouté dans package.json et node_modules/ automatiquement</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div class="cmd-card-head">
+                <span class="cmd-icon"></span>
+                <div class="cmd-info">
+                    <div class="cmd-title">Erreurs fréquentes et solutions</div>
+                    <div class="cmd-desc">Ce qui peut bloquer et comment s'en sortir</div>
+                </div>
+            </div>
+            <div class="cmd-body">
+                <div class="term">
+                    <div class="term-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="term-title">Erreurs communes</span></div>
+                    <div class="term-body">
+                        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd" style="color:#ff7b72;">npm run dev → sh: vite: command not found</span></div>
+                        <div class="term-out warn">↳ node_modules/ manquant → tape d'abord : npm install</div>
+                        <br>
+                        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd" style="color:#ff7b72;">npm install → Could not read package.json</span></div>
+                        <div class="term-out warn">↳ tu n'es pas dans le bon dossier → tape : cd ~/DevLille/REACT/react-boutique</div>
+                        <br>
+                        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd" style="color:#ff7b72;">npm → zsh: command not found: npm</span></div>
+                        <div class="term-out warn">↳ Node.js pas installé ou PATH pas chargé → tape : source ~/.zprofile</div>
+                        <br>
+                        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd" style="color:#ff7b72;">Port 5173 is already in use</span></div>
+                        <div class="term-out warn">↳ un autre serveur tourne → tape Ctrl+C dans l'autre terminal, puis relance</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── QUIZ ── -->
+    <section class="section" id="quiz">
+        <div class="section-badge">09</div>
+        <h2>Quiz — Vérifie ta compréhension</h2>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q1.</span> Je veux changer le prix d'un produit. Quel fichier j'ouvre ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q1',false)">src/components/CarteProduit.jsx</button>
+                <button class="opt" onclick="ans(this,'q1',true)">src/data/produits.js</button>
+                <button class="opt" onclick="ans(this,'q1',false)">src/App.jsx</button>
+            </div>
+            <div class="fb" id="fb-q1"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q2.</span> Je crée un composant <code>Newsletter.jsx</code>. Que dois-je faire pour qu'il apparaisse sur la page ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q2',false)">Le mettre dans le dossier components/, ça suffit</button>
+                <button class="opt" onclick="ans(this,'q2',true)">L'importer dans App.jsx ET l'ajouter dans le return</button>
+                <button class="opt" onclick="ans(this,'q2',false)">L'ajouter dans index.html</button>
+            </div>
+            <div class="fb" id="fb-q2"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q3.</span> Le state <code>panier</code> est dans <code>App.jsx</code>. Comment <code>Header.jsx</code> y accède ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q3',false)">Header importe directement App.jsx</button>
+                <button class="opt" onclick="ans(this,'q3',true)">App passe panier.length à Header via une prop</button>
+                <button class="opt" onclick="ans(this,'q3',false)">Header utilise localStorage pour lire le panier</button>
+            </div>
+            <div class="fb" id="fb-q3"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q4.</span> J'ajoute un 8ème produit dans <code>produits.js</code>. Que se passe-t-il ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q4',false)">Rien, il faut aussi modifier GrilleProduits.jsx</button>
+                <button class="opt" onclick="ans(this,'q4',true)">Une 8ème carte apparaît automatiquement grâce au .map()</button>
+                <button class="opt" onclick="ans(this,'q4',false)">Il faut créer un nouveau composant CarteProduit8.jsx</button>
+            </div>
+            <div class="fb" id="fb-q4"></div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="q"><span class="qn">Q5.</span> Je veux que la bannière promo s'affiche <strong>après</strong> les produits. Où je change ça ?</div>
+            <div class="opts">
+                <button class="opt" onclick="ans(this,'q5',false)">Dans BannierePromo.jsx</button>
+                <button class="opt" onclick="ans(this,'q5',true)">Dans App.jsx — je bouge la ligne &lt;BannierePromo /&gt; après &lt;main&gt;</button>
+                <button class="opt" onclick="ans(this,'q5',false)">Dans index.css avec la propriété order</button>
+            </div>
+            <div class="fb" id="fb-q5"></div>
+        </div>
+
+        <div id="score-box" style="display:none;text-align:center;padding:28px;background:var(--card);border:1px solid rgba(97,218,251,.2);border-radius:12px;margin-top:12px;">
+            <div id="s-emoji" style="font-size:2.5rem;margin-bottom:10px;"></div>
+            <div id="s-text" style="font-family:var(--mono);font-size:.95rem;color:var(--text);"></div>
+        </div>
+    </section>
+
+</main>
+</div>
+
+<script>
+function tcopy(btn, id) {
+  const el = document.getElementById(id)
+  const text = el.innerText.replace(/^\$\s*/gm, '').trim()
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ copié'; btn.classList.add('ok')
+    setTimeout(() => { btn.textContent = 'copier'; btn.classList.remove('ok') }, 1800)
+  })
+}
+
+
+const sections = document.querySelectorAll('.section[id]')
+const navLinks  = document.querySelectorAll('.nav-link')
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'))
+      const link = document.querySelector(`.nav-link[href="#${e.target.id}"]`)
+      if (link) link.classList.add('active')
+    }
+  })
+}, { threshold: 0.3 })
+sections.forEach(s => obs.observe(s))
+
+function cp(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre')
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = '✓'; btn.classList.add('ok')
+    setTimeout(() => { btn.textContent = 'copier'; btn.classList.remove('ok') }, 1800)
+  })
+}
+
+const fbs = {
+  q1:{ ok:'Exact ! Toutes les données des produits (nom, prix, description…) sont centralisées dans produits.js. Un seul endroit à modifier.', ko:'Non. Les données ne sont pas dans les composants — elles sont dans src/data/produits.js. Les composants ne font qu\'afficher ce qu\'on leur passe.' },
+  q2:{ ok:'Exact ! Créer le fichier ne suffit pas. React ne sait pas qu\'il existe. Il faut l\'importer dans App.jsx puis l\'écrire dans le return pour qu\'il soit rendu.', ko:'Non. React ne scan pas automatiquement le dossier components/. Tu dois importer explicitement le composant dans App.jsx et l\'ajouter dans le return.' },
+  q3:{ ok:'Parfait ! App.jsx écrit <Header panier={panier.length} />. Header reçoit ce nombre dans ses props et l\'affiche dans le badge.', ko:'Non. Les composants ne peuvent pas lire directement le state des autres. App passe panier.length à Header via une prop, et Header l\'affiche.' },
+  q4:{ ok:'Exact ! GrilleProduits fait produits.map(p => <CarteProduit key={p.id} produit={p} />). Il parcourt tout le tableau — ajout d\'un objet = nouvelle carte automatique.', ko:'Non. Le .map() dans GrilleProduits parcourt tout le tableau produits. Si tu ajoutes un objet, il crée automatiquement une nouvelle CarteProduit.' },
+  q5:{ ok:'Parfait ! App.jsx est le chef d\'orchestre. L\'ordre des composants dans son return = l\'ordre d\'affichage sur la page. Bouger une ligne change la position.', ko:'Non. L\'ordre d\'affichage est déterminé par l\'ordre des composants dans le return de App.jsx. C\'est là que tu déplaces <BannierePromo />.' },
+}
+const rep = {}
+function ans(btn, qid, ok) {
+  if (rep[qid] !== undefined) return
+  rep[qid] = ok
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => o.disabled = true)
+  btn.classList.add(ok ? 'correct' : 'wrong')
+  if (!ok) btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => { if (o.onclick?.toString().includes(',true)')) o.classList.add('correct') })
+  const fb = document.getElementById('fb-' + qid)
+  fb.innerHTML = fbs[qid][ok ? 'ok' : 'ko']
+  fb.className = 'fb show ' + (ok ? 'ok' : 'ko')
+  if (Object.keys(rep).length === 5) {
+    const g = Object.values(rep).filter(Boolean).length
+    const box = document.getElementById('score-box')
+    box.style.display = 'block'
+    document.getElementById('s-emoji').textContent = ['','','','',''][g]
+    document.getElementById('s-text').innerHTML = `Score : <strong style="color:var(--green)">${g}/5</strong> — ${g===5?'Tu maîtrises l\'architecture React ':g>=4?'Presque parfait ! Relis la partie ratée.':g>=3?'Bien, mais relis les manipulations.':'Reprends depuis le début '}`
+    box.scrollIntoView({ behavior:'smooth', block:'center' })
+  }
+}
+</script>
+
+<script src="../cursor.js"></script>
+
+</body>
+</html>

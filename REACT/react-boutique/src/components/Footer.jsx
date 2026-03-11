@@ -8,7 +8,7 @@ function Footer() {
     <footer className="footer">
       <div className="footer-contenu">
         <div className="footer-logo">
-          <span>⚡ TechStore</span>
+          <span>TechStore</span>
           <p>L'équipement des développeurs.</p>
         </div>
 

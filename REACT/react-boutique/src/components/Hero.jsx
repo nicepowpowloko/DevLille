@@ -6,7 +6,7 @@ function Hero() {
   return (
     <section className="hero" id="accueil">
       <div className="hero-contenu">
-        <span className="hero-badge">🚀 Nouvelle collection 2024</span>
+        <span className="hero-badge">Nouvelle collection 2024</span>
         <h1 className="hero-titre">
           L'équipement parfait<br />
           pour les <span className="hero-accent">développeurs</span>
@@ -21,7 +21,7 @@ function Hero() {
         </div>
       </div>
       <div className="hero-visual">
-        <div className="hero-emoji">💻</div>
+        <div className="hero-emoji"></div>
       </div>
     </section>
   )

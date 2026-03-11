@@ -51,7 +51,7 @@ function CarteProduit({ produit, onAjouterPanier }) {
       {/* Stock restant */}
       {!enRupture && stock <= 5 && (
         <p className="carte-stock-alerte">
-          ⚠️ Plus que {stock} en stock !
+          Plus que {stock} en stock !
         </p>
       )}
     </div>

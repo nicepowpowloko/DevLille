@@ -15,7 +15,7 @@ npm run dev
 # → http://localhost:5173
 ```
 
-## 📁 Structure du projet
+## Structure du projet
 
 ```
 react-boutique/
@@ -42,7 +42,7 @@ react-boutique/
         └── index.css           ← Styles globaux
 ```
 
-## 🧠 Concepts illustrés
+## Concepts illustrés
 
 | Concept       | Où le trouver                     |
 |---------------|-----------------------------------|

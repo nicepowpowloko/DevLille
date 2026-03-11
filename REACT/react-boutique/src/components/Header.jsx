@@ -5,7 +5,7 @@ function Header({ panier, onOuvrirPanier }) {
   return (
     <header className="header">
       <div className="header-logo">
-        <span className="logo-icon">⚡</span>
+        <span className="logo-icon"></span>
         <span className="logo-texte">TechStore</span>
       </div>
 
