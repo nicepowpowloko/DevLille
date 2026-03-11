@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merise — MCD → MLD avec Looping</title>
+<style>
+:root {
+    --bg:#f0f4f8; --card:#ffffff; --surface:#f8fafc;
+    --border:#dde3ed; --border2:#c8d2e0;
+    --accent:#1a6bcc; --accent2:#2e86de; --accent-light:#e8f0fb;
+    --green:#1a8a3c; --green-light:#e6f4ec;
+    --yellow:#b07d00; --yellow-light:#fdf6e3;
+    --red:#c0392b; --red-light:#fdf0ef;
+    --purple:#6b3fa0; --purple-light:#f3eefb;
+    --orange:#c05000; --orange-light:#fff0e6;
+    --text:#1a2030; --muted:#4a5568; --dim:#8a9ab5;
+    --title:#e8edf5; --code-bg:#1e2535; --code-text:#e6edf3;
+    --mono:'SF Mono','Fira Code','Consolas',monospace;
+    --shadow: 0 1px 4px rgba(0,0,0,.08), 0 2px 12px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(26,107,204,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(26,107,204,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;width:230px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--shadow);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.85rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.68rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:block;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:var(--accent-light);color:var(--accent);}
+.nav-link.active{background:var(--accent-light);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.64rem;color:var(--dim);margin-right:6px;}
+
+.content{margin-left:230px;padding:48px 48px 80px;max-width:calc(100% - 230px);}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:52px;}
+.page-header h1{font-size:2.4rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;color:var(--text);}
+.hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:580px;margin-bottom:16px;}
+.tags{display:flex;gap:8px;flex-wrap:wrap;}
+.tag-pill{font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.tag-pill.b{background:var(--accent-light);border-color:#b3cfee;color:var(--accent);}
+.tag-pill.g{background:var(--green-light);border-color:#b3d9c0;color:var(--green);}
+.tag-pill.p{background:var(--purple-light);border-color:#ccb8e8;color:var(--purple);}
+
+/* SECTION */
+.section{margin-bottom:60px;scroll-margin-top:24px;}
+.section-badge{font-family:var(--mono);font-size:.65rem;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.section-badge::after{content:'';flex:1;height:1px;background:var(--border);}
+.section h2{font-size:1.4rem;font-weight:800;margin-bottom:16px;letter-spacing:-.02em;color:var(--text);}
+.prose{color:var(--muted);font-size:.92rem;line-height:1.8;margin-bottom:16px;}
+.prose strong{color:var(--text);font-weight:700;}
+.prose code{font-family:var(--mono);font-size:.8rem;background:#e8edf5;border:1px solid var(--border);padding:1px 6px;border-radius:3px;color:var(--accent);}
+
+/* CALLOUT */
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:16px;font-size:.88rem;line-height:1.7;display:flex;gap:10px;align-items:flex-start;}
+.callout.info{background:var(--accent-light);border:1px solid #b3cfee;color:#1a4a8a;}
+.callout.tip{background:var(--yellow-light);border:1px solid #e8d090;color:#7a5500;}
+.callout.warn{background:var(--orange-light);border:1px solid #f0c090;color:#8a3800;}
+.callout.success{background:var(--green-light);border:1px solid #a8d8b8;color:#145a28;}
+.callout.def{background:var(--purple-light);border:1px solid #ccb8e8;color:#4a2080;}
+.callout strong{color:inherit;}
+.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.callout-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+
+/* CODE BLOCK */
+.code-block{background:var(--code-bg);border:1px solid #2d3748;border-radius:10px;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow);}
+.cb-head{background:#161b22;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2d3748;}
+.dots{display:flex;gap:5px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#7d8590;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;}
+.cb-badge.sql{background:rgba(26,107,204,.2);border:1px solid rgba(26,107,204,.4);color:#61dafb;}
+.cb-badge.looping{background:rgba(68,214,44,.12);border:1px solid rgba(68,214,44,.3);color:#44D62C;}
+.cb-copy{background:rgba(255,255,255,.06);border:1px solid #3d444d;color:#7d8590;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(97,218,251,.12);border-color:rgba(97,218,251,.4);color:#61dafb;}
+.cb-copy.ok{color:#44D62C;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:var(--code-text);}
+.kw{color:#ff7b72;font-weight:600;}
+.fn{color:#d2a8ff;}
+.str{color:#a5d6ff;}
+.num{color:#f8c555;}
+.cmt{color:#4a5568;font-style:italic;}
+.vr{color:#79c0ff;}
+.op{color:#ffa657;}
+.hl-line{background:rgba(97,218,251,.08);display:block;margin:0 -20px;padding:0 20px;border-left:2px solid #61dafb;}
+
+/* MERISE DIAGRAM */
+.mcd-container{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:16px;box-shadow:var(--shadow);overflow-x:auto;}
+.mcd-title{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:20px;}
+
+/* Entité */
+.entity{display:inline-block;min-width:160px;border-radius:8px;overflow:hidden;border:2px solid var(--accent);box-shadow:0 2px 8px rgba(26,107,204,.15);}
+.entity-header{background:var(--accent);color:#fff;padding:8px 14px;font-weight:800;font-size:.88rem;text-align:center;letter-spacing:.03em;}
+.entity-pk{padding:6px 14px 2px;font-family:var(--mono);font-size:.78rem;color:var(--accent);font-weight:700;border-bottom:1px dashed var(--border);background:var(--accent-light);}
+.entity-pk::before{content:'🔑 ';}
+.entity-attr{padding:3px 14px;font-family:var(--mono);font-size:.75rem;color:var(--muted);background:var(--card);}
+.entity-attr:last-child{padding-bottom:8px;}
+
+/* Relation */
+.relation{display:inline-block;min-width:110px;border-radius:8px;border:2px solid var(--orange);background:var(--orange-light);text-align:center;padding:10px 14px;font-weight:800;font-size:.82rem;color:var(--orange);}
+.relation-verb{font-size:.7rem;font-weight:600;color:var(--orange);opacity:.8;display:block;margin-top:2px;}
+
+/* Cardinalités */
+.card-badge{font-family:var(--mono);font-size:.78rem;font-weight:800;padding:3px 9px;border-radius:4px;background:var(--card);border:1.5px solid var(--border);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.card-badge.one{border-color:#1a8a3c;color:#1a8a3c;}
+.card-badge.many{border-color:#c0392b;color:#c0392b;}
+
+/* Flèche liaison */
+.liaison{display:flex;align-items:center;gap:8px;margin:16px 0;flex-wrap:wrap;}
+.liaison-line{flex:1;height:2px;background:linear-gradient(90deg,var(--border),var(--border2));min-width:30px;position:relative;}
+.liaison-line::after{content:'►';position:absolute;right:-6px;top:-8px;font-size:.7rem;color:var(--dim);}
+
+/* MLD Table */
+.mld-table{width:100%;border-collapse:collapse;font-size:.84rem;font-family:var(--mono);margin-bottom:4px;}
+.mld-table th{background:var(--accent);color:#fff;padding:8px 14px;text-align:left;font-weight:700;font-size:.78rem;}
+.mld-table td{padding:7px 14px;border-bottom:1px solid var(--border);color:var(--text);}
+.mld-table tr:last-child td{border-bottom:none;}
+.mld-table tr:hover td{background:var(--accent-light);}
+.td-pk{color:var(--accent);font-weight:700;}
+.td-pk::before{content:'🔑 ';}
+.td-fk{color:var(--orange);font-weight:600;}
+.td-fk::before{content:'🔗 ';}
+.td-attr{color:var(--muted);}
+.td-type{color:var(--dim);font-size:.72rem;}
+.td-nn{font-size:.65rem;padding:1px 5px;border-radius:3px;background:var(--red-light);border:1px solid #f0c0bd;color:var(--red);}
+
+/* ÉTAPES LOOPING */
+.steps-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow);}
+.step-head{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.78rem;font-weight:800;flex-shrink:0;}
+.step-num.blue{background:var(--accent-light);border:2px solid #b3cfee;color:var(--accent);}
+.step-num.green{background:var(--green-light);border:2px solid #a8d8b8;color:var(--green);}
+.step-num.purple{background:var(--purple-light);border:2px solid #ccb8e8;color:var(--purple);}
+.step-num.orange{background:var(--orange-light);border:2px solid #f0c090;color:var(--orange);}
+.step-title{font-weight:700;font-size:.88rem;color:var(--text);}
+.step-body{padding:14px 16px;font-size:.84rem;color:var(--muted);line-height:1.7;}
+.step-body strong{color:var(--text);}
+
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--shadow);}
+.q{font-weight:700;font-size:.92rem;margin-bottom:13px;color:var(--text);}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.84rem;cursor:pointer;transition:all .15s;text-align:left;}
+.opt:hover{border-color:#b3cfee;color:var(--text);background:var(--accent-light);}
+.opt.correct{border-color:#a8d8b8;background:var(--green-light);color:var(--green);}
+.opt.wrong{border-color:#f0c0bd;background:var(--red-light);color:var(--red);}
+.fb{margin-top:10px;font-size:.82rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:var(--green-light);border:1px solid #a8d8b8;color:#145a28;}
+.fb.ko{background:var(--red-light);border:1px solid #f0c0bd;color:#8a1a14;}
+
+/* RESULT */
+.result-ok{display:flex;align-items:center;gap:10px;background:var(--green-light);border:1px solid #a8d8b8;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:.85rem;color:#145a28;}
+
+/* COMPARE GRID */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+.cbox{background:var(--card);border:1px solid var(--border);border-radius:9px;overflow:hidden;box-shadow:var(--shadow);}
+.cbox.avant{border-color:#f0c0bd;}
+.cbox.apres{border-color:#a8d8b8;}
+.chead{padding:8px 14px;font-family:var(--mono);font-size:.7rem;border-bottom:1px solid var(--border);font-weight:700;letter-spacing:.05em;}
+.cbox.avant .chead{background:var(--red-light);color:var(--red);}
+.cbox.apres .chead{background:var(--green-light);color:var(--green);}
+
+.divider{height:1px;background:var(--border);margin:48px 0;}
+::-webkit-scrollbar{width:5px;height:5px;} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}.steps-grid,.compare{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <span> Merise</span>
+        <p>MCD → MLD avec Looping</p>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Théorie</div>
+        <a href="#intro" class="nav-link active"><span class="nav-num">01</span>C'est quoi Merise ?</a>
+        <a href="#concepts" class="nav-link"><span class="nav-num">02</span>Entités & Associations</a>
+        <a href="#cardinalites" class="nav-link"><span class="nav-num">03</span>Les cardinalités</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Construire le MCD</div>
+        <a href="#mcd-exemple" class="nav-link"><span class="nav-num">04</span>MCD — Exemple complet</a>
+        <a href="#looping" class="nav-link"><span class="nav-num">05</span>Looping — pas à pas</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Transformer en MLD</div>
+        <a href="#regles" class="nav-link"><span class="nav-num">06</span>Règles de transformation</a>
+        <a href="#mld-exemple" class="nav-link"><span class="nav-num">07</span>MLD — Résultat final</a>
+        <a href="#sql" class="nav-link"><span class="nav-num">08</span>Vers le SQL</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Vérifier</div>
+        <a href="#quiz" class="nav-link"><span class="nav-num">09</span>Quiz</a>
+    </div>
+</aside>
+
+<!-- CONTENU -->
+<main class="content">
+
+<div class="page-header">
+    <h1>Modélisation <span class="hl">Merise</span><br>MCD → MLD</h1>
+    <p>Apprendre à concevoir une base de données proprement : construire un MCD (Modèle Conceptuel), le dessiner dans Looping, puis le transformer en MLD (Modèle Logique) prêt pour SQL.</p>
+    <div class="tags">
+        <span class="tag-pill b">MCD</span>
+        <span class="tag-pill b">MLD</span>
+        <span class="tag-pill g">Looping</span>
+        <span class="tag-pill p">SQL</span>
+    </div>
+</div>
+
+<!-- ── 01 INTRO ── -->
+<section class="section" id="intro">
+    <div class="section-badge">01</div>
+    <h2>C'est quoi Merise ?</h2>
+
+    <p class="prose">Merise est une <strong>méthode de conception de bases de données</strong> française. L'idée : avant d'écrire une seule ligne de SQL, on modélise les données sur papier (ou dans Looping) pour être sûr de la structure.</p>
+
+    <div class="compare">
+        <div class="cbox avant" style="border-color:#b3cfee;">
+            <div class="chead" style="background:var(--accent-light);color:var(--accent);">MCD — Niveau conceptuel</div>
+            <div style="padding:14px;font-size:.86rem;color:var(--muted);line-height:1.75;">
+                <strong style="color:var(--text);">Ce qu'on modélise</strong> — proche du monde réel.<br>
+                On pense en <strong>entités</strong> (Client, Produit) et en <strong>associations</strong> (Commande, Appartient).<br><br>
+                Pas de technique, pas de SQL. Juste la logique métier.
+            </div>
+        </div>
+        <div class="cbox apres" style="border-color:#a8d8b8;">
+            <div class="chead" style="background:var(--green-light);color:var(--green);">MLD — Niveau logique</div>
+            <div style="padding:14px;font-size:.86rem;color:var(--muted);line-height:1.75;">
+                <strong style="color:var(--text);">Ce qu'on va créer</strong> — proche de la base de données.<br>
+                On parle de <strong>tables</strong>, de <strong>clés primaires</strong> (PK) et de <strong>clés étrangères</strong> (FK).<br><br>
+                Directement traduisible en SQL <code>CREATE TABLE</code>.
+            </div>
+        </div>
+    </div>
+
+    <div class="callout info">
+        <span class="callout-icon"></span>
+        <div><strong>L'analogie :</strong> le MCD c'est le plan d'architecte — ce qu'on veut construire. Le MLD c'est le plan technique — comment on va le construire concrètement.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 02 CONCEPTS ── -->
+<section class="section" id="concepts">
+    <div class="section-badge">02</div>
+    <h2>Entités & Associations — les deux briques</h2>
+
+    <p class="prose">Un MCD n'a que deux types d'éléments : les <strong>entités</strong> (les choses du monde réel) et les <strong>associations</strong> (les liens entre ces choses).</p>
+
+    <div style="display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px;">
+
+        <div>
+            <div class="callout def" style="margin-bottom:12px;">
+                <span class="callout-icon"></span>
+                <div><strong>Entité</strong> — un objet du monde réel dont on veut stocker des infos. Ex : <code>CLIENT</code>, <code>PRODUIT</code>, <code>COMMANDE</code></div>
+            </div>
+            <div class="entity">
+                <div class="entity-header">CLIENT</div>
+                <div class="entity-pk">id_client</div>
+                <div class="entity-attr">nom</div>
+                <div class="entity-attr">prenom</div>
+                <div class="entity-attr">email</div>
+                <div class="entity-attr">telephone</div>
+            </div>
+        </div>
+
+        <div>
+            <div class="callout warn" style="margin-bottom:12px;">
+                <span class="callout-icon"></span>
+                <div><strong>Association</strong> — le lien entre deux entités. Ex : un Client <em>passe</em> une Commande. Le verbe c'est l'association.</div>
+            </div>
+            <div class="relation">
+                PASSER
+                <span class="relation-verb">un client passe une commande</span>
+            </div>
+        </div>
+
+        <div>
+            <div class="callout def" style="margin-bottom:12px;border-color:#ccb8e8;">
+                <span class="callout-icon"></span>
+                <div><strong>Entité</strong></div>
+            </div>
+            <div class="entity" style="border-color:#6b3fa0;">
+                <div class="entity-header" style="background:#6b3fa0;">COMMANDE</div>
+                <div class="entity-pk" style="color:#6b3fa0;background:var(--purple-light);">id_commande</div>
+                <div class="entity-attr">date_commande</div>
+                <div class="entity-attr">statut</div>
+                <div class="entity-attr">montant_total</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="callout tip">
+        <span class="callout-icon"></span>
+        <div><strong>Identifier les entités :</strong> un nom = une entité candidate. Demande-toi "est-ce que j'ai besoin de stocker plusieurs informations sur ce sujet ?" Si oui, c'est une entité.</div>
+    </div>
+
+    <p class="prose"><strong>L'identifiant</strong> (ou clé primaire) est l'attribut souligné — il identifie de manière unique chaque occurrence. Dans Looping, il apparaît automatiquement en gras/souligné.</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 03 CARDINALITÉS ── -->
+<section class="section" id="cardinalites">
+    <div class="section-badge">03</div>
+    <h2>Les cardinalités — le cœur de Merise</h2>
+
+    <p class="prose">Les cardinalités indiquent <strong>combien de fois</strong> une entité peut participer à une association. On les lit toujours <strong>depuis l'entité</strong> vers l'association, avec un minimum et un maximum.</p>
+
+    <div class="mcd-container">
+        <div class="mcd-title">Lecture des cardinalités</div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;">
+            <div class="entity">
+                <div class="entity-header">CLIENT</div>
+                <div class="entity-pk">id_client</div>
+                <div class="entity-attr">nom</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span class="card-badge many">1,N</span>
+                <div style="width:50px;height:2px;background:var(--border2);"></div>
+                <div class="relation">PASSER</div>
+                <div style="width:50px;height:2px;background:var(--border2);"></div>
+                <span class="card-badge one">1,1</span>
+            </div>
+            <div class="entity" style="border-color:#6b3fa0;">
+                <div class="entity-header" style="background:#6b3fa0;">COMMANDE</div>
+                <div class="entity-pk" style="color:#6b3fa0;background:var(--purple-light);">id_commande</div>
+                <div class="entity-attr">date_commande</div>
+            </div>
+        </div>
+        <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:.84rem;">
+                <div style="color:var(--red);font-weight:700;margin-bottom:6px;">📖 Lire CLIENT → (1,N) → PASSER</div>
+                <div style="color:var(--muted);">Un client passe <strong style="color:var(--text);">au minimum 1</strong> commande et <strong style="color:var(--text);">au maximum N</strong> (plusieurs) commandes.</div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:.84rem;">
+                <div style="color:var(--green);font-weight:700;margin-bottom:6px;">Lire COMMANDE → (1,1) → PASSER</div>
+                <div style="color:var(--muted);">Une commande est passée par <strong style="color:var(--text);">exactement 1</strong> client (ni 0, ni 2).</div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:16px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;box-shadow:var(--shadow);">
+            <div style="font-family:var(--mono);font-size:1.2rem;font-weight:900;color:var(--accent);margin-bottom:6px;">0,1</div>
+            <div style="font-size:.82rem;color:var(--muted);">Zéro ou un.<br><em>Un employé dirige 0 ou 1 service.</em></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;box-shadow:var(--shadow);">
+            <div style="font-family:var(--mono);font-size:1.2rem;font-weight:900;color:var(--green);margin-bottom:6px;">1,1</div>
+            <div style="font-size:.82rem;color:var(--muted);">Exactement un.<br><em>Une commande appartient à 1 client.</em></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;box-shadow:var(--shadow);">
+            <div style="font-family:var(--mono);font-size:1.2rem;font-weight:900;color:var(--orange);margin-bottom:6px;">0,N</div>
+            <div style="font-size:.82rem;color:var(--muted);">Zéro ou plusieurs.<br><em>Un produit est dans 0 ou N paniers.</em></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;box-shadow:var(--shadow);">
+            <div style="font-family:var(--mono);font-size:1.2rem;font-weight:900;color:var(--red);margin-bottom:6px;">1,N</div>
+            <div style="font-size:.82rem;color:var(--muted);">Un ou plusieurs.<br><em>Un client passe au moins 1 commande.</em></div>
+        </div>
+    </div>
+
+    <div class="callout warn">
+        <span class="callout-icon"></span>
+        <div><strong>Piège fréquent :</strong> les cardinalités se lisent <strong>depuis l'entité vers l'association</strong>, pas dans le sens inverse. La cardinalité écrite côté entité répond à la question "combien de fois cette entité participe à l'association ?"</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 04 MCD EXEMPLE ── -->
+<section class="section" id="mcd-exemple">
+    <div class="section-badge">04</div>
+    <h2>MCD complet — Boutique en ligne</h2>
+
+    <p class="prose">On modélise une boutique en ligne : des <strong>Clients</strong> passent des <strong>Commandes</strong>, chaque commande contient des <strong>Produits</strong>, chaque produit appartient à une <strong>Catégorie</strong>.</p>
+
+    <div class="mcd-container">
+        <div class="mcd-title">MCD — Boutique en ligne</div>
+
+        <!-- Ligne 1 : CLIENT — PASSER — COMMANDE -->
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:24px;">
+            <div class="entity">
+                <div class="entity-header">CLIENT</div>
+                <div class="entity-pk">id_client</div>
+                <div class="entity-attr">nom</div>
+                <div class="entity-attr">prenom</div>
+                <div class="entity-attr">email</div>
+                <div class="entity-attr">adresse</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <span class="card-badge many">1,N</span>
+                <div style="width:60px;height:2px;background:var(--border2);"></div>
+                <div class="relation" style="min-width:100px;">PASSER</div>
+                <div style="width:60px;height:2px;background:var(--border2);"></div>
+                <span class="card-badge one">1,1</span>
+            </div>
+            <div class="entity" style="border-color:#6b3fa0;">
+                <div class="entity-header" style="background:#6b3fa0;">COMMANDE</div>
+                <div class="entity-pk" style="color:#6b3fa0;background:var(--purple-light);">id_commande</div>
+                <div class="entity-attr">date_commande</div>
+                <div class="entity-attr">statut</div>
+                <div class="entity-attr">adresse_livraison</div>
+            </div>
+        </div>
+
+        <!-- Ligne 2 : COMMANDE — CONTENIR — PRODUIT — APPARTENIR — CATEGORIE -->
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;">
+            <div class="entity" style="border-color:#6b3fa0;">
+                <div class="entity-header" style="background:#6b3fa0;">COMMANDE</div>
+                <div class="entity-pk" style="color:#6b3fa0;background:var(--purple-light);">id_commande</div>
+                <div class="entity-attr">date_commande</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <span class="card-badge many">1,N</span>
+                <div style="width:40px;height:2px;background:var(--border2);"></div>
+                <div class="relation" style="min-width:110px;">
+                    CONTENIR
+                    <span class="relation-verb" style="font-size:.65rem;display:block;">quantite</span>
+                </div>
+                <div style="width:40px;height:2px;background:var(--border2);"></div>
+                <span class="card-badge many">0,N</span>
+            </div>
+            <div class="entity" style="border-color:#1a8a3c;">
+                <div class="entity-header" style="background:#1a8a3c;">PRODUIT</div>
+                <div class="entity-pk" style="color:#1a8a3c;background:var(--green-light);">id_produit</div>
+                <div class="entity-attr">nom_produit</div>
+                <div class="entity-attr">prix</div>
+                <div class="entity-attr">stock</div>
+                <div class="entity-attr">description</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <span class="card-badge many">0,N</span>
+                <div style="width:40px;height:2px;background:var(--border2);"></div>
+                <div class="relation" style="min-width:110px;">APPARTENIR</div>
+                <div style="width:40px;height:2px;background:var(--border2);"></div>
+                <span class="card-badge one">1,1</span>
+            </div>
+            <div class="entity" style="border-color:#b07d00;">
+                <div class="entity-header" style="background:#b07d00;">CATEGORIE</div>
+                <div class="entity-pk" style="color:#b07d00;background:var(--yellow-light);">id_categorie</div>
+                <div class="entity-attr">nom_categorie</div>
+                <div class="entity-attr">description</div>
+            </div>
+        </div>
+
+        <div style="margin-top:20px;font-size:.8rem;color:var(--dim);text-align:center;font-family:var(--mono);">
+            Note : CONTENIR a un attribut propre — <strong>quantite</strong> — car un produit peut être commandé en plusieurs exemplaires
+        </div>
+    </div>
+
+    <div class="callout tip">
+        <span class="callout-icon"></span>
+        <div><strong>Association avec attribut :</strong> quand une information n'appartient ni à une entité ni à l'autre mais <em>à la relation entre les deux</em>, on la met dans l'association. Ici <code>quantite</code> n'appartient pas à COMMANDE ni à PRODUIT — elle décrit la ligne de commande.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 05 LOOPING ── -->
+<section class="section" id="looping">
+    <div class="section-badge">05</div>
+    <h2>Looping — construire le MCD pas à pas</h2>
+
+    <p class="prose"><strong>Looping</strong> est un logiciel gratuit (Windows/Mac avec Wine) qui permet de dessiner un MCD et de le transformer automatiquement en MLD et en SQL. Voici toutes les manipulations à faire.</p>
+
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-head">
+                <div class="step-num blue">1</div>
+                <div class="step-title">Créer une entité</div>
+            </div>
+            <div class="step-body">
+                Double-clic sur la zone blanche → une entité apparaît.<br><br>
+                <strong>Nommer l'entité</strong> : clic sur le nom → taper en MAJUSCULES par convention (CLIENT, PRODUIT…).<br><br>
+                <strong>Ajouter des attributs</strong> : clic sur le "+" sous l'entité → taper le nom → Entrée.<br><br>
+                <strong>Définir l'identifiant</strong> : double-clic sur l'attribut → cocher "Identifiant" → il passe en gras souligné.
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-head">
+                <div class="step-num green">2</div>
+                <div class="step-title">Créer une association</div>
+            </div>
+            <div class="step-body">
+                Clic sur une entité → maintenir → glisser vers une autre entité → relâcher.<br><br>
+                Une association se crée automatiquement entre les deux.<br><br>
+                <strong>Nommer l'association</strong> : clic sur le nom de l'association → taper un verbe à l'infinitif (PASSER, CONTENIR…).<br><br>
+                <strong>Ajouter un attribut à l'association</strong> : clic sur "+" de l'association (ex: <em>quantite</em> pour CONTENIR).
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-head">
+                <div class="step-num purple">3</div>
+                <div class="step-title">Définir les cardinalités</div>
+            </div>
+            <div class="step-body">
+                Clic sur le lien entre une entité et une association → un menu apparaît.<br><br>
+                Choisir le <strong>minimum</strong> (0 ou 1) et le <strong>maximum</strong> (1 ou N).<br><br>
+                Répéter pour chaque côté de chaque association.<br><br>
+                <strong>Vérification</strong> : relire chaque cardinalité en français pour confirmer sa logique.
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-head">
+                <div class="step-num orange">4</div>
+                <div class="step-title">Générer le MLD et le SQL</div>
+            </div>
+            <div class="step-body">
+                Menu <strong>Génération → MLD</strong> : Looping transforme automatiquement le MCD en tables relationnelles.<br><br>
+                Menu <strong>Génération → SQL</strong> : génère le code <code>CREATE TABLE</code> prêt à exécuter dans MySQL/PostgreSQL.<br><br>
+                Vérifier les clés étrangères générées → elles doivent correspondre aux règles de transformation.
+            </div>
+        </div>
+    </div>
+
+    <div class="callout success">
+        <span class="callout-icon"></span>
+        <div><strong>Télécharger Looping :</strong> <code>looping-mcd.net</code> — gratuit, pas d'installation sur Mac (utiliser Wine ou une VM Windows). Sinon utiliser <strong>DB Designer</strong> (en ligne) ou <strong>draw.io</strong> pour les schémas.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 06 RÈGLES ── -->
+<section class="section" id="regles">
+    <div class="section-badge">06</div>
+    <h2>Les 3 règles de transformation MCD → MLD</h2>
+
+    <p class="prose">Pour passer du MCD au MLD, il y a exactement <strong>3 règles</strong> selon le type de cardinalité de l'association.</p>
+
+    <!-- RÈGLE 1 -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow);">
+        <div style="background:var(--green-light);border-bottom:1px solid #a8d8b8;padding:12px 20px;display:flex;align-items:center;gap:12px;">
+            <span style="width:32px;height:32px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;">1</span>
+            <div>
+                <div style="font-weight:800;font-size:.95rem;color:var(--green);">Association 1,1 — 1,N  (ou 0,1 — 1,N)</div>
+                <div style="font-size:.78rem;color:var(--muted);">La clé de l'entité côté "1" migre vers l'entité côté "N"</div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:6px;">
+                <span class="card-badge one">1,1</span>
+                <span style="color:var(--dim);">↔</span>
+                <span class="card-badge many">1,N</span>
+            </div>
+        </div>
+        <div style="padding:16px 20px;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;">
+            <div>
+                <div style="font-family:var(--mono);font-size:.72rem;color:var(--dim);margin-bottom:8px;">MCD</div>
+                <div style="font-family:var(--mono);font-size:.84rem;color:var(--muted);">
+                    CLIENT <span style="color:var(--red);">(1,N)</span> —PASSER— <span style="color:var(--green);">(1,1)</span> COMMANDE
+                </div>
+            </div>
+            <div style="font-size:1.4rem;color:var(--dim);">→</div>
+            <div>
+                <div style="font-family:var(--mono);font-size:.72rem;color:var(--dim);margin-bottom:8px;">MLD</div>
+                <div style="font-family:var(--mono);font-size:.84rem;color:var(--muted);">
+                    CLIENT(<u>id_client</u>, nom, …)<br>
+                    COMMANDE(<u>id_commande</u>, date, …, <span style="color:var(--orange);">#id_client</span>)
+                </div>
+            </div>
+        </div>
+        <div style="padding:0 20px 14px;font-size:.84rem;color:var(--muted);">
+             L'identifiant de CLIENT (<code>id_client</code>) devient une <strong>clé étrangère (#)</strong> dans COMMANDE.
+        </div>
+    </div>
+
+    <!-- RÈGLE 2 -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow);">
+        <div style="background:var(--orange-light);border-bottom:1px solid #f0c090;padding:12px 20px;display:flex;align-items:center;gap:12px;">
+            <span style="width:32px;height:32px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;">2</span>
+            <div>
+                <div style="font-weight:800;font-size:.95rem;color:var(--orange);">Association N,N (ou 0,N — 1,N)</div>
+                <div style="font-size:.78rem;color:var(--muted);">Crée une nouvelle table intermédiaire avec les deux clés</div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:6px;">
+                <span class="card-badge many">N,N</span>
+            </div>
+        </div>
+        <div style="padding:16px 20px;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;">
+            <div>
+                <div style="font-family:var(--mono);font-size:.72rem;color:var(--dim);margin-bottom:8px;">MCD</div>
+                <div style="font-family:var(--mono);font-size:.84rem;color:var(--muted);">
+                    COMMANDE <span style="color:var(--red);">(1,N)</span><br>
+                    —CONTENIR— <span style="font-size:.72rem;">quantite</span><br>
+                    <span style="color:var(--red);">(0,N)</span> PRODUIT
+                </div>
+            </div>
+            <div style="font-size:1.4rem;color:var(--dim);">→</div>
+            <div>
+                <div style="font-family:var(--mono);font-size:.72rem;color:var(--dim);margin-bottom:8px;">MLD</div>
+                <div style="font-family:var(--mono);font-size:.84rem;color:var(--muted);">
+                    COMMANDE(<u>id_commande</u>, …)<br>
+                    PRODUIT(<u>id_produit</u>, …)<br>
+                    <span style="color:var(--orange);">CONTENIR(<u>#id_commande</u>, <u>#id_produit</u>, quantite)</span>
+                </div>
+            </div>
+        </div>
+        <div style="padding:0 20px 14px;font-size:.84rem;color:var(--muted);">
+            👉 Une nouvelle table <strong>CONTENIR</strong> est créée. Sa clé primaire est la combinaison des deux clés étrangères. Les attributs de l'association (ici <code>quantite</code>) vont dans cette table.
+        </div>
+    </div>
+
+    <!-- RÈGLE 3 -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow);">
+        <div style="background:var(--purple-light);border-bottom:1px solid #ccb8e8;padding:12px 20px;display:flex;align-items:center;gap:12px;">
+            <span style="width:32px;height:32px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;">3</span>
+            <div>
+                <div style="font-weight:800;font-size:.95rem;color:var(--purple);">Association 1,1 — 1,1 (rare)</div>
+                <div style="font-size:.78rem;color:var(--muted);">Les deux entités fusionnent en une seule table</div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:6px;">
+                <span class="card-badge one">1,1</span>
+                <span style="color:var(--dim);">↔</span>
+                <span class="card-badge one">1,1</span>
+            </div>
+        </div>
+        <div style="padding:16px 20px;font-size:.84rem;color:var(--muted);">
+            Les deux entités peuvent être fusionnées en une seule table. On choisit un des deux identifiants comme clé primaire et on regroupe tous les attributs.
+        </div>
+    </div>
+
+    <div class="callout info">
+        <span class="callout-icon"></span>
+        <div><strong>Mémo rapide :</strong><br>
+        <strong>1,1 — 1,N</strong> → FK qui migre vers le côté N<br>
+        <strong>N,N</strong> → nouvelle table intermédiaire<br>
+        <strong>1,1 — 1,1</strong> → fusion des deux tables</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 07 MLD RÉSULTAT ── -->
+<section class="section" id="mld-exemple">
+    <div class="section-badge">07</div>
+    <h2>MLD final — Boutique en ligne</h2>
+
+    <p class="prose">Voici le résultat de la transformation du MCD en MLD. Chaque entité devient une table, les associations N,N deviennent des tables intermédiaires.</p>
+
+    <div class="mcd-container">
+        <div class="mcd-title">MLD — 5 tables</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+            <div>
+                <div style="font-family:var(--mono);font-size:.72rem;color:var(--accent);font-weight:700;margin-bottom:8px;">TABLE CLIENT</div>
+                <table class="mld-table">
+                    <tr><th>Champ</th><th>Type</th><th>Contrainte</th></tr>
+                    <tr><td class="td-pk">id_client</td><td class="td-type">INT</td><td><span class="td-nn">PK</span></td></tr>
+                    <tr><td class="td-attr">nom</td><td class="td-type">VARCHAR(100)</td><td><span class="td-nn">NOT NULL</span></td></tr>
+                    <tr><td class="td-attr">prenom</td><td class="td-type">VARCHAR(100)</td><td></td></tr>
+                    <tr><td class="td-attr">email</td><td class="td-type">VARCHAR(150)</td><td><span class="td-nn">UNIQUE</span></td></tr>
+                    <tr><td class="td-attr">adresse</td><td class="td-type">TEXT</td><td></td></tr>
+                </table>
+            </div>
+
+            <div>
+                <div style="font-family:var(--mono);font-size:.72rem;color:#6b3fa0;font-weight:700;margin-bottom:8px;">TABLE COMMANDE</div>
+                <table class="mld-table">
+                    <tr><th>Champ</th><th>Type</th><th>Contrainte</th></tr>
+                    <tr><td class="td-pk">id_commande</td><td class="td-type">INT</td><td><span class="td-nn">PK</span></td></tr>
+                    <tr><td class="td-attr">date_commande</td><td class="td-type">DATE</td><td><span class="td-nn">NOT NULL</span></td></tr>
+                    <tr><td class="td-attr">statut</td><td class="td-type">VARCHAR(50)</td><td></td></tr>
+                    <tr><td class="td-attr">adresse_livraison</td><td class="td-type">TEXT</td><td></td></tr>
+                    <tr><td class="td-fk">id_client</td><td class="td-type">INT</td><td><span class="td-nn">FK → CLIENT</span></td></tr>
+                </table>
+            </div>
+
+            <div>
+                <div style="font-family:var(--mono);font-size:.72rem;color:var(--green);font-weight:700;margin-bottom:8px;">TABLE PRODUIT</div>
+                <table class="mld-table">
+                    <tr><th>Champ</th><th>Type</th><th>Contrainte</th></tr>
+                    <tr><td class="td-pk">id_produit</td><td class="td-type">INT</td><td><span class="td-nn">PK</span></td></tr>
+                    <tr><td class="td-attr">nom_produit</td><td class="td-type">VARCHAR(200)</td><td><span class="td-nn">NOT NULL</span></td></tr>
+                    <tr><td class="td-attr">prix</td><td class="td-type">DECIMAL(10,2)</td><td><span class="td-nn">NOT NULL</span></td></tr>
+                    <tr><td class="td-attr">stock</td><td class="td-type">INT</td><td></td></tr>
+                    <tr><td class="td-attr">description</td><td class="td-type">TEXT</td><td></td></tr>
+                    <tr><td class="td-fk">id_categorie</td><td class="td-type">INT</td><td><span class="td-nn">FK → CATEGORIE</span></td></tr>
+                </table>
+            </div>
+
+            <div>
+                <div style="font-family:var(--mono);font-size:.72rem;color:var(--yellow);font-weight:700;margin-bottom:8px;">TABLE CATEGORIE</div>
+                <table class="mld-table">
+                    <tr><th>Champ</th><th>Type</th><th>Contrainte</th></tr>
+                    <tr><td class="td-pk">id_categorie</td><td class="td-type">INT</td><td><span class="td-nn">PK</span></td></tr>
+                    <tr><td class="td-attr">nom_categorie</td><td class="td-type">VARCHAR(100)</td><td><span class="td-nn">NOT NULL</span></td></tr>
+                    <tr><td class="td-attr">description</td><td class="td-type">TEXT</td><td></td></tr>
+                </table>
+            </div>
+
+        </div>
+
+        <div style="margin-top:16px;">
+            <div style="font-family:var(--mono);font-size:.72rem;color:var(--orange);font-weight:700;margin-bottom:8px;">TABLE CONTENIR — issue de l'association N,N</div>
+            <table class="mld-table">
+                <tr><th>Champ</th><th>Type</th><th>Contrainte</th></tr>
+                <tr><td class="td-fk">id_commande</td><td class="td-type">INT</td><td><span class="td-nn">PK + FK → COMMANDE</span></td></tr>
+                <tr><td class="td-fk">id_produit</td><td class="td-type">INT</td><td><span class="td-nn">PK + FK → PRODUIT</span></td></tr>
+                <tr><td class="td-attr">quantite</td><td class="td-type">INT</td><td><span class="td-nn">NOT NULL</span></td></tr>
+            </table>
+            <div style="font-size:.78rem;color:var(--dim);margin-top:8px;font-family:var(--mono);">→ Clé primaire composite : (id_commande, id_produit)</div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 08 SQL ── -->
+<section class="section" id="sql">
+    <div class="section-badge">08</div>
+    <h2>Du MLD vers le SQL</h2>
+
+    <p class="prose">Chaque table du MLD donne exactement un <code>CREATE TABLE</code>. Looping peut générer ce code automatiquement, mais voici comment le lire et le comprendre.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">boutique.sql — généré depuis Looping</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Toujours créer les tables sans FK en premier</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">CLIENT</span> (
+    <span class="vr">id_client</span>   <span class="op">INT</span><span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">nom</span><span class="op">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL</span>,
+    <span class="vr">prenom</span><span class="op">VARCHAR</span>(<span class="num">100</span>),
+    <span class="vr">email</span><span class="op">VARCHAR</span>(<span class="num">150</span>) <span class="kw">UNIQUE NOT NULL</span>,
+    <span class="vr">adresse</span><span class="op">TEXT</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="fn">CATEGORIE</span> (
+    <span class="vr">id_categorie</span><span class="op">INT</span><span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">nom_categorie</span><span class="op">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL</span>,
+    <span class="vr">description</span><span class="op">TEXT</span>
+);
+
+<span class="cmt">-- Ensuite les tables avec FK</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">COMMANDE</span> (
+    <span class="vr">id_commande</span><span class="op">INT</span><span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">date_commande</span><span class="op">DATE</span><span class="kw">NOT NULL</span>,
+    <span class="vr">statut</span><span class="op">VARCHAR</span>(<span class="num">50</span>),
+    <span class="vr">adresse_livraison</span> <span class="op">TEXT</span>,
+    <span class="hl-line"><span class="vr">id_client</span><span class="op">INT</span><span class="kw">NOT NULL</span>,   <span class="cmt">← clé étrangère</span></span>
+    <span class="hl-line"><span class="kw">FOREIGN KEY</span> (<span class="vr">id_client</span>) <span class="kw">REFERENCES</span> <span class="fn">CLIENT</span>(<span class="vr">id_client</span>)</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="fn">PRODUIT</span> (
+    <span class="vr">id_produit</span><span class="op">INT</span><span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">nom_produit</span><span class="op">VARCHAR</span>(<span class="num">200</span>)<span class="kw">NOT NULL</span>,
+    <span class="vr">prix</span> <span class="op">DECIMAL</span>(<span class="num">10</span>,<span class="num">2</span>)  <span class="kw">NOT NULL</span>,
+    <span class="vr">stock</span> <span class="op">INT</span>  <span class="kw">DEFAULT</span> <span class="num">0</span>,
+    <span class="vr">description</span>   <span class="op">TEXT</span>,
+    <span class="hl-line"><span class="vr">id_categorie</span>  <span class="op">INT</span> <span class="kw">NOT NULL</span>,</span>
+    <span class="hl-line"><span class="kw">FOREIGN KEY</span> (<span class="vr">id_categorie</span>) <span class="kw">REFERENCES</span> <span class="fn">CATEGORIE</span>(<span class="vr">id_categorie</span>)</span>
+);
+
+<span class="cmt">-- Table issue de l'association N,N — clé primaire composite</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">CONTENIR</span> (
+    <span class="hl-line"><span class="vr">id_commande</span>  <span class="op">INT</span>  <span class="kw">NOT NULL</span>,</span>
+    <span class="hl-line"><span class="vr">id_produit</span> <span class="op">INT</span>  <span class="kw">NOT NULL</span>,</span>
+    <span class="vr">quantite</span>  <span class="op">INT</span>  <span class="kw">NOT NULL DEFAULT</span> <span class="num">1</span>,
+    <span class="hl-line"><span class="kw">PRIMARY KEY</span> (<span class="vr">id_commande</span>, <span class="vr">id_produit</span>),   <span class="cmt">← clé composite</span></span>
+    <span class="kw">FOREIGN KEY</span> (<span class="vr">id_commande</span>) <span class="kw">REFERENCES</span> <span class="fn">COMMANDE</span>(<span class="vr">id_commande</span>),
+    <span class="kw">FOREIGN KEY</span> (<span class="vr">id_produit</span>)  <span class="kw">REFERENCES</span> <span class="fn">PRODUIT</span>(<span class="vr">id_produit</span>)
+);</code></pre>
+    </div>
+
+    <div class="callout warn">
+        <span class="callout-icon"></span>
+        <div><strong>Ordre de création :</strong> toujours créer les tables <strong>référencées</strong> avant les tables qui les référencent. CLIENT avant COMMANDE, CATEGORIE avant PRODUIT, COMMANDE et PRODUIT avant CONTENIR.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── QUIZ ── -->
+<section class="section" id="quiz">
+    <div class="section-badge">09</div>
+    <h2>Quiz — Vérifie ta compréhension</h2>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q1.</span> Quelle est la différence entre MCD et MLD ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q1',false)">Le MCD est pour MySQL, le MLD est pour PostgreSQL</button>
+            <button class="opt" onclick="ans(this,'q1',true)">Le MCD modélise la logique métier, le MLD décrit les tables concrètes avec PK et FK</button>
+            <button class="opt" onclick="ans(this,'q1',false)">Le MCD a des cardinalités, le MLD non</button>
+        </div>
+        <div class="fb" id="fb-q1"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q2.</span> Une association <strong>(1,N) — (0,N)</strong> entre AUTEUR et LIVRE se transforme en :</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q2',false)">id_auteur migre en FK dans LIVRE</button>
+            <button class="opt" onclick="ans(this,'q2',true)">Une nouvelle table intermédiaire ECRIRE(#id_auteur, #id_livre)</button>
+            <button class="opt" onclick="ans(this,'q2',false)">Les deux tables fusionnent</button>
+        </div>
+        <div class="fb" id="fb-q2"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q3.</span> Dans la table CONTENIR, pourquoi la clé primaire est-elle <code>(id_commande, id_produit)</code> ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q3',false)">Parce que Looping le génère automatiquement comme ça</button>
+            <button class="opt" onclick="ans(this,'q3',true)">Parce qu'une ligne est identifiée uniquement par la combinaison des deux : un produit peut être dans plusieurs commandes et une commande peut avoir plusieurs produits</button>
+            <button class="opt" onclick="ans(this,'q3',false)">Parce qu'on ne peut pas avoir un seul id dans une table intermédiaire</button>
+        </div>
+        <div class="fb" id="fb-q3"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q4.</span> Que signifie la cardinalité <code>(0,N)</code> côté PRODUIT dans l'association CONTENIR ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q4',false)">Un produit doit obligatoirement être dans une commande</button>
+            <button class="opt" onclick="ans(this,'q4',true)">Un produit peut n'être dans aucune commande (0) ou dans plusieurs (N) — un produit peut exister sans être commandé</button>
+            <button class="opt" onclick="ans(this,'q4',false)">Un produit ne peut être dans qu'une seule commande à la fois</button>
+        </div>
+        <div class="fb" id="fb-q4"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q5.</span> Pourquoi créer CLIENT avant COMMANDE en SQL ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q5',false)">Par convention alphabétique</button>
+            <button class="opt" onclick="ans(this,'q5',true)">Parce que COMMANDE a une FK vers CLIENT — la table référencée doit exister avant la table qui la référence</button>
+            <button class="opt" onclick="ans(this,'q5',false)">Pour que MySQL optimise les requêtes</button>
+        </div>
+        <div class="fb" id="fb-q5"></div>
+    </div>
+
+    <div id="score-box" style="display:none;text-align:center;padding:28px;background:var(--card);border:1px solid #b3cfee;border-radius:12px;margin-top:12px;box-shadow:var(--shadow);">
+        <div id="s-emoji" style="font-size:2.5rem;margin-bottom:10px;"></div>
+        <div id="s-text" style="font-family:var(--mono);font-size:.95rem;color:var(--text);"></div>
+    </div>
+</section>
+
+</main>
+</div>
+
+<script>
+// Nav scroll spy
+const sections = document.querySelectorAll('.section[id]')
+const navLinks  = document.querySelectorAll('.nav-link')
+const obs = new IntersectionObserver(e => {
+    e.forEach(en => {
+        if (en.isIntersecting) {
+            navLinks.forEach(l => l.classList.remove('active'))
+            const l = document.querySelector(`.nav-link[href="#${en.target.id}"]`)
+            if (l) l.classList.add('active')
+        }
+    })
+}, { threshold:0.2 })
+sections.forEach(s => obs.observe(s))
+
+function cp(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre')
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = '✓'; btn.classList.add('ok')
+        setTimeout(() => { btn.textContent = 'copier'; btn.classList.remove('ok') }, 1800)
+    })
+}
+
+const fbs = {
+    q1:{ ok:'Exact ! Le MCD est conceptuel — il représente le monde réel avec des entités et associations. Le MLD est logique — il représente les tables, PK et FK, prêt pour le SQL.', ko:'Non. La différence est de niveau : MCD = modèle conceptuel (logique métier), MLD = modèle logique (tables concrètes avec PK et FK).' },
+    q2:{ ok:'Exact ! Dès qu\'on a du N des deux côtés (1,N — 0,N), on est en N,N → règle 2 : nouvelle table intermédiaire avec les deux FK comme clé primaire composite.', ko:'Non. (1,N) — (0,N) est une association N,N → règle 2 : on crée une table intermédiaire ECRIRE(#id_auteur, #id_livre). La FK ne migre que dans le cas 1,1 — 1,N.' },
+    q3:{ ok:'Parfait ! C\'est le sens même d\'une clé primaire composite : chaque combinaison (commande + produit) est unique. Un même produit peut apparaître dans plusieurs commandes, et une commande peut contenir plusieurs produits.', ko:'Non. La raison logique est que chaque ligne est identifiée par la combinaison commande+produit. Cette combinaison est unique : on ne peut pas avoir deux fois le même produit dans la même commande.' },
+    q4:{ ok:'Exact ! (0,N) signifie minimum 0 = un produit peut exister sans être commandé. Maximum N = il peut être dans autant de commandes que l\'on veut. Le 0 est important : on ne force pas la commande.', ko:'Non. (0,N) : le 0 = minimum zéro, donc le produit peut ne pas être commandé du tout. Le N = maximum illimité, donc il peut être dans plusieurs commandes.' },
+    q5:{ ok:'Exact ! C\'est une contrainte de référentiel : la FOREIGN KEY dans COMMANDE pointe vers CLIENT. Si CLIENT n\'existe pas encore, MySQL retourne une erreur. On crée toujours les tables référencées en premier.', ko:'Non. C\'est une contrainte technique : COMMANDE contient FOREIGN KEY (id_client) REFERENCES CLIENT. Si CLIENT n\'existe pas encore au moment du CREATE TABLE COMMANDE, MySQL échoue.' },
+}
+const rep = {}
+function ans(btn, qid, ok) {
+    if (rep[qid] !== undefined) return
+    rep[qid] = ok
+    btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => o.disabled = true)
+    btn.classList.add(ok ? 'correct' : 'wrong')
+    if (!ok) btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => { if (o.onclick?.toString().includes(',true)')) o.classList.add('correct') })
+    const fb = document.getElementById('fb-' + qid)
+    fb.innerHTML = fbs[qid][ok ? 'ok' : 'ko']
+    fb.className = 'fb show ' + (ok ? 'ok' : 'ko')
+    if (Object.keys(rep).length === 5) {
+        const g = Object.values(rep).filter(Boolean).length
+        const box = document.getElementById('score-box')
+        box.style.display = 'block'
+        document.getElementById('s-emoji').textContent = ['','','','',''][g]
+        document.getElementById('s-text').innerHTML = `Score : <strong style="color:var(--green)">${g}/5</strong> — ${g===5?'Tu maîtrises Merise 🚀':g>=4?'Très bien ! Relis la règle ratée.':g>=3?'Bien, mais reprends les cardinalités.':'Reprends depuis les bases '}`
+        box.scrollIntoView({ behavior:'smooth', block:'center' })
+    }
+}
+</script>
+<script src="../cursor.js"></script>
+</body>
+</html>
