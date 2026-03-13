@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Interface Web – Naviguer sur github.com | Real Conseil</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg:     #0b0c0f;
+  --bg2:    #13141a;
+  --bg3:    #1a1b23;
+  --bg4:    #22232d;
+  --border: #2a2b38;
+  --text:   #e6e6f0;
+  --muted:  #6e6e85;
+  --accent: #5b8dee;
+  --green:  #3ecf8e;
+  --warn:   #f59e0b;
+  --danger: #f87171;
+  --purple: #a78bfa;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; font-size: 15px; line-height: 1.7; }
+
+/* HEADER */
+header {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 15px 36px; display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100;
+}
+.logo { font-size: 13px; font-weight: 800; color: var(--accent); }
+.logo span { color: var(--muted); font-weight: 400; }
+.badge { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--muted); }
+
+/* HERO */
+.hero { padding: 56px 36px 44px; max-width: 860px; margin: 0 auto; border-bottom: 1px solid var(--border); }
+.hero-tag { font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.hero h1 { font-size: clamp(26px, 4vw, 42px); font-weight: 800; line-height: 1.15; margin-bottom: 14px; }
+.hero h1 em { color: var(--green); font-style: normal; }
+.hero p { color: var(--muted); font-size: 16px; max-width: 540px; }
+
+/* LAYOUT */
+.layout { display: grid; grid-template-columns: 220px 1fr; max-width: 1180px; margin: 0 auto; }
+
+/* SIDEBAR */
+nav.sidebar { border-right: 1px solid var(--border); padding: 28px 0; position: sticky; top: 57px; height: calc(100vh - 57px); overflow-y: auto; }
+.nav-section { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #444; padding: 16px 22px 5px; font-weight: 800; }
+nav.sidebar a { display: block; padding: 7px 22px; font-size: 13px; color: var(--muted); text-decoration: none; transition: all .15s; border-left: 2px solid transparent; }
+nav.sidebar a:hover { color: var(--text); background: var(--bg2); border-left-color: var(--accent); }
+
+/* MAIN */
+main { padding: 48px 50px 80px; }
+section { margin-bottom: 76px; scroll-margin-top: 76px; }
+
+h2 { font-size: 21px; font-weight: 800; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.snum { background: var(--accent); color: #000; font-size: 11px; font-weight: 800; width: 24px; height: 24px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.snum.g { background: var(--green); }
+.snum.w { background: var(--warn); }
+.snum.p { background: var(--purple); }
+h3 { font-size: 15px; font-weight: 700; margin: 26px 0 10px; }
+p { color: #bbbbc8; margin-bottom: 12px; }
+
+/* CALLOUTS */
+.callout { border-radius: 10px; padding: 15px 20px; margin: 14px 0; border-left: 3px solid; font-size: 14px; }
+.callout.tip    { background: #0d2318; border-color: var(--green);  color: #82e0b8; }
+.callout.info   { background: #131e35; border-color: var(--accent); color: #a8c4f5; }
+.callout.warn   { background: #251d0b; border-color: var(--warn);   color: #f0c67a; }
+.callout.danger { background: #251010; border-color: var(--danger); color: #f5a0a0; }
+.callout strong { display: block; margin-bottom: 4px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; opacity: .6; }
+
+code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: var(--bg3); padding: 2px 7px; border-radius: 4px; color: var(--green); }
+
+/* ── GITHUB MOCKUPS ── */
+.mockup-wrap { margin: 18px 0; }
+.mockup-title { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.mockup-title::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 2px; }
+
+/* Browser chrome */
+.browser {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.browser-bar {
+  background: var(--bg3); border-bottom: 1px solid var(--border);
+  padding: 10px 16px; display: flex; align-items: center; gap: 10px;
+}
+.dots { display: flex; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.r { background: #f87171; } .dot.y { background: #f59e0b; } .dot.g { background: #3ecf8e; }
+.url-bar { flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 12px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted); }
+.url-bar em { color: var(--accent); font-style: normal; }
+
+/* GitHub UI mockup elements */
+.gh-page { background: #0d1117; padding: 0; }
+
+/* ── TOPNAV ── */
+.gh-topnav {
+  background: #161b22; border-bottom: 1px solid #30363d;
+  padding: 12px 20px; display: flex; align-items: center; gap: 16px;
+}
+.gh-logo { color: #fff; font-size: 20px; }
+.gh-search {
+  background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+  padding: 5px 12px; color: #8b949e; font-size: 12px; width: 220px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.gh-nav-links { display: flex; gap: 4px; margin-left: auto; }
+.gh-nav-link { color: #e6edf3; font-size: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+.gh-nav-link:hover { background: #21262d; }
+.gh-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #000; flex-shrink: 0; }
+
+/* Annotation system */
+.annotated { position: relative; }
+.hotspot {
+  position: absolute; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.hotspot-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--warn); color: #000; font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 4px rgba(245,158,11,.25);
+  animation: pulse 2s ease-in-out infinite;
+  z-index: 10; position: relative;
+}
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 4px rgba(245,158,11,.25); } 50% { box-shadow: 0 0 0 8px rgba(245,158,11,.1); } }
+
+/* Annotations list */
+.annotations { display: grid; gap: 10px; margin-top: 16px; }
+.ann {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px;
+}
+.ann-num { width: 24px; height: 24px; border-radius: 6px; background: var(--warn); color: #000; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ann-text strong { font-size: 13px; font-weight: 700; display: block; margin-bottom: 2px; }
+.ann-text p { font-size: 12.5px; color: var(--muted); margin: 0; }
+
+/* ── REPO PAGE MOCKUP ── */
+.gh-repo-header { background: #0d1117; border-bottom: 1px solid #21262d; padding: 16px 20px; }
+.gh-repo-name { font-size: 18px; font-weight: 600; color: #58a6ff; margin-bottom: 6px; }
+.gh-repo-name span { color: #8b949e; }
+.gh-repo-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+.gh-tag { background: #1f6feb33; border: 1px solid #1f6feb66; border-radius: 20px; padding: 3px 10px; font-size: 11px; color: #58a6ff; font-family: 'JetBrains Mono', monospace; }
+.gh-tag.g { background: #3ecf8e22; border-color: #3ecf8e44; color: #3ecf8e; }
+.gh-tag.y { background: #f59e0b22; border-color: #f59e0b44; color: #f59e0b; }
+
+.gh-repo-tabs { background: #0d1117; border-bottom: 1px solid #21262d; padding: 0 20px; display: flex; gap: 0; }
+.gh-tab { padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; color: #8b949e; }
+.gh-tab.active { color: #e6edf3; border-bottom-color: #f78166; }
+.gh-tab:hover:not(.active) { color: #e6edf3; }
+
+.gh-code-bar { background: #161b22; border: 1px solid #21262d; border-radius: 6px 6px 0 0; padding: 10px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.gh-branch-selector { background: #21262d; border: 1px solid #30363d; border-radius: 6px; padding: 5px 12px; color: #e6edf3; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.gh-branch-selector::after { content: '▾'; color: #8b949e; }
+.gh-file-count { color: #8b949e; font-size: 13px; margin-left: auto; }
+.gh-btn { background: #21262d; border: 1px solid #30363d; border-radius: 6px; padding: 5px 14px; color: #e6edf3; font-size: 12.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.gh-btn.green { background: #2ea043; border-color: #3fb950; color: #fff; }
+.gh-btn.blue  { background: #1f6feb; border-color: #388bfd; color: #fff; }
+
+.gh-file-tree { background: #0d1117; border: 1px solid #21262d; border-top: none; }
+.gh-file-row { padding: 8px 16px; border-bottom: 1px solid #161b22; display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; }
+.gh-file-row:hover { background: #161b22; }
+.gh-file-row:last-child { border-bottom: none; }
+.gh-icon { color: #8b949e; font-size: 14px; }
+.gh-icon.f { color: var(--accent); }
+.gh-fname { color: #58a6ff; flex: 1; }
+.gh-fname.folder { color: var(--accent); font-weight: 600; }
+.gh-fmsg { color: #8b949e; font-size: 11.5px; flex: 2; }
+.gh-ftime { color: #8b949e; font-size: 11.5px; text-align: right; }
+
+/* PR mockup */
+.gh-pr-header { background: #0d1117; padding: 16px 20px; border-bottom: 1px solid #21262d; }
+.gh-pr-title { font-size: 18px; font-weight: 600; color: #e6edf3; margin-bottom: 6px; }
+.gh-pr-title .pr-num { color: #8b949e; font-weight: 400; }
+.gh-pr-status { display: inline-flex; align-items: center; gap: 6px; background: #388bfd22; border: 1px solid #388bfd55; color: #58a6ff; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 700; }
+.gh-pr-status.merged { background: #8957e522; border-color: #8957e555; color: #a78bfa; }
+.gh-pr-status.open { background: #2ea04322; border-color: #2ea04355; color: #3ecf8e; }
+
+.gh-pr-meta { background: #0d1117; padding: 12px 20px; border-bottom: 1px solid #21262d; font-size: 13px; color: #8b949e; }
+.gh-pr-meta strong { color: #e6edf3; }
+
+.gh-pr-body { background: #0d1117; padding: 16px 20px; display: flex; gap: 20px; }
+.gh-pr-main { flex: 3; }
+.gh-pr-sidebar { flex: 1; border-left: 1px solid #21262d; padding-left: 20px; }
+.gh-comment { background: #161b22; border: 1px solid #21262d; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+.gh-comment-header { background: #1c2128; padding: 8px 14px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #21262d; font-size: 12px; color: #8b949e; }
+.gh-comment-body { padding: 12px 14px; font-size: 13px; color: #e6edf3; }
+.gh-merge-box { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin-top: 12px; text-align: center; }
+.gh-merge-box p { color: #8b949e; font-size: 13px; margin-bottom: 12px; }
+
+/* CONFLICT mockup */
+.conflict-block { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; margin: 14px 0; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+.conflict-line { padding: 4px 16px; display: flex; gap: 12px; }
+.conflict-line.head   { background: #ff000015; }
+.conflict-line.theirs { background: #00ff0015; }
+.conflict-line.sep    { background: #ffffff08; }
+.conflict-line.normal { }
+.ln { color: #8b949e; width: 24px; text-align: right; flex-shrink: 0; }
+.conflict-line.head .code   { color: #f87171; }
+.conflict-line.theirs .code { color: #3ecf8e; }
+.conflict-line.sep .code    { color: #f59e0b; }
+.conflict-line.normal .code { color: #e6edf3; }
+
+/* FLOW STEPS */
+.flow { margin: 18px 0; display: flex; flex-direction: column; gap: 8px; }
+.flow-step { display: flex; gap: 14px; align-items: flex-start; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 13px 18px; transition: border-color .15s; }
+.flow-step:hover { border-color: var(--accent); }
+.fnum { width: 26px; height: 26px; border-radius: 7px; background: var(--accent); color: #000; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.fnum.g { background: var(--green); }
+.fnum.w { background: var(--warn); color: #000; }
+.fnum.r { background: var(--danger); color: #fff; }
+.ftext strong { display: block; font-size: 13.5px; font-weight: 700; margin-bottom: 2px; }
+.ftext p { font-size: 12.5px; color: var(--muted); margin: 0; }
+
+/* HIGHLIGHT BOX */
+.highlight-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin: 14px 0; }
+.highlight-box h4 { font-size: 13px; font-weight: 800; color: var(--accent); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .06em; }
+
+/* GRID 2 cols */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  nav.sidebar { display: none; }
+  main { padding: 24px 16px; }
+  .grid2 { grid-template-columns: 1fr; }
+  .gh-topnav { flex-wrap: wrap; }
+  .gh-search { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Real Conseil <span>/ Formation</span></div>
+  <div class="badge">GitHub Interface Web</div>
+</header>
+
+<div style="border-bottom:1px solid var(--border)">
+  <div class="hero">
+    <div class="hero-tag">Module Git · Interface</div>
+    <h1>Naviguer sur <em>github.com</em></h1>
+    <p>Tout ce qu'on voit sur l'interface GitHub en ligne, à quoi ça sert, et comment s'en servir quand on travaille en équipe.</p>
+  </div>
+</div>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="nav-section">Se repérer</div>
+  <a href="#accueil">Tableau de bord</a>
+  <a href="#profil">Page de profil</a>
+  <div class="nav-section">Les repositories</div>
+  <a href="#creer-repo">Créer un repo</a>
+  <a href="#repo-page">Page d'un repo</a>
+  <a href="#fichiers">Naviguer dans les fichiers</a>
+  <a href="#branches">Voir les branches</a>
+  <a href="#commits">Historique des commits</a>
+  <div class="nav-section">Collaborer</div>
+  <a href="#inviter">Inviter un collaborateur</a>
+  <a href="#pull-request">Pull Request (PR)</a>
+  <a href="#creer-pr">Créer une PR</a>
+  <a href="#relire-pr">Relire et approuver</a>
+  <a href="#merger">Merger la PR</a>
+  <div class="nav-section">Autres</div>
+  <a href="#issues">Issues</a>
+  <a href="#settings">Settings repo</a>
+  <a href="#raccourcis">Raccourcis utiles</a>
+</nav>
+
+<main>
+
+<!-- ── 1. ACCUEIL ── -->
+<section id="accueil">
+  <h2><span class="snum">1</span> Le tableau de bord — ce qu'on voit en arrivant</h2>
+
+  <p>Quand tu te connectes sur github.com, tu arrives sur ton tableau de bord personnel. Voici à quoi il ressemble et ce que signifie chaque zone.</p>
+
+  <div class="mockup-wrap">
+    <div class="mockup-title">Interface GitHub — après connexion</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+        <div class="url-bar"><em>github.com</em></div>
+      </div>
+      <div class="gh-page">
+        <div class="gh-topnav">
+          <div class="gh-logo">⬡</div>
+          <div class="gh-search">Rechercher ou aller à…&nbsp;&nbsp;&nbsp;/</div>
+          <div class="gh-nav-links">
+            <div class="gh-nav-link">Pull requests</div>
+            <div class="gh-nav-link">Issues</div>
+            <div class="gh-nav-link">Marketplace</div>
+            <div class="gh-nav-link">Explore</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:8px">
+            <span style="color:#e6edf3;font-size:18px"></span>
+            <span style="color:#e6edf3;font-size:18px">＋▾</span>
+            <div class="gh-avatar">A</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:260px 1fr;gap:0;background:#0d1117;padding:20px;gap:20px;font-size:13px">
+          <div>
+            <div style="background:#161b22;border:1px solid #21262d;border-radius:8px;padding:16px;margin-bottom:14px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <div class="gh-avatar" style="width:52px;height:52px;font-size:20px">A</div>
+                <div>
+                  <div style="color:#e6edf3;font-weight:700;font-size:14px">alice-dev</div>
+                  <div style="color:#8b949e;font-size:12px">Alice Dupont</div>
+                </div>
+              </div>
+              <div style="color:#8b949e;font-size:12px;margin-bottom:8px">Real Conseil · Amiens</div>
+              <div style="display:flex;gap:10px;font-size:12px;color:#8b949e">
+                <span><strong style="color:#e6edf3">12</strong> repos</span>
+                <span><strong style="color:#e6edf3">3</strong> followers</span>
+              </div>
+            </div>
+            <div style="background:#161b22;border:1px solid #21262d;border-radius:8px;padding:14px">
+              <div style="font-size:12px;font-weight:700;color:#e6edf3;margin-bottom:10px">Repositories récents</div>
+              <div style="color:#58a6ff;font-size:12px;padding:4px 0;border-bottom:1px solid #21262d">mon-projet-react</div>
+              <div style="color:#58a6ff;font-size:12px;padding:4px 0;border-bottom:1px solid #21262d">portfolio-alice</div>
+              <div style="color:#58a6ff;font-size:12px;padding:4px 0">exercices-js</div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div style="font-size:14px;font-weight:700;color:#e6edf3">Activité récente</div>
+              <div class="gh-btn green" style="font-size:12px">＋ New repository</div>
+            </div>
+            <div style="background:#161b22;border:1px solid #21262d;border-radius:8px;overflow:hidden">
+              <div style="padding:12px 16px;border-bottom:1px solid #21262d;font-size:12.5px;color:#e6edf3">🔀 alice-dev merged PR #4 dans <span style="color:#58a6ff">mon-projet-react</span> <span style="color:#8b949e;float:right">il y a 2h</span></div>
+              <div style="padding:12px 16px;border-bottom:1px solid #21262d;font-size:12.5px;color:#e6edf3">⬆ alice-dev pushed 3 commits dans <span style="color:#58a6ff">mon-projet-react</span> <span style="color:#8b949e;float:right">hier</span></div>
+              <div style="padding:12px 16px;font-size:12.5px;color:#e6edf3">🍴 alice-dev created branch <span style="color:#3ecf8e">feature/navbar</span> <span style="color:#8b949e;float:right">hier</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotations">
+    <div class="ann"><div class="ann-num">A</div><div class="ann-text"><strong>Barre de navigation haut</strong><p>Logo GitHub, barre de recherche (raccourci <code>/</code>), accès aux Pull Requests et Issues globales, notifications (), bouton + pour créer un repo.</p></div></div>
+    <div class="ann"><div class="ann-num">B</div><div class="ann-text"><strong>Bloc profil gauche</strong><p>Ton avatar, nom d'utilisateur, localisation, nombre de repos et followers. Cliquer sur ton avatar → accès à ton profil public.</p></div></div>
+    <div class="ann"><div class="ann-num">C</div><div class="ann-text"><strong>Repositories récents</strong><p>Accès rapide à tes derniers repos. Pour voir tous tes repos → cliquer sur ton avatar en haut à droite → "Your repositories".</p></div></div>
+    <div class="ann"><div class="ann-num">D</div><div class="ann-text"><strong>Fil d'activité</strong><p>Toute l'activité récente : tes pushes, merges, branches créées. Utile pour voir ce que ton équipier a fait depuis la dernière fois.</p></div></div>
+    <div class="ann"><div class="ann-num">E</div><div class="ann-text"><strong>Bouton + New repository</strong><p>Crée un nouveau repo directement. On peut aussi le faire via le bouton <strong>+</strong> en haut à droite de la navbar.</p></div></div>
+  </div>
+</section>
+
+<!-- ── 2. CRÉER REPO ── -->
+<section id="creer-repo">
+  <h2><span class="snum">2</span> Créer un nouveau repository</h2>
+
+  <p>Voici exactement ce que tu remplis quand tu crées un repo pour un projet en duo.</p>
+
+  <div class="mockup-wrap">
+    <div class="mockup-title">Formulaire "New repository"</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+        <div class="url-bar"><em>github.com/new</em></div>
+      </div>
+      <div class="gh-page" style="padding:24px 28px;font-size:13px">
+        <div style="color:#e6edf3;font-size:20px;font-weight:600;margin-bottom:20px">Create a new repository</div>
+        <div style="margin-bottom:16px">
+          <div style="color:#e6edf3;font-size:13px;font-weight:600;margin-bottom:6px">Repository name <span style="color:#f87171">*</span></div>
+          <div style="background:#0d1117;border:1px solid #388bfd;border-radius:6px;padding:8px 12px;color:#e6edf3;font-family:JetBrains Mono;font-size:13px">mon-projet-react</div>
+          <div style="color:#3ecf8e;font-size:11.5px;margin-top:4px">✓ mon-projet-react est disponible.</div>
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="color:#e6edf3;font-size:13px;font-weight:600;margin-bottom:6px">Description <span style="color:#8b949e">(optionnel)</span></div>
+          <div style="background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 12px;color:#8b949e;font-size:13px">Projet React avec Alice et Bob – Formation DWWM</div>
+        </div>
+        <div style="display:flex;gap:20px;margin-bottom:20px">
+          <div style="display:flex;align-items:center;gap:8px;background:#161b22;border:2px solid #388bfd;border-radius:8px;padding:12px 16px;flex:1">
+            <div style="color:#58a6ff;font-size:18px">🔒</div>
+            <div>
+              <div style="color:#e6edf3;font-weight:700;font-size:13px">Public</div>
+              <div style="color:#8b949e;font-size:11.5px">N'importe qui peut voir ce repo. Toi seul peut commiter.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px 16px;flex:1">
+            <div style="color:#8b949e;font-size:18px">🔐</div>
+            <div>
+              <div style="color:#8b949e;font-weight:700;font-size:13px">Private</div>
+              <div style="color:#8b949e;font-size:11.5px">Seulement toi et tes collaborateurs peuvent voir ce repo.</div>
+            </div>
+          </div>
+        </div>
+        <div style="border-top:1px solid #21262d;padding-top:16px;margin-bottom:16px">
+          <div style="color:#e6edf3;font-size:13px;font-weight:600;margin-bottom:10px">Initialize this repository with:</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            
+            <span style="color:#e6edf3;font-size:13px">Add a README file</span>
+            <span style="color:#8b949e;font-size:11.5px">← Important ! Cocher ça</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            
+            <span style="color:#e6edf3;font-size:13px">.gitignore</span>
+            <span style="color:#8b949e;font-size:11.5px">← choisir "Node" pour React</span>
+          </div>
+        </div>
+        <div class="gh-btn green" style="font-size:13px;padding:8px 20px;display:inline-flex">Create repository</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <strong>Ce qu'il faut absolument cocher</strong>
+    Toujours cocher <strong>"Add a README file"</strong>. Ça crée un premier commit sur <code>main</code> automatiquement. Sans ça, le repo est vide et le clone ne fonctionne pas correctement.
+  </div>
+
+  <div class="callout info">
+    <strong>Public vs Private en formation</strong>
+    En TP, choisir <strong>Public</strong> pour que le formateur puisse voir votre travail. En projet professionnel réel → Private.
+  </div>
+</section>
+
+<!-- ── 3. PAGE REPO ── -->
+<section id="repo-page">
+  <h2><span class="snum">3</span> La page d'un repository — la vue principale</h2>
+
+  <p>C'est la page sur laquelle tu passes 80% du temps. Voici chaque zone décryptée.</p>
+
+  <div class="mockup-wrap">
+    <div class="mockup-title">Page principale d'un repository</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+        <div class="url-bar"><em>github.com/alice-dev/mon-projet-react</em></div>
+      </div>
+      <div class="gh-page">
+        <div class="gh-repo-header">
+          <div class="gh-repo-name"><span>alice-dev /</span> mon-projet-react</div>
+          <div class="gh-repo-meta">
+            <div class="gh-tag">Public</div>
+            <div class="gh-tag g">2</div>
+            <div class="gh-tag y">Fork</div>
+          </div>
+        </div>
+        <div class="gh-repo-tabs">
+          <div class="gh-tab active">Code</div>
+          <div class="gh-tab">Issues 2</div>
+          <div class="gh-tab">Pull requests 1</div>
+          <div class="gh-tab">▶ Actions</div>
+          <div class="gh-tab">⚙ Settings</div>
+        </div>
+        <div style="padding:16px 20px;background:#0d1117">
+          <div class="gh-code-bar">
+            <div class="gh-branch-selector">⎇&nbsp; main</div>
+            <div style="color:#8b949e;font-size:12.5px">3 branches&nbsp; · &nbsp;0 tags</div>
+            <div style="margin-left:auto;display:flex;gap:8px">
+              <div class="gh-btn">⬇ Code</div>
+            </div>
+          </div>
+          <div class="gh-file-tree">
+            <div class="gh-file-row">
+              <span class="gh-icon"></span>
+              <span class="gh-fname folder">src</span>
+              <span class="gh-fmsg">feat: ajout composants React</span>
+              <span class="gh-ftime">il y a 2h</span>
+            </div>
+            <div class="gh-file-row">
+              <span class="gh-icon"></span>
+              <span class="gh-fname folder">public</span>
+              <span class="gh-fmsg">init: structure de base</span>
+              <span class="gh-ftime">hier</span>
+            </div>
+            <div class="gh-file-row">
+              <span class="gh-icon f"></span>
+              <span class="gh-fname">.gitignore</span>
+              <span class="gh-fmsg">init: structure de base</span>
+              <span class="gh-ftime">hier</span>
+            </div>
+            <div class="gh-file-row">
+              <span class="gh-icon f"></span>
+              <span class="gh-fname">package.json</span>
+              <span class="gh-fmsg">feat: ajout dépendances React</span>
+              <span class="gh-ftime">hier</span>
+            </div>
+            <div class="gh-file-row">
+              <span class="gh-icon f"></span>
+              <span class="gh-fname">README.md</span>
+              <span class="gh-fmsg">docs: mise à jour README</span>
+              <span class="gh-ftime">il y a 3j</span>
+            </div>
+          </div>
+          <div style="background:#161b22;border:1px solid #21262d;border-top:none;padding:16px 20px">
+            <div style="font-size:14px;font-weight:600;color:#e6edf3;margin-bottom:6px">📖 README.md</div>
+            <div style="color:#8b949e;font-size:13px">Mon Projet React – Formation DWWM · Développé par Alice et Bob</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotations" style="margin-top:16px">
+    <div class="ann"><div class="ann-num">1</div><div class="ann-text"><strong>Onglet Code</strong><p>La vue par défaut. On voit tous les fichiers du projet sur la branche sélectionnée.</p></div></div>
+    <div class="ann"><div class="ann-num">2</div><div class="ann-text"><strong>Onglet Issues</strong><p>Pour signaler des bugs ou des tâches à faire. Le chiffre indique le nombre d'issues ouvertes.</p></div></div>
+    <div class="ann"><div class="ann-num">3</div><div class="ann-text"><strong>Onglet Pull requests</strong><p>Toutes les PR en cours ou fermées. C'est ici qu'on voit les demandes de fusion en attente de validation.</p></div></div>
+    <div class="ann"><div class="ann-num">4</div><div class="ann-text"><strong>Sélecteur de branche</strong><p>Le menu déroulant <strong>⎇ main</strong> permet de changer de branche et voir le code de chaque branche séparément.</p></div></div>
+    <div class="ann"><div class="ann-num">5</div><div class="ann-text"><strong>Liste des fichiers</strong><p>Cliquer sur un dossier → on entre dedans. Cliquer sur un fichier → on voit son contenu. La colonne de droite = le dernier commit qui a modifié ce fichier.</p></div></div>
+    <div class="ann"><div class="ann-num">6</div><div class="ann-text"><strong>Bouton Code (vert)</strong><p>Donne l'URL à copier pour <code>git clone</code>. Copier l'URL HTTPS pour les débutants.</p></div></div>
+  </div>
+</section>
+
+<!-- ── 4. BRANCHES ── -->
+<section id="branches">
+  <h2><span class="snum">4</span> Voir et naviguer entre les branches</h2>
+
+  <p>Le menu déroulant de branches est un des éléments les plus importants. Il permet de voir le code de chaque branche séparément.</p>
+
+  <div class="mockup-wrap">
+    <div class="mockup-title">Sélecteur de branches ouvert</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+        <div class="url-bar">🔒 <em>github.com/alice-dev/mon-projet-react/tree/<strong>feature/navbar</strong></em></div>
+      </div>
+      <div class="gh-page" style="padding:16px 20px">
+        <div style="position:relative;display:inline-block;margin-bottom:16px">
+          <div class="gh-branch-selector" style="border-color:#388bfd;background:#1f6feb22">⎇&nbsp; feature/navbar</div>
+          <div style="position:absolute;top:36px;left:0;width:260px;background:#161b22;border:1px solid #30363d;border-radius:8px;overflow:hidden;z-index:10;box-shadow:0 8px 24px #00000066">
+            <div style="padding:8px 12px;border-bottom:1px solid #21262d">
+              <input placeholder="Chercher une branche…" style="background:#0d1117;border:1px solid #30363d;border-radius:5px;padding:5px 10px;color:#e6edf3;font-size:12px;width:100%;outline:none">
+            </div>
+            <div style="padding:6px 0">
+              <div style="padding:7px 12px;font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.08em">Branches</div>
+              <div style="padding:7px 16px;font-size:13px;color:#e6edf3;background:#21262d;display:flex;align-items:center;gap:8px">
+                <span style="color:#3ecf8e">✓</span> feature/navbar <span style="background:#1f6feb33;color:#58a6ff;font-size:10px;border-radius:10px;padding:2px 7px;margin-left:auto">actuelle</span>
+              </div>
+              <div style="padding:7px 16px;font-size:13px;color:#e6edf3;display:flex;align-items:center;gap:8px">
+                <span style="color:transparent">✓</span> main <span style="background:#2ea04322;color:#3ecf8e;font-size:10px;border-radius:10px;padding:2px 7px;margin-left:auto">default</span>
+              </div>
+              <div style="padding:7px 16px;font-size:13px;color:#e6edf3">
+                <span style="color:transparent">✓</span> feature/login
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="color:#8b949e;font-size:12.5px;margin-top:60px">
+          → Quand on change de branche, les fichiers affichés changent aussi.<br>
+          → L'URL change : <code style="background:#161b22;padding:2px 6px">/tree/feature/navbar</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <h4>Comment voir le code de l'équipier sur sa branche</h4>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="fnum">1</div>
+        <div class="ftext"><strong>Aller sur la page du repo</strong><p>github.com/alice-dev/mon-projet-react</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="fnum">2</div>
+        <div class="ftext"><strong>Cliquer sur le menu ⎇ main</strong><p>Le sélecteur de branches s'ouvre</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="fnum">3</div>
+        <div class="ftext"><strong>Cliquer sur la branche de l'équipier</strong><p>Ex: <code>feature/login</code> → les fichiers changent</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="fnum g">4</div>
+        <div class="ftext"><strong>On voit maintenant son code</strong><p>L'URL affiche <code>/tree/feature/login</code></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 5. COMMITS ── -->
+<section id="commits">
+  <h2><span class="snum">5</span> L'historique des commits</h2>
+
+  <p>Pour voir tout ce qui s'est passé sur le projet, qui a fait quoi et quand.</p>
+
+  <div class="mockup-wrap">
+    <div class="mockup-title">Page des commits — github.com/.../commits/main</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+        <div class="url-bar">🔒 <em>github.com/alice-dev/mon-projet-react/commits/main</em></div>
+      </div>
+      <div class="gh-page" style="padding:0">
+        <div style="padding:14px 20px;border-bottom:1px solid #21262d;display:flex;align-items:center;justify-content:space-between">
+          <div style="color:#e6edf3;font-size:14px;font-weight:600">Commits on main</div>
+          <div style="color:#8b949e;font-size:12px">⎇ main</div>
+        </div>
+
+        <div style="padding:0 20px">
+          <div style="padding:14px 0;border-bottom:1px solid #21262d">
+            <div style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;margin-bottom:10px;letter-spacing:.08em">Aujourd'hui</div>
+            <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
+              <div class="gh-avatar" style="width:26px;height:26px;font-size:11px;flex-shrink:0">A</div>
+              <div style="flex:1">
+                <div style="color:#58a6ff;font-size:13.5px;font-weight:600;margin-bottom:2px">Merge pull request #4 — feature/navbar into main</div>
+                <div style="color:#8b949e;font-size:12px">alice-dev · il y a 2 heures</div>
+              </div>
+              <div style="color:#8b949e;font-size:11.5px;font-family:JetBrains Mono">3a8f2c1</div>
+              <div style="color:#8b949e;font-size:14px">⧉</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
+              <div class="gh-avatar" style="width:26px;height:26px;font-size:11px;flex-shrink:0;background:var(--green)">B</div>
+              <div style="flex:1">
+                <div style="color:#58a6ff;font-size:13.5px;font-weight:600;margin-bottom:2px">style: mise en forme navbar responsive</div>
+                <div style="color:#8b949e;font-size:12px">alice-dev · il y a 3 heures</div>
+              </div>
+              <div style="color:#8b949e;font-size:11.5px;font-family:JetBrains Mono">d2e19ab</div>
+              <div style="color:#8b949e;font-size:14px">⧉</div>
+            </div>
+          </div>
+          <div style="padding:14px 0">
+            <div style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;margin-bottom:10px;letter-spacing:.08em">Hier</div>
+            <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
+              <div class="gh-avatar" style="width:26px;height:26px;font-size:11px;flex-shrink:0">A</div>
+              <div style="flex:1">
+                <div style="color:#58a6ff;font-size:13.5px;font-weight:600;margin-bottom:2px">feat: ajout structure HTML navbar</div>
+                <div style="color:#8b949e;font-size:12px">alice-dev · hier 14:32</div>
+              </div>
+              <div style="color:#8b949e;font-size:11.5px;font-family:JetBrains Mono">9c4b31f</div>
+              <div style="color:#8b949e;font-size:14px">⧉</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
+              <div class="gh-avatar" style="width:26px;height:26px;font-size:11px;flex-shrink:0">A</div>
+              <div style="flex:1">
+                <div style="color:#58a6ff;font-size:13.5px;font-weight:600;margin-bottom:2px">init: structure de base du projet</div>
+                <div style="color:#8b949e;font-size:12px">alice-dev · hier 09:15</div>
+              </div>
+              <div style="color:#8b949e;font-size:11.5px;font-family:JetBrains Mono">1a2b3c4</div>
+              <div style="color:#8b949e;font-size:14px">⧉</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotations">
+    <div class="ann"><div class="ann-num">1</div><div class="ann-text"><strong>Message du commit</strong><p>Cliquer dessus pour voir exactement quelles lignes ont été modifiées dans ce commit (vert = ajouté, rouge = supprimé).</p></div></div>
+    <div class="ann"><div class="ann-num">2</div><div class="ann-text"><strong>Le hash court</strong><p>L'identifiant unique du commit ex: <code>3a8f2c1</code>. Utile si on veut revenir à ce point précis avec <code>git checkout 3a8f2c1</code>.</p></div></div>
+    <div class="ann"><div class="ann-num">3</div><div class="ann-text"><strong>Comment accéder à cette page</strong><p>Sur la page du repo → cliquer sur l'horloge à côté du nombre de commits, ou aller sur <code>/commits/main</code> dans l'URL.</p></div></div>
+  </div>
+</section>
+
+<!-- ── 6. INVITER ── -->
+<section id="inviter">
+  <h2><span class="snum">6</span> Inviter un collaborateur</h2>
+
+  <p>Pour que ton équipier puisse pusher sur ton repo, tu dois l'inviter. Sans ça, il peut seulement lire.</p>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="fnum">1</div>
+      <div class="ftext"><strong>Aller dans Settings du repo</strong><p>Onglet <strong>Settings</strong> en haut de la page du repo (pas le Settings de ton compte !)</p></div>
+    </div>
+    <div class="flow-step">
+      <div class="fnum">2</div>
+      <div class="ftext"><strong>Collaborators dans le menu gauche</strong><p>Settings → Collaborators → cliquer sur <strong>"Add people"</strong></p></div>
+    </div>
+    <div class="flow-step">
+      <div class="fnum">3</div>
+      <div class="ftext"><strong>Chercher l'équipier par son pseudo GitHub</strong><p>Taper le pseudo GitHub de Bob → le sélectionner → <strong>"Add [nom] to this repository"</strong></p></div>
+    </div>
+    <div class="flow-step">
+      <div class="fnum g">4</div>
+      <div class="ftext"><strong>Bob reçoit un email d'invitation</strong><p>Il doit cliquer sur "Accept invitation" dans l'email, ou aller sur github.com/notifications. Après ça, il peut push.</p></div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <strong>Attention</strong>
+    Le Settings dans la barre de navigation du repo ≠ le Settings de ton compte GitHub. Pour inviter un collaborateur : Settings du <strong>repo</strong>, pas de ton profil.
+  </div>
+</section>
+
+<!-- ── 7. PULL REQUEST ── -->
+<section id="pull-request">
+  <h2><span class="snum p">7</span> Comprendre une Pull Request</h2>
+
+  <p>Une Pull Request (PR) c'est une demande formelle de fusionner une branche dans <code>main</code>. C'est le cœur du travail en équipe sur GitHub.</p>
+
+  <div class="grid2">
+    <div class="highlight-box">
+      <h4>Ce que permet une PR</h4>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:8px">L'équipier voit exactement ce qui va changer</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:8px">On peut commenter des lignes spécifiques</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:8px">On peut demander des modifications avant de valider</p>
+      <p style="font-size:13px;color:var(--muted);margin:0">GitHub vérifie les conflits automatiquement</p>
+    </div>
+    <div class="highlight-box">
+      <h4>Vocabulaire PR</h4>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px"><strong style="color:var(--text)">base :</strong> la branche cible (souvent <code>main</code>)</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px"><strong style="color:var(--text)">compare :</strong> ta branche avec tes changements</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px"><strong style="color:var(--text)">reviewer :</strong> la personne qui doit valider</p>
+      <p style="font-size:13px;color:var(--muted);margin:0"><strong style="color:var(--text)">merge :</strong> fusionner après validation</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 8. CRÉER PR ── -->
+<section id="creer-pr">
+  <h2><span class="snum p">8</span> Créer une Pull Request</h2>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="fnum">1</div>
+      <div class="ftext"><strong>Pusher sa branche sur GitHub</strong><p><code>git push origin feature/navbar</code> depuis le terminal</p></div>
+    </div>
+    <div class="flow-step">
+      <div class="fnum">2</div>
+      <div class="ftext"><strong>GitHub détecte la nouvelle branche</strong><p>Un bandeau jaune apparaît en haut du repo : <em>"feature/navbar had recent pushes — Compare & pull request"</em>. Cliquer dessus.</p></div>
+    </div>
+    <div class="flow-step">
+      <div class="fnum">3</div>
+      <div class="ftext"><strong>Remplir le formulaire de PR</strong><p>Voir le mockup ci-dessous.</p></div>
+    </div>
+    <div class="flow-step">
+      <div class="fnum g">4</div>
+      <div class="ftext"><strong>Cliquer "Create pull request"</strong><p>La PR est ouverte. L'équipier reçoit une notification.</p></div>
+    </div>
+  </div>
+
+  <div class="mockup-wrap">
+    <div class="mockup-title">Formulaire de création de Pull Request</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+        <div class="url-bar"><em>github.com/alice-dev/mon-projet-react/compare/feature/navbar</em></div>
+      </div>
+      <div class="gh-page" style="padding:20px 24px;font-size:13px">
+        <div style="color:#e6edf3;font-size:18px;font-weight:600;margin-bottom:16px">Open a pull request</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;background:#161b22;border:1px solid #21262d;border-radius:8px;padding:10px 14px;font-size:12.5px">
+          <span style="color:#8b949e">base :</span>
+          <span style="background:#2ea04322;color:#3ecf8e;border-radius:4px;padding:2px 8px;font-weight:700">main</span>
+          <span style="color:#8b949e">←</span>
+          <span style="color:#8b949e">compare :</span>
+          <span style="background:#1f6feb22;color:#58a6ff;border-radius:4px;padding:2px 8px;font-weight:700">feature/navbar</span>
+          <span style="color:#3ecf8e;margin-left:auto;font-size:12px">✓ Able to merge</span>
+        </div>
+        <div style="margin-bottom:12px">
+          <input placeholder="feat: ajout navbar responsive avec liens actifs" style="width:100%;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 12px;color:#e6edf3;font-size:14px;font-weight:600;outline:none;font-family:Syne,sans-serif">
+        </div>
+        <div style="background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:12px;margin-bottom:16px;min-height:80px;color:#8b949e;font-size:12.5px">
+          ## Ce qui a été fait<br>
+          - Structure HTML de la navbar<br>
+          - Styles responsive (mobile + desktop)<br>
+          - Liens actifs avec React Router
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;font-size:12px">
+          <div style="background:#161b22;border:1px solid #21262d;border-radius:8px;padding:12px">
+            <div style="color:#8b949e;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Reviewers</div>
+            <div style="color:#58a6ff">+ bob-dev</div>
+          </div>
+          <div style="background:#161b22;border:1px solid #21262d;border-radius:8px;padding:12px">
+            <div style="color:#8b949e;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Assignees</div>
+            <div style="color:#58a6ff">+ alice-dev</div>
+          </div>
+        </div>
+        <div class="gh-btn green" style="font-size:13px;padding:8px 20px;display:inline-flex">Create pull request</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 9. RELIRE PR ── -->
+<section id="relire-pr">
+  <h2><span class="snum p">9</span> Relire et commenter une PR</h2>
+
+  <p>Bob reçoit une notification. Il doit relire le code d'Alice avant de valider.</p>
+
+  <div class="mockup-wrap">
+    <div class="mockup-title">Page d'une Pull Request ouverte</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+        <div class="url-bar"><em>github.com/alice-dev/mon-projet-react/pull/4</em></div>
+      </div>
+      <div class="gh-page">
+        <div class="gh-pr-header">
+          <div class="gh-pr-title">feat: ajout navbar responsive <span class="pr-num">#4</span></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <div class="gh-pr-status open">Open</div>
+            <div style="color:#8b949e;font-size:13px;display:flex;align-items:center">alice-dev wants to merge 3 commits into <strong style="color:#e6edf3;margin:0 4px">main</strong> from <strong style="color:#58a6ff;margin:0 4px">feature/navbar</strong></div>
+          </div>
+        </div>
+        <div class="gh-repo-tabs">
+          <div class="gh-tab active">Conversation 2</div>
+          <div class="gh-tab">± Commits 3</div>
+          <div class="gh-tab">Files changed 4</div>
+        </div>
+        <div class="gh-pr-body">
+          <div class="gh-pr-main">
+            <div class="gh-comment">
+              <div class="gh-comment-header">
+                <div class="gh-avatar" style="width:20px;height:20px;font-size:9px">A</div>
+                <strong style="color:#e6edf3">alice-dev</strong> commented il y a 2h
+              </div>
+              <div class="gh-comment-body">
+                Navbar terminée<br>
+                - Structure HTML OK<br>
+                - Responsive mobile + desktop<br>
+                - Liens actifs avec useState
+              </div>
+            </div>
+            <div class="gh-comment">
+              <div class="gh-comment-header">
+                <div class="gh-avatar" style="width:20px;height:20px;font-size:9px;background:var(--green)">B</div>
+                <strong style="color:#e6edf3">bob-dev</strong> reviewed — left a comment
+              </div>
+              <div class="gh-comment-body" style="background:#161b22;margin:10px;border-radius:6px;padding:10px;border-left:3px solid var(--warn)">
+                <div style="color:#8b949e;font-size:11.5px;margin-bottom:4px">src/components/Navbar.jsx · line 12</div>
+                <div style="color:#f59e0b;font-size:12.5px">Le className ici peut être factorisé dans une const. Sinon RAS, belle PR !</div>
+              </div>
+            </div>
+            <div class="gh-merge-box">
+              <p>This branch has no conflicts with the base branch</p>
+              <div style="display:flex;gap:10px;justify-content:center">
+                <div class="gh-btn green" style="font-size:13px"> Merge pull request</div>
+              </div>
+              <div style="color:#8b949e;font-size:11.5px;margin-top:8px">Merging will close this pull request.</div>
+            </div>
+          </div>
+          <div class="gh-pr-sidebar">
+            <div style="margin-bottom:14px">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#8b949e;font-weight:700;margin-bottom:8px">Reviewers</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px">
+                <div class="gh-avatar" style="width:20px;height:20px;font-size:9px;background:var(--green)">B</div>
+                <span style="color:#3ecf8e">bob-dev ✓ Approved</span>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#8b949e;font-weight:700;margin-bottom:8px">Labels</div>
+              <div class="gh-tag g" style="font-size:11px">feature</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotations">
+    <div class="ann"><div class="ann-num">1</div><div class="ann-text"><strong>Onglet "Files changed"</strong><p>L'onglet le plus important pour relire. On voit chaque fichier modifié avec vert (ajouté) et rouge (supprimé). Cliquer sur le + d'une ligne pour laisser un commentaire précis.</p></div></div>
+    <div class="ann"><div class="ann-num">2</div><div class="ann-text"><strong>Bouton "Review changes"</strong><p>En haut à droite de Files changed. Permet d'approuver (Approve), de demander des modifications (Request changes), ou simplement commenter.</p></div></div>
+    <div class="ann"><div class="ann-num">3</div><div class="ann-text"><strong>Bouton "Merge pull request"</strong><p>S'affiche quand la PR est approuvée et sans conflit. C'est le bouton final qui fusionne la branche dans main.</p></div></div>
+  </div>
+</section>
+
+<!-- ── 10. MERGER ── -->
+<section id="merger">
+  <h2><span class="snum g">10</span> Merger la Pull Request</h2>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="fnum g">1</div>
+      <div class="ftext"><strong>Cliquer "Merge pull request"</strong><p>Le bouton vert en bas de la PR. GitHub confirme le merge.</p></div>
+    </div>
+    <div class="flow-step">
+      <div class="fnum g">2</div>
+      <div class="ftext"><strong>Confirmer avec "Confirm merge"</strong><p>GitHub demande une confirmation. La branche est fusionnée dans main.</p></div>
+    </div>
+    <div class="flow-step">
+      <div class="fnum g">3</div>
+      <div class="ftext"><strong>Supprimer la branche — "Delete branch"</strong><p>GitHub propose directement. Cliquer dessus pour garder le repo propre.</p></div>
+    </div>
+    <div class="flow-step">
+      <div class="fnum">4</div>
+      <div class="ftext"><strong>Les deux font git pull origin main</strong><p>Pour récupérer le merge en local sur leur machine.</p></div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <strong>Après le merge, la PR passe en "Merged" (violet)</strong>
+    Elle reste consultable dans l'historique des PR. On peut voir toute l'historique des discussions et décisions de l'équipe.
+  </div>
+</section>
+
+<!-- ── 11. ISSUES ── -->
+<section id="issues">
+  <h2><span class="snum">11</span> Les Issues — gérer les tâches et bugs</h2>
+
+  <p>Les Issues servent à lister les tâches à faire, signaler des bugs, ou noter des idées. C'est le mini-Trello de GitHub.</p>
+
+  <div class="highlight-box">
+    <h4>Comment utiliser les Issues en duo</h4>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="fnum">1</div>
+        <div class="ftext"><strong>Onglet Issues → "New issue"</strong><p>Donner un titre clair + description. Assigner à Alice ou Bob selon qui s'en occupe.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="fnum">2</div>
+        <div class="ftext"><strong>Ajouter des labels</strong><p><span class="gh-tag" style="font-size:11px">bug</span> <span class="gh-tag g" style="font-size:11px">feature</span> <span class="gh-tag y" style="font-size:11px">documentation</span> — Pour filtrer et prioriser.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="fnum g">3</div>
+        <div class="ftext"><strong>Fermer l'issue via un commit ou une PR</strong><p>Dans le message du commit, écrire <code>Closes #12</code> → l'issue #12 se ferme automatiquement au merge.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <strong>Astuce pro</strong>
+    Dans le message d'une PR ou d'un commit, écrire <code>Closes #5</code>, <code>Fixes #3</code> ou <code>Resolves #8</code> ferme automatiquement l'issue correspondante au moment du merge. Très pratique pour garder les issues synchronisées avec le code.
+  </div>
+</section>
+
+<!-- ── 12. RACCOURCIS ── -->
+<section id="raccourcis">
+  <h2><span class="snum">12</span> Raccourcis et astuces interface</h2>
+
+  <div class="grid2">
+    <div class="highlight-box">
+      <h4>Raccourcis clavier GitHub</h4>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px"><code>/</code> — Focus sur la barre de recherche</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px"><code>T</code> — Chercher un fichier dans le repo</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px"><code>L</code> — Aller à un numéro de ligne</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px"><code>B</code> — Ouvrir la vue "Blame" (qui a écrit quelle ligne)</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px"><code>?</code> — Voir tous les raccourcis disponibles</p>
+      <p style="font-size:13px;color:var(--muted);margin:0"><code>.</code> (point) — Ouvrir le repo dans VS Code en ligne !</p>
+    </div>
+    <div class="highlight-box">
+      <h4>URL utiles à connaître</h4>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:6px"><code>/commits/main</code> → historique commits</p>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:6px"><code>/branches</code> → toutes les branches</p>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:6px"><code>/pulls</code> → toutes les PR</p>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:6px"><code>/issues</code> → toutes les issues</p>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:6px"><code>/settings/access</code> → inviter collaborateurs</p>
+      <p style="font-size:12.5px;color:var(--muted);margin:0"><code>/network</code> → graphe des branches</p>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <strong>Le point (.) — VS Code dans le navigateur</strong>
+    Sur n'importe quel repo GitHub, appuyer sur la touche <code>.</code> (point) ouvre automatiquement un VS Code en ligne dans le navigateur. On peut lire et naviguer dans le code sans rien installer. Parfait pour relire une PR rapidement.
+  </div>
+
+  <div class="callout info">
+    <strong>Voir qui a écrit quoi — Blame</strong>
+    Sur un fichier GitHub, cliquer sur <strong>"Blame"</strong> en haut à droite affiche ligne par ligne qui a écrit quoi et quand. Indispensable pour comprendre l'historique d'un fichier.
+  </div>
+</section>
+
+</main>
+</div>
+<script src="../cursor.js"></script>
+</body>
+</html>

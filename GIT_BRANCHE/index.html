@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Branches – Travailler en duo | Real Conseil</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg:      #0b0c0f;
+  --bg2:     #13141a;
+  --bg3:     #1a1b23;
+  --bg4:     #22232d;
+  --border:  #2a2b38;
+  --text:    #e6e6f0;
+  --muted:   #6e6e85;
+  --accent:  #5b8dee;
+  --green:   #3ecf8e;
+  --warn:    #f59e0b;
+  --danger:  #f87171;
+  --purple:  #a78bfa;
+  --pink:    #f472b6;
+  --alice:   #5b8dee;
+  --bob:     #3ecf8e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; font-size: 15px; line-height: 1.7; }
+
+/* ── HEADER ── */
+header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 36px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  position: sticky; top: 0; z-index: 100;
+}
+.logo { font-size: 13px; font-weight: 800; color: var(--accent); letter-spacing: .06em; }
+.logo span { color: var(--muted); font-weight: 400; }
+.hbadge { display: flex; gap: 8px; }
+.badge { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--muted); }
+
+/* ── HERO ── */
+.hero {
+  padding: 60px 36px 48px;
+  max-width: 880px; margin: 0 auto;
+  border-bottom: 1px solid var(--border);
+}
+.hero-tag { font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.hero h1 { font-size: clamp(28px, 4.5vw, 46px); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+.hero h1 em { color: var(--green); font-style: normal; }
+.hero p { color: var(--muted); font-size: 16px; max-width: 560px; }
+
+/* ── LAYOUT ── */
+.layout { display: grid; grid-template-columns: 230px 1fr; max-width: 1200px; margin: 0 auto; }
+
+/* ── SIDEBAR ── */
+nav.sidebar {
+  border-right: 1px solid var(--border);
+  padding: 32px 0;
+  position: sticky; top: 57px;
+  height: calc(100vh - 57px);
+  overflow-y: auto;
+}
+.nav-section { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #444; padding: 18px 24px 6px; font-weight: 800; }
+nav.sidebar a {
+  display: block; padding: 8px 24px;
+  font-size: 13px; color: var(--muted);
+  text-decoration: none; transition: all .15s;
+  border-left: 2px solid transparent;
+}
+nav.sidebar a:hover { color: var(--text); background: var(--bg2); border-left-color: var(--accent); }
+
+/* ── MAIN ── */
+main { padding: 52px 52px 80px; }
+section { margin-bottom: 80px; scroll-margin-top: 80px; }
+
+h2 {
+  font-size: 22px; font-weight: 800; margin-bottom: 20px;
+  padding-bottom: 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.step-num {
+  background: var(--accent); color: #000;
+  font-size: 11px; font-weight: 800;
+  width: 24px; height: 24px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.step-num.green { background: var(--green); }
+.step-num.warn  { background: var(--warn); }
+.step-num.danger{ background: var(--danger); }
+
+h3 { font-size: 16px; font-weight: 700; margin: 28px 0 10px; }
+p  { color: #bbbbc8; margin-bottom: 12px; }
+
+/* ── CODE ── */
+pre {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 18px 20px; overflow-x: auto; margin: 12px 0 20px; position: relative;
+  cursor: pointer; transition: border-color .15s;
+}
+pre:hover { border-color: var(--accent); }
+pre code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.8; }
+.copy-btn {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 5px;
+  color: var(--muted); font-size: 10px; padding: 3px 8px; cursor: pointer;
+  font-family: 'JetBrains Mono', monospace; transition: all .15s; opacity: 0;
+}
+pre:hover .copy-btn { opacity: 1; }
+.copy-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: var(--bg3); padding: 2px 7px; border-radius: 4px; color: var(--green); }
+pre code { background: none; padding: 0; }
+
+.kw  { color: #c792ea; }
+.fn  { color: #82aaff; }
+.str { color: #c3e88d; }
+.cmt { color: #4a5568; font-style: italic; }
+.br  { color: #f59e0b; font-weight: 700; }
+.ok  { color: #3ecf8e; }
+.err { color: #f87171; }
+
+/* ── CALLOUTS ── */
+.callout { border-radius: 10px; padding: 16px 20px; margin: 16px 0; border-left: 3px solid; font-size: 14px; }
+.callout.info   { background: #131e35; border-color: var(--accent); color: #a8c4f5; }
+.callout.tip    { background: #0d2318; border-color: var(--green);  color: #82e0b8; }
+.callout.warn   { background: #251d0b; border-color: var(--warn);   color: #f0c67a; }
+.callout.danger { background: #251010; border-color: var(--danger); color: #f5a0a0; }
+.callout strong { display: block; margin-bottom: 4px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; opacity: .6; }
+
+/* ── PERSO TAGS ── */
+.alice-tag, .bob-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace; margin-bottom: 8px;
+}
+.alice-tag { background: #0d1c3a; border: 1px solid #1e3a6e; color: var(--alice); }
+.bob-tag   { background: #0d2318; border: 1px solid #1a4030; color: var(--bob); }
+
+/* ── DUO STEPS ── */
+.duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.duo-col { border-radius: 10px; overflow: hidden; }
+.duo-header { padding: 10px 16px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.duo-col.alice .duo-header { background: #0d1c3a; color: var(--alice); border-bottom: 1px solid #1e3a6e; }
+.duo-col.bob   .duo-header { background: #0d2318; color: var(--bob);   border-bottom: 1px solid #1a4030; }
+.duo-col.alice pre { margin: 0; border-radius: 0; border: none; background: #0a1628; border-bottom: 1px solid #1e3a6e; }
+.duo-col.bob   pre { margin: 0; border-radius: 0; border: none; background: #08180f; border-bottom: 1px solid #1a4030; }
+.duo-col.alice pre:last-child, .duo-col.bob pre:last-child { border-bottom: none; }
+
+/* ── BRANCH VISUAL ── */
+.branch-visual {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 24px;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+.branch-visual svg { width: 100%; min-width: 600px; }
+
+/* ── FLOW STEPS ── */
+.flow { margin: 20px 0; }
+.flow-step {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 16px 20px; margin-bottom: 8px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+  transition: border-color .15s;
+}
+.flow-step:hover { border-color: var(--accent); }
+.flow-num {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--accent); color: #000;
+  font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.flow-num.g { background: var(--green); }
+.flow-num.o { background: var(--warn); color: #000; }
+.flow-num.r { background: var(--danger); color: #fff; }
+.flow-content strong { display: block; font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.flow-content p { margin: 0; font-size: 13px; color: var(--muted); }
+
+/* ── TABLEAU ── */
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px; }
+th { background: var(--bg2); padding: 10px 14px; border: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); text-align: left; }
+td { padding: 10px 14px; border: 1px solid var(--border); color: #bbbbc8; vertical-align: top; }
+tr:nth-child(even) td { background: var(--bg2); }
+
+/* ── COMPARE ── */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.c-box { border-radius: 10px; overflow: hidden; }
+.c-head { padding: 8px 14px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.c-box.bad  .c-head  { background: #251010; color: var(--danger); }
+.c-box.good .c-head  { background: #0d2318; color: var(--green); }
+.c-box pre { margin: 0; border-radius: 0 0 10px 10px; border-top: none; }
+
+/* TOAST */
+#toast { position: fixed; bottom: 20px; right: 20px; background: var(--green); color: #000; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 12.5px; opacity: 0; transform: translateY(8px); transition: all .18s; pointer-events: none; z-index: 999; }
+#toast.show { opacity: 1; transform: translateY(0); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  nav.sidebar { display: none; }
+  main { padding: 28px 18px; }
+  .duo-grid { grid-template-columns: 1fr; }
+  .compare  { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Real Conseil <span>/ Formation</span></div>
+  <div class="hbadge">
+    <div class="badge">DWWM · Git</div>
+    <div class="badge">Travail en duo</div>
+  </div>
+</header>
+
+<div style="border-bottom:1px solid var(--border)">
+<div class="hero">
+  <div class="hero-tag">Module Git · Branches</div>
+  <h1>Travailler en duo<br>avec les <em>branches Git</em></h1>
+  <p>Le guide complet pour deux développeurs qui travaillent sur le même projet sans se marcher dessus.</p>
+</div>
+</div>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="nav-section">Comprendre</div>
+  <a href="#pourquoi">Pourquoi les branches ?</a>
+  <a href="#vocabulaire">Vocabulaire</a>
+  <a href="#schema">Schéma visuel</a>
+  <div class="nav-section">Mise en place</div>
+  <a href="#setup">Initialisation du projet</a>
+  <a href="#rejoindre">Rejoindre le projet (Équipier 2)</a>
+  <div class="nav-section">Workflow quotidien</div>
+  <a href="#workflow">Flux de travail complet</a>
+  <a href="#alice">Équipier 1 — Alice</a>
+  <a href="#bob">Équipier 2 — Bob</a>
+  <a href="#merge">Fusionner les branches</a>
+  <div class="nav-section">Problèmes</div>
+  <a href="#conflits">Gérer les conflits</a>
+  <a href="#regles">Règles d'équipe</a>
+  <a href="#commandes">Aide-mémoire commandes</a>
+</nav>
+
+<main>
+
+<!-- ── POURQUOI ── -->
+<section id="pourquoi">
+  <h2><span class="step-num">1</span> Pourquoi les branches ?</h2>
+
+  <p>Sans branches, deux personnes qui modifient les mêmes fichiers en même temps créent immédiatement des conflits. C'est le chaos.</p>
+
+  <div class="compare">
+    <div class="c-box bad">
+      <div class="c-head">Sans branches — le chaos</div>
+      <pre><code><span class="cmt"># Alice pushes, Bob pushes...</span>
+<span class="err">! [rejected] main -> main</span>
+<span class="err">error: failed to push some refs</span>
+<span class="cmt"># → ils écrasent le travail l'un de l'autre</span>
+<span class="cmt"># → personne ne sait qui a fait quoi</span>
+<span class="cmt"># → le projet est cassé</span></code></pre>
+    </div>
+    <div class="c-box good">
+      <div class="c-head">Avec branches — chacun son espace</div>
+      <pre><code><span class="ok"># Alice travaille sur feature/navbar</span>
+<span class="ok"># Bob travaille sur feature/login</span>
+<span class="ok"># → ils ne se bloquent jamais</span>
+<span class="ok"># → chaque fonctionnalité est isolée</span>
+<span class="ok"># → on fusionne quand c'est prêt</span></code></pre>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <strong>La règle d'or</strong>
+    On ne travaille <strong>jamais directement sur <code>main</code></strong>. <code>main</code> = la version stable. Chaque fonctionnalité = une branche. Toujours.
+  </div>
+</section>
+
+<!-- ── VOCABULAIRE ── -->
+<section id="vocabulaire">
+  <h2><span class="step-num">2</span> Vocabulaire à connaître</h2>
+
+  <table>
+    <thead><tr><th>Terme</th><th>C'est quoi ?</th><th>Analogie</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>main</code></td>
+        <td>La branche principale. C'est la version stable, celle qui tourne en production.</td>
+        <td>Le tronc de l'arbre</td>
+      </tr>
+      <tr>
+        <td><code>branch</code></td>
+        <td>Une copie parallèle du code pour travailler sur une fonctionnalité sans toucher <code>main</code>.</td>
+        <td>Une branche de l'arbre</td>
+      </tr>
+      <tr>
+        <td><code>commit</code></td>
+        <td>Une sauvegarde horodatée avec un message. Comme un checkpoint de jeu vidéo.</td>
+        <td>Une photo de l'état du projet</td>
+      </tr>
+      <tr>
+        <td><code>push</code></td>
+        <td>Envoyer ses commits vers GitHub (le serveur distant).</td>
+        <td>Uploader son travail</td>
+      </tr>
+      <tr>
+        <td><code>pull</code></td>
+        <td>Récupérer les derniers changements depuis GitHub.</td>
+        <td>Télécharger le travail des autres</td>
+      </tr>
+      <tr>
+        <td><code>merge</code></td>
+        <td>Fusionner une branche dans une autre.</td>
+        <td>Coller deux morceaux ensemble</td>
+      </tr>
+      <tr>
+        <td><code>Pull Request</code></td>
+        <td>Une demande de fusion sur GitHub. On demande à l'autre de relire avant de merger.</td>
+        <td>Demander une validation avant de coller</td>
+      </tr>
+      <tr>
+        <td><code>conflit</code></td>
+        <td>Deux personnes ont modifié les mêmes lignes. Git ne sait pas lequel garder.</td>
+        <td>Deux personnes ont répondu sur la même ligne du cahier</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ── SCHEMA ── -->
+<section id="schema">
+  <h2><span class="step-num">3</span> Schéma visuel — ce qui se passe vraiment</h2>
+
+  <p>Voici comment les branches d'Alice et Bob coexistent sur le même projet sans se perturber :</p>
+
+  <div class="branch-visual">
+    <svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, monospace">
+
+      <!-- MAIN LINE -->
+      <line x1="40" y1="140" x2="680" y2="140" stroke="#2a2b38" stroke-width="2"/>
+
+      <!-- MAIN commits -->
+      <!-- C1 -->
+      <circle cx="80"  cy="140" r="10" fill="#5b8dee"/>
+      <text x="80"  y="165" font-size="10" fill="#6e6e85" text-anchor="middle">init</text>
+
+      <!-- C2 -->
+      <circle cx="180" cy="140" r="10" fill="#5b8dee"/>
+      <text x="180" y="165" font-size="10" fill="#6e6e85" text-anchor="middle">structure</text>
+
+      <!-- FORK points -->
+      <!-- Alice branches off from C2 upward -->
+      <line x1="180" y1="130" x2="240" y2="70" stroke="#5b8dee" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <!-- Alice branch line -->
+      <line x1="240" y1="70" x2="500" y2="70" stroke="#5b8dee" stroke-width="2.5"/>
+
+      <!-- Alice commits -->
+      <circle cx="300" cy="70" r="9" fill="#5b8dee"/>
+      <text x="300" y="55" font-size="10" fill="#5b8dee" text-anchor="middle">navbar</text>
+
+      <circle cx="400" cy="70" r="9" fill="#5b8dee"/>
+      <text x="400" y="55" font-size="10" fill="#5b8dee" text-anchor="middle">styles</text>
+
+      <circle cx="500" cy="70" r="9" fill="#5b8dee"/>
+      <text x="500" y="55" font-size="10" fill="#5b8dee" text-anchor="middle">liens</text>
+
+      <!-- Alice merge back to main -->
+      <line x1="500" y1="79" x2="540" y2="130" stroke="#5b8dee" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+      <!-- Bob branches off from C2 downward -->
+      <line x1="180" y1="150" x2="240" y2="210" stroke="#3ecf8e" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <!-- Bob branch line -->
+      <line x1="240" y1="210" x2="480" y2="210" stroke="#3ecf8e" stroke-width="2.5"/>
+
+      <!-- Bob commits -->
+      <circle cx="310" cy="210" r="9" fill="#3ecf8e"/>
+      <text x="310" y="235" font-size="10" fill="#3ecf8e" text-anchor="middle">form HTML</text>
+
+      <circle cx="420" cy="210" r="9" fill="#3ecf8e"/>
+      <text x="420" y="235" font-size="10" fill="#3ecf8e" text-anchor="middle">validation</text>
+
+      <circle cx="480" cy="210" r="9" fill="#3ecf8e"/>
+      <text x="480" y="235" font-size="10" fill="#3ecf8e" text-anchor="middle">submit</text>
+
+      <!-- Bob merge back to main -->
+      <line x1="480" y1="201" x2="580" y2="150" stroke="#3ecf8e" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+      <!-- MERGE commit on main -->
+      <circle cx="540" cy="140" r="10" fill="#5b8dee"/>
+      <line   cx="540" cy="140" r="10" fill="none"/>
+      <circle cx="580" cy="140" r="10" fill="#3ecf8e"/>
+
+      <!-- Final main commit -->
+      <circle cx="650" cy="140" r="12" fill="#f59e0b" stroke="#f59e0b" stroke-width="2"/>
+      <text x="650" y="170" font-size="10" fill="#f59e0b" text-anchor="middle">release</text>
+
+      <!-- Labels -->
+      <rect x="30" y="130" width="34" height="18" rx="4" fill="#1a1b23" stroke="#2a2b38"/>
+      <text x="47" y="143" font-size="9" fill="#6e6e85" text-anchor="middle" font-weight="700">main</text>
+
+      <rect x="205" y="60" width="72" height="18" rx="4" fill="#0d1c3a" stroke="#1e3a6e"/>
+      <text x="241" y="73" font-size="9" fill="#5b8dee" text-anchor="middle" font-weight="700">Alice / navbar</text>
+
+      <rect x="200" y="200" width="72" height="18" rx="4" fill="#0d2318" stroke="#1a4030"/>
+      <text x="236" y="213" font-size="9" fill="#3ecf8e" text-anchor="middle" font-weight="700">Bob / login</text>
+
+      <!-- Merge labels -->
+      <text x="540" y="125" font-size="9" fill="#5b8dee" text-anchor="middle">merge Alice</text>
+      <text x="580" y="125" font-size="9" fill="#3ecf8e" text-anchor="middle">merge Bob</text>
+    </svg>
+  </div>
+
+  <div class="callout info">
+    <strong>Ce que montre ce schéma</strong>
+    Alice et Bob partent du même point (<code>main</code>). Ils travaillent en parallèle sur leurs branches sans se gêner. Quand chacun a terminé, on fusionne leurs branches dans <code>main</code>. Le résultat final contient le travail des deux.
+  </div>
+</section>
+
+<!-- ── SETUP ── -->
+<section id="setup">
+  <h2><span class="step-num">4</span> Initialisation — Équipier 1 crée le projet</h2>
+
+  <p>Une seule personne fait ça au début. L'autre rejoindra ensuite.</p>
+
+  <div class="alice-tag"> Équipier 1 — Alice (crée le repo)</div>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-content">
+        <strong>Créer le repo sur GitHub</strong>
+        <p>Aller sur github.com → New repository → Cocher "Add a README" → Create</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-content">
+        <strong>Cloner en local et initialiser le projet</strong>
+        <p>Sur son ordinateur, Alice clone le repo et pose la structure de base.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-content">
+        <strong>Inviter l'équipier sur GitHub</strong>
+        <p>Settings → Collaborators → Add people → envoyer l'invitation à Bob</p>
+      </div>
+    </div>
+  </div>
+
+  <pre><code><span class="cmt"># Étape 1 — Alice clone le repo créé sur GitHub</span>
+<span class="fn">git clone</span> https://github.com/alice/mon-projet.git
+<span class="fn">cd</span> mon-projet
+
+<span class="cmt"># Étape 2 — Elle crée la structure de base</span>
+<span class="fn">touch</span> index.html style.css script.js
+
+<span class="cmt"># Étape 3 — Premier commit sur main</span>
+<span class="fn">git add</span> .
+<span class="fn">git commit</span> -m <span class="str">"init : structure de base du projet"</span>
+<span class="fn">git push</span> origin main</code><button class="copy-btn">Copier</button></pre>
+
+  <div class="callout warn">
+    <strong>Important</strong>
+    Alice envoie la structure de base sur <code>main</code> AVANT que Bob rejoigne. Comme ça, les deux partent du même point de départ.
+  </div>
+</section>
+
+<!-- ── REJOINDRE ── -->
+<section id="rejoindre">
+  <h2><span class="step-num">5</span> Rejoindre le projet — Équipier 2</h2>
+
+  <div class="bob-tag">Équipier 2 — Bob (rejoint le repo)</div>
+
+  <pre><code><span class="cmt"># Bob accepte l'invitation GitHub (email ou notifications)</span>
+<span class="cmt"># Puis il clone le repo sur son ordinateur</span>
+<span class="fn">git clone</span> https://github.com/alice/mon-projet.git
+<span class="fn">cd</span> mon-projet
+
+<span class="cmt"># Vérifier qu'il voit bien le code d'Alice</span>
+<span class="fn">ls</span>
+<span class="cmt"># → index.html  style.css  script.js  README.md</span>
+
+<span class="cmt"># Vérifier les branches disponibles</span>
+<span class="fn">git branch</span> -a
+<span class="cmt"># → * main</span>
+<span class="cmt">#   remotes/origin/main</span></code><button class="copy-btn">Copier</button></pre>
+
+  <div class="callout tip">
+    <strong>Bob est maintenant synchronisé avec Alice.</strong>
+    Il a exactement le même code. Il peut maintenant créer sa propre branche pour travailler.
+  </div>
+</section>
+
+<!-- ── WORKFLOW ── -->
+<section id="workflow">
+  <h2><span class="step-num green">6</span> Le workflow quotidien — vue d'ensemble</h2>
+
+  <p>Chaque matin, chaque jour de travail, le même rituel :</p>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-num g">1</div>
+      <div class="flow-content">
+        <strong>Se mettre à jour depuis main</strong>
+        <p><code>git pull origin main</code> — toujours commencer par récupérer le travail des autres</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num g">2</div>
+      <div class="flow-content">
+        <strong>Créer ou se mettre sur sa branche</strong>
+        <p><code>git checkout -b feature/ma-fonctionnalite</code> — une branche = une fonctionnalité</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num g">3</div>
+      <div class="flow-content">
+        <strong>Travailler, commiter régulièrement</strong>
+        <p><code>git add .</code> + <code>git commit -m "message"</code> — souvent, en petits morceaux</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num g">4</div>
+      <div class="flow-content">
+        <strong>Pusher sa branche sur GitHub</strong>
+        <p><code>git push origin feature/ma-fonctionnalite</code> — sauvegarder sur le serveur</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num o">5</div>
+      <div class="flow-content">
+        <strong>Ouvrir une Pull Request sur GitHub</strong>
+        <p>Demander à l'équipier de relire le code avant de fusionner dans main</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num o">6</div>
+      <div class="flow-content">
+        <strong>L'équipier relit et approuve</strong>
+        <p>Il peut commenter, demander des modifications, puis valider</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num g">7</div>
+      <div class="flow-content">
+        <strong>Merger dans main</strong>
+        <p>Une fois validé, la branche fusionne dans <code>main</code> — le code est intégré</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num g">8</div>
+      <div class="flow-content">
+        <strong>Supprimer la branche terminée</strong>
+        <p>La branche a rempli son rôle. On la supprime pour garder le repo propre.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ALICE ── -->
+<section id="alice">
+  <h2><span class="step-num">7</span> Équipier 1 — Alice travaille sur la navbar</h2>
+
+  <div class="alice-tag">Alice — feature/navbar</div>
+
+  <h3>Début de journée — se mettre à jour</h3>
+  <pre><code><span class="cmt"># Toujours commencer par ça !</span>
+<span class="fn">git checkout</span> main
+<span class="fn">git pull</span> origin main
+<span class="cmt"># → Alice récupère tout ce que Bob a pushé la veille</span></code><button class="copy-btn">Copier</button></pre>
+
+  <h3>Créer sa branche de fonctionnalité</h3>
+  <pre><code><span class="cmt"># Créer la branche ET basculer dessus en une seule commande</span>
+<span class="fn">git checkout</span> -b feature/navbar
+
+<span class="cmt"># Vérifier sur quelle branche on est</span>
+<span class="fn">git branch</span>
+<span class="cmt"># →   main</span>
+<span class="cmt"># → * feature/navbar   ← l'étoile = branche active</span></code><button class="copy-btn">Copier</button></pre>
+
+  <h3>Travailler et commiter par petites étapes</h3>
+  <pre><code><span class="cmt"># Alice modifie index.html, crée navbar.css...</span>
+<span class="cmt"># Après chaque petite étape logique → commit !</span>
+
+<span class="fn">git add</span> .
+<span class="fn">git commit</span> -m <span class="str">"feat: ajout structure HTML navbar"</span>
+
+<span class="cmt"># Elle continue à coder...</span>
+<span class="fn">git add</span> .
+<span class="fn">git commit</span> -m <span class="str">"style: mise en forme navbar responsive"</span>
+
+<span class="fn">git add</span> .
+<span class="fn">git commit</span> -m <span class="str">"feat: ajout liens de navigation actifs"</span></code><button class="copy-btn">Copier</button></pre>
+
+  <h3>Pusher sa branche sur GitHub</h3>
+  <pre><code><span class="cmt"># Envoyer la branche sur GitHub</span>
+<span class="fn">git push</span> origin feature/navbar
+<span class="cmt"># → La branche est maintenant visible sur GitHub</span>
+<span class="cmt"># → Bob peut la voir mais elle ne touche pas à main</span></code><button class="copy-btn">Copier</button></pre>
+
+  <div class="callout tip">
+    <strong>Convention de nommage des branches</strong>
+    <code>feature/</code> pour une nouvelle fonctionnalité — <code>fix/</code> pour corriger un bug — <code>style/</code> pour du CSS — <code>docs/</code> pour la documentation. Ça aide à comprendre l'intention au premier coup d'œil.
+  </div>
+</section>
+
+<!-- ── BOB ── -->
+<section id="bob">
+  <h2><span class="step-num green">8</span> Équipier 2 — Bob travaille sur le formulaire</h2>
+
+  <div class="bob-tag">Bob — feature/login</div>
+
+  <p>Pendant qu'Alice fait la navbar, Bob fait le formulaire de login. En parallèle, sans attendre Alice.</p>
+
+  <pre><code><span class="cmt"># Bob se met à jour depuis main</span>
+<span class="fn">git checkout</span> main
+<span class="fn">git pull</span> origin main
+
+<span class="cmt"># Il crée SA branche</span>
+<span class="fn">git checkout</span> -b feature/login
+
+<span class="cmt"># Il travaille et commite...</span>
+<span class="fn">git add</span> .
+<span class="fn">git commit</span> -m <span class="str">"feat: structure HTML du formulaire login"</span>
+
+<span class="fn">git add</span> .
+<span class="fn">git commit</span> -m <span class="str">"feat: validation JavaScript email + mot de passe"</span>
+
+<span class="fn">git add</span> .
+<span class="fn">git commit</span> -m <span class="str">"style: design du formulaire responsive"</span>
+
+<span class="cmt"># Il push sa branche</span>
+<span class="fn">git push</span> origin feature/login</code><button class="copy-btn">Copier</button></pre>
+
+  <div class="callout info">
+    <strong>À ce stade</strong>
+    Alice et Bob ont chacun leur branche sur GitHub. Ni l'une ni l'autre n'a touché à <code>main</code>. Le code principal est toujours propre et stable.
+  </div>
+</section>
+
+<!-- ── MERGE ── -->
+<section id="merge">
+  <h2><span class="step-num warn">9</span> Fusionner — Pull Request sur GitHub</h2>
+
+  <p>Quand une fonctionnalité est terminée et testée, on l'intègre dans <code>main</code> via une <strong>Pull Request</strong> (PR).</p>
+
+  <h3>Étape 1 — Créer la Pull Request sur GitHub</h3>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-content">
+        <strong>Aller sur le repo GitHub</strong>
+        <p>GitHub détecte automatiquement la nouvelle branche et propose un bouton <strong>"Compare & pull request"</strong>. Cliquer dessus.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-content">
+        <strong>Remplir la PR</strong>
+        <p>Titre clair + description de ce qui a été fait. Assigner l'équipier en reviewer.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-content">
+        <strong>L'équipier relit sur GitHub</strong>
+        <p>Il voit les modifications fichier par fichier, peut commenter des lignes spécifiques, puis approuver.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num g">4</div>
+      <div class="flow-content">
+        <strong>Merger la PR</strong>
+        <p>Cliquer sur <strong>"Merge pull request"</strong>. La branche fusionne dans <code>main</code>.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num g">5</div>
+      <div class="flow-content">
+        <strong>Supprimer la branche</strong>
+        <p>GitHub propose directement de supprimer la branche mergée. Cliquer sur "Delete branch".</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Étape 2 — Se resynchroniser après le merge</h3>
+  <pre><code><span class="cmt"># Les DEUX équipiers font ça après chaque merge dans main</span>
+<span class="fn">git checkout</span> main
+<span class="fn">git pull</span> origin main
+<span class="cmt"># → main est maintenant à jour avec le travail fusionné</span>
+<span class="cmt"># → Prêt à créer une nouvelle branche pour la prochaine fonctionnalité</span></code><button class="copy-btn">Copier</button></pre>
+
+  <h3>Option — Merger en ligne de commande (sans PR)</h3>
+  <pre><code><span class="cmt"># Si on veut merger directement depuis le terminal (pour les TP)</span>
+<span class="fn">git checkout</span> main
+<span class="fn">git pull</span> origin main
+
+<span class="cmt"># Merger la branche d'Alice dans main</span>
+<span class="fn">git merge</span> feature/navbar
+
+<span class="cmt"># Pusher le merge sur GitHub</span>
+<span class="fn">git push</span> origin main
+
+<span class="cmt"># Supprimer la branche localement</span>
+<span class="fn">git branch</span> -d feature/navbar
+
+<span class="cmt"># Supprimer la branche sur GitHub aussi</span>
+<span class="fn">git push</span> origin --delete feature/navbar</code><button class="copy-btn">Copier</button></pre>
+</section>
+
+<!-- ── CONFLITS ── -->
+<section id="conflits">
+  <h2><span class="step-num danger">10</span> Gérer les conflits</h2>
+
+  <p>Un conflit arrive quand deux personnes modifient <strong>les mêmes lignes du même fichier</strong>. Git ne peut pas choisir automatiquement.</p>
+
+  <h3>À quoi ressemble un conflit ?</h3>
+  <pre><code><span class="cmt"># Git affiche ça dans le fichier en conflit :</span>
+
+<span class="err">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>
+&lt;h1&gt;Bienvenue sur MonApp&lt;/h1&gt;
+<span class="warn"></span>
+&lt;h1&gt;Mon Application Web&lt;/h1&gt;
+<span class="ok">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/navbar</span>
+
+<span class="cmt"># ↑ Ce qui est entre &lt;&lt;&lt;&lt; et ==== = MA version (HEAD = branche actuelle)</span>
+<span class="cmt"># ↑ Ce qui est entre ==== et &gt;&gt;&gt;&gt; = la version de l'autre branche</span></code><button class="copy-btn">Copier</button></pre>
+
+  <h3>Résoudre le conflit</h3>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-num r">1</div>
+      <div class="flow-content">
+        <strong>Ouvrir le fichier en conflit dans VS Code</strong>
+        <p>VS Code colore les conflits et propose des boutons : "Accept Current Change", "Accept Incoming Change", "Accept Both".</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num o">2</div>
+      <div class="flow-content">
+        <strong>Choisir quelle version garder (ou combiner les deux)</strong>
+        <p>Discuter avec l'équipier si besoin. Supprimer les marqueurs <code>&lt;&lt;&lt;</code> <code>===</code> <code>&gt;&gt;&gt;</code>.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num g">3</div>
+      <div class="flow-content">
+        <strong>Commiter la résolution</strong>
+        <p>Une fois le conflit résolu, commiter pour valider la résolution.</p>
+      </div>
+    </div>
+  </div>
+
+  <pre><code><span class="cmt"># Après avoir résolu manuellement le conflit dans le fichier :</span>
+<span class="fn">git add</span> index.html
+<span class="fn">git commit</span> -m <span class="str">"fix: résolution conflit sur le titre h1"</span>
+<span class="fn">git push</span> origin main</code><button class="copy-btn">Copier</button></pre>
+
+  <div class="callout warn">
+    <strong>Éviter les conflits — la règle simple</strong>
+    Si vous travaillez à deux, <strong>ne modifiez pas les mêmes fichiers en même temps</strong>. Alice prend les fichiers de layout, Bob prend les fichiers de fonctionnalité. La communication évite 90% des conflits.
+  </div>
+</section>
+
+<!-- ── REGLES ── -->
+<section id="regles">
+  <h2><span class="step-num">11</span> Règles d'équipe à afficher dans votre repo</h2>
+
+  <div class="duo-grid">
+    <div class="duo-col alice">
+      <div class="duo-header">Alice</div>
+      <pre><code><span class="cmt"># Ce qu'Alice ne fait JAMAIS :</span>
+<span class="err">git push origin main</span>
+<span class="cmt"># → Pousser directement sur main</span>
+<span class="cmt"># → sans passer par une PR</span>
+<span class="err">git add .</span>
+<span class="err">git commit -m "fix"</span>
+<span class="cmt"># → Message de commit vide</span>
+<span class="cmt"># → ou sans description</span></code></pre>
+      <pre><code><span class="cmt"># Ce qu'Alice DOIT faire :</span>
+<span class="ok">git pull origin main</span>
+<span class="cmt"># → au début de chaque session</span>
+<span class="ok">git checkout -b feature/xxx</span>
+<span class="cmt"># → toujours une branche dédiée</span>
+<span class="ok">git commit -m "feat: description"</span>
+<span class="cmt"># → message clair et précis</span></code></pre>
+    </div>
+    <div class="duo-col bob">
+      <div class="duo-header">Bob</div>
+      <pre><code><span class="cmt"># Ce que Bob ne fait JAMAIS :</span>
+<span class="err">git push --force</span>
+<span class="cmt"># → INTERDIT — écrase le travail de l'autre</span>
+<span class="err">git commit -m "wip"</span>
+<span class="err">git commit -m "test"</span>
+<span class="err">git commit -m "aaaaa"</span>
+<span class="cmt"># → Messages inutiles</span></code></pre>
+      <pre><code><span class="cmt"># Ce que Bob DOIT faire :</span>
+<span class="ok">git status</span>
+<span class="cmt"># → vérifier avant chaque commit</span>
+<span class="ok">git log --oneline</span>
+<span class="cmt"># → voir l'historique propre</span>
+<span class="ok">git branch</span>
+<span class="cmt"># → vérifier sa branche active</span></code></pre>
+    </div>
+  </div>
+
+  <div class="callout danger">
+    <strong>Commande interdite en duo</strong>
+    <code>git push --force</code> ou <code>git push -f</code> est la commande la plus dangereuse qui existe en équipe. Elle écrase l'historique GitHub et détruit le travail de l'équipier. Ne jamais l'utiliser.
+  </div>
+</section>
+
+<!-- ── COMMANDES ── -->
+<section id="commandes">
+  <h2><span class="step-num">12</span> Aide-mémoire — toutes les commandes</h2>
+
+  <table>
+    <thead><tr><th>Commande</th><th>Ce que ça fait</th><th>Quand l'utiliser</th></tr></thead>
+    <tbody>
+      <tr><td><code>git clone &lt;url&gt;</code></td><td>Copier un repo GitHub en local</td><td>Une seule fois au début</td></tr>
+      <tr><td><code>git status</code></td><td>Voir les fichiers modifiés / non commités</td><td>Avant chaque commit</td></tr>
+      <tr><td><code>git branch</code></td><td>Lister les branches locales (* = active)</td><td>Pour savoir où on est</td></tr>
+      <tr><td><code>git branch -a</code></td><td>Lister toutes les branches (locales + remote)</td><td>Pour voir les branches de l'équipier</td></tr>
+      <tr><td><code>git checkout -b feature/xxx</code></td><td>Créer une nouvelle branche ET basculer dessus</td><td>Début de chaque fonctionnalité</td></tr>
+      <tr><td><code>git checkout main</code></td><td>Revenir sur main</td><td>Avant de créer une nouvelle branche</td></tr>
+      <tr><td><code>git pull origin main</code></td><td>Récupérer les derniers changements de main</td><td>Début de chaque session de travail</td></tr>
+      <tr><td><code>git add .</code></td><td>Préparer tous les fichiers modifiés pour le commit</td><td>Avant chaque commit</td></tr>
+      <tr><td><code>git add fichier.html</code></td><td>Préparer un seul fichier</td><td>Quand on veut commiter sélectivement</td></tr>
+      <tr><td><code>git commit -m "message"</code></td><td>Sauvegarder un checkpoint avec un message</td><td>Après chaque étape logique</td></tr>
+      <tr><td><code>git push origin feature/xxx</code></td><td>Envoyer sa branche sur GitHub</td><td>Régulièrement + fin de journée</td></tr>
+      <tr><td><code>git merge feature/xxx</code></td><td>Fusionner une branche dans la branche actuelle</td><td>Après validation de la PR</td></tr>
+      <tr><td><code>git branch -d feature/xxx</code></td><td>Supprimer une branche locale après merge</td><td>Nettoyage post-merge</td></tr>
+      <tr><td><code>git log --oneline</code></td><td>Voir l'historique des commits en résumé</td><td>Pour comprendre qui a fait quoi</td></tr>
+      <tr><td><code>git diff</code></td><td>Voir les changements non commités ligne par ligne</td><td>Avant de commiter</td></tr>
+      <tr><td><code>git stash</code></td><td>Mettre son travail en attente temporairement</td><td>Pour changer de branche sans commiter</td></tr>
+      <tr><td><code>git stash pop</code></td><td>Récupérer le travail mis en stash</td><td>Après le changement de branche</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Convention messages de commit</h3>
+  <pre><code><span class="cmt"># Format recommandé : type: description courte</span>
+
+<span class="ok">feat:</span>  <span class="str">"feat: ajout formulaire de contact"</span>      <span class="cmt"># Nouvelle fonctionnalité</span>
+<span class="ok">fix:</span>   <span class="str">"fix: correction bug validation email"</span>   <span class="cmt"># Correction de bug</span>
+<span class="ok">style:</span> <span class="str">"style: mise en forme responsive navbar"</span> <span class="cmt"># CSS / mise en forme</span>
+<span class="ok">docs:</span>  <span class="str">"docs: mise à jour du README"</span>            <span class="cmt"># Documentation</span>
+<span class="ok">refac:</span> <span class="str">"refac: découpage composant Header"</span>     <span class="cmt"># Réorganisation code</span>
+<span class="ok">init:</span>  <span class="str">"init: structure de base du projet"</span>     <span class="cmt"># Premier commit</span></code><button class="copy-btn">Copier</button></pre>
+</section>
+
+<!-- ── SCENARIO COMPLET ── -->
+<section id="scenario">
+  <h2><span class="step-num green">★</span> Scénario complet — une journée type en duo</h2>
+
+  <p>Alice et Bob reprennent le travail le matin. Voici exactement ce que chacun tape :</p>
+
+  <div class="duo-grid">
+    <div class="duo-col alice">
+      <div class="duo-header">Alice — matin</div>
+      <pre><code><span class="cmt"># 1. Se mettre à jour</span>
+<span class="fn">git checkout</span> main
+<span class="fn">git pull</span> origin main
+
+<span class="cmt"># 2. Nouvelle branche du jour</span>
+<span class="fn">git checkout</span> -b feature/footer
+
+<span class="cmt"># 3. Elle code le footer...</span>
+
+<span class="cmt"># 4. Commits réguliers</span>
+<span class="fn">git add</span> .
+<span class="fn">git commit</span> -m <span class="str">"feat: structure footer"</span>
+<span class="fn">git add</span> .
+<span class="fn">git commit</span> -m <span class="str">"style: footer responsive"</span>
+
+<span class="cmt"># 5. Push</span>
+<span class="fn">git push</span> origin feature/footer</code></pre>
+    </div>
+    <div class="duo-col bob">
+      <div class="duo-header">Bob — matin</div>
+      <pre><code><span class="cmt"># 1. Se mettre à jour</span>
+<span class="fn">git checkout</span> main
+<span class="fn">git pull</span> origin main
+
+<span class="cmt"># 2. Nouvelle branche du jour</span>
+<span class="fn">git checkout</span> -b feature/galerie
+
+<span class="cmt"># 3. Il code la galerie d'images...</span>
+
+<span class="cmt"># 4. Commits réguliers</span>
+<span class="fn">git add</span> .
+<span class="fn">git commit</span> -m <span class="str">"feat: grille galerie HTML"</span>
+<span class="fn">git add</span> .
+<span class="fn">git commit</span> -m <span class="str">"style: galerie responsive"</span>
+
+<span class="cmt"># 5. Push</span>
+<span class="fn">git push</span> origin feature/galerie</code></pre>
+    </div>
+  </div>
+
+  <div class="duo-grid" style="margin-top:16px">
+    <div class="duo-col alice">
+      <div class="duo-header">Alice — après-midi (PR + merge)</div>
+      <pre><code><span class="cmt"># Alice ouvre une PR sur GitHub</span>
+<span class="cmt"># → feature/footer → main</span>
+<span class="cmt"># → Elle assigne Bob en reviewer</span>
+
+<span class="cmt"># Bob approuve → Alice merge sur GitHub</span>
+
+<span class="cmt"># Alice se resynchronise</span>
+<span class="fn">git checkout</span> main
+<span class="fn">git pull</span> origin main
+<span class="ok"># ✓ main contient maintenant le footer</span></code></pre>
+    </div>
+    <div class="duo-col bob">
+      <div class="duo-header">Bob — après-midi (PR + merge)</div>
+      <pre><code><span class="cmt"># Bob ouvre une PR sur GitHub</span>
+<span class="cmt"># → feature/galerie → main</span>
+<span class="cmt"># → Il assigne Alice en reviewer</span>
+
+<span class="cmt"># Alice approuve → Bob merge sur GitHub</span>
+
+<span class="cmt"># Bob se resynchronise</span>
+<span class="fn">git checkout</span> main
+<span class="fn">git pull</span> origin main
+<span class="ok"># ✓ main contient footer + galerie</span></code></pre>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <strong>Résultat</strong>
+    En une journée, Alice et Bob ont chacun développé une fonctionnalité complète, sans jamais se bloquer. <code>main</code> contient maintenant le footer ET la galerie. Propre, traçable, professionnel.
+  </div>
+</section>
+
+</main>
+</div>
+
+<div id="toast">Copié !</div>
+
+<script>
+document.querySelectorAll('pre').forEach(pre => {
+  const btn = pre.querySelector('.copy-btn')
+  const text = pre.querySelector('code').innerText
+  pre.addEventListener('click', () => copy(text))
+  if (btn) btn.addEventListener('click', e => { e.stopPropagation(); copy(text) })
+})
+function copy(text) {
+  navigator.clipboard.writeText(text).catch(() => {})
+  const t = document.getElementById('toast')
+  t.classList.add('show')
+  setTimeout(() => t.classList.remove('show'), 1500)
+}
+</script>
+<script src="../cursor.js"></script>
+</body>
+</html>
