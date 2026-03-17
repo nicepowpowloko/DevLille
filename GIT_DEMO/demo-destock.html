@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide demo GitHub Desktop + VSCode | DWWM</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg:     #0c0e14;
+  --bg2:    #11141d;
+  --bg3:    #181c28;
+  --border: #232840;
+  --text:   #dde2f0;
+  --muted:  #55607a;
+  --accent: #4d9eff;
+  --green:  #3ecf8e;
+  --yellow: #f5c542;
+  --red:    #f0665a;
+  --purple: #a78bfa;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Space Grotesk', sans-serif; font-size: 14px;
+  display: flex; height: 100vh; overflow: hidden;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 210px; background: var(--bg2); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;
+}
+.sb-logo { padding: 16px 14px 12px; border-bottom: 1px solid var(--border); }
+.sb-logo .l1 { font-size: 12px; font-weight: 800; color: var(--accent); }
+.sb-logo .l2 { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.sb-list { flex: 1; padding: 8px 0; }
+.sb-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 14px; cursor: pointer; transition: all .15s;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  border-left: 3px solid transparent;
+}
+.sb-item:hover  { background: var(--bg3); color: var(--text); }
+.sb-item.active { background: var(--bg3); color: var(--text); border-left-color: var(--accent); }
+.sb-item.done   { color: var(--green); }
+.sn {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  background: var(--border); font-size: 10px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; color: var(--muted);
+}
+.sb-item.active .sn { background: var(--accent); color: #000; }
+.sb-item.done   .sn { background: var(--green);  color: #000; }
+.sb-foot { padding: 12px 14px; border-top: 1px solid var(--border); }
+.sf-label { font-size: 10px; font-weight: 700; color: var(--muted); display: flex; justify-content: space-between; }
+.sf-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 6px; }
+.sf-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 2px; transition: width .4s; width: 0; }
+
+/* MAIN */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 10px 20px; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.tb-tag   { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); background: rgba(77,158,255,.1); padding: 3px 10px; border-radius: 6px; }
+.tb-title { font-size: 15px; font-weight: 800; }
+.tb-time  { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--muted); background: var(--bg3); border: 1px solid var(--border); padding: 4px 12px; border-radius: 6px; }
+.tb-btns  { display: flex; gap: 6px; }
+.tb-btn {
+  padding: 6px 14px; border-radius: 7px; font-size: 12.5px; font-weight: 700;
+  cursor: pointer; border: none; font-family: 'Space Grotesk', sans-serif; transition: all .15s;
+}
+.btn-prev { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+.btn-next { background: var(--accent); color: #000; }
+.tb-btn:hover:not(:disabled) { opacity: .85; transform: translateY(-1px); }
+.tb-btn:disabled { opacity: .3; cursor: not-allowed; transform: none; }
+
+/* CONTENT */
+.content { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.screen { display: none; flex-direction: column; gap: 14px; }
+.screen.active { display: flex; }
+
+/* BLOCKS */
+.block { border-radius: 12px; padding: 14px 16px; border: 1px solid var(--border); }
+.block.say  { background: rgba(167,139,250,.06); border-color: rgba(167,139,250,.25); }
+.block.ghw  { background: rgba(240,102,90,.05);  border-color: rgba(240,102,90,.2); }
+.block.ghd  { background: rgba(77,158,255,.05);  border-color: rgba(77,158,255,.2); }
+.block.vsc  { background: rgba(62,207,142,.05);  border-color: rgba(62,207,142,.2); }
+.block.warn { background: rgba(245,197,66,.05);  border-color: rgba(245,197,66,.2); }
+.block.bob  { background: rgba(245,166,35,.05);  border-color: rgba(245,166,35,.25); }
+.block.ok   { background: rgba(62,207,142,.06);  border-color: rgba(62,207,142,.3); display:flex; gap:12px; align-items:flex-start; }
+
+.bl { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+.say  .bl { color: var(--purple); }
+.ghw  .bl { color: var(--red); }
+.ghd  .bl { color: var(--accent); }
+.vsc  .bl { color: var(--green); }
+.warn .bl { color: var(--yellow); }
+.bob  .bl { color: #f5a623; }
+.ok   .bl { color: var(--green); }
+
+.bt { font-size: 13.5px; color: var(--text); line-height: 1.6; }
+.bt code {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  background: var(--bg3); padding: 1px 6px; border-radius: 4px;
+  color: var(--green); border: 1px solid var(--border);
+}
+.bt strong { color: #fff; font-weight: 700; }
+
+.step { display: flex; align-items: baseline; gap: 8px; margin-bottom: 7px; }
+.stp {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  font-size: 10px; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.stp.g { background: rgba(77,158,255,.2);  color: var(--accent); }
+.stp.v { background: rgba(62,207,142,.2);  color: var(--green); }
+.stp.r { background: rgba(240,102,90,.2);  color: var(--red); }
+.stp.o { background: rgba(245,166,35,.2);  color: #f5a623; }
+
+.hint {
+  background: var(--bg3); border: 1px dashed var(--border); border-radius: 8px;
+  padding: 9px 13px; font-size: 12px; color: var(--muted);
+  display: flex; align-items: flex-start; gap: 8px; margin-top: 10px;
+}
+.hint::before { content: '📸'; flex-shrink: 0; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+pre.code {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  color: #d4d4d4; margin-top: 10px; overflow-x: auto; line-height: 1.6;
+}
+.kw  { color: #569cd6; }
+.fn  { color: #dcdcaa; }
+.tg  { color: #4ec9b0; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="l1">Guide demo live</div>
+    <div class="l2">GitHub Desktop + VSCode</div>
+  </div>
+  <div class="sb-list" id="sb-list"></div>
+  <div class="sb-foot">
+    <div class="sf-label"><span>Avancement</span><span id="sf-txt">1 / 7</span></div>
+    <div class="sf-bar"><div class="sf-fill" id="sf-fill"></div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="tb-tag"   id="tb-tag"></div>
+    <div class="tb-title" id="tb-title"></div>
+    <div class="tb-time"  id="tb-time"></div>
+    <div class="tb-btns">
+      <button class="tb-btn btn-prev" id="btn-prev" onclick="prev()" disabled>Prec.</button>
+      <button class="tb-btn btn-next" id="btn-next" onclick="next()">Suivant</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- ETAPE 1 -->
+    <div class="screen" id="s0">
+      <div class="block say">
+        <div class="bl">Ce que tu dis aux stagiaires</div>
+        <div class="bt">Je suis Alice. Je cree le projet sur GitHub et j'invite mon equipier Bob. On commence toujours par creer le repo en ligne avant de toucher a quoi que ce soit en local.</div>
+      </div>
+      <div class="block ghw">
+        <div class="bl">GitHub Web — github.com/new</div>
+        <div class="bt">
+          <div class="step"><span class="stp r">1</span> Repository name : <code>mon-projet-duo</code></div>
+          <div class="step"><span class="stp r">2</span> Visibilite : <strong>Public</strong></div>
+          <div class="step"><span class="stp r">3</span> Cocher <strong>"Add a README file"</strong> — indispensable</div>
+          <div class="step"><span class="stp r">4</span> .gitignore template : choisir <strong>Node</strong></div>
+          <div class="step"><span class="stp r">5</span> Cliquer <strong>"Create repository"</strong></div>
+        </div>
+      </div>
+      <div class="block ghd">
+        <div class="bl">GitHub Desktop — cloner le repo</div>
+        <div class="bt">
+          <div class="step"><span class="stp g">1</span> File &gt; <strong>Clone repository</strong></div>
+          <div class="step"><span class="stp g">2</span> Onglet <strong>GitHub.com</strong> — trouver <code>mon-projet-duo</code></div>
+          <div class="step"><span class="stp g">3</span> Choisir le dossier local puis <strong>Clone</strong></div>
+          <div class="hint">Montrer : "Current Branch: main" apparait en haut de GitHub Desktop apres le clone.</div>
+        </div>
+      </div>
+      <div class="block warn">
+        <div class="bl">Piege a expliquer</div>
+        <div class="bt">Sans "Add README" coche, le repo est vide — pas de commit initial, pas de branche <code>main</code>. GitHub Desktop affiche une erreur au clone. <strong>Toujours cocher cette case.</strong></div>
+      </div>
+    </div>
+
+    <!-- ETAPE 2 -->
+    <div class="screen" id="s1">
+      <div class="block say">
+        <div class="bl">Ce que tu dis</div>
+        <div class="bt">Bob peut lire le repo, mais pas ecrire dedans. Sans invitation, son push sera refuse avec une erreur 403 Forbidden. Il faut l'ajouter comme collaborateur.</div>
+      </div>
+      <div class="block ghw">
+        <div class="bl">GitHub Web — Settings du repo</div>
+        <div class="bt">
+          <div class="step"><span class="stp r">1</span> Sur la page du repo — onglet <strong>Settings</strong> dans la barre en haut</div>
+          <div class="step"><span class="stp r">2</span> Menu gauche — <strong>Collaborators</strong></div>
+          <div class="step"><span class="stp r">3</span> Bouton <strong>"Add people"</strong></div>
+          <div class="step"><span class="stp r">4</span> Taper le pseudo GitHub de Bob — confirmer l'ajout</div>
+          <div class="hint">Montrer : la page affiche "Invitation sent" avec l'email de Bob en attente.</div>
+        </div>
+      </div>
+      <div class="block ghd">
+        <div class="bl">Bob — accepter l'invitation</div>
+        <div class="bt">
+          <div class="step"><span class="stp g">1</span> Bob recoit un email — cliquer <strong>"View invitation"</strong></div>
+          <div class="step"><span class="stp g">2</span> Ou aller sur <code>github.com/notifications</code></div>
+          <div class="step"><span class="stp g">3</span> Cliquer <strong>"Accept invitation"</strong></div>
+        </div>
+      </div>
+      <div class="block warn">
+        <div class="bl">Piege classique</div>
+        <div class="bt"><strong>Settings du repo</strong> (dans la barre d'onglets du repo) est different du <strong>Settings du compte</strong> (avatar en haut a droite). Erreur tres frequente chez les debutants.</div>
+      </div>
+    </div>
+
+    <!-- ETAPE 3 -->
+    <div class="screen" id="s2">
+      <div class="block say">
+        <div class="bl">Ce que tu dis</div>
+        <div class="bt">Maintenant je suis Bob. J'ai accepte l'invitation. Je clone le projet sur ma machine. Le clone copie tout l'historique Git en local.</div>
+      </div>
+      <div class="block ghd">
+        <div class="bl">GitHub Desktop — Bob clone</div>
+        <div class="bt">
+          <div class="step"><span class="stp g">1</span> File &gt; <strong>Clone repository</strong></div>
+          <div class="step"><span class="stp g">2</span> Onglet GitHub.com — chercher <code>alice-dev/mon-projet-duo</code></div>
+          <div class="step"><span class="stp g">3</span> Choisir un dossier different du dossier d'Alice</div>
+          <div class="step"><span class="stp g">4</span> Clone — Bob est sur <code>main</code></div>
+          <div class="hint">Montrer les deux fenetres GitHub Desktop cote a cote — meme repo, meme etat initial.</div>
+        </div>
+      </div>
+      <div class="block vsc">
+        <div class="bl">VSCode — ouvrir le projet</div>
+        <div class="bt">
+          <div class="step"><span class="stp v">1</span> Dans GitHub Desktop — bouton <strong>"Open in Visual Studio Code"</strong></div>
+          <div class="step"><span class="stp v">2</span> VSCode s'ouvre avec le dossier du projet</div>
+          <div class="step"><span class="stp v">3</span> En bas a gauche : la branche courante <code>main</code> est visible</div>
+        </div>
+      </div>
+      <div class="block ok">
+        <div style="font-size:20px;font-weight:900;flex-shrink:0;color:var(--green)">OK</div>
+        <div>
+          <div class="bl">Checkpoint</div>
+          <div class="bt">Alice et Bob ont tous les deux le projet en local sur <code>main</code>. Etape suivante : chacun cree sa propre branche avant de coder.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ETAPE 4 -->
+    <div class="screen" id="s3">
+      <div class="block say">
+        <div class="bl">Ce que tu dis</div>
+        <div class="bt">Regle absolue : on ne code jamais directement sur main. Chacun cree une branche pour sa fonctionnalite. On peut travailler en parallele sans se bloquer mutuellement.</div>
+      </div>
+      <div class="two-col">
+        <div class="block ghd">
+          <div class="bl">Alice — sa branche</div>
+          <div class="bt">
+            <div class="step"><span class="stp g">1</span> Cliquer sur <strong>"Current Branch: main"</strong></div>
+            <div class="step"><span class="stp g">2</span> <strong>"New Branch"</strong></div>
+            <div class="step"><span class="stp g">3</span> Nom : <code>feature/navbar</code></div>
+            <div class="step"><span class="stp g">4</span> <strong>"Create Branch"</strong></div>
+          </div>
+        </div>
+        <div class="block bob">
+          <div class="bl">Bob — sa branche</div>
+          <div class="bt">
+            <div class="step"><span class="stp o">1</span> Meme chose de son cote</div>
+            <div class="step"><span class="stp o">2</span> Nom : <code>feature/login</code></div>
+            <div class="step"><span class="stp o">3</span> <strong>"Create Branch"</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="block vsc">
+        <div class="bl">VSCode confirme le changement</div>
+        <div class="bt">
+          <div class="step"><span class="stp v">1</span> En bas a gauche de VSCode : <code>main</code> est passe a <code>feature/navbar</code></div>
+          <div class="step"><span class="stp v">2</span> GitHub Desktop et VSCode sont synchronises en temps reel</div>
+          <div class="hint">Moment fort : montrer que le badge de branche en bas de VSCode change en meme temps que dans GitHub Desktop.</div>
+        </div>
+      </div>
+      <div class="block warn">
+        <div class="bl">Convention de nommage</div>
+        <div class="bt">
+          <code>feature/</code> nouvelle fonctionnalite &nbsp;·&nbsp;
+          <code>fix/</code> correction &nbsp;·&nbsp;
+          <code>chore/</code> config — toujours en minuscules avec tirets, sans espaces.
+        </div>
+      </div>
+    </div>
+
+    <!-- ETAPE 5 -->
+    <div class="screen" id="s4">
+      <div class="block say">
+        <div class="bl">Ce que tu dis</div>
+        <div class="bt">Je cree mon fichier Navbar dans VSCode. Regardez GitHub Desktop en meme temps — il detecte le fichier automatiquement des la sauvegarde. C'est le moment le plus parlant de toute la demo.</div>
+      </div>
+      <div class="block vsc">
+        <div class="bl">VSCode — creer le fichier</div>
+        <div class="bt">
+          <div class="step"><span class="stp v">1</span> Creer le dossier <code>src/</code> dans l'explorateur VSCode</div>
+          <div class="step"><span class="stp v">2</span> Creer le fichier <code>src/Navbar.jsx</code></div>
+          <div class="step"><span class="stp v">3</span> Taper ce code minimal :</div>
+        </div>
+        <pre class="code"><span class="kw">export default function</span> <span class="fn">Navbar</span>() {
+  <span class="kw">return</span> &lt;<span class="tg">nav</span>&gt;Ma Navbar&lt;/<span class="tg">nav</span>&gt;
+}</pre>
+        <div class="bt" style="margin-top:10px">
+          <div class="step"><span class="stp v">4</span> <strong>Cmd+S</strong> (Mac) ou <strong>Ctrl+S</strong> (Windows) pour sauvegarder</div>
+          <div class="hint">Passer IMMEDIATEMENT dans GitHub Desktop apres la sauvegarde — l'effet est instantane.</div>
+        </div>
+      </div>
+      <div class="block ghd">
+        <div class="bl">GitHub Desktop — detection automatique</div>
+        <div class="bt">
+          <div class="step"><span class="stp g">1</span> Panneau gauche : <code>src/Navbar.jsx</code> apparait avec un + vert</div>
+          <div class="step"><span class="stp g">2</span> Panneau droit : le diff montre les lignes ajoutees en vert</div>
+          <div class="step"><span class="stp g">3</span> Champ <strong>Summary</strong> en bas : taper <code>feat: ajout composant Navbar</code></div>
+          <div class="step"><span class="stp g">4</span> Bouton bleu <strong>"Commit to feature/navbar"</strong></div>
+          <div class="step"><span class="stp g">5</span> Bouton en haut <strong>"Publish branch"</strong> = git push</div>
+          <div class="hint">Montrer le diff vert dans le panneau droit — c'est ce que Bob verra dans la PR pour relire le code.</div>
+        </div>
+      </div>
+      <div class="block warn">
+        <div class="bl">Convention messages de commit</div>
+        <div class="bt">
+          <code>feat:</code> nouvelle fonctionnalite &nbsp;·&nbsp;
+          <code>fix:</code> correction &nbsp;·&nbsp;
+          <code>style:</code> mise en forme &nbsp;·&nbsp;
+          <code>docs:</code> documentation &nbsp;·&nbsp;
+          <code>refac:</code> refactoring
+        </div>
+      </div>
+    </div>
+
+    <!-- ETAPE 6 -->
+    <div class="screen" id="s5">
+      <div class="block say">
+        <div class="bl">Ce que tu dis</div>
+        <div class="bt">J'ai pushe ma branche. Je demande maintenant a Bob de relire mon code avant de le fusionner dans main. C'est ca une Pull Request — une demande formelle de validation.</div>
+      </div>
+      <div class="block ghd">
+        <div class="bl">GitHub Desktop — creer la PR en 1 clic</div>
+        <div class="bt">
+          <div class="step"><span class="stp g">1</span> Apres le push, une banniere apparait : <strong>"Create Pull Request"</strong></div>
+          <div class="step"><span class="stp g">2</span> Cliquer dessus — GitHub s'ouvre sur le bon formulaire automatiquement</div>
+          <div class="hint">La banniere disparait apres quelques secondes — cliquer vite ou aller dans Branch &gt; Create Pull Request.</div>
+        </div>
+      </div>
+      <div class="block ghw">
+        <div class="bl">GitHub Web — remplir le formulaire de PR</div>
+        <div class="bt">
+          <div class="step"><span class="stp r">1</span> Titre : <code>feat: ajout navbar responsive</code></div>
+          <div class="step"><span class="stp r">2</span> Description : ce qui a ete fait, pourquoi</div>
+          <div class="step"><span class="stp r">3</span> Reviewers — cliquer l'engrenage — ajouter <strong>bob-dev</strong></div>
+          <div class="step"><span class="stp r">4</span> Bouton vert <strong>"Create pull request"</strong></div>
+          <div class="hint">Montrer : "base: main &lt;-- compare: feature/navbar". Expliquer le sens de la fleche — c'est ce qui va ou.</div>
+        </div>
+      </div>
+      <div class="block ok">
+        <div style="font-size:20px;font-weight:900;flex-shrink:0;color:var(--green)">OK</div>
+        <div>
+          <div class="bl">Checkpoint</div>
+          <div class="bt">La PR est ouverte. Bob recoit une notification. <code>main</code> n'a PAS encore change — le code d'Alice est en attente de validation.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ETAPE 7 -->
+    <div class="screen" id="s6">
+      <div class="block say">
+        <div class="bl">Ce que tu dis</div>
+        <div class="bt">Je suis maintenant Bob. J'ai recu la notification. Je vais relire le code d'Alice avant de valider. On ne merge jamais sans relire — meme en formation.</div>
+      </div>
+      <div class="block ghw">
+        <div class="bl">Bob relit la PR — GitHub Web</div>
+        <div class="bt">
+          <div class="step"><span class="stp r">1</span> Aller sur la PR — onglet <strong>"Files changed"</strong></div>
+          <div class="step"><span class="stp r">2</span> Lire les lignes vertes (+) ajoutees, rouges (-) supprimees</div>
+          <div class="step"><span class="stp r">3</span> Cliquer sur le + d'une ligne pour laisser un commentaire inline</div>
+          <div class="step"><span class="stp r">4</span> Bouton <strong>"Review changes"</strong> — Approve — <strong>"Submit review"</strong></div>
+          <div class="hint">Faire un vrai commentaire en live — les stagiaires voient l'utilite du code review.</div>
+        </div>
+      </div>
+      <div class="block ghw">
+        <div class="bl">Alice merge</div>
+        <div class="bt">
+          <div class="step"><span class="stp r">1</span> Apres approbation de Bob — bouton vert <strong>"Merge pull request"</strong></div>
+          <div class="step"><span class="stp r">2</span> <strong>"Confirm merge"</strong></div>
+          <div class="step"><span class="stp r">3</span> <strong>"Delete branch"</strong> — garder le repo propre</div>
+        </div>
+      </div>
+      <div class="block ghd">
+        <div class="bl">Les deux — recuperer main a jour</div>
+        <div class="bt">
+          <div class="step"><span class="stp g">1</span> Dans GitHub Desktop : switcher sur la branche <code>main</code></div>
+          <div class="step"><span class="stp g">2</span> Bouton <strong>"Fetch origin"</strong> puis <strong>"Pull origin"</strong></div>
+          <div class="step"><span class="stp g">3</span> VSCode se met a jour — <code>Navbar.jsx</code> apparait dans l'arborescence</div>
+          <div class="hint">Moment final : Navbar.jsx est dans VSCode sur main. Il est arrive via le merge, pas par copie manuelle.</div>
+        </div>
+      </div>
+      <div class="block ok">
+        <div style="font-size:20px;font-weight:900;flex-shrink:0;color:var(--green)">FIN</div>
+        <div>
+          <div class="bl">Workflow complet</div>
+          <div class="bt"><strong>branch &gt; commit &gt; push &gt; PR &gt; review &gt; merge &gt; pull</strong><br>C'est ce cycle que les stagiaires repeteront tous les jours en entreprise.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var STEPS = [
+  { tag:'ETAPE 1 — ALICE',            title:'Creer le repo sur GitHub',        time:'~5 min' },
+  { tag:'ETAPE 2 — ALICE (Settings)', title:'Inviter Bob collaborateur',        time:'~3 min' },
+  { tag:'ETAPE 3 — BOB',              title:'Bob clone le repo',               time:'~4 min' },
+  { tag:'ETAPE 4 — ALICE + BOB',      title:'Creer les branches',              time:'~5 min' },
+  { tag:'ETAPE 5 — ALICE',            title:'Coder et commiter dans VSCode',   time:'~8 min' },
+  { tag:'ETAPE 6 — ALICE',            title:'Ouvrir la Pull Request',          time:'~5 min' },
+  { tag:'ETAPE 7 — BOB + MERGE',      title:'Review, Merge, Pull',             time:'~6 min' }
+];
+var cur = 0;
+var N = STEPS.length;
+
+var sbList = document.getElementById('sb-list');
+for (var i = 0; i < N; i++) {
+  (function(idx) {
+    var el = document.createElement('div');
+    el.className = 'sb-item';
+    el.innerHTML = '<div class="sn">' + (idx + 1) + '</div><div>' + STEPS[idx].title + '</div>';
+    el.addEventListener('click', function() { goTo(idx); });
+    sbList.appendChild(el);
+  })(i);
+}
+
+function goTo(n) {
+  for (var i = 0; i < N; i++) {
+    var sc = document.getElementById('s' + i);
+    if (sc) { sc.className = i === n ? 'screen active' : 'screen'; }
+  }
+  var items = document.querySelectorAll('.sb-item');
+  for (var j = 0; j < items.length; j++) {
+    items[j].className = j < n ? 'sb-item done' : j === n ? 'sb-item active' : 'sb-item';
+  }
+  cur = n;
+  document.getElementById('tb-tag').textContent   = STEPS[n].tag;
+  document.getElementById('tb-title').textContent = STEPS[n].title;
+  document.getElementById('tb-time').textContent  = STEPS[n].time;
+  document.getElementById('btn-prev').disabled    = (n === 0);
+  document.getElementById('btn-next').disabled    = (n === N - 1);
+  document.getElementById('btn-next').textContent = n === N - 1 ? 'Termine !' : 'Suivant';
+  var pct = n === 0 ? 0 : Math.round(n / (N - 1) * 100);
+  document.getElementById('sf-fill').style.width = pct + '%';
+  document.getElementById('sf-txt').textContent  = (n + 1) + ' / ' + N;
+  document.querySelector('.content').scrollTop = 0;
+}
+
+function next() { if (cur < N - 1) goTo(cur + 1); }
+function prev() { if (cur > 0)     goTo(cur - 1); }
+
+goTo(0);
+</script>
+<script src="../cursor.js"></script>
+</body>
+</html>

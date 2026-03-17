@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git en équipe — Démo interactive | Real Conseil DWWM</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg:       #0c0e14;
+  --bg2:      #11141d;
+  --bg3:      #171b27;
+  --bg4:      #1d2235;
+  --border:   #252b3d;
+  --text:     #e2e6f0;
+  --muted:    #5a6480;
+  --accent:   #4d9eff;
+  --green:    #3ecf8e;
+  --red:      #f0665a;
+  --yellow:   #f5c542;
+  --purple:   #a78bfa;
+  --alice:    #3ecf8e;
+  --bob:      #f5a623;
+  --main-br:  #4d9eff;
+  --mono:     'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; font-size: 14px; }
+
+/* ── LAYOUT ── */
+.app { display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+.topbar {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 10px 24px; display: flex; align-items: center; gap: 14px;
+  z-index: 30;
+}
+.tb-logo { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--accent); }
+.tb-logo span { color: var(--muted); font-weight: 400; }
+.tb-steps { display: flex; gap: 0; margin-left: 8px; }
+.tb-step {
+  padding: 5px 14px; font-size: 11.5px; font-weight: 700; cursor: pointer;
+  border: 1px solid var(--border); margin-left: -1px; color: var(--muted);
+  transition: all .15s; white-space: nowrap;
+}
+.tb-step:first-child { border-radius: 8px 0 0 8px; }
+.tb-step:last-child  { border-radius: 0 8px 8px 0; }
+.tb-step:hover  { background: var(--bg3); color: var(--text); }
+.tb-step.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 800; }
+.tb-step.done   { background: #0d3d22; border-color: var(--green); color: var(--green); }
+.tb-spacer { flex: 1; }
+.tb-nav { display: flex; gap: 8px; }
+.nav-btn {
+  padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 700;
+  cursor: pointer; border: none; font-family: 'Space Grotesk', sans-serif; transition: all .15s;
+}
+.nav-prev { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+.nav-next { background: var(--accent); color: #000; }
+.nav-btn:hover:not(:disabled) { opacity: .85; transform: translateY(-1px); }
+.nav-btn:disabled { opacity: .3; cursor: not-allowed; transform: none; }
+
+/* ── MAIN CONTENT ── */
+.main { display: grid; grid-template-columns: 1fr 320px; overflow: hidden; }
+
+/* ── LEFT PANEL (scenario + visual) ── */
+.left-panel { display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border); }
+
+/* Branch diagram */
+.branch-diagram {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 16px 24px; flex-shrink: 0; position: relative; overflow: hidden;
+}
+.bd-title { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+#branch-canvas { width: 100%; height: 90px; display: block; }
+
+/* Split view: VSCode + GitHub */
+.split-view { flex: 1; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
+
+/* VSCode Simulator */
+.vscode {
+  background: #1e1e1e; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.vscode-tabs {
+  background: #2d2d2d; display: flex; align-items: center; gap: 0;
+  border-bottom: 1px solid #111; flex-shrink: 0; padding-left: 50px;
+}
+.vscode-activity {
+  position: absolute; left: 0; top: 0; width: 50px; height: 100%;
+  background: #333; border-right: 1px solid #111; display: flex;
+  flex-direction: column; align-items: center; padding-top: 8px; gap: 4px;
+  z-index: 5;
+}
+.va-icon { width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: #858585; transition: all .15s; }
+.va-icon.active { color: #fff; background: rgba(255,255,255,.08); }
+.vscode-tab {
+  padding: 7px 14px; font-size: 12px; color: #858585; cursor: pointer;
+  border-right: 1px solid #111; display: flex; align-items: center; gap: 7px;
+  background: #2d2d2d; transition: all .15s; white-space: nowrap;
+}
+.vscode-tab.active { background: #1e1e1e; color: #fff; border-top: 1px solid var(--accent); }
+.vscode-body { flex: 1; display: grid; grid-template-columns: 160px 1fr; overflow: hidden; position: relative; }
+.file-tree {
+  background: #252526; border-right: 1px solid #111;
+  overflow-y: auto; padding: 8px 0; font-size: 12px; font-family: var(--mono);
+}
+.ft-header { padding: 6px 12px; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #858585; }
+.ft-item {
+  padding: 4px 12px 4px 20px; color: #ccc; cursor: pointer; display: flex;
+  align-items: center; gap: 6px; transition: background .1s; white-space: nowrap;
+}
+.ft-item:hover { background: #2a2d2e; }
+.ft-item.active { background: #37373d; color: #fff; }
+.ft-item.new-file { color: var(--green); animation: fadeSlide .4s ease; }
+.ft-folder { color: var(--accent); }
+.ft-item.modified { color: var(--yellow); }
+@keyframes fadeSlide { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+
+.editor { overflow-y: auto; font-family: var(--mono); font-size: 12px; padding: 16px; line-height: 1.7; position: relative; }
+.editor-line { display: flex; gap: 12px; }
+.ln { color: #858585; text-align: right; min-width: 20px; user-select: none; }
+.code-line { color: #d4d4d4; }
+.code-kw   { color: #569cd6; }
+.code-str  { color: #ce9178; }
+.code-fn   { color: #dcdcaa; }
+.code-cm   { color: #6a9955; }
+.code-tag  { color: #4ec9b0; }
+.code-new  { background: rgba(62,207,142,.08); border-left: 2px solid var(--green); margin-left: -16px; padding-left: 14px; animation: highlight .5s ease; }
+@keyframes highlight { from{background:rgba(62,207,142,.25)} to{background:rgba(62,207,142,.08)} }
+
+/* Terminal */
+.terminal {
+  background: #1e1e1e; border-top: 1px solid #111;
+  flex-shrink: 0; max-height: 170px; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.term-tabs { background: #2d2d2d; display: flex; align-items: center; gap: 0; border-bottom: 1px solid #111; flex-shrink: 0; }
+.term-tab { padding: 5px 14px; font-size: 11.5px; color: #858585; cursor: pointer; border-right: 1px solid #111; }
+.term-tab.active { color: #fff; background: #1e1e1e; }
+.term-body { padding: 8px 12px; overflow-y: auto; flex: 1; font-family: var(--mono); font-size: 12px; line-height: 1.65; }
+.term-line { margin-bottom: 1px; }
+.term-prompt { color: var(--green); }
+.term-cmd    { color: var(--text); }
+.term-out    { color: var(--muted); }
+.term-success{ color: var(--green); }
+.term-error  { color: var(--red); }
+.term-info   { color: var(--accent); }
+.term-line.new { animation: termSlide .25s ease; }
+@keyframes termSlide { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* GitHub Simulator */
+.github { background: var(--bg2); display: flex; flex-direction: column; overflow: hidden; }
+.gh-topbar {
+  background: #161b22; border-bottom: 1px solid #30363d;
+  padding: 8px 14px; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.gh-logo { color: #fff; font-size: 18px; }
+.gh-url  { font-family: var(--mono); font-size: 11px; color: #8b949e; }
+.gh-body { flex: 1; overflow-y: auto; padding: 14px; }
+
+/* ── RIGHT PANEL (explanation) ── */
+.right-panel {
+  background: var(--bg2); display: flex; flex-direction: column; overflow: hidden;
+}
+.rp-header {
+  padding: 14px 18px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.rp-step-tag {
+  font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 4px;
+}
+.rp-title { font-size: 16px; font-weight: 800; color: var(--text); }
+.rp-body { flex: 1; overflow-y: auto; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+
+/* Explanation blocks */
+.exp-block {
+  border-radius: 10px; padding: 12px 14px; border: 1px solid var(--border);
+}
+.exp-block.concept { background: rgba(77,158,255,.06); border-color: rgba(77,158,255,.2); }
+.exp-block.action  { background: rgba(62,207,142,.06); border-color: rgba(62,207,142,.2); }
+.exp-block.warning { background: rgba(245,197,66,.06); border-color: rgba(245,197,66,.2); }
+.exp-block.alice   { background: rgba(62,207,142,.06); border-color: rgba(62,207,142,.3); }
+.exp-block.bob     { background: rgba(245,166,35,.06); border-color: rgba(245,166,35,.3); }
+.eb-label { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.eb-label.concept { color: var(--accent); }
+.eb-label.action  { color: var(--green); }
+.eb-label.warning { color: var(--yellow); }
+.eb-label.alice   { color: var(--alice); }
+.eb-label.bob     { color: var(--bob); }
+.eb-text { font-size: 13px; color: var(--text); line-height: 1.55; }
+.eb-text code { font-family: var(--mono); font-size: 11.5px; background: var(--bg3); padding: 1px 6px; border-radius: 4px; color: var(--green); }
+.eb-text strong { color: var(--text); font-weight: 700; }
+
+/* Command pills */
+.cmd-pills { display: flex; flex-direction: column; gap: 6px; }
+.cmd-pill {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 12px; font-family: var(--mono); font-size: 12px; color: var(--green);
+  display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all .15s;
+  position: relative;
+}
+.cmd-pill:hover { border-color: var(--green); background: rgba(62,207,142,.07); }
+.cmd-pill .cp-who { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; }
+.cp-who.alice { background: rgba(62,207,142,.15); color: var(--alice); }
+.cp-who.bob   { background: rgba(245,166,35,.15);  color: var(--bob); }
+.cp-who.both  { background: rgba(77,158,255,.15);  color: var(--accent); }
+.cmd-pill .cp-cmd  { flex: 1; }
+.cmd-pill .cp-copy { font-size: 11px; color: var(--muted); opacity: 0; transition: opacity .15s; }
+.cmd-pill:hover .cp-copy { opacity: 1; }
+
+/* Auto-play button */
+.auto-play-btn {
+  margin: 0 18px 14px; padding: 10px; border-radius: 8px; font-size: 13px;
+  font-weight: 700; cursor: pointer; border: 1px solid var(--border);
+  background: var(--bg3); color: var(--accent); font-family: 'Space Grotesk', sans-serif;
+  transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.auto-play-btn:hover { background: rgba(77,158,255,.1); border-color: var(--accent); }
+.auto-play-btn.running { background: rgba(62,207,142,.1); border-color: var(--green); color: var(--green); }
+
+/* GitHub elements */
+.gh-repo-name { color: #58a6ff; font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+.gh-repo-name span { color: #8b949e; font-weight: 400; }
+.gh-tag { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+.gh-tag.public { background: #1f6feb22; border: 1px solid #1f6feb55; color: #58a6ff; }
+.gh-branch-select { display: flex; align-items: center; gap: 8px; margin: 12px 0; }
+.gh-branch-btn { background: #21262d; border: 1px solid #30363d; border-radius: 6px; padding: 5px 12px; color: #e6edf3; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.gh-branch-btn::after { content: '▾'; color: #8b949e; }
+.gh-file-row { padding: 7px 10px; border-bottom: 1px solid #21262d; display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; transition: background .1s; }
+.gh-file-row:hover { background: #161b22; }
+.gh-fname { color: #58a6ff; flex: 1; }
+.gh-fmsg  { color: #8b949e; font-size: 11px; flex: 2; }
+.gh-ftime { color: #8b949e; font-size: 11px; }
+.gh-file-tree { background: #0d1117; border: 1px solid #21262d; border-radius: 6px; overflow: hidden; margin-bottom: 12px; }
+
+/* PR card */
+.pr-card { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+.pr-header { padding: 10px 14px; border-bottom: 1px solid #21262d; }
+.pr-title { font-size: 14px; font-weight: 700; color: #e6edf3; margin-bottom: 6px; }
+.pr-status { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+.pr-status.open   { background: #2ea04322; border: 1px solid #2ea04355; color: #3ecf8e; }
+.pr-status.merged { background: #8957e522; border: 1px solid #8957e555; color: #a78bfa; }
+.pr-body { padding: 10px 14px; font-size: 12px; color: #8b949e; }
+.pr-merge-btn {
+  display: block; width: calc(100% - 28px); margin: 10px 14px;
+  background: #2ea043; border: 1px solid #3fb950; border-radius: 6px;
+  padding: 8px; color: #fff; font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: 'Space Grotesk', sans-serif; transition: all .15s;
+}
+.pr-merge-btn:hover { background: #3bb54a; }
+.pr-merge-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Collab invite */
+.collab-form { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 14px; margin-bottom: 10px; }
+.collab-input { width: 100%; background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 8px 12px; color: #e6edf3; font-size: 12.5px; font-family: 'Space Grotesk', sans-serif; outline: none; margin-bottom: 10px; }
+.collab-add-btn { background: #1f6feb; border: none; border-radius: 6px; padding: 7px 16px; color: #fff; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: 'Space Grotesk', sans-serif; }
+.collab-added { background: #0d3d22; border: 1px solid #1a7a3f; border-radius: 8px; padding: 10px 14px; font-size: 12.5px; color: var(--green); display: flex; align-items: center; gap: 8px; }
+
+/* Diff view */
+.diff-line { font-family: var(--mono); font-size: 11.5px; padding: 1px 8px; }
+.diff-line.add { background: rgba(62,207,142,.1); color: var(--green); }
+.diff-line.rm  { background: rgba(240,102,90,.1);  color: var(--red); }
+.diff-line.ctx { color: #8b949e; }
+
+/* Animations */
+.slide-in  { animation: slideIn .3s ease; }
+@keyframes slideIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulseDot 1.5s ease-in-out infinite; }
+@keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:.6} }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <div class="tb-logo">git-demo<span>.html</span></div>
+  <div class="tb-steps" id="tb-steps"></div>
+  <div class="tb-spacer"></div>
+  <div class="tb-nav">
+    <button class="nav-btn nav-prev" id="btn-prev" onclick="prev()" disabled>← Précédent</button>
+    <button class="nav-btn nav-next" id="btn-next" onclick="next()">Suivant →</button>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- ── LEFT PANEL ── -->
+  <div class="left-panel">
+
+    <!-- Branch diagram -->
+    <div class="branch-diagram">
+      <div class="bd-title">Schéma des branches — évolue en temps réel</div>
+      <canvas id="branch-canvas"></canvas>
+    </div>
+
+    <!-- Split VSCode + GitHub -->
+    <div class="split-view">
+
+      <!-- VSCode -->
+      <div class="vscode" id="vscode-panel">
+        <div class="vscode-tabs" id="vscode-tabs">
+          <div class="vscode-tab active" id="tab-readme">📄 README.md</div>
+        </div>
+        <div class="vscode-body">
+          <div class="file-tree" id="file-tree">
+            <div class="ft-header">EXPLORER</div>
+            <div class="ft-item ft-folder">📁 mon-projet-react</div>
+            <div class="ft-item active" id="ft-readme">📄 README.md</div>
+          </div>
+          <div class="editor" id="editor-content">
+            <div class="editor-line"><span class="ln">1</span><span class="code-line"><span class="code-kw">#</span> <span class="code-str">mon-projet-react</span></span></div>
+            <div class="editor-line"><span class="ln">2</span><span class="code-line"></span></div>
+            <div class="editor-line"><span class="ln">3</span><span class="code-line">Projet React – Formation DWWM</span></div>
+            <div class="editor-line"><span class="ln">4</span><span class="code-line code-cm"><!-- Développé par Alice et Bob --></span></div>
+          </div>
+        </div>
+        <div class="terminal" id="terminal-panel">
+          <div class="term-tabs">
+            <div class="term-tab active">TERMINAL</div>
+            <div class="term-tab">PROBLÈMES</div>
+          </div>
+          <div class="term-body" id="term-body">
+            <div class="term-line"><span class="term-prompt">$</span> <span class="term-out">Prêt.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GitHub -->
+      <div class="github" id="github-panel">
+        <div class="gh-topbar">
+          <div class="gh-logo">⬡</div>
+          <div class="gh-url" id="gh-url">github.com/alice-dev/mon-projet-react</div>
+        </div>
+        <div class="gh-body" id="gh-body">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL ── -->
+  <div class="right-panel">
+    <div class="rp-header">
+      <div class="rp-step-tag" id="rp-tag">ÉTAPE 1 / 8</div>
+      <div class="rp-title" id="rp-title">Initialisation du projet</div>
+    </div>
+    <div class="rp-body" id="rp-body">
+      <!-- filled by JS -->
+    </div>
+    <button class="auto-play-btn" id="auto-btn" onclick="autoPlay()">▶ Simuler cette étape</button>
+  </div>
+
+</div>
+</div>
+
+<script>
+// 
+//  STEPS DEFINITION
+// 
+const STEPS = [
+  {
+    id: 0, label: '1. Init', title: 'Créer le repo GitHub',
+    tag: 'ÉTAPE 1 — ALICE',
+    ghUrl: 'github.com/alice-dev/mon-projet-react',
+    termLines: [
+      { type:'prompt', text:'git init mon-projet-react' },
+      { type:'success', text:'Initialized empty Git repository in .../mon-projet-react/.git/' },
+      { type:'prompt', text:'cd mon-projet-react' },
+      { type:'prompt', text:'git remote add origin https://github.com/alice-dev/mon-projet-react.git' },
+      { type:'success', text:'Remote "origin" ajouté.' },
+    ],
+    branchState: { commits: [{ id:0, branch:'main', label:'init', x:.12 }], branches:['main'] },
+    ghContent: 'repo-init',
+    fileTree: [
+      { icon:'📁', name:'mon-projet-react', class:'ft-folder' },
+      { icon:'📄', name:'README.md',  class:'', active:true },
+      { icon:'📄', name:'.gitignore', class:'' },
+    ],
+    editorFile: 'README.md',
+    editorContent: [
+      { ln:1, code:'<span class="code-kw">#</span> <span class="code-str">mon-projet-react</span>' },
+      { ln:2, code:'' },
+      { ln:3, code:'Projet React – Formation DWWM' },
+      { ln:4, code:'<span class="code-cm"><!-- Développé par Alice et Bob --></span>' },
+    ],
+    explanation: [
+      { type:'concept', label:' Concept', text:'<code>git init</code> crée un dépôt Git local. <code>git remote add origin</code> le connecte à GitHub.' },
+      { type:'action',  label:' Alice fait', text:'Elle crée le repo sur GitHub en cochant "Initialize with README" puis récupère l\'URL.' },
+      { type:'concept', label:'📁 Structure', text:'À ce stade : <strong>1 branche</strong> (<code>main</code>), <strong>1 commit</strong> (le README). Bob n\'est pas encore invité.' },
+    ],
+    cmds: [
+      { who:'alice', cmd:'git init mon-projet-react' },
+      { who:'alice', cmd:'cd mon-projet-react' },
+      { who:'alice', cmd:'git remote add origin <url-github>' },
+    ],
+  },
+  {
+    id: 1, label: '2. Collab', title: 'Inviter Bob comme collaborateur',
+    tag: 'ÉTAPE 2 — ALICE (GitHub)',
+    ghUrl: 'github.com/alice-dev/mon-projet-react/settings/access',
+    termLines: [
+      { type:'info', text:'→ Aller sur GitHub : Settings → Collaborators → Add people' },
+      { type:'out',  text:'Rechercher : "bob-dev"' },
+      { type:'success', text:'Invitation envoyée à bob-dev ✓' },
+      { type:'info', text:'Bob reçoit un email — il doit cliquer "Accept invitation"' },
+    ],
+    branchState: { commits: [{ id:0, branch:'main', label:'init', x:.12 }], branches:['main'] },
+    ghContent: 'collab',
+    fileTree: [
+      { icon:'📁', name:'mon-projet-react', class:'ft-folder' },
+      { icon:'📄', name:'README.md',  class:'', active:true },
+      { icon:'📄', name:'.gitignore', class:'' },
+    ],
+    editorFile: 'README.md',
+    editorContent: [
+      { ln:1, code:'<span class="code-kw">#</span> <span class="code-str">mon-projet-react</span>' },
+      { ln:2, code:'' },
+      { ln:3, code:'Projet React – Formation DWWM' },
+    ],
+    explanation: [
+      { type:'concept', label:'Concept', text:'Sans invitation, Bob peut <strong>lire</strong> le repo mais pas <strong>écrire</strong> dedans. Il faut l\'ajouter comme collaborateur.' },
+      { type:'alice',   label:'🟢 Alice — Settings repo', text:'Settings → Collaborators → Add people → taper le pseudo GitHub de Bob.' },
+      { type:'warning', label:'Piège classique', text:'Settings du <strong>repo</strong> ≠ Settings du compte ! Ne pas confondre les deux.' },
+    ],
+    cmds: [
+      { who:'both', cmd:'github.com → Settings → Collaborators' },
+      { who:'both', cmd:'→ Add people → "bob-dev"' },
+    ],
+  },
+  {
+    id: 2, label: '3. Clone', title: 'Bob clone le repo',
+    tag: 'ÉTAPE 3 — BOB',
+    ghUrl: 'github.com/alice-dev/mon-projet-react',
+    termLines: [
+      { type:'prompt', text:'git clone https://github.com/alice-dev/mon-projet-react.git' },
+      { type:'out',    text:'Cloning into \'mon-projet-react\'...' },
+      { type:'out',    text:'remote: Enumerating objects: 3, done.' },
+      { type:'success', text:'Receiving objects: 100% ✓' },
+      { type:'prompt', text:'cd mon-projet-react' },
+      { type:'prompt', text:'git branch' },
+      { type:'success', text:'* main' },
+    ],
+    branchState: { commits: [{ id:0, branch:'main', label:'init', x:.12 }], branches:['main'] },
+    ghContent: 'repo-clone',
+    fileTree: [
+      { icon:'📁', name:'mon-projet-react', class:'ft-folder' },
+      { icon:'📄', name:'README.md',  class:'', active:true },
+      { icon:'📄', name:'.gitignore', class:'' },
+    ],
+    editorFile: 'README.md',
+    editorContent: [
+      { ln:1, code:'<span class="code-kw">#</span> <span class="code-str">mon-projet-react</span>' },
+      { ln:2, code:'' },
+      { ln:3, code:'Projet React – Formation DWWM' },
+    ],
+    explanation: [
+      { type:'concept', label:' Concept', text:'<code>git clone</code> télécharge une copie complète du repo sur la machine de Bob, avec tout l\'historique.' },
+      { type:'bob',     label:'🟠 Bob fait', text:'Il copie l\'URL HTTPS depuis GitHub (bouton vert "Code"), puis clone dans son terminal.' },
+      { type:'concept', label:' Résultat', text:'Bob a maintenant le projet en local. Il est sur <code>main</code>. Avant de coder, il va créer <strong>sa propre branche</strong>.' },
+    ],
+    cmds: [
+      { who:'bob', cmd:'git clone https://github.com/alice-dev/mon-projet-react.git' },
+      { who:'bob', cmd:'cd mon-projet-react' },
+      { who:'bob', cmd:'git branch' },
+    ],
+  },
+  {
+    id: 3, label: '4. Branches', title: 'Chacun crée sa branche',
+    tag: 'ÉTAPE 4 — ALICE + BOB',
+    ghUrl: 'github.com/alice-dev/mon-projet-react/branches',
+    termLines: [
+      { type:'info',    text:'— Alice —' },
+      { type:'prompt',  text:'git checkout -b feature/navbar' },
+      { type:'success', text:'Switched to a new branch \'feature/navbar\'' },
+      { type:'info',    text:'— Bob —' },
+      { type:'prompt',  text:'git checkout -b feature/login' },
+      { type:'success', text:'Switched to a new branch \'feature/login\'' },
+    ],
+    branchState: {
+      commits: [
+        { id:0, branch:'main',     label:'init',   x:.15 },
+        { id:1, branch:'alice',    label:'branch', x:.35, from:0 },
+        { id:2, branch:'bob',      label:'branch', x:.35, from:0 },
+      ],
+      branches:['main','alice','bob']
+    },
+    ghContent: 'branches-list',
+    fileTree: [
+      { icon:'📁', name:'mon-projet-react', class:'ft-folder' },
+      { icon:'📁', name:'src', class:'ft-folder' },
+      { icon:'📄', name:'Navbar.jsx', class:'ft-item', indent:true },
+      { icon:'📄', name:'README.md',  class:'', active:true },
+      { icon:'📄', name:'.gitignore', class:'' },
+    ],
+    editorFile: 'Navbar.jsx',
+    editorContent: [
+      { ln:1, code:'<span class="code-kw">// feature/navbar</span> <span class="code-cm">— Alice travaille ici</span>' },
+      { ln:2, code:'' },
+      { ln:3, code:'<span class="code-kw">export default function</span> <span class="code-fn">Navbar</span>() {' },
+      { ln:4, code:'  <span class="code-kw">return</span> &lt;<span class="code-tag">nav</span>&gt;...&lt;/<span class="code-tag">nav</span>&gt;' },
+      { ln:5, code:'}' },
+    ],
+    explanation: [
+      { type:'concept', label:' Règle d\'or', text:'On ne code <strong>jamais directement sur main</strong>. On crée une branche par fonctionnalité.' },
+      { type:'alice',   label:'🟢 Alice', text:'<code>git checkout -b feature/navbar</code> — elle crée et bascule sur sa branche.' },
+      { type:'bob',     label:'🟠 Bob',   text:'<code>git checkout -b feature/login</code> — il fait pareil sur sa machine.' },
+      { type:'concept', label:' Résultat', text:'<strong>3 branches</strong> existent maintenant : <code>main</code>, <code>feature/navbar</code>, <code>feature/login</code>. Chacun travaille en isolation.' },
+    ],
+    cmds: [
+      { who:'alice', cmd:'git checkout -b feature/navbar' },
+      { who:'bob',   cmd:'git checkout -b feature/login' },
+      { who:'both',  cmd:'git branch  ← vérifie où tu es' },
+    ],
+  },
+  {
+    id: 4, label: '5. Commits', title: 'Chacun commite son travail',
+    tag: 'ÉTAPE 5 — ALICE + BOB',
+    ghUrl: 'github.com/alice-dev/mon-projet-react',
+    termLines: [
+      { type:'info',    text:'— Alice sur feature/navbar —' },
+      { type:'prompt',  text:'git add src/Navbar.jsx' },
+      { type:'prompt',  text:'git commit -m "feat: ajout composant Navbar"' },
+      { type:'success', text:'[feature/navbar 3a8f2c1] feat: ajout composant Navbar' },
+      { type:'prompt',  text:'git push origin feature/navbar' },
+      { type:'success', text:'Branch \'feature/navbar\' set up to track remote.' },
+    ],
+    branchState: {
+      commits: [
+        { id:0, branch:'main',  label:'init',   x:.12 },
+        { id:1, branch:'alice', label:'Navbar', x:.38, from:0 },
+        { id:2, branch:'alice', label:'+style', x:.58, from:1 },
+        { id:3, branch:'bob',   label:'Login',  x:.38, from:0 },
+        { id:4, branch:'bob',   label:'+form',  x:.58, from:3 },
+      ],
+      branches:['main','alice','bob']
+    },
+    ghContent: 'commits',
+    fileTree: [
+      { icon:'📁', name:'src', class:'ft-folder' },
+      { icon:'📄', name:'Navbar.jsx', class:'modified', indent:true },
+      { icon:'📄', name:'Login.jsx',  class:'new-file',  indent:true },
+      { icon:'📄', name:'README.md',  class:'', active:true },
+    ],
+    editorFile: 'Navbar.jsx',
+    editorContent: [
+      { ln:1, code:'<span class="code-kw">import</span> { <span class="code-fn">Link</span> } <span class="code-kw">from</span> <span class="code-str">\'react-router-dom\'</span>' },
+      { ln:2, code:'' },
+      { ln:3, code:'<span class="code-kw">export default function</span> <span class="code-fn">Navbar</span>() {', newLine:true },
+      { ln:4, code:'  <span class="code-kw">return</span> (', newLine:true },
+      { ln:5, code:'    &lt;<span class="code-tag">nav</span> className=<span class="code-str">"navbar"</span>&gt;', newLine:true },
+      { ln:6, code:'      &lt;<span class="code-tag">Link</span> to=<span class="code-str">"/"</span>&gt;Accueil&lt;/<span class="code-tag">Link</span>&gt;', newLine:true },
+      { ln:7, code:'    &lt;/<span class="code-tag">nav</span>&gt;', newLine:true },
+      { ln:8, code:'  )' },
+      { ln:9, code:'}' },
+    ],
+    explanation: [
+      { type:'concept', label:' Workflow', text:'<code>git add</code> → <code>git commit</code> → <code>git push</code>. Les trois étapes pour envoyer son travail sur GitHub.' },
+      { type:'alice',   label:'🟢 Alice commite', text:'Elle commite <code>Navbar.jsx</code> avec un message clair : <code>"feat: ajout composant Navbar"</code>' },
+      { type:'bob',     label:'🟠 Bob commite',   text:'En parallèle, il commite <code>Login.jsx</code>. Leurs branches <strong>n\'interfèrent pas</strong>.' },
+      { type:'warning', label:' Convention', text:'Messages commit : <code>feat:</code> nouvelle fonctionnalité · <code>fix:</code> correction · <code>style:</code> mise en forme' },
+    ],
+    cmds: [
+      { who:'alice', cmd:'git add src/Navbar.jsx' },
+      { who:'alice', cmd:'git commit -m "feat: ajout composant Navbar"' },
+      { who:'alice', cmd:'git push origin feature/navbar' },
+      { who:'bob',   cmd:'git add src/Login.jsx' },
+      { who:'bob',   cmd:'git commit -m "feat: formulaire de login"' },
+      { who:'bob',   cmd:'git push origin feature/login' },
+    ],
+  },
+  {
+    id: 5, label: '6. PR', title: 'Alice ouvre une Pull Request',
+    tag: 'ÉTAPE 6 — ALICE (GitHub)',
+    ghUrl: 'github.com/alice-dev/mon-projet-react/compare/feature/navbar',
+    termLines: [
+      { type:'info',    text:'→ GitHub détecte la branche pushée :' },
+      { type:'success', text:'"feature/navbar had recent pushes — Compare & pull request"' },
+      { type:'info',    text:'→ Alice clique "Compare & pull request"' },
+      { type:'info',    text:'→ Titre : "feat: ajout navbar responsive"' },
+      { type:'info',    text:'→ Reviewer : bob-dev' },
+      { type:'success', text:'Pull Request #1 ouverte ✓' },
+    ],
+    branchState: {
+      commits: [
+        { id:0, branch:'main',  label:'init',   x:.12 },
+        { id:1, branch:'alice', label:'Navbar', x:.38, from:0 },
+        { id:2, branch:'alice', label:'+style', x:.58, from:1 },
+        { id:3, branch:'bob',   label:'Login',  x:.38, from:0 },
+        { id:4, branch:'bob',   label:'+form',  x:.58, from:3 },
+        { id:5, branch:'alice', label:'PR →',   x:.75, from:2, isPR:true },
+      ],
+      branches:['main','alice','bob']
+    },
+    ghContent: 'pr-open',
+    fileTree: [
+      { icon:'📁', name:'src', class:'ft-folder' },
+      { icon:'📄', name:'Navbar.jsx', class:'', active:true, indent:true },
+    ],
+    editorFile: 'Navbar.jsx — diff',
+    editorContent: null, // diff view
+    diff: [
+      { type:'ctx', text:' import { Link } from \'react-router-dom\'' },
+      { type:'add', text:'+import styles from \'./Navbar.module.css\'' },
+      { type:'ctx', text:'' },
+      { type:'ctx', text:' export default function Navbar() {' },
+      { type:'add', text:'+  const [open, setOpen] = useState(false)' },
+      { type:'ctx', text:'   return (' },
+      { type:'add', text:'+    <nav className={styles.navbar}>' },
+      { type:'rm',  text:'-    <nav className="navbar">' },
+    ],
+    explanation: [
+      { type:'concept', label:' Pull Request', text:'Une PR = demande formelle de fusionner une branche dans <code>main</code>. L\'équipier doit <strong>valider</strong> avant que le code soit intégré.' },
+      { type:'alice',   label:'🟢 Alice', text:'Elle va sur GitHub, clique le bandeau jaune "Compare & pull request", remplit le titre et assigne Bob comme reviewer.' },
+      { type:'bob',     label:'🟠 Bob reçoit', text:'Une notification GitHub. Il doit aller dans l\'onglet "Files changed" pour relire le code.' },
+    ],
+    cmds: [
+      { who:'alice', cmd:'git push origin feature/navbar' },
+      { who:'both',  cmd:'github.com → Compare & pull request' },
+      { who:'both',  cmd:'→ Assign reviewer → bob-dev' },
+    ],
+  },
+  {
+    id: 6, label: '7. Review', title: 'Bob relit et approuve la PR',
+    tag: 'ÉTAPE 7 — BOB (GitHub)',
+    ghUrl: 'github.com/alice-dev/mon-projet-react/pull/1',
+    termLines: [
+      { type:'info',    text:'→ Bob va sur la PR, clique "Files changed"' },
+      { type:'info',    text:'→ Il lit les lignes ajoutées (+) et supprimées (-)' },
+      { type:'info',    text:'→ "Review changes" → Approve ✓' },
+      { type:'success', text:'Bob a approuvé la PR #1 ✓' },
+      { type:'info',    text:'→ Aucun conflit détecté par GitHub' },
+    ],
+    branchState: {
+      commits: [
+        { id:0, branch:'main',  label:'init',   x:.12 },
+        { id:1, branch:'alice', label:'Navbar', x:.38, from:0 },
+        { id:2, branch:'alice', label:'+style', x:.58, from:1 },
+        { id:3, branch:'bob',   label:'Login',  x:.38, from:0 },
+        { id:4, branch:'bob',   label:'+form',  x:.58, from:3 },
+        { id:5, branch:'alice', label:'✓ PR',   x:.75, from:2, isPR:true, approved:true },
+      ],
+      branches:['main','alice','bob']
+    },
+    ghContent: 'pr-review',
+    fileTree: [
+      { icon:'📁', name:'src', class:'ft-folder' },
+      { icon:'📄', name:'Navbar.jsx', class:'', active:true, indent:true },
+    ],
+    editorFile: 'Navbar.jsx — diff',
+    editorContent: null,
+    diff: [
+      { type:'ctx', text:' import { Link } from \'react-router-dom\'' },
+      { type:'add', text:'+import styles from \'./Navbar.module.css\'' },
+      { type:'add', text:'+const [open, setOpen] = useState(false)' },
+      { type:'rm',  text:'-// TODO: responsive' },
+    ],
+    explanation: [
+      { type:'concept', label:' Code review', text:'Onglet "Files changed" = voir exactement ce qui change. <span style="color:var(--green)">Vert (+)</span> = ajouté · <span style="color:var(--red)">Rouge (-)</span> = supprimé.' },
+      { type:'bob',     label:'🟠 Bob relit', text:'Il clique sur <strong>+ d\'une ligne</strong> pour commenter directement dans le code. Puis "Review changes" → Approve.' },
+      { type:'concept', label:' Bon à savoir', text:'On peut demander des modifications (Request changes) avant d\'approuver — la PR reste ouverte jusqu\'à correction.' },
+    ],
+    cmds: [
+      { who:'bob', cmd:'github.com → Pull requests → #1' },
+      { who:'bob', cmd:'→ Files changed (relire)' },
+      { who:'bob', cmd:'→ Review changes → Approve ✓' },
+    ],
+  },
+  {
+    id: 7, label: '8. Merge', title: 'Merge et git pull',
+    tag: 'ÉTAPE 8 — MERGE FINAL',
+    ghUrl: 'github.com/alice-dev/mon-projet-react',
+    termLines: [
+      { type:'info',    text:'→ Alice clique "Merge pull request" → Confirm merge' },
+      { type:'success', text:'Pull Request #1 merged ✓ — feature/navbar → main' },
+      { type:'info',    text:'→ "Delete branch" — branche nettoyée' },
+      { type:'info',    text:'— Les deux récupèrent main à jour —' },
+      { type:'prompt',  text:'git checkout main' },
+      { type:'prompt',  text:'git pull origin main' },
+      { type:'success', text:'Already up to date. / 1 file changed, +12, -2' },
+    ],
+    branchState: {
+      commits: [
+        { id:0, branch:'main',  label:'init',   x:.12 },
+        { id:1, branch:'alice', label:'Navbar', x:.32, from:0 },
+        { id:2, branch:'alice', label:'+style', x:.50, from:1 },
+        { id:3, branch:'bob',   label:'Login',  x:.32, from:0 },
+        { id:4, branch:'bob',   label:'+form',  x:.50, from:3 },
+        { id:5, branch:'main',  label:'merge ✓', x:.75, from:0, isMerge:true, mergeFrom:2 },
+      ],
+      branches:['main','alice','bob']
+    },
+    ghContent: 'merged',
+    fileTree: [
+      { icon:'📁', name:'src', class:'ft-folder' },
+      { icon:'📄', name:'Navbar.jsx', class:'new-file', indent:true },
+      { icon:'📄', name:'Login.jsx',  class:'new-file', indent:true },
+      { icon:'📄', name:'README.md',  class:'', active:true },
+    ],
+    editorFile: 'README.md',
+    editorContent: [
+      { ln:1, code:'<span class="code-kw">#</span> <span class="code-str">mon-projet-react</span>' },
+      { ln:2, code:'' },
+      { ln:3, code:'Projet React – Formation DWWM' },
+      { ln:4, code:'<span class="code-cm">Navbar mergée dans main</span>', newLine:true },
+    ],
+    explanation: [
+      { type:'action',  label:'Merge', text:'Alice clique "Merge pull request" puis "Delete branch". Le code de <code>feature/navbar</code> est maintenant dans <code>main</code>.' },
+      { type:'concept', label:' git pull', text:'<strong>Les deux</strong> doivent faire <code>git checkout main</code> + <code>git pull origin main</code> pour avoir le code fusionné en local.' },
+      { type:'bob',     label:'🟠 Bob continue', text:'Il peut maintenant créer une PR pour <code>feature/login</code> de la même façon. Le cycle recommence !' },
+      { type:'warning', label:'Cycle complet', text:'branch → commit → push → PR → review → merge → pull. C\'est le workflow quotidien en équipe.' },
+    ],
+    cmds: [
+      { who:'alice', cmd:'github.com → Merge pull request → Confirm' },
+      { who:'alice', cmd:'→ Delete branch' },
+      { who:'both',  cmd:'git checkout main' },
+      { who:'both',  cmd:'git pull origin main' },
+    ],
+  },
+]
+
+// 
+//  STATE
+// 
+let cur = 0, autoTimer = null
+
+// Build step tabs
+const tbSteps = document.getElementById('tb-steps')
+STEPS.forEach((s, i) => {
+  const el = document.createElement('div')
+  el.className = 'tb-step' + (i===0?' active':'')
+  el.textContent = s.label; el.dataset.i = i
+  el.onclick = () => goTo(i)
+  tbSteps.appendChild(el)
+})
+
+// 
+//  BRANCH DIAGRAM (Canvas)
+// 
+const canvas = document.getElementById('branch-canvas')
+const ctx2d  = canvas.getContext('2d')
+
+const BRANCH_Y = { main:.22, alice:.55, bob:.82 }
+const BRANCH_COL = { main:'#4d9eff', alice:'#3ecf8e', bob:'#f5a623' }
+const BRANCH_LABELS = { main:'main', alice:'feature/navbar (Alice)', bob:'feature/login (Bob)' }
+
+function resizeCanvas() {
+  const rect = canvas.parentElement.getBoundingClientRect()
+  canvas.width  = rect.width * devicePixelRatio
+  canvas.height = 90 * devicePixelRatio
+  canvas.style.width  = rect.width + 'px'
+  canvas.style.height = '90px'
+  ctx2d.scale(devicePixelRatio, devicePixelRatio)
+  drawBranches(STEPS[cur].branchState)
+}
+
+function drawBranches(state) {
+  const W = canvas.offsetWidth, H = 90
+  ctx2d.clearRect(0, 0, W, H)
+
+  // Draw branch lines
+  const brs = state.branches || ['main']
+
+  // Main line always
+  ctx2d.strokeStyle = BRANCH_COL.main + '33'
+  ctx2d.lineWidth = 2
+  ctx2d.setLineDash([4,3])
+  ctx2d.beginPath(); ctx2d.moveTo(30, H * BRANCH_Y.main); ctx2d.lineTo(W - 20, H * BRANCH_Y.main); ctx2d.stroke()
+  ctx2d.setLineDash([])
+
+  if (brs.includes('alice')) {
+    ctx2d.strokeStyle = BRANCH_COL.alice + '33'
+    ctx2d.lineWidth = 2; ctx2d.setLineDash([4,3])
+    ctx2d.beginPath(); ctx2d.moveTo(30, H * BRANCH_Y.alice); ctx2d.lineTo(W - 20, H * BRANCH_Y.alice); ctx2d.stroke()
+    ctx2d.setLineDash([])
+  }
+  if (brs.includes('bob')) {
+    ctx2d.strokeStyle = BRANCH_COL.bob + '33'
+    ctx2d.lineWidth = 2; ctx2d.setLineDash([4,3])
+    ctx2d.beginPath(); ctx2d.moveTo(30, H * BRANCH_Y.bob); ctx2d.lineTo(W - 20, H * BRANCH_Y.bob); ctx2d.stroke()
+    ctx2d.setLineDash([])
+  }
+
+  // Branch label
+  ctx2d.font = '600 10px JetBrains Mono, monospace'
+  ctx2d.fillStyle = BRANCH_COL.main + 'aa'
+  ctx2d.fillText('main', 4, H * BRANCH_Y.main + 4)
+  if (brs.includes('alice')) { ctx2d.fillStyle = BRANCH_COL.alice + 'aa'; ctx2d.fillText('Alice', 4, H * BRANCH_Y.alice + 4) }
+  if (brs.includes('bob'))   { ctx2d.fillStyle = BRANCH_COL.bob   + 'aa'; ctx2d.fillText('Bob',   4, H * BRANCH_Y.bob   + 4) }
+
+  // Commits
+  const commits = state.commits || []
+  commits.forEach(c => {
+    const by = BRANCH_Y[c.branch] || BRANCH_Y.main
+    const bx = 44 + c.x * (W - 64)
+    const cy = H * by
+    const col = BRANCH_COL[c.branch] || BRANCH_COL.main
+
+    // Line from parent
+    if (c.from !== undefined) {
+      const parent = commits.find(p => p.id === c.from)
+      if (parent) {
+        const py = H * (BRANCH_Y[parent.branch] || BRANCH_Y.main)
+        const px = 44 + parent.x * (W - 64)
+        ctx2d.strokeStyle = col + '88'
+        ctx2d.lineWidth = 2
+        ctx2d.beginPath(); ctx2d.moveTo(px, py); ctx2d.lineTo(bx, cy); ctx2d.stroke()
+      }
+    }
+
+    // For merge: draw line back to main
+    if (c.isMerge && c.mergeFrom !== undefined) {
+      const src = commits.find(p => p.id === c.mergeFrom)
+      if (src) {
+        const sy = H * (BRANCH_Y[src.branch] || BRANCH_Y.main)
+        const sx = 44 + src.x * (W - 64)
+        ctx2d.strokeStyle = BRANCH_COL.main + '99'
+        ctx2d.lineWidth = 2.5
+        ctx2d.beginPath(); ctx2d.moveTo(sx, sy); ctx2d.lineTo(bx, cy); ctx2d.stroke()
+      }
+    }
+
+    // Dot
+    const r = c.isMerge ? 9 : c.isPR ? 7 : 7
+    ctx2d.beginPath(); ctx2d.arc(bx, cy, r, 0, Math.PI * 2)
+    ctx2d.fillStyle = c.approved ? '#3ecf8e' : c.isMerge ? '#a78bfa' : col
+    ctx2d.fill()
+    if (c.isPR || c.isMerge) {
+      ctx2d.strokeStyle = '#fff'
+      ctx2d.lineWidth = 2
+      ctx2d.stroke()
+    }
+
+    // Label
+    ctx2d.font = '700 9px JetBrains Mono, monospace'
+    ctx2d.fillStyle = '#e2e6f0cc'
+    ctx2d.textAlign = 'center'
+    ctx2d.fillText(c.label, bx, cy - 10)
+    ctx2d.textAlign = 'left'
+  })
+}
+
+window.addEventListener('resize', resizeCanvas)
+setTimeout(resizeCanvas, 50)
+
+// 
+//  RENDER STEP
+// 
+function goTo(n) {
+  clearTimeout(autoTimer)
+  document.querySelectorAll('.tb-step').forEach((el, i) => {
+    el.className = 'tb-step' + (i < n ? ' done' : i === n ? ' active' : '')
+  })
+  cur = n
+  const step = STEPS[n]
+  document.getElementById('btn-prev').disabled = n === 0
+  document.getElementById('btn-next').disabled = n === STEPS.length - 1
+  document.getElementById('btn-next').textContent = n === STEPS.length - 2 ? 'Terminer ✓' : 'Suivant →'
+
+  // Right panel
+  document.getElementById('rp-tag').textContent   = `${step.tag}`
+  document.getElementById('rp-title').textContent = step.title
+  renderRightPanel(step)
+
+  // Terminal
+  renderTerminal([{ type:'out', text:`--- Étape ${n+1} : ${step.title} ---` }])
+
+  // File tree
+  renderFileTree(step.fileTree)
+
+  // Editor
+  if (step.diff) renderDiff(step.diff)
+  else if (step.editorContent) renderEditor(step.editorContent, step.editorFile)
+
+  // Tabs
+  const tabs = document.getElementById('vscode-tabs')
+  tabs.innerHTML = `<div class="vscode-tab active">📄 ${step.editorFile || 'README.md'}</div>`
+
+  // GitHub
+  document.getElementById('gh-url').textContent = step.ghUrl
+  renderGH(step)
+
+  // Branch diagram
+  drawBranches(step.branchState)
+
+  // Auto-play button
+  const btn = document.getElementById('auto-btn')
+  btn.textContent = '▶ Simuler cette étape'
+  btn.className = 'auto-play-btn'
+}
+
+function next() { if (cur < STEPS.length-1) goTo(cur+1) }
+function prev() { if (cur > 0) goTo(cur-1) }
+
+// ── Terminal ──
+function renderTerminal(lines) {
+  const body = document.getElementById('term-body')
+  body.innerHTML = ''
+  lines.forEach((l, i) => {
+    const el = document.createElement('div')
+    el.className = 'term-line'
+    if (l.type === 'prompt')  el.innerHTML = `<span class="term-prompt">$ </span><span class="term-cmd">${l.text}</span>`
+    else if (l.type === 'success') el.innerHTML = `<span class="term-success">${l.text}</span>`
+    else if (l.type === 'error')   el.innerHTML = `<span class="term-error">${l.text}</span>`
+    else if (l.type === 'info')    el.innerHTML = `<span class="term-info">${l.text}</span>`
+    else el.innerHTML = `<span class="term-out">${l.text}</span>`
+    body.appendChild(el)
+  })
+}
+
+function addTermLine(line) {
+  const body = document.getElementById('term-body')
+  const el = document.createElement('div')
+  el.className = 'term-line new'
+  if (line.type === 'prompt')  el.innerHTML = `<span class="term-prompt">$ </span><span class="term-cmd">${line.text}</span>`
+  else if (line.type === 'success') el.innerHTML = `<span class="term-success">${line.text}</span>`
+  else if (line.type === 'error')   el.innerHTML = `<span class="term-error">${line.text}</span>`
+  else if (line.type === 'info')    el.innerHTML = `<span class="term-info">${line.text}</span>`
+  else el.innerHTML = `<span class="term-out">${line.text}</span>`
+  body.appendChild(el)
+  body.scrollTop = body.scrollHeight
+}
+
+// ── File Tree ──
+function renderFileTree(items) {
+  if (!items) return
+  const ft = document.getElementById('file-tree')
+  ft.innerHTML = '<div class="ft-header">EXPLORER</div>'
+  items.forEach(item => {
+    const el = document.createElement('div')
+    el.className = `ft-item ${item.class || ''}${item.active ? ' active' : ''}${item.indent ? '' : ''}`
+    el.style.paddingLeft = item.indent ? '30px' : ''
+    el.innerHTML = `${item.icon} ${item.name}`
+    ft.appendChild(el)
+  })
+}
+
+// ── Editor ──
+function renderEditor(lines, filename) {
+  const ed = document.getElementById('editor-content')
+  ed.innerHTML = ''
+  lines.forEach(l => {
+    const el = document.createElement('div')
+    el.className = 'editor-line' + (l.newLine ? ' code-new' : '')
+    el.innerHTML = `<span class="ln">${l.ln}</span><span class="code-line">${l.code}</span>`
+    ed.appendChild(el)
+  })
+}
+
+function renderDiff(lines) {
+  const ed = document.getElementById('editor-content')
+  ed.innerHTML = ''
+  lines.forEach((l, i) => {
+    const el = document.createElement('div')
+    el.className = `diff-line ${l.type}`
+    el.textContent = l.text
+    ed.appendChild(el)
+  })
+}
+
+// ── Right Panel ──
+function renderRightPanel(step) {
+  const body = document.getElementById('rp-body')
+  body.innerHTML = ''
+
+  step.explanation?.forEach(exp => {
+    const el = document.createElement('div')
+    el.className = `exp-block ${exp.type} slide-in`
+    el.innerHTML = `<div class="eb-label ${exp.type}">${exp.label}</div><div class="eb-text">${exp.text}</div>`
+    body.appendChild(el)
+  })
+
+  if (step.cmds?.length) {
+    const hr = document.createElement('div')
+    hr.style.cssText = 'border-top:1px solid var(--border);margin:4px 0'
+    body.appendChild(hr)
+    const title = document.createElement('div')
+    title.style.cssText = 'font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px'
+    title.textContent = 'COMMANDES'
+    body.appendChild(title)
+    const pills = document.createElement('div')
+    pills.className = 'cmd-pills'
+    step.cmds.forEach(cmd => {
+      const el = document.createElement('div')
+      el.className = 'cmd-pill'
+      el.innerHTML = `<span class="cp-who ${cmd.who}">${cmd.who}</span><span class="cp-cmd">${cmd.cmd}</span><span class="cp-copy">copier</span>`
+      el.onclick = () => { navigator.clipboard?.writeText(cmd.cmd); el.style.borderColor = 'var(--green)'; setTimeout(() => el.style.borderColor = '', 1200) }
+      pills.appendChild(el)
+    })
+    body.appendChild(pills)
+  }
+}
+
+// ── GitHub Panel ──
+function renderGH(step) {
+  const body = document.getElementById('gh-body')
+  body.innerHTML = ''
+
+  if (step.ghContent === 'repo-init' || step.ghContent === 'repo-clone') {
+    body.innerHTML = `
+      <div class="gh-repo-name"><span>alice-dev / </span>mon-projet-react</div>
+      <div style="margin-bottom:12px"><span class="gh-tag public">Public</span></div>
+      <div class="gh-branch-select">
+        <div class="gh-branch-btn">⎇ main</div>
+        <div style="color:#8b949e;font-size:12px;margin-left:8px">1 branch · 1 commit</div>
+      </div>
+      <div class="gh-file-tree">
+        <div class="gh-file-row"><span>📄</span><span class="gh-fname">README.md</span><span class="gh-fmsg">init: structure de base</span><span class="gh-ftime">maintenant</span></div>
+        <div class="gh-file-row"><span>📄</span><span class="gh-fname">.gitignore</span><span class="gh-fmsg">init: structure de base</span><span class="gh-ftime">maintenant</span></div>
+      </div>
+      <div style="background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:12px;font-size:12.5px;color:#e6edf3">
+        <div style="font-size:13px;font-weight:700;color:#58a6ff;margin-bottom:4px">📖 README.md</div>
+        <div style="color:#8b949e"># mon-projet-react — Formation DWWM</div>
+      </div>
+    `
+  } else if (step.ghContent === 'collab') {
+    body.innerHTML = `
+      <div style="color:#e6edf3;font-size:13px;font-weight:700;margin-bottom:14px">⚙ Settings → Collaborators & teams</div>
+      <div class="collab-form">
+        <div style="color:#e6edf3;font-size:13px;font-weight:600;margin-bottom:10px">Manage access — Add a collaborator</div>
+        <input class="collab-input" id="collab-input" placeholder="Pseudo GitHub (ex: bob-dev)" />
+        <button class="collab-add-btn" onclick="addCollab()">Add collaborator</button>
+      </div>
+      <div id="collab-result"></div>
+      <div style="color:#8b949e;font-size:11.5px;margin-top:10px">⚠ Bob recevra un email d\'invitation — il doit l\'accepter.</div>
+    `
+  } else if (step.ghContent === 'branches-list') {
+    body.innerHTML = `
+      <div class="gh-repo-name"><span>alice-dev / </span>mon-projet-react</div>
+      <div class="gh-branch-select">
+        <div class="gh-branch-btn">⎇ feature/navbar</div>
+        <div style="color:#3ecf8e;font-size:12px;font-weight:700;margin-left:8px">3 branches</div>
+      </div>
+      <div style="color:#8b949e;font-size:12px;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Branches actives</div>
+      <div class="gh-file-tree">
+        <div class="gh-file-row" style="background:#1c2128"><span style="color:#58a6ff">⎇</span><span class="gh-fname" style="color:#58a6ff">main</span><span class="gh-fmsg">branche par défaut</span></div>
+        <div class="gh-file-row" style="background:#0d2318"><span style="color:#3ecf8e">⎇</span><span class="gh-fname" style="color:#3ecf8e">feature/navbar</span><span class="gh-fmsg">Alice — 1 commit ahead</span></div>
+        <div class="gh-file-row" style="background:#1f1500"><span style="color:#f5a623">⎇</span><span class="gh-fname" style="color:#f5a623">feature/login</span><span class="gh-fmsg">Bob — 1 commit ahead</span></div>
+      </div>
+    `
+  } else if (step.ghContent === 'commits') {
+    body.innerHTML = `
+      <div class="gh-repo-name"><span>alice-dev / </span>mon-projet-react</div>
+      <div class="gh-branch-select"><div class="gh-branch-btn">⎇ feature/navbar</div></div>
+      <div class="gh-file-tree">
+        <div class="gh-file-row"><span>📁</span><span class="gh-fname" style="color:#58a6ff;font-weight:700">src</span><span class="gh-fmsg">feat: ajout composant Navbar</span><span class="gh-ftime">à l'instant</span></div>
+        <div class="gh-file-row"><span>📄</span><span class="gh-fname">README.md</span><span class="gh-fmsg">init: structure de base</span><span class="gh-ftime">il y a 1h</span></div>
+      </div>
+      <div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px;margin-top:8px">
+        <div style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;margin-bottom:8px">Derniers commits</div>
+        <div style="padding:8px 0;border-bottom:1px solid #21262d;font-size:12.5px;color:#e6edf3;display:flex;align-items:center;gap:8px">
+          <div style="width:20px;height:20px;border-radius:50%;background:#3ecf8e;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#000">A</div>
+          <span style="color:#58a6ff">feat: ajout composant Navbar</span>
+          <span style="color:#8b949e;font-size:11px;margin-left:auto;font-family:JetBrains Mono">3a8f2c1</span>
+        </div>
+        <div style="padding:8px 0;font-size:12.5px;color:#e6edf3;display:flex;align-items:center;gap:8px">
+          <div style="width:20px;height:20px;border-radius:50%;background:#3ecf8e;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#000">A</div>
+          <span style="color:#58a6ff">init: structure de base</span>
+          <span style="color:#8b949e;font-size:11px;margin-left:auto;font-family:JetBrains Mono">1a2b3c4</span>
+        </div>
+      </div>
+    `
+  } else if (step.ghContent === 'pr-open') {
+    body.innerHTML = `
+      <div class="pr-card">
+        <div class="pr-header">
+          <div class="pr-title">feat: ajout navbar responsive <span style="color:#8b949e;font-weight:400">#1</span></div>
+          <span class="pr-status open">● Open</span>
+        </div>
+        <div class="pr-body">alice-dev wants to merge <strong style="color:#e6edf3">feature/navbar</strong> into <strong style="color:#e6edf3">main</strong>
+          <br><br>
+          <div style="background:#161b22;border:1px solid #21262d;border-radius:6px;padding:10px;margin-top:8px">
+            <div style="color:#8b949e;font-size:11px;margin-bottom:4px">Reviewer assigné</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:22px;height:22px;border-radius:50%;background:#f5a623;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#000">B</div>
+              <span style="color:#e6edf3;font-size:13px;font-weight:700">bob-dev</span>
+              <span style="color:#8b949e;font-size:11.5px">— En attente de review</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px">
+        <div style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;margin-bottom:8px">Files changed (4)</div>
+        <div class="diff-line add">+import styles from './Navbar.module.css'</div>
+        <div class="diff-line add">+const [open, setOpen] = useState(false)</div>
+        <div class="diff-line rm">-// TODO: responsive</div>
+      </div>
+    `
+  } else if (step.ghContent === 'pr-review') {
+    body.innerHTML = `
+      <div class="pr-card">
+        <div class="pr-header">
+          <div class="pr-title">feat: ajout navbar responsive <span style="color:#8b949e;font-weight:400">#1</span></div>
+          <span class="pr-status open">● Open — Reviewed ✓</span>
+        </div>
+        <div class="pr-body">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div style="width:22px;height:22px;border-radius:50%;background:#f5a623;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#000">B</div>
+            <span style="color:#3ecf8e;font-weight:700">bob-dev a approuvé ✓</span>
+          </div>
+          <div style="background:#0d2318;border:1px solid #1a7a3f;border-radius:6px;padding:10px;font-size:12.5px;color:#3ecf8e">
+             Code propre, bien structuré. Je valide !
+          </div>
+          <div style="margin-top:10px;color:#8b949e;font-size:12px"> This branch has no conflicts with the base branch</div>
+        </div>
+        <button class="pr-merge-btn" onclick="simulateMerge()">Merge pull request</button>
+      </div>
+    `
+  } else if (step.ghContent === 'merged') {
+    body.innerHTML = `
+      <div class="pr-card">
+        <div class="pr-header">
+          <div class="pr-title">feat: ajout navbar responsive <span style="color:#8b949e;font-weight:400">#1</span></div>
+          <span class="pr-status merged">✓ Merged</span>
+        </div>
+        <div class="pr-body" style="color:#a78bfa">
+          Pull Request mergée avec succès dans <strong style="color:#e6edf3">main</strong>
+        </div>
+      </div>
+      <div class="gh-repo-name" style="margin-top:12px"><span>alice-dev / </span>mon-projet-react</div>
+      <div class="gh-branch-select"><div class="gh-branch-btn">⎇ main</div></div>
+      <div class="gh-file-tree">
+        <div class="gh-file-row"><span>📁</span><span class="gh-fname" style="color:#58a6ff;font-weight:700">src</span><span class="gh-fmsg">Merge pull request #1</span><span class="gh-ftime">à l'instant</span></div>
+        <div class="gh-file-row"><span style="color:#3ecf8e">📄</span><span class="gh-fname" style="color:#3ecf8e">Navbar.jsx</span><span class="gh-fmsg">feat: ajout composant Navbar</span><span class="gh-ftime">à l'instant</span></div>
+        <div class="gh-file-row"><span>📄</span><span class="gh-fname">README.md</span><span class="gh-fmsg">init</span><span class="gh-ftime">il y a 2h</span></div>
+      </div>
+    `
+  }
+}
+
+// ── Interactions ──
+function addCollab() {
+  const val = document.getElementById('collab-input')?.value.trim()
+  if (!val) return
+  document.getElementById('collab-result').innerHTML = `
+    <div class="collab-added">✓ Invitation envoyée à <strong>${val}</strong> — en attente de confirmation</div>
+  `
+  addTermLine({ type:'success', text:`Invitation envoyée à ${val} ✓` })
+}
+
+function simulateMerge() {
+  document.querySelector('.pr-merge-btn').disabled = true
+  document.querySelector('.pr-merge-btn').textContent = '⏳ Merging…'
+  setTimeout(() => {
+    addTermLine({ type:'success', text:'Pull Request #1 merged ✓' })
+    document.querySelector('.pr-status').className = 'pr-status merged'
+    document.querySelector('.pr-status').textContent = '✓ Merged'
+    document.querySelector('.pr-merge-btn').textContent = '✓ Merged — Delete branch'
+    document.querySelector('.pr-merge-btn').style.background = '#8957e5'
+    document.querySelector('.pr-merge-btn').onclick = () => {
+      addTermLine({ type:'info', text:'Branch feature/navbar deleted.' })
+    }
+  }, 1200)
+}
+
+// ── Auto-play simulation ──
+function autoPlay() {
+  const btn = document.getElementById('auto-btn')
+  btn.className = 'auto-play-btn running'
+  btn.textContent = 'Simulation en cours…'
+  const lines = STEPS[cur].termLines || []
+  document.getElementById('term-body').innerHTML = ''
+  let i = 0
+  function next2() {
+    if (i >= lines.length) {
+      btn.textContent = '✓ Simulation terminée'
+      btn.className = 'auto-play-btn'
+      return
+    }
+    addTermLine(lines[i]); i++
+    autoTimer = setTimeout(next2, 400 + Math.random() * 300)
+  }
+  next2()
+}
+
+// Init
+goTo(0)
+</script>
+<script src="../cursor.js"></script>
+</body>
+</html>

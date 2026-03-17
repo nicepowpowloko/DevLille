@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../favicon-32x32.png" type="image/png">
+    <title>Supports GITHUB - Formation DWWM</title>
+    <style>
+        :root {
+            --bg-deep:      #080b0f;
+            --bg-card:      #0d1117;
+            --titlebar:     #161b22;
+            --border:       #1e2d3d;
+            --accent-neon:  #44D62C;
+            --accent-blue:  #00b4d8;
+            --text-primary: #e6edf3;
+            --text-muted:   #7d8590;
+            --text-dim:     #3d444d;
+            --red-btn:      #ff5f57;
+            --orange-btn:   #febc2e;
+            --green-btn:    #28c840;
+            --font-mono:    'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;
+            --font-ui:      -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+
+        body {
+            font-family: var(--font-ui);
+            background: var(--bg-deep);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Grid background */
+        body::before {
+            content:''; position:fixed; inset:0;
+            background-image:
+                linear-gradient(rgba(68,214,44,.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(68,214,44,.025) 1px, transparent 1px);
+            background-size:40px 40px;
+            pointer-events:none; z-index:0;
+        }
+
+        /* Orbs */
+        .orb { position:fixed; border-radius:50%; filter:blur(120px); pointer-events:none; z-index:0; opacity:.15; }
+        .orb-1 { width:500px;height:500px; background:radial-gradient(circle,#44D62C,transparent); top:-150px;left:-150px; animation:orbFloat 18s ease-in-out infinite; }
+        .orb-2 { width:400px;height:400px; background:radial-gradient(circle,#00b4d8,transparent); bottom:-100px;right:-100px; animation:orbFloat 22s ease-in-out infinite reverse; }
+        @keyframes orbFloat { 0%,100%{transform:translate(0,0)} 33%{transform:translate(20px,-20px)} 66%{transform:translate(-15px,15px)} }
+
+        /* Overlay transition */
+        .overlay { display:none; }
+
+        /* Container */
+        .container { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:60px 24px 80px; transition:transform .35s cubic-bezier(.4,0,.2,1), opacity .35s ease; }
+
+        /* Header */
+        .header { text-align:center; margin-bottom:52px; animation:fadeDown .55s ease both; }
+        @keyframes fadeDown { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
+
+        .logo-wrap { display:inline-block; margin-bottom:20px; position:relative; }
+        .logo-wrap::before { content:''; position:absolute; inset:-8px; border-radius:20px; background:linear-gradient(135deg,var(--accent-neon),var(--accent-blue)); opacity:.25; filter:blur(16px); animation:logoPulse 3s ease-in-out infinite; }
+        @keyframes logoPulse { 0%,100%{opacity:.15} 50%{opacity:.45} }
+        .logo-wrap img { position:relative; width:72px; background:#fff; padding:9px; border-radius:13px; display:block; }
+
+        .header h1 {
+            font-size:clamp(1.7rem,4vw,2.6rem); font-weight:700; letter-spacing:-.02em;
+            background:linear-gradient(135deg,#fff 0%,var(--accent-neon) 45%,var(--accent-blue) 90%);
+            background-size:200% auto;
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+            animation:gradShift 6s linear infinite; margin-bottom:10px;
+        }
+        @keyframes gradShift { 0%{background-position:0% center} 100%{background-position:200% center} }
+
+        .breadcrumb { font-family:var(--font-mono); font-size:.78rem; color:var(--text-muted); }
+        .breadcrumb span { color:var(--accent-neon); }
+
+        /* Legend */
+        .legend { display:flex; justify-content:center; gap:24px; flex-wrap:wrap; margin-bottom:44px; animation:fadeDown .55s ease .1s both; }
+        .legend-item { display:flex; align-items:center; gap:7px; font-size:.75rem; color:var(--text-muted); font-family:var(--font-mono); }
+        .leg-dot { width:11px;height:11px;border-radius:50%; flex-shrink:0; }
+        .leg-dot.r{background:var(--red-btn)} .leg-dot.o{background:var(--orange-btn)} .leg-dot.g{background:var(--green-btn)}
+
+        /* Mac card */
+        .mac-card {
+            background:var(--bg-card); border:1px solid var(--border);
+            border-radius:12px; overflow:hidden; margin-bottom:20px;
+            transition:transform .3s cubic-bezier(.34,1.56,.64,1), border-color .3s, box-shadow .3s;
+            animation:fadeUp .5s ease both;
+        }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+        .mac-card:nth-child(1){animation-delay:.05s} .mac-card:nth-child(2){animation-delay:.12s} .mac-card:nth-child(3){animation-delay:.19s} .mac-card:nth-child(4){animation-delay:.26s}
+        .mac-card:hover { transform:translateY(-5px) scale(1.005); border-color:rgba(68,214,44,.3); box-shadow:0 20px 50px rgba(0,0,0,.55), 0 0 0 1px rgba(68,214,44,.12); }
+
+        /* Titlebar */
+        .titlebar { background:var(--titlebar); padding:10px 14px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); }
+        .dots { display:flex; gap:7px; align-items:center; }
+        .dot { width:13px;height:13px; border-radius:50%; cursor:pointer; border:none; outline:none; position:relative; transition:filter .15s, transform .15s; flex-shrink:0; }
+        .dot:hover { filter:brightness(1.25); transform:scale(1.15); }
+        .dot:active { transform:scale(.88); }
+        .dot-r { background:var(--red-btn); box-shadow:0 0 6px rgba(255,95,87,.4); }
+        .dot-o { background:var(--orange-btn); box-shadow:0 0 6px rgba(254,188,46,.4); }
+        .dot-g { background:var(--green-btn); box-shadow:0 0 8px rgba(40,200,64,.5); }
+        .dot-icon { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:900; color:rgba(0,0,0,.65); opacity:0; transition:opacity .15s; }
+        .titlebar:hover .dot-icon { opacity:1; }
+        .titlebar-name { flex:1; text-align:center; font-family:var(--font-mono); font-size:.77rem; color:var(--text-muted); letter-spacing:.04em; margin-right:39px; }
+
+        /* Card body */
+        .card-body { padding:22px 22px 24px; }
+        .card-tag { display:inline-flex; align-items:center; gap:6px; background:rgba(68,214,44,.07); border:1px solid rgba(68,214,44,.18); border-radius:6px; padding:3px 10px; font-family:var(--font-mono); font-size:.68rem; color:var(--accent-neon); letter-spacing:.08em; text-transform:uppercase; margin-bottom:16px; }
+        .card-tag::before { content:'▸'; font-size:.62rem; }
+        .card-section-title { font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:14px; padding-left:10px; border-left:3px solid var(--accent-neon); }
+
+        /* Links */
+        .link-list { display:flex; flex-direction:column; gap:4px; }
+        .link-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; border:1px solid transparent; text-decoration:none; color:var(--text-muted); font-size:.88rem; font-family:var(--font-mono); transition:all .2s ease; cursor:pointer; }
+        .link-item:hover { background:rgba(68,214,44,.06); border-color:rgba(68,214,44,.2); color:var(--text-primary); padding-left:18px; }
+        .li-icon { font-size:.8rem; color:var(--accent-neon); opacity:.7; flex-shrink:0; transition:opacity .2s; }
+        .link-item:hover .li-icon { opacity:1; }
+        .li-ext { margin-left:auto; font-size:.65rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em; flex-shrink:0; }
+
+        /* Toast */
+        .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(70px); background:var(--titlebar); border:1px solid var(--border); border-radius:10px; padding:10px 20px; font-family:var(--font-mono); font-size:.8rem; color:var(--orange-btn); box-shadow:0 8px 30px rgba(0,0,0,.5); z-index:1000; transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s ease; opacity:0; white-space:nowrap; }
+        .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+        /* Footer */
+        footer { position:relative; z-index:1; text-align:center; padding:36px 24px 60px; border-top:1px solid var(--border); margin-top:40px; }
+        footer img { width:54px; background:#fff; padding:7px; border-radius:10px; margin-bottom:14px; opacity:.75; }
+        footer p { color:var(--text-muted); font-size:.8rem; margin:4px 0; }
+        footer a { color:var(--accent-blue); text-decoration:none; font-size:.8rem; }
+        footer a:hover { text-decoration:underline; }
+        .mono { font-family:var(--font-mono); color:var(--text-dim); font-size:.7rem; margin-top:14px; }
+
+        @media(max-width:600px) { .legend{gap:14px} .header h1{font-size:1.6rem} }
+    </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"></div>
+<div class="toast" id="toast"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="container" id="mainContainer">
+
+    <header class="header">
+        <div class="logo-wrap">
+            <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil">
+        </div>
+        <h1>Exemple GitHub</h1>
+        <p class="breadcrumb">Formation DWWM <span>/</span> GIT <span>// 2025-2026</span></p>
+    </header>
+
+    <div class="legend">
+        <div class="legend-item"><div class="leg-dot r"></div>Retour arrière</div>
+        <div class="legend-item"><div class="leg-dot o"></div>Nouvel onglet</div>
+        <div class="legend-item"><div class="leg-dot g"></div>Ouvrir le fichier</div>
+    </div>
+
+    <!-- Carte 1 : Demo -->
+    <div class="mac-card">
+        <div class="titlebar">
+            <div class="dots">
+                <button class="dot dot-r" onclick="goBack(event)" title="Retour arrière"><span class="dot-icon">✕</span></button>
+                <button class="dot dot-o" onclick="openTab(event,'./git-demo.html')" title="Nouvel onglet"><span class="dot-icon">⊞</span></button>
+                <button class="dot dot-g" onclick="goTo(event,'./git-demo.html')" title="Ouvrir"><span class="dot-icon">↗</span></button>
+            </div>
+            <span class="titlebar-name">git-demo.html</span>
+        </div>
+        <div class="card-body">
+            <div class="card-tag">Exemple</div>
+            <p class="card-section-title">Démo</p>
+            <div class="link-list">
+                <a class="link-item" onclick="goTo(event,'./git-demo.html')">
+                    <span class="li-icon">▸</span> Exemple utilisation GitHub <span class="li-ext">.html</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+      <!-- Carte 2 : Tuto PDF -->
+    <div class="mac-card">
+        <div class="titlebar">
+            <div class="dots">
+                <button class="dot dot-r" onclick="goBack(event)" title="Retour arrière"><span class="dot-icon">✕</span></button>
+                <button class="dot dot-o" onclick="openTab(event,'./guide-demo-github.pdf')" title="Nouvel onglet"><span class="dot-icon">⊞</span></button>
+                <button class="dot dot-g" onclick="goTo(event,'./guide-demo-github.pdf')" title="Ouvrir"><span class="dot-icon">↗</span></button>
+            </div>
+            <span class="titlebar-name">Tuto-Git-Branches.pdf</span>
+        </div>
+        <div class="card-body">
+            <div class="card-tag">Tuto</div>
+            <p class="card-section-title">Tuto PDF</p>
+            <div class="link-list">
+                <a class="link-item" onclick="goTo(event,'./guide-demo-github.pdf')">
+                    <span class="li-icon">▸</span> Tutoriel GitHub <span class="li-ext">.pdf</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+     <!-- Carte 1bis : Demo destock -->
+    <div class="mac-card">
+        <div class="titlebar">
+            <div class="dots">
+                <button class="dot dot-r" onclick="goBack(event)" title="Retour arrière"><span class="dot-icon">✕</span></button>
+                <button class="dot dot-o" onclick="openTab(event,'./demo-destock.html')" title="Nouvel onglet"><span class="dot-icon">⊞</span></button>
+                <button class="dot dot-g" onclick="goTo(event,'./demo-destock.html')" title="Ouvrir"><span class="dot-icon">↗</span></button>
+            </div>
+            <span class="titlebar-name">demo-destock.html</span>
+        </div>
+        <div class="card-body">
+            <div class="card-tag">Destkop</div>
+            <p class="card-section-title">Démo Appli</p>
+            <div class="link-list">
+                <a class="link-item" onclick="goTo(event,'./demo-destock.html')">
+                    <span class="li-icon">▸</span> Exemple GitHub Destkop <span class="li-ext">.html</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    
+        
+
+    <!-- Carte 3 : Navigation retour -->
+    <div class="mac-card">
+        <div class="titlebar">
+            <div class="dots">
+                <button class="dot dot-r" onclick="goBack(event)" title="Retour arrière"><span class="dot-icon">✕</span></button>
+                <button class="dot dot-o" onclick="openTab(event,'../index.html')" title="Accueil dans nouvel onglet"><span class="dot-icon">⊞</span></button>
+                <button class="dot dot-g" onclick="goTo(event,'../index.html')" title="Retour accueil"><span class="dot-icon">↗</span></button>
+            </div>
+            <span class="titlebar-name">navigation.js</span>
+        </div>
+        <div class="card-body">
+            <div class="card-tag">Navigation</div>
+            <p class="card-section-title">Retour à l'accueil</p>
+            <div class="link-list">
+                <a class="link-item" onclick="goTo(event,'../index.html')">
+                    <span class="li-icon">←</span> Retour à l'accueil Formation DWWM <span class="li-ext">index</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil">
+    <p><strong style="color:var(--text-primary)">Formation Real Conseil — DWWM</strong></p>
+    <p>&copy; DARRAS Thomas</p>
+    <p class="mono">// Supports mis à jour régulièrement via GitHub &nbsp;·&nbsp;
+        <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo</a>
+    </p>
+</footer>
+
+<script>
+    const PDF_LIST = [
+        './Cours html.pdf', './Organisation html.pdf',
+        './Les balises et attributs.pdf', './Structure contenu.pdf',
+        './Flexbox_Grid.pdf', './Insertion image.pdf',
+        './lexique html.pdf', './Méthodes POST et GET.pdf',
+        './Rcr_VSCODE.pdf'
+    ];
+
+    function goBack(event) {
+        event.stopPropagation();
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.location.href = '../index.html';
+        }
+    }
+    function openTab(event, url) {
+        event.stopPropagation();
+        window.open(url, '_blank');
+        showToast('🟠 Ouvert dans un nouvel onglet !');
+    }
+    function openAllPdfs(event) {
+        event.stopPropagation();
+        PDF_LIST.forEach((p, i) => setTimeout(() => window.open(p, '_blank'), i * 100));
+        showToast('🟠 ' + PDF_LIST.length + ' PDFs ouverts dans de nouveaux onglets !');
+    }
+    function goTo(event, url) {
+        event.stopPropagation();
+        window.location.href = url;
+    }
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2600);
+    }
+    window.addEventListener('pageshow', () => {
+        const c = document.getElementById('mainContainer');
+        c.style.transition = 'none';
+        c.style.opacity = '1';
+        c.style.transform = 'none';
+    });
+</script>
+<script src="../cursor.js"></script>
+</body>
+</html>
