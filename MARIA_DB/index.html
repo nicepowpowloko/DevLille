@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MariaDB — Base de données & CRUD</title>
+<style>
+:root {
+    --bg:#f0f4f8; --card:#ffffff; --surface:#f8fafc;
+    --border:#dde3ed; --border2:#c8d2e0;
+    --accent:#1a6bcc; --accent2:#2e86de; --accent-light:#e8f0fb;
+    --green:#1a8a3c; --green-light:#e6f4ec;
+    --yellow:#b07d00; --yellow-light:#fdf6e3;
+    --red:#c0392b; --red-light:#fdf0ef;
+    --purple:#6b3fa0; --purple-light:#f3eefb;
+    --orange:#c05000; --orange-light:#fff0e6;
+    --text:#1a2030; --muted:#4a5568; --dim:#8a9ab5;
+    --title:#161b22; --code-bg:#1e2535; --code-text:#e6edf3;
+    --mono:'SF Mono','Fira Code','Consolas',monospace;
+    --shadow:0 1px 4px rgba(0,0,0,.08),0 2px 12px rgba(0,0,0,.06);
+    --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(26,107,204,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(26,107,204,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+/* ── LAYOUT ── */
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;left:0;top:0;width:230px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--shadow);transition:transform .25s;}
+.sidebar-logo{padding:0 20px 18px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+.sidebar-logo span{font-size:.85rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.68rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:6px;}
+.nav-label{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:6px 8px 3px;font-weight:700;}
+.nav-link{display:block;padding:6px 10px;border-radius:6px;font-size:.77rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:var(--accent-light);color:var(--accent);}
+.nav-link.active{background:var(--accent-light);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);margin-right:5px;}
+
+/* ── HAMBURGER ── */
+.hamburger{display:none;position:fixed;top:14px;left:14px;z-index:100;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;cursor:pointer;box-shadow:var(--shadow);}
+.hamburger span{display:block;width:18px;height:2px;background:var(--text);margin:3px 0;transition:.2s;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:40;}
+
+/* ── CONTENT ── */
+.content{margin-left:230px;padding:48px 48px 80px;max-width:calc(100% - 230px);}
+
+/* ── PAGE HEADER ── */
+.page-header{margin-bottom:52px;}
+.page-header h1{font-size:2.2rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;color:var(--text);}
+.hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.93rem;line-height:1.75;max-width:580px;margin-bottom:16px;}
+.tags{display:flex;gap:7px;flex-wrap:wrap;}
+.tag-pill{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.tag-pill.b{background:var(--accent-light);border-color:#b3cfee;color:var(--accent);}
+.tag-pill.g{background:var(--green-light);border-color:#b3d9c0;color:var(--green);}
+.tag-pill.p{background:var(--purple-light);border-color:#ccb8e8;color:var(--purple);}
+.tag-pill.o{background:var(--orange-light);border-color:#f0c090;color:var(--orange);}
+
+/* ── SECTION ── */
+.section{margin-bottom:60px;scroll-margin-top:24px;}
+.section-badge{font-family:var(--mono);font-size:.63rem;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.section-badge::after{content:'';flex:1;height:1px;background:var(--border);}
+.section h2{font-size:1.4rem;font-weight:800;margin-bottom:16px;letter-spacing:-.02em;color:var(--text);}
+.prose{color:var(--muted);font-size:.91rem;line-height:1.8;margin-bottom:14px;}
+.prose strong{color:var(--text);font-weight:700;}
+.prose code{font-family:var(--mono);font-size:.8rem;background:#e8edf5;border:1px solid var(--border);padding:1px 6px;border-radius:3px;color:var(--accent);}
+
+/* ── CALLOUT ── */
+.callout{border-radius:var(--radius);padding:13px 16px;margin-bottom:14px;font-size:.87rem;line-height:1.7;display:flex;gap:10px;align-items:flex-start;}
+.callout.info{background:var(--accent-light);border:1px solid #b3cfee;color:#1a4a8a;}
+.callout.tip{background:var(--yellow-light);border:1px solid #e8d090;color:#7a5500;}
+.callout.warn{background:var(--orange-light);border:1px solid #f0c090;color:#8a3800;}
+.callout.success{background:var(--green-light);border:1px solid #a8d8b8;color:#145a28;}
+.callout.def{background:var(--purple-light);border:1px solid #ccb8e8;color:#4a2080;}
+.callout strong{color:inherit;}
+.callout code{font-family:var(--mono);font-size:.77rem;background:rgba(0,0,0,.07);padding:1px 5px;border-radius:3px;}
+.ci{font-size:1.05rem;flex-shrink:0;margin-top:1px;}
+
+/* ── CODE BLOCK ── */
+.code-block{background:var(--code-bg);border:1px solid #2d3748;border-radius:var(--radius);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow);}
+.cb-head{background:#161b22;padding:9px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2d3748;flex-wrap:wrap;gap:6px;}
+.dots{display:flex;gap:5px;flex-shrink:0;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.72rem;color:#7d8590;flex:1;min-width:0;}
+.cb-badge{font-size:.59rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;white-space:nowrap;}
+.cb-badge.sql{background:rgba(26,107,204,.2);border:1px solid rgba(26,107,204,.4);color:#61dafb;}
+.cb-badge.bash{background:rgba(68,214,44,.1);border:1px solid rgba(68,214,44,.3);color:#44D62C;}
+.cb-badge.new{background:rgba(68,214,44,.1);border:1px solid rgba(68,214,44,.3);color:#44D62C;}
+.cb-badge.mod{background:rgba(255,107,0,.12);border:1px solid rgba(255,107,0,.3);color:#ffa657;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid #3d444d;color:#7d8590;font-family:var(--mono);font-size:.64rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.cb-copy:hover{background:rgba(97,218,251,.12);border-color:rgba(97,218,251,.4);color:#61dafb;}
+.cb-copy.ok{color:#44D62C;}
+pre{padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:.81rem;line-height:1.95;color:var(--code-text);}
+/* SQL syntax */
+.kw{color:#ff7b72;font-weight:600;}
+.fn{color:#d2a8ff;}
+.str{color:#a5d6ff;}
+.num{color:#f8c555;}
+.cmt{color:#4d5a6a;font-style:italic;}
+.vr{color:#79c0ff;}
+.op{color:#ffa657;}
+.ok-line{background:rgba(68,214,44,.08);display:block;margin:0 -18px;padding:0 18px;border-left:2px solid #44D62C;}
+.hl{background:rgba(97,218,251,.07);display:block;margin:0 -18px;padding:0 18px;border-left:2px solid #61dafb;}
+
+/* ── TERMINAL ── */
+.term{background:#0a0a0a;border:1px solid #2a2a2a;border-radius:var(--radius);overflow:hidden;margin-bottom:14px;}
+.term-head{background:#1a1a1a;padding:9px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a2a;}
+.term-title{font-family:var(--mono);font-size:.71rem;color:#555;flex:1;text-align:center;}
+.term-body{padding:16px 18px;font-family:var(--mono);font-size:.82rem;line-height:2;}
+.tp{color:#44D62C;flex-shrink:0;user-select:none;}
+.tc{color:#e6edf3;}
+.tc .tcmd{color:#61dafb;}
+.tc .targ{color:#ffa657;}
+.tc .tpath{color:#c084fc;}
+.to{color:#555;padding-left:18px;font-size:.77rem;line-height:1.65;margin-bottom:3px;}
+.to.s{color:#44D62C;}
+.to.w{color:#f7df1e;}
+.to.e{color:#ff7b72;}
+.tline{display:flex;align-items:flex-start;gap:8px;margin-bottom:1px;}
+
+/* ── TABLE ── */
+.sql-table{width:100%;border-collapse:collapse;font-size:.83rem;font-family:var(--mono);margin-bottom:4px;overflow:hidden;border-radius:8px;box-shadow:var(--shadow);}
+.sql-table th{background:var(--accent);color:#fff;padding:9px 14px;text-align:left;font-weight:700;font-size:.77rem;}
+.sql-table td{padding:8px 14px;border-bottom:1px solid var(--border);color:var(--text);}
+.sql-table tr:last-child td{border-bottom:none;}
+.sql-table tr:hover td{background:var(--accent-light);}
+.td-pk{color:var(--accent);font-weight:700;}
+.td-pk::before{content:'🔑 ';}
+.td-fk{color:var(--orange);font-weight:600;}
+.td-fk::before{content:'🔗 ';}
+.td-t{color:var(--dim);font-size:.72rem;}
+.pill{font-size:.62rem;padding:1px 6px;border-radius:3px;margin-left:4px;}
+.pill.nn{background:var(--red-light);border:1px solid #f0c0bd;color:var(--red);}
+.pill.pk{background:var(--accent-light);border:1px solid #b3cfee;color:var(--accent);}
+.pill.ai{background:var(--green-light);border:1px solid #a8d8b8;color:var(--green);}
+.pill.uq{background:var(--purple-light);border:1px solid #ccb8e8;color:var(--purple);}
+
+/* ── CRUD CARDS ── */
+.crud-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:16px;}
+.crud-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.crud-head{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.crud-letter{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.85rem;font-weight:900;flex-shrink:0;}
+.crud-letter.c{background:var(--green-light);border:2px solid #a8d8b8;color:var(--green);}
+.crud-letter.r{background:var(--accent-light);border:2px solid #b3cfee;color:var(--accent);}
+.crud-letter.u{background:var(--yellow-light);border:2px solid #e8d090;color:var(--yellow);}
+.crud-letter.d{background:var(--red-light);border:2px solid #f0c0bd;color:var(--red);}
+.crud-info .crud-name{font-weight:800;font-size:.9rem;color:var(--text);}
+.crud-info .crud-sql{font-family:var(--mono);font-size:.72rem;color:var(--dim);}
+.crud-body{padding:14px 16px;font-size:.84rem;color:var(--muted);line-height:1.7;}
+.crud-body strong{color:var(--text);}
+
+/* ── COMPARE ── */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.cbox{background:var(--card);border:1px solid var(--border);border-radius:9px;overflow:hidden;box-shadow:var(--shadow);}
+.chead{padding:8px 13px;font-family:var(--mono);font-size:.68rem;border-bottom:1px solid var(--border);font-weight:700;}
+.cbox.bad .chead{background:var(--red-light);color:var(--red);}
+.cbox.good .chead{background:var(--green-light);color:var(--green);}
+
+/* ── QUIZ ── */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;box-shadow:var(--shadow);}
+.q{font-weight:700;font-size:.91rem;margin-bottom:12px;color:var(--text);}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.76rem;margin-right:7px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;}
+.opt:hover{border-color:#b3cfee;color:var(--text);background:var(--accent-light);}
+.opt.correct{border-color:#a8d8b8;background:var(--green-light);color:var(--green);}
+.opt.wrong{border-color:#f0c0bd;background:var(--red-light);color:var(--red);}
+.fb{margin-top:9px;font-size:.81rem;padding:10px 13px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:var(--green-light);border:1px solid #a8d8b8;color:#145a28;}
+.fb.ko{background:var(--red-light);border:1px solid #f0c0bd;color:#8a1a14;}
+
+.divider{height:1px;background:var(--border);margin:48px 0;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ═
+   RESPONSIVE
+   */
+@media(max-width:768px){
+    .sidebar{transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);}
+    .sidebar-overlay.open{display:block;}
+    .hamburger{display:block;}
+    .content{margin-left:0;padding:60px 16px 60px;}
+    .page-header h1{font-size:1.7rem;}
+    .compare{grid-template-columns:1fr;}
+    .crud-grid{grid-template-columns:1fr;}
+    pre{font-size:.75rem;}
+    .sql-table{font-size:.75rem;}
+    .sql-table th,.sql-table td{padding:7px 10px;}
+    .steps-wrap{grid-template-columns:1fr;}
+}
+@media(min-width:769px) and (max-width:1100px){
+    .sidebar{width:200px;}
+    .content{margin-left:200px;padding:40px 28px 60px;max-width:calc(100% - 200px);}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ── HAMBURGER ── -->
+<button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+</button>
+<div class="sidebar-overlay" id="overlay"></div>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <span>🐬 MariaDB</span>
+        <p>Base de données & CRUD</p>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Introduction</div>
+        <a href="#intro" class="nav-link active"><span class="nav-num">01</span>C'est quoi MariaDB ?</a>
+        <a href="#install" class="nav-link"><span class="nav-num">02</span>Connexion & Terminal</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Créer la base</div>
+        <a href="#creer-bdd" class="nav-link"><span class="nav-num">03</span>Créer la base</a>
+        <a href="#schema" class="nav-link"><span class="nav-num">04</span>Définir le schéma</a>
+        <a href="#contraintes" class="nav-link"><span class="nav-num">05</span>Contraintes & Types</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">CRUD</div>
+        <a href="#insert" class="nav-link"><span class="nav-num">06</span>INSERT — Créer</a>
+        <a href="#select" class="nav-link"><span class="nav-num">07</span>SELECT — Lire</a>
+        <a href="#update" class="nav-link"><span class="nav-num">08</span>UPDATE — Modifier</a>
+        <a href="#delete" class="nav-link"><span class="nav-num">09</span>DELETE — Supprimer</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Aller plus loin</div>
+        <a href="#jointures" class="nav-link"><span class="nav-num">10</span>Jointures</a>
+        <a href="#bonnes-pratiques" class="nav-link"><span class="nav-num">11</span>Bonnes pratiques</a>
+        <a href="#quiz" class="nav-link"><span class="nav-num">12</span>Quiz</a>
+    </div>
+</aside>
+
+<!-- ── CONTENU ── -->
+<main class="content">
+
+<div class="page-header">
+    <h1>MariaDB —<br><span class="hl">Base de données & CRUD</span></h1>
+    <p>Apprendre à créer une base de données, définir son schéma (tables, types, contraintes) et écrire toutes les requêtes CRUD : INSERT, SELECT, UPDATE, DELETE.</p>
+    <div class="tags">
+        <span class="tag-pill b">CREATE DATABASE</span>
+        <span class="tag-pill b">CREATE TABLE</span>
+        <span class="tag-pill g">INSERT</span>
+        <span class="tag-pill g">SELECT</span>
+        <span class="tag-pill o">UPDATE</span>
+        <span class="tag-pill p">DELETE</span>
+    </div>
+</div>
+
+<!-- ── 01 INTRO ── -->
+<section class="section" id="intro">
+    <div class="section-badge">01</div>
+    <h2>C'est quoi MariaDB ?</h2>
+
+    <p class="prose">MariaDB est un <strong>système de gestion de base de données relationnelle (SGBDR)</strong> open source, fork de MySQL. On y stocke des données sous forme de <strong>tables</strong> (lignes + colonnes) et on les manipule avec le langage <strong>SQL</strong>.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);">
+            <div style="font-size:1.5rem;margin-bottom:6px;"></div>
+            <div style="font-weight:700;font-size:.88rem;margin-bottom:4px;">Base de données</div>
+            <div style="font-size:.8rem;color:var(--muted);">Conteneur de toutes les tables d'une application. Ex : <code style="font-family:var(--mono);font-size:.75rem;">boutique_db</code></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);">
+            <div style="font-size:1.5rem;margin-bottom:6px;"></div>
+            <div style="font-weight:700;font-size:.88rem;margin-bottom:4px;">Table</div>
+            <div style="font-size:.8rem;color:var(--muted);">Un tableau de données. Chaque ligne = un enregistrement. Ex : <code style="font-family:var(--mono);font-size:.75rem;">client</code></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);">
+            <div style="font-size:1.5rem;margin-bottom:6px;">🔑</div>
+            <div style="font-weight:700;font-size:.88rem;margin-bottom:4px;">Clé primaire (PK)</div>
+            <div style="font-size:.8rem;color:var(--muted);">Identifiant unique de chaque ligne. Ex : <code style="font-family:var(--mono);font-size:.75rem;">id_client = 1</code></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);">
+            <div style="font-size:1.5rem;margin-bottom:6px;">🔗</div>
+            <div style="font-weight:700;font-size:.88rem;margin-bottom:4px;">Clé étrangère (FK)</div>
+            <div style="font-size:.8rem;color:var(--muted);">Lien entre deux tables. Ex : <code style="font-family:var(--mono);font-size:.75rem;">id_client</code> dans COMMANDE</div>
+        </div>
+    </div>
+
+    <div class="callout info">
+        <span class="ci">🐬</span>
+        <div><strong>MariaDB vs MySQL :</strong> les commandes SQL sont quasi-identiques. Tout ce que tu apprends ici fonctionne sur MySQL aussi. MariaDB est installé par défaut avec XAMPP, WAMP, et la plupart des hébergements.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 02 CONNEXION ── -->
+<section class="section" id="install">
+    <div class="section-badge">02</div>
+    <h2>Connexion & Terminal</h2>
+
+    <p class="prose">Avant d'écrire du SQL, il faut se connecter au serveur MariaDB. Voici les deux façons : en ligne de commande ou via une interface graphique.</p>
+
+    <div class="term">
+        <div class="term-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="term-title">Se connecter à MariaDB</span></div>
+        <div class="term-body">
+            <div class="tline"><span class="tp">$</span><span class="tc"><span class="tcmd">mysql</span> <span class="targ">-u root -p</span></span></div>
+            <div class="to">↳ -u root = nom d'utilisateur "root"</div>
+            <div class="to">↳ -p = demander le mot de passe</div>
+            <div class="to s">Enter password: ••••••</div>
+            <div class="to s">Welcome to the MariaDB monitor. </div>
+            <br>
+            <div class="tline"><span class="tp" style="color:#61dafb;">MariaDB&nbsp;[(none)]&gt;</span><span class="tc" style="color:#e6edf3;">&nbsp;_</span></div>
+            <div class="to">↳ Le prompt change → tu es dans MariaDB</div>
+        </div>
+    </div>
+
+    <div class="callout tip">
+        <span class="ci"></span>
+        <div><strong>Interface graphique :</strong> tu peux aussi utiliser <strong>phpMyAdmin</strong> (inclus dans XAMPP) ou <strong>DBeaver</strong> (gratuit, recommandé) pour visualiser les tables et exécuter du SQL avec une interface.</div>
+    </div>
+
+    <div class="term">
+        <div class="term-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="term-title">Commandes utiles dans le terminal MariaDB</span></div>
+        <div class="term-body">
+            <div class="tline"><span class="tp" style="color:#61dafb;">MariaDB&nbsp;[(none)]&gt;</span><span class="tc"><span class="targ"> SHOW DATABASES;</span></span></div>
+            <div class="to">↳ lister toutes les bases de données</div>
+            <br>
+            <div class="tline"><span class="tp" style="color:#61dafb;">MariaDB&nbsp;[(none)]&gt;</span><span class="tc"><span class="targ"> USE boutique_db;</span></span></div>
+            <div class="to">↳ sélectionner une base pour travailler dedans</div>
+            <br>
+            <div class="tline"><span class="tp" style="color:#61dafb;">MariaDB&nbsp;[boutique_db]&gt;</span><span class="tc"><span class="targ"> SHOW TABLES;</span></span></div>
+            <div class="to">↳ lister les tables de la base active</div>
+            <br>
+            <div class="tline"><span class="tp" style="color:#61dafb;">MariaDB&nbsp;[boutique_db]&gt;</span><span class="tc"><span class="targ"> DESCRIBE client;</span></span></div>
+            <div class="to">↳ afficher la structure d'une table</div>
+            <br>
+            <div class="tline"><span class="tp" style="color:#61dafb;">MariaDB&nbsp;[boutique_db]&gt;</span><span class="tc"><span class="targ"> EXIT;</span></span></div>
+            <div class="to">↳ quitter le terminal MariaDB</div>
+        </div>
+    </div>
+
+    <div class="callout warn">
+        <span class="ci"></span>
+        <div><strong>Le point-virgule est obligatoire !</strong> Chaque requête SQL doit se terminer par <code>;</code>. Sans ça, MariaDB attend la suite et ne s'exécute pas.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 03 CRÉER BDD ── -->
+<section class="section" id="creer-bdd">
+    <div class="section-badge">03</div>
+    <h2>Créer la base de données</h2>
+
+    <p class="prose">La première étape est de créer un conteneur qui accueillera toutes nos tables. On appelle ça la <strong>base de données</strong>.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Créer et sélectionner la base</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Créer la base de données</span>
+<span class="kw">CREATE DATABASE</span> <span class="fn">boutique_db</span>
+    <span class="kw">CHARACTER SET</span> utf8mb4
+    <span class="kw">COLLATE</span> utf8mb4_unicode_ci;
+
+<span class="cmt">-- La sélectionner pour travailler dedans</span>
+<span class="kw">USE</span> <span class="fn">boutique_db</span>;
+
+<span class="cmt">-- Version sécurisée : ne pas planter si elle existe déjà</span>
+<span class="kw">CREATE DATABASE IF NOT EXISTS</span> <span class="fn">boutique_db</span>;</code></pre>
+    </div>
+
+    <div class="callout info">
+        <span class="ci"></span>
+        <div><strong>utf8mb4</strong> — l'encodage qui supporte tous les caractères : accents français, emojis, caractères asiatiques… Toujours l'utiliser plutôt que <code>utf8</code> seul qui est incomplet.</div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Supprimer / renommer</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Supprimer une base (ATTENTION : irréversible !)</span>
+<span class="kw">DROP DATABASE IF EXISTS</span> <span class="fn">boutique_db</span>;
+
+<span class="cmt">-- Lister toutes les bases disponibles</span>
+<span class="kw">SHOW DATABASES</span>;</code></pre>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 04 SCHÉMA ── -->
+<section class="section" id="schema">
+    <div class="section-badge">04</div>
+    <h2>Définir le schéma — CREATE TABLE</h2>
+
+    <p class="prose">Le schéma c'est la <strong>structure</strong> de chaque table : les colonnes, leurs types, leurs contraintes. On le définit avec <code>CREATE TABLE</code>. Voici le schéma complet de notre boutique.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Table client</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="kw">CREATE TABLE</span> <span class="fn">client</span> (
+    <span class="hl"><span class="vr">id_client</span>   <span class="op">INT</span>           <span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,  <span class="cmt">← clé primaire</span></span>
+    <span class="vr">nom</span><span class="op">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL</span>,
+    <span class="vr">prenom</span>      <span class="op">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL</span>,
+    <span class="vr">email</span><span class="op">VARCHAR</span>(<span class="num">150</span>) <span class="kw">NOT NULL UNIQUE</span>,<span class="cmt">← unique</span>
+    <span class="vr">telephone</span><span class="op">VARCHAR</span>(<span class="num">20</span>),
+    <span class="vr">adresse</span><span class="op">TEXT</span>,
+    <span class="vr">date_inscription</span> <span class="op">DATETIME</span> <span class="kw">DEFAULT</span> <span class="fn">NOW</span>()<span class="cmt">← valeur auto</span>
+);</code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Table categorie</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="kw">CREATE TABLE</span> <span class="fn">categorie</span> (
+    <span class="vr">id_categorie</span>  <span class="op">INT</span><span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">nom</span> <span class="op">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL UNIQUE</span>,
+    <span class="vr">description</span>   <span class="op">TEXT</span>
+);</code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Table produit — avec clé étrangère</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="kw">CREATE TABLE</span> <span class="fn">produit</span> (
+    <span class="vr">id_produit</span>   <span class="op">INT</span>              <span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">nom</span><span class="op">VARCHAR</span>(<span class="num">200</span>)    <span class="kw">NOT NULL</span>,
+    <span class="vr">prix</span> <span class="op">DECIMAL</span>(<span class="num">10</span>,<span class="num">2</span>)  <span class="kw">NOT NULL</span>,
+    <span class="vr">stock</span>  <span class="op">INT</span>  <span class="kw">DEFAULT</span> <span class="num">0</span>,
+    <span class="vr">description</span>  <span class="op">TEXT</span>,
+    <span class="hl"><span class="vr">id_categorie</span> <span class="op">INT</span> <span class="kw">NOT NULL</span>,</span>
+    <span class="hl"><span class="kw">FOREIGN KEY</span> (<span class="vr">id_categorie</span>) <span class="kw">REFERENCES</span> <span class="fn">categorie</span>(<span class="vr">id_categorie</span>)</span>
+);</code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Table commande + Table commande_produit (N,N)</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="kw">CREATE TABLE</span> <span class="fn">commande</span> (
+    <span class="vr">id_commande</span>   <span class="op">INT</span>         <span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">date_commande</span> <span class="op">DATETIME</span>    <span class="kw">DEFAULT</span> <span class="fn">NOW</span>(),
+    <span class="vr">statut</span>        <span class="op">ENUM</span>(<span class="str">'en_attente'</span>,<span class="str">'validee'</span>,<span class="str">'expediee'</span>,<span class="str">'livree'</span>) <span class="kw">DEFAULT</span> <span class="str">'en_attente'</span>,
+    <span class="vr">montant_total</span> <span class="op">DECIMAL</span>(<span class="num">10</span>,<span class="num">2</span>),
+    <span class="vr">id_client</span>     <span class="op">INT</span>         <span class="kw">NOT NULL</span>,
+    <span class="kw">FOREIGN KEY</span> (<span class="vr">id_client</span>) <span class="kw">REFERENCES</span> <span class="fn">client</span>(<span class="vr">id_client</span>)
+);
+
+<span class="cmt">-- Table intermédiaire issue de l'association N,N</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">commande_produit</span> (
+    <span class="vr">id_commande</span>  <span class="op">INT</span>  <span class="kw">NOT NULL</span>,
+    <span class="vr">id_produit</span>   <span class="op">INT</span>  <span class="kw">NOT NULL</span>,
+    <span class="vr">quantite</span>     <span class="op">INT</span>  <span class="kw">NOT NULL DEFAULT</span> <span class="num">1</span>,
+    <span class="hl"><span class="kw">PRIMARY KEY</span> (<span class="vr">id_commande</span>, <span class="vr">id_produit</span>),  <span class="cmt">← clé composite</span></span>
+    <span class="kw">FOREIGN KEY</span> (<span class="vr">id_commande</span>) <span class="kw">REFERENCES</span> <span class="fn">commande</span>(<span class="vr">id_commande</span>),
+    <span class="kw">FOREIGN KEY</span> (<span class="vr">id_produit</span>)  <span class="kw">REFERENCES</span> <span class="fn">produit</span>(<span class="vr">id_produit</span>)
+);</code></pre>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 05 TYPES & CONTRAINTES ── -->
+<section class="section" id="contraintes">
+    <div class="section-badge">05</div>
+    <h2>Types de données & Contraintes</h2>
+
+    <p class="prose">Chaque colonne a un <strong>type</strong> (quel genre de données) et des <strong>contraintes</strong> (règles à respecter).</p>
+
+    <div style="overflow-x:auto;margin-bottom:16px;">
+        <table class="sql-table">
+            <tr><th>Type</th><th>Utilisation</th><th>Exemple</th></tr>
+            <tr><td class="td-pk" style="color:var(--accent);">INT</td><td style="color:var(--muted);">Nombre entier</td><td style="font-family:var(--mono);font-size:.78rem;">42, -5, 0</td></tr>
+            <tr><td style="font-family:var(--mono);color:var(--accent);">DECIMAL(10,2)</td><td style="color:var(--muted);">Nombre décimal précis (prix)</td><td style="font-family:var(--mono);font-size:.78rem;">29.99, 1299.00</td></tr>
+            <tr><td style="font-family:var(--mono);color:var(--accent);">VARCHAR(n)</td><td style="color:var(--muted);">Texte court variable, max n caractères</td><td style="font-family:var(--mono);font-size:.78rem;">'Alice', 'Paris'</td></tr>
+            <tr><td style="font-family:var(--mono);color:var(--accent);">TEXT</td><td style="color:var(--muted);">Texte long (description, contenu)</td><td style="font-family:var(--mono);font-size:.78rem;">Un long paragraphe…</td></tr>
+            <tr><td style="font-family:var(--mono);color:var(--accent);">DATETIME</td><td style="color:var(--muted);">Date et heure</td><td style="font-family:var(--mono);font-size:.78rem;">2025-03-11 14:30:00</td></tr>
+            <tr><td style="font-family:var(--mono);color:var(--accent);">DATE</td><td style="color:var(--muted);">Date seule</td><td style="font-family:var(--mono);font-size:.78rem;">2025-03-11</td></tr>
+            <tr><td style="font-family:var(--mono);color:var(--accent);">BOOLEAN</td><td style="color:var(--muted);">Vrai / Faux (TINYINT(1) en interne)</td><td style="font-family:var(--mono);font-size:.78rem;">TRUE, FALSE</td></tr>
+            <tr><td style="font-family:var(--mono);color:var(--accent);">ENUM('a','b')</td><td style="color:var(--muted);">Valeur parmi une liste fixe</td><td style="font-family:var(--mono);font-size:.78rem;">'en_attente', 'validee'</td></tr>
+        </table>
+    </div>
+
+    <div style="overflow-x:auto;margin-bottom:16px;">
+        <table class="sql-table">
+            <tr><th>Contrainte</th><th>Rôle</th></tr>
+            <tr><td><span class="pill pk">PRIMARY KEY</span></td><td style="color:var(--muted);font-size:.84rem;">Identifiant unique de la ligne — obligatoire, pas de doublons, pas de NULL</td></tr>
+            <tr><td><span class="pill ai">AUTO_INCREMENT</span></td><td style="color:var(--muted);font-size:.84rem;">MariaDB génère l'id automatiquement (1, 2, 3…)</td></tr>
+            <tr><td><span class="pill nn">NOT NULL</span></td><td style="color:var(--muted);font-size:.84rem;">La colonne ne peut pas être vide — obligatoire</td></tr>
+            <tr><td><span class="pill uq">UNIQUE</span></td><td style="color:var(--muted);font-size:.84rem;">Pas deux lignes avec la même valeur (email unique)</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:.78rem;color:var(--orange);">DEFAULT valeur</td><td style="color:var(--muted);font-size:.84rem;">Valeur utilisée si on ne précise rien à l'insertion</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:.78rem;color:var(--orange);">FOREIGN KEY</td><td style="color:var(--muted);font-size:.84rem;">Lien vers la PK d'une autre table — intégrité référentielle</td></tr>
+        </table>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 06 INSERT ── -->
+<section class="section" id="insert">
+    <div class="section-badge">06 — CREATE</div>
+    <h2>INSERT — Ajouter des données</h2>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <div style="background:var(--green-light);border:2px solid #a8d8b8;border-radius:8px;padding:8px 16px;font-family:var(--mono);font-weight:900;font-size:1.1rem;color:var(--green);">C</div>
+        <div style="font-size:.9rem;color:var(--muted);"><strong style="color:var(--text);">CREATE</strong> → INSERT INTO … VALUES …</div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">INSERT — syntaxe complète</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Insérer un seul enregistrement</span>
+<span class="kw">INSERT INTO</span> <span class="fn">client</span> (<span class="vr">nom</span>, <span class="vr">prenom</span>, <span class="vr">email</span>, <span class="vr">telephone</span>)
+<span class="kw">VALUES</span> (<span class="str">'Dupont'</span>, <span class="str">'Alice'</span>, <span class="str">'alice@email.com'</span>, <span class="str">'0612345678'</span>);
+
+<span class="cmt">-- Insérer plusieurs enregistrements en une seule requête</span>
+<span class="kw">INSERT INTO</span> <span class="fn">categorie</span> (<span class="vr">nom</span>, <span class="vr">description</span>)
+<span class="kw">VALUES</span>
+    (<span class="str">'Audio'</span>,       <span class="str">'Casques, enceintes, écouteurs'</span>),
+    (<span class="str">'Accessoires'</span>, <span class="str">'Claviers, souris, câbles'</span>),
+    (<span class="str">'Écrans'</span>,      <span class="str">'Moniteurs et écrans PC'</span>);
+
+<span class="cmt">-- Insérer un produit avec clé étrangère</span>
+<span class="kw">INSERT INTO</span> <span class="fn">produit</span> (<span class="vr">nom</span>, <span class="vr">prix</span>, <span class="vr">stock</span>, <span class="vr">id_categorie</span>)
+<span class="kw">VALUES</span> (<span class="str">'Casque Sony WH-1000XM5'</span>, <span class="num">279.99</span>, <span class="num">12</span>, <span class="num">1</span>);</code></pre>
+    </div>
+
+    <div class="callout tip">
+        <span class="ci"></span>
+        <div><strong>id_client non précisé ?</strong> Pas de problème — il est <code>AUTO_INCREMENT</code> donc MariaDB lui attribue automatiquement la prochaine valeur disponible (1, 2, 3…). Ne pas l'inclure dans la liste des colonnes.</div>
+    </div>
+
+    <div class="compare">
+        <div class="cbox bad">
+            <div class="chead"> Erreur fréquente</div>
+            <pre style="padding:12px;font-family:var(--mono);font-size:.78rem;line-height:1.8;color:#c0392b;background:var(--red-light);"><code>INSERT INTO client
+VALUES ('Dupont', 'Alice');
+<span style="font-size:.7rem;color:#888;">← sans préciser les colonnes
+→ MariaDB attend TOUTES les colonnes
+dans l'ordre exact du CREATE TABLE</span></code></pre>
+        </div>
+        <div class="cbox good">
+            <div class="chead"> Bonne pratique</div>
+            <pre style="padding:12px;font-family:var(--mono);font-size:.78rem;line-height:1.8;color:#1a8a3c;background:var(--green-light);"><code>INSERT INTO client (nom, prenom, email)
+VALUES ('Dupont', 'Alice', 'a@b.fr');
+<span style="font-size:.7rem;color:#888;">← toujours nommer les colonnes
+→ plus lisible, plus sûr</span></code></pre>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 07 SELECT ── -->
+<section class="section" id="select">
+    <div class="section-badge">07 — READ</div>
+    <h2>SELECT — Lire les données</h2>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <div style="background:var(--accent-light);border:2px solid #b3cfee;border-radius:8px;padding:8px 16px;font-family:var(--mono);font-weight:900;font-size:1.1rem;color:var(--accent);">R</div>
+        <div style="font-size:.9rem;color:var(--muted);"><strong style="color:var(--text);">READ</strong> → SELECT … FROM … WHERE …</div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">SELECT — du basique au filtré</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Tout sélectionner (éviter en production)</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">client</span>;
+
+<span class="cmt">-- Sélectionner des colonnes précises</span>
+<span class="kw">SELECT</span> <span class="vr">nom</span>, <span class="vr">prenom</span>, <span class="vr">email</span> <span class="kw">FROM</span> <span class="fn">client</span>;
+
+<span class="cmt">-- Filtrer avec WHERE</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">client</span>
+<span class="hl"><span class="kw">WHERE</span> <span class="vr">nom</span> = <span class="str">'Dupont'</span>;</span>
+
+<span class="cmt">-- Plusieurs conditions</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">produit</span>
+<span class="kw">WHERE</span> <span class="vr">prix</span> &lt; <span class="num">100</span> <span class="kw">AND</span> <span class="vr">stock</span> &gt; <span class="num">0</span>;
+
+<span class="cmt">-- Trier les résultats</span>
+<span class="kw">SELECT</span> <span class="vr">nom</span>, <span class="vr">prix</span> <span class="kw">FROM</span> <span class="fn">produit</span>
+<span class="kw">ORDER BY</span> <span class="vr">prix</span> <span class="kw">ASC</span>;    <span class="cmt">-- ASC = croissant, DESC = décroissant</span>
+
+<span class="cmt">-- Limiter le nombre de résultats</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">produit</span>
+<span class="kw">ORDER BY</span> <span class="vr">prix</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">5</span>;   <span class="cmt">-- les 5 produits les plus chers</span></code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">WHERE — opérateurs de filtrage</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Égalité / différence</span>
+<span class="kw">WHERE</span> <span class="vr">statut</span> = <span class="str">'validee'</span>
+<span class="kw">WHERE</span> <span class="vr">statut</span> != <span class="str">'livree'</span>
+
+<span class="cmt">-- Comparaisons numériques</span>
+<span class="kw">WHERE</span> <span class="vr">prix</span> &gt;= <span class="num">50</span> <span class="kw">AND</span> <span class="vr">prix</span> &lt;= <span class="num">200</span>
+<span class="kw">WHERE</span> <span class="vr">prix</span> <span class="kw">BETWEEN</span> <span class="num">50</span> <span class="kw">AND</span> <span class="num">200</span>    <span class="cmt">← équivalent, plus lisible</span>
+
+<span class="cmt">-- Recherche dans une liste</span>
+<span class="kw">WHERE</span> <span class="vr">statut</span> <span class="kw">IN</span> (<span class="str">'validee'</span>, <span class="str">'expediee'</span>)
+
+<span class="cmt">-- Recherche textuelle (% = n'importe quoi)</span>
+<span class="hl"><span class="kw">WHERE</span> <span class="vr">nom</span> <span class="kw">LIKE</span> <span class="str">'%sony%'</span>      <span class="cmt">← contient "sony"</span></span>
+<span class="kw">WHERE</span> <span class="vr">email</span> <span class="kw">LIKE</span> <span class="str">'%@gmail.com'</span> <span class="cmt">← se termine par @gmail.com</span>
+
+<span class="cmt">-- Valeur nulle</span>
+<span class="kw">WHERE</span> <span class="vr">telephone</span> <span class="kw">IS NULL</span>
+<span class="kw">WHERE</span> <span class="vr">telephone</span> <span class="kw">IS NOT NULL</span></code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Fonctions d'agrégation</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Compter les lignes</span>
+<span class="kw">SELECT COUNT</span>(*) <span class="kw">FROM</span> <span class="fn">client</span>;
+<span class="kw">SELECT COUNT</span>(*) <span class="kw">FROM</span> <span class="fn">produit</span> <span class="kw">WHERE</span> <span class="vr">stock</span> = <span class="num">0</span>;
+
+<span class="cmt">-- Min, Max, Moyenne, Somme</span>
+<span class="kw">SELECT</span>
+    <span class="fn">MIN</span>(<span class="vr">prix</span>)  <span class="kw">AS</span> <span class="vr">prix_minimum</span>,
+    <span class="fn">MAX</span>(<span class="vr">prix</span>)  <span class="kw">AS</span> <span class="vr">prix_maximum</span>,
+    <span class="fn">AVG</span>(<span class="vr">prix</span>)  <span class="kw">AS</span> <span class="vr">prix_moyen</span>,
+    <span class="fn">SUM</span>(<span class="vr">stock</span>) <span class="kw">AS</span> <span class="vr">stock_total</span>
+<span class="kw">FROM</span> <span class="fn">produit</span>;
+
+<span class="cmt">-- Grouper par catégorie</span>
+<span class="kw">SELECT</span> <span class="vr">id_categorie</span>, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> <span class="vr">nb_produits</span>
+<span class="kw">FROM</span> <span class="fn">produit</span>
+<span class="kw">GROUP BY</span> <span class="vr">id_categorie</span>;</code></pre>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 08 UPDATE ── -->
+<section class="section" id="update">
+    <div class="section-badge">08 — UPDATE</div>
+    <h2>UPDATE — Modifier des données</h2>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <div style="background:var(--yellow-light);border:2px solid #e8d090;border-radius:8px;padding:8px 16px;font-family:var(--mono);font-weight:900;font-size:1.1rem;color:var(--yellow);">U</div>
+        <div style="font-size:.9rem;color:var(--muted);"><strong style="color:var(--text);">UPDATE</strong> → UPDATE … SET … WHERE …</div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">UPDATE — modifier des lignes</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Modifier un seul champ</span>
+<span class="kw">UPDATE</span> <span class="fn">client</span>
+<span class="kw">SET</span> <span class="vr">email</span> = <span class="str">'nouvelle@adresse.com'</span>
+<span class="hl"><span class="kw">WHERE</span> <span class="vr">id_client</span> = <span class="num">1</span>;</span>
+
+<span class="cmt">-- Modifier plusieurs champs à la fois</span>
+<span class="kw">UPDATE</span> <span class="fn">produit</span>
+<span class="kw">SET</span>
+    <span class="vr">prix</span>  = <span class="num">249.99</span>,
+    <span class="vr">stock</span> = <span class="vr">stock</span> - <span class="num">1</span>    <span class="cmt">← décrémenter le stock</span>
+<span class="kw">WHERE</span> <span class="vr">id_produit</span> = <span class="num">3</span>;
+
+<span class="cmt">-- Modifier plusieurs lignes en une seule requête</span>
+<span class="kw">UPDATE</span> <span class="fn">commande</span>
+<span class="kw">SET</span> <span class="vr">statut</span> = <span class="str">'expediee'</span>
+<span class="kw">WHERE</span> <span class="vr">statut</span> = <span class="str">'validee'</span>
+  <span class="kw">AND</span> <span class="vr">date_commande</span> &lt; <span class="str">'2025-01-01'</span>;</code></pre>
+    </div>
+
+    <div class="callout warn">
+        <span class="ci"></span>
+        <div><strong>TOUJOURS mettre un WHERE !</strong> Un UPDATE sans WHERE modifie <strong>toutes les lignes</strong> de la table. C'est l'une des erreurs les plus catastrophiques en SQL. Avant d'exécuter, vérifier avec un SELECT la condition.</div>
+    </div>
+
+    <div class="compare">
+        <div class="cbox bad">
+            <div class="chead"> DANGER — sans WHERE</div>
+            <pre style="padding:12px;font-family:var(--mono);font-size:.78rem;line-height:1.8;color:#c0392b;background:var(--red-light);"><code>UPDATE client
+SET email = 'hacker@evil.com';
+↳ TOUS les clients ont maintenant
+  la même adresse email !</code></pre>
+        </div>
+        <div class="cbox good">
+            <div class="chead">Correct — avec WHERE</div>
+            <pre style="padding:12px;font-family:var(--mono);font-size:.78rem;line-height:1.8;color:#1a8a3c;background:var(--green-light);"><code>UPDATE client
+SET email = 'alice@new.fr'
+WHERE id_client = 1;
+↳ Seul le client n°1 est modifié</code></pre>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 09 DELETE ── -->
+<section class="section" id="delete">
+    <div class="section-badge">09 — DELETE</div>
+    <h2>DELETE — Supprimer des données</h2>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <div style="background:var(--red-light);border:2px solid #f0c0bd;border-radius:8px;padding:8px 16px;font-family:var(--mono);font-weight:900;font-size:1.1rem;color:var(--red);">D</div>
+        <div style="font-size:.9rem;color:var(--muted);"><strong style="color:var(--text);">DELETE</strong> → DELETE FROM … WHERE …</div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">DELETE — supprimer des lignes</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Supprimer un enregistrement précis</span>
+<span class="kw">DELETE FROM</span> <span class="fn">client</span>
+<span class="hl"><span class="kw">WHERE</span> <span class="vr">id_client</span> = <span class="num">5</span>;</span>
+
+<span class="cmt">-- Supprimer selon une condition</span>
+<span class="kw">DELETE FROM</span> <span class="fn">produit</span>
+<span class="kw">WHERE</span> <span class="vr">stock</span> = <span class="num">0</span> <span class="kw">AND</span> <span class="vr">prix</span> &lt; <span class="num">10</span>;
+
+<span class="cmt">-- Vider toute la table (garder la structure)</span>
+<span class="kw">TRUNCATE TABLE</span> <span class="fn">produit</span>;   <span class="cmt">← remet aussi l'AUTO_INCREMENT à 1</span>
+
+<span class="cmt">-- Supprimer la table entièrement (structure + données)</span>
+<span class="kw">DROP TABLE IF EXISTS</span> <span class="fn">produit</span>;</code></pre>
+    </div>
+
+    <div class="callout warn">
+        <span class="ci"></span>
+        <div><strong>Même règle qu'UPDATE :</strong> un DELETE sans WHERE supprime toutes les lignes. Idem pour les clés étrangères — impossible de supprimer un client qui a des commandes (contrainte FK). Il faut supprimer les commandes d'abord.</div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow);">
+        <div style="font-family:var(--mono);font-size:.72rem;color:var(--dim);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;">Résumé CRUD</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">
+            <div style="text-align:center;padding:10px;background:var(--green-light);border-radius:8px;border:1px solid #a8d8b8;">
+                <div style="font-family:var(--mono);font-weight:900;color:var(--green);font-size:.9rem;">C — INSERT</div>
+                <div style="font-size:.75rem;color:var(--muted);margin-top:3px;">Ajouter des lignes</div>
+            </div>
+            <div style="text-align:center;padding:10px;background:var(--accent-light);border-radius:8px;border:1px solid #b3cfee;">
+                <div style="font-family:var(--mono);font-weight:900;color:var(--accent);font-size:.9rem;">R — SELECT</div>
+                <div style="font-size:.75rem;color:var(--muted);margin-top:3px;">Lire des lignes</div>
+            </div>
+            <div style="text-align:center;padding:10px;background:var(--yellow-light);border-radius:8px;border:1px solid #e8d090;">
+                <div style="font-family:var(--mono);font-weight:900;color:var(--yellow);font-size:.9rem;">U — UPDATE</div>
+                <div style="font-size:.75rem;color:var(--muted);margin-top:3px;">Modifier des lignes</div>
+            </div>
+            <div style="text-align:center;padding:10px;background:var(--red-light);border-radius:8px;border:1px solid #f0c0bd;">
+                <div style="font-family:var(--mono);font-weight:900;color:var(--red);font-size:.9rem;">D — DELETE</div>
+                <div style="font-size:.75rem;color:var(--muted);margin-top:3px;">Supprimer des lignes</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 10 JOINTURES ── -->
+<section class="section" id="jointures">
+    <div class="section-badge">10</div>
+    <h2>Jointures — lier plusieurs tables</h2>
+
+    <p class="prose">Dans une vraie base, les données sont réparties dans plusieurs tables. Les <strong>jointures</strong> permettent de les combiner dans une seule requête SELECT.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">INNER JOIN — le plus courant</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Afficher chaque commande avec le nom du client</span>
+<span class="kw">SELECT</span>
+    <span class="vr">c.id_commande</span>,
+    <span class="vr">c.date_commande</span>,
+    <span class="vr">c.statut</span>,
+    <span class="hl"><span class="vr">cl.nom</span><span class="kw">AS</span> <span class="vr">nom_client</span>,</span>
+    <span class="hl"><span class="vr">cl.email</span><span class="kw">AS</span> <span class="vr">email_client</span></span>
+<span class="kw">FROM</span> <span class="fn">commande</span> <span class="vr">c</span>
+<span class="hl"><span class="kw">INNER JOIN</span> <span class="fn">client</span> <span class="vr">cl</span> <span class="kw">ON</span> <span class="vr">c</span>.<span class="vr">id_client</span> = <span class="vr">cl</span>.<span class="vr">id_client</span></span>
+<span class="kw">WHERE</span> <span class="vr">c</span>.<span class="vr">statut</span> = <span class="str">'en_attente'</span>;</code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">JOIN sur 3 tables — commande + produits + client</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="kw">SELECT</span>
+    <span class="vr">cl.nom</span><span class="kw">AS</span> <span class="vr">client</span>,
+    <span class="vr">co.date_commande</span>,
+    <span class="vr">p.nom</span><span class="kw">AS</span> <span class="vr">produit</span>,
+    <span class="vr">cp.quantite</span>,
+    <span class="vr">p.prix</span><span class="kw">AS</span> <span class="vr">prix_unitaire</span>
+<span class="kw">FROM</span> <span class="fn">commande_produit</span> <span class="vr">cp</span>
+<span class="kw">INNER JOIN</span> <span class="fn">commande</span> <span class="vr">co</span> <span class="kw">ON</span> <span class="vr">cp</span>.<span class="vr">id_commande</span> = <span class="vr">co</span>.<span class="vr">id_commande</span>
+<span class="kw">INNER JOIN</span> <span class="fn">produit</span>  <span class="vr">p</span>  <span class="kw">ON</span> <span class="vr">cp</span>.<span class="vr">id_produit</span>  = <span class="vr">p</span>.<span class="vr">id_produit</span>
+<span class="kw">INNER JOIN</span> <span class="fn">client</span>   <span class="vr">cl</span> <span class="kw">ON</span> <span class="vr">co</span>.<span class="vr">id_client</span>   = <span class="vr">cl</span>.<span class="vr">id_client</span>
+<span class="kw">ORDER BY</span> <span class="vr">co</span>.<span class="vr">date_commande</span> <span class="kw">DESC</span>;</code></pre>
+    </div>
+
+    <div class="callout info">
+        <span class="ci"></span>
+        <div><strong>INNER JOIN vs LEFT JOIN :</strong> INNER JOIN retourne uniquement les lignes qui ont une correspondance dans les deux tables. LEFT JOIN retourne toutes les lignes de la table de gauche, même si aucune correspondance n'existe à droite (valeur NULL).</div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">LEFT JOIN — inclure les produits sans catégorie</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Tous les produits, même sans catégorie</span>
+<span class="kw">SELECT</span>
+    <span class="vr">p</span>.<span class="vr">nom</span><span class="kw">AS</span> <span class="vr">produit</span>,
+    <span class="vr">p</span>.<span class="vr">prix</span>,
+    <span class="hl"><span class="vr">cat</span>.<span class="vr">nom</span><span class="kw">AS</span> <span class="vr">categorie</span>   <span class="cmt">← NULL si pas de catégorie</span></span>
+<span class="kw">FROM</span> <span class="fn">produit</span> <span class="vr">p</span>
+<span class="hl"><span class="kw">LEFT JOIN</span> <span class="fn">categorie</span> <span class="vr">cat</span> <span class="kw">ON</span> <span class="vr">p</span>.<span class="vr">id_categorie</span> = <span class="vr">cat</span>.<span class="vr">id_categorie</span>;</span></code></pre>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 11 BONNES PRATIQUES ── -->
+<section class="section" id="bonnes-pratiques">
+    <div class="section-badge">11</div>
+    <h2>Bonnes pratiques</h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:16px;">
+
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);">
+            <div style="background:var(--green-light);border-bottom:1px solid #a8d8b8;padding:11px 16px;font-weight:700;font-size:.88rem;color:var(--green);">Nommage des tables</div>
+            <div style="padding:14px;font-size:.84rem;color:var(--muted);line-height:1.75;">
+                Toujours en <strong style="color:var(--text);">minuscules</strong> avec <strong style="color:var(--text);">underscores</strong>.<br>
+                Noms au <strong style="color:var(--text);">singulier</strong> : <code style="font-family:var(--mono);font-size:.77rem;">client</code> pas <code style="font-family:var(--mono);font-size:.77rem;">clients</code>.<br>
+                Préfixer les FK : <code style="font-family:var(--mono);font-size:.77rem;">id_client</code>.
+            </div>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);">
+            <div style="background:var(--accent-light);border-bottom:1px solid #b3cfee;padding:11px 16px;font-weight:700;font-size:.88rem;color:var(--accent);">Toujours un WHERE</div>
+            <div style="padding:14px;font-size:.84rem;color:var(--muted);line-height:1.75;">
+                Pour UPDATE et DELETE, <strong style="color:var(--text);">toujours vérifier avec un SELECT</strong> avant d'exécuter.<br>
+                Utiliser l'<strong style="color:var(--text);">id</strong> comme critère de préférence.
+            </div>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);">
+            <div style="background:var(--yellow-light);border-bottom:1px solid #e8d090;padding:11px 16px;font-weight:700;font-size:.88rem;color:var(--yellow);">Ordre de création</div>
+            <div style="padding:14px;font-size:.84rem;color:var(--muted);line-height:1.75;">
+                Créer les tables <strong style="color:var(--text);">référencées en premier</strong>.<br>
+                <code style="font-family:var(--mono);font-size:.77rem;">categorie</code> avant <code style="font-family:var(--mono);font-size:.77rem;">produit</code>.<br>
+                <code style="font-family:var(--mono);font-size:.77rem;">client</code> avant <code style="font-family:var(--mono);font-size:.77rem;">commande</code>.
+            </div>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);">
+            <div style="background:var(--purple-light);border-bottom:1px solid #ccb8e8;padding:11px 16px;font-weight:700;font-size:.88rem;color:var(--purple);">Commentaires SQL</div>
+            <div style="padding:14px;font-size:.84rem;color:var(--muted);line-height:1.75;">
+                <code style="font-family:var(--mono);font-size:.77rem;">-- commentaire sur une ligne</code><br>
+                <code style="font-family:var(--mono);font-size:.77rem;">/* commentaire<br>&nbsp;&nbsp;multi-lignes */</code><br>
+                Documenter les requêtes complexes.
+            </div>
+        </div>
+
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Script complet — ordre d'exécution recommandé</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- 1. Créer la base</span>
+<span class="kw">CREATE DATABASE IF NOT EXISTS</span> <span class="fn">boutique_db</span> <span class="kw">CHARACTER SET</span> utf8mb4;
+<span class="kw">USE</span> <span class="fn">boutique_db</span>;
+
+<span class="cmt">-- 2. Tables sans FK (référencées)</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">client</span> ( ... );
+<span class="kw">CREATE TABLE</span> <span class="fn">categorie</span> ( ... );
+
+<span class="cmt">-- 3. Tables avec FK</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">produit</span> ( ... <span class="kw">FOREIGN KEY</span> ... );
+<span class="kw">CREATE TABLE</span> <span class="fn">commande</span> ( ... <span class="kw">FOREIGN KEY</span> ... );
+
+<span class="cmt">-- 4. Tables intermédiaires N,N</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">commande_produit</span> ( ... );
+
+<span class="cmt">-- 5. Données de test</span>
+<span class="kw">INSERT INTO</span> <span class="fn">categorie</span> ...;
+<span class="kw">INSERT INTO</span> <span class="fn">client</span> ...;
+<span class="kw">INSERT INTO</span> <span class="fn">produit</span> ...;
+<span class="kw">INSERT INTO</span> <span class="fn">commande</span> ...;</code></pre>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── QUIZ ── -->
+<section class="section" id="quiz">
+    <div class="section-badge">12</div>
+    <h2>Quiz — Vérifie ta compréhension</h2>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q1.</span> Quelle commande permet de sélectionner une base de données avant de travailler dedans ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q1',false)">SELECT DATABASE boutique_db;</button>
+            <button class="opt" onclick="ans(this,'q1',true)">USE boutique_db;</button>
+            <button class="opt" onclick="ans(this,'q1',false)">CONNECT TO boutique_db;</button>
+        </div>
+        <div class="fb" id="fb-q1"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q2.</span> Je veux modifier l'email du client dont l'id est 3. Quelle requête est correcte ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q2',false)">UPDATE client SET email = 'new@mail.fr';</button>
+            <button class="opt" onclick="ans(this,'q2',true)">UPDATE client SET email = 'new@mail.fr' WHERE id_client = 3;</button>
+            <button class="opt" onclick="ans(this,'q2',false)">MODIFY client SET email = 'new@mail.fr' WHERE id_client = 3;</button>
+        </div>
+        <div class="fb" id="fb-q2"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q3.</span> Quelle est la différence entre <code>DELETE FROM produit</code> et <code>TRUNCATE TABLE produit</code> ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q3',false)">Il n'y a aucune différence, les deux font la même chose</button>
+            <button class="opt" onclick="ans(this,'q3',true)">DELETE peut utiliser un WHERE pour cibler des lignes. TRUNCATE vide toute la table et remet l'AUTO_INCREMENT à 1</button>
+            <button class="opt" onclick="ans(this,'q3',false)">TRUNCATE supprime aussi la structure de la table</button>
+        </div>
+        <div class="fb" id="fb-q3"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q4.</span> Je veux les produits dont le nom contient "casque". Quelle clause WHERE utiliser ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q4',false)">WHERE nom = 'casque'</button>
+            <button class="opt" onclick="ans(this,'q4',false)">WHERE nom CONTAINS 'casque'</button>
+            <button class="opt" onclick="ans(this,'q4',true)">WHERE nom LIKE '%casque%'</button>
+        </div>
+        <div class="fb" id="fb-q4"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q5.</span> Pourquoi un INNER JOIN retourne moins de lignes qu'un LEFT JOIN ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q5',false)">INNER JOIN est plus rapide donc il saute des lignes</button>
+            <button class="opt" onclick="ans(this,'q5',true)">INNER JOIN ne retourne que les lignes avec correspondance dans les deux tables. LEFT JOIN inclut aussi les lignes sans correspondance (NULL à droite)</button>
+            <button class="opt" onclick="ans(this,'q5',false)">LEFT JOIN duplique les lignes, c'est pourquoi il en retourne plus</button>
+        </div>
+        <div class="fb" id="fb-q5"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q6.</span> Pourquoi faut-il créer la table <code>client</code> avant la table <code>commande</code> ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q6',false)">Par ordre alphabétique des tables</button>
+            <button class="opt" onclick="ans(this,'q6',true)">Parce que commande contient une FOREIGN KEY vers client — la table référencée doit exister avant</button>
+            <button class="opt" onclick="ans(this,'q6',false)">MariaDB crée toujours les tables dans l'ordre alphabétique de toute façon</button>
+        </div>
+        <div class="fb" id="fb-q6"></div>
+    </div>
+
+    <div id="score-box" style="display:none;text-align:center;padding:28px;background:var(--card);border:1px solid #b3cfee;border-radius:12px;margin-top:12px;box-shadow:var(--shadow);">
+        <div id="s-emoji" style="font-size:2.5rem;margin-bottom:10px;"></div>
+        <div id="s-text" style="font-family:var(--mono);font-size:.95rem;color:var(--text);"></div>
+    </div>
+</section>
+
+</main>
+</div>
+
+<script>
+// ── Hamburger menu ──
+const hamburger = document.getElementById('hamburger')
+const sidebar = document.getElementById('sidebar')
+const overlay = document.getElementById('overlay')
+hamburger.addEventListener('click', () => {
+    sidebar.classList.toggle('open')
+    overlay.classList.toggle('open')
+})
+overlay.addEventListener('click', () => {
+    sidebar.classList.remove('open')
+    overlay.classList.remove('open')
+})
+
+// ── Nav scroll spy ──
+const sections = document.querySelectorAll('.section[id]')
+const navLinks = document.querySelectorAll('.nav-link')
+const obs = new IntersectionObserver(e => {
+    e.forEach(en => {
+        if (en.isIntersecting) {
+            navLinks.forEach(l => l.classList.remove('active'))
+            const l = document.querySelector(`.nav-link[href="#${en.target.id}"]`)
+            if (l) l.classList.add('active')
+        }
+    })
+}, { threshold: 0.2 })
+sections.forEach(s => obs.observe(s))
+
+// Fermer sidebar au clic sur un lien (mobile)
+navLinks.forEach(l => l.addEventListener('click', () => {
+    sidebar.classList.remove('open')
+    overlay.classList.remove('open')
+}))
+
+// ── Copy ──
+function cp(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre')
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = '✓'; btn.classList.add('ok')
+        setTimeout(() => { btn.textContent = 'copier'; btn.classList.remove('ok') }, 1800)
+    })
+}
+
+// ── Quiz ──
+const fbs = {
+    q1:{ ok:'Exact ! USE sélectionne la base active. Toutes les requêtes suivantes s\'appliquent à cette base. Sans USE, il faut préfixer : SELECT * FROM boutique_db.client', ko:'Non. La commande est USE boutique_db; — elle "entre" dans la base pour travailler dedans.' },
+    q2:{ ok:'Parfait ! Toujours préciser WHERE avec l\'id pour cibler exactement la ligne voulue. Sans WHERE, tous les clients auraient le même email.', ko:'Non. La syntaxe est UPDATE table SET colonne = valeur WHERE condition. Et sans WHERE, on modifie TOUTES les lignes !' },
+    q3:{ ok:'Exact ! DELETE peut cibler des lignes avec WHERE. TRUNCATE vide tout d\'un coup et remet le compteur AUTO_INCREMENT à 1. DROP TABLE, lui, supprime aussi la structure.', ko:'Non. DELETE peut utiliser WHERE pour supprimer des lignes précises. TRUNCATE vide toute la table ET remet l\'AUTO_INCREMENT à 1. DROP TABLE supprime la structure elle-même.' },
+    q4:{ ok:'Parfait ! LIKE avec % permet la recherche partielle. % remplace n\'importe quelle suite de caractères. %casque% = contient "casque" n\'importe où dans le nom.', ko:'Non. Pour une recherche partielle on utilise LIKE avec %. WHERE nom = \'casque\' cherche l\'égalité exacte. LIKE \'%casque%\' cherche les noms qui contiennent "casque".' },
+    q5:{ ok:'Exact ! INNER JOIN = intersection des deux tables : seulement les lignes avec correspondance. LEFT JOIN = toutes les lignes de gauche + correspondances de droite (NULL si pas de correspondance).', ko:'Non. INNER JOIN ne retourne QUE les lignes qui ont une correspondance dans les deux tables. LEFT JOIN inclut toutes les lignes de la table gauche, avec NULL quand il n\'y a pas de correspondance à droite.' },
+    q6:{ ok:'Parfait ! La contrainte FOREIGN KEY dans commande pointe vers client. Si client n\'existe pas encore, MariaDB retourne une erreur à l\'exécution du CREATE TABLE commande.', ko:'Non. C\'est une contrainte technique : commande a une FOREIGN KEY (id_client) REFERENCES client. Si client n\'existe pas encore, le CREATE TABLE commande échoue avec une erreur.' },
+}
+const rep = {}
+function ans(btn, qid, ok) {
+    if (rep[qid] !== undefined) return
+    rep[qid] = ok
+    btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => o.disabled = true)
+    btn.classList.add(ok ? 'correct' : 'wrong')
+    if (!ok) btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => { if (o.onclick?.toString().includes(',true)')) o.classList.add('correct') })
+    const fb = document.getElementById('fb-' + qid)
+    fb.innerHTML = fbs[qid][ok ? 'ok' : 'ko']
+    fb.className = 'fb show ' + (ok ? 'ok' : 'ko')
+    if (Object.keys(rep).length === 6) {
+        const g = Object.values(rep).filter(Boolean).length
+        const box = document.getElementById('score-box')
+        box.style.display = 'block'
+        document.getElementById('s-emoji').textContent = ['','','','','','',''][g]
+        document.getElementById('s-text').innerHTML = `Score : <strong style="color:var(--green)">${g}/6</strong> — ${g===6?'Tu maîtrises MariaDB 🚀':g>=4?'Très bien ! Relis les parties ratées.':g>=3?'Bien, reprends les jointures et le WHERE.':'Reprends depuis les bases '}`
+        box.scrollIntoView({ behavior:'smooth', block:'center' })
+    }
+}
+</script>
+</body>
+</html>

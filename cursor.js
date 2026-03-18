@@ -4,7 +4,7 @@
 
     /* Taille écran  */
     const isMobile = window.innerWidth < 768;
-   const W = isMobile ? 35 : 80;
+   const W = isMobile ? 35 : 25;
 const H = isMobile ? 47 : 75;
     const offsetX = isMobile ? 12 : 20;
     const offsetY = isMobile ? -42 : -70;
@@ -19,12 +19,12 @@ const H = isMobile ? 47 : 75;
             position: fixed;
             width: ${dotSize}px;
             height: ${dotSize}px;
-            background: #44D62C;
+            background: #fa05ea;
             border-radius: 50%;
             pointer-events: none;
             z-index: 99999;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 8px #44D62C;
+            
         }
 
         #sakura-cursor {

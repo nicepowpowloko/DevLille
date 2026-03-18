@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>useContext - React Avancé</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --real: #A0866B;
+            --conseil: #2C3F77;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        header {
+            background: linear-gradient(135deg, #20232a 0%, #2E75B6 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(97,218,251,0.08) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        header h1 { font-size: 2.8em; margin-bottom: 15px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        header h1 span { color: #61dafb; }
+        header .subtitle { font-size: 1.3em; margin-bottom: 10px; opacity: 0.9; position: relative; }
+        header .author   { font-size: 1.05em; font-style: italic; opacity: 0.7; position: relative; }
+
+        .react-logo { font-size: 3em; color: #61dafb; margin-bottom: 15px; display: block; position: relative; }
+
+        /* Burger */
+        .burger-menu {
+            display: none;
+            background-color: #20232a;
+            padding: 15px 20px;
+            cursor: pointer;
+            position: sticky;
+            top: 0;
+            z-index: 101;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .burger-text { color: #61dafb; font-size: 1em; font-weight: bold; }
+        .burger-icon { display: flex; flex-direction: column; gap: 5px; width: 30px; }
+        .burger-icon span { width: 100%; height: 3px; background-color: #61dafb; transition: 0.3s; display: block; }
+        .burger-menu.active .burger-icon span:nth-child(1) { transform: rotate(45deg) translate(8px, 8px); }
+        .burger-menu.active .burger-icon span:nth-child(2) { opacity: 0; }
+        .burger-menu.active .burger-icon span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+
+        .nav-menu { background-color: #20232a; padding: 14px 40px; position: sticky; top: 0; z-index: 100; }
+        .nav-menu a { color: #abb2bf; text-decoration: none; margin-right: 18px; font-size: 0.88em; transition: color 0.3s; }
+        .nav-menu a:hover { color: var(--real); border-bottom: #61dafb 2px solid; font-weight: bolder; }
+
+        .content { padding: 40px; }
+
+        h2 { color: var(--real); font-size: 1.9em; margin-top: 40px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #61dafb; }
+        h3 { color: var(--conseil); font-size: 1.35em; margin-top: 30px; margin-bottom: 15px; }
+        h4 { color: #404040; font-size: 1.1em; margin-top: 20px; margin-bottom: 10px; }
+        p  { margin-bottom: 15px; }
+
+        .highlight { background-color: #e8f8fd; border: 1px solid #61dafb; padding: 2px 7px; border-radius: 4px; font-weight: bold; color: #20232a; }
+
+        code { font-family: 'Courier New', monospace; background-color: #282c34; color: #61dafb; padding: 2px 7px; border-radius: 4px; font-size: 0.92em; }
+
+        .code-block { background-color: #282c34; border-left: 4px solid #61dafb; padding: 22px; margin: 20px 0; border-radius: 6px; overflow-x: auto; position: relative; }
+        .code-block .code-label { position: absolute; top: 8px; right: 12px; background-color: #61dafb; color: #20232a; font-size: 0.75em; font-weight: bold; padding: 2px 8px; border-radius: 4px; }
+        .code-block pre { font-family: 'Courier New', monospace; font-size: 0.93em; line-height: 1.7; color: #abb2bf; white-space: pre; }
+
+        /* Syntax colors */
+        .c-comment  { color: #5c6370; font-style: italic; }
+        .c-keyword  { color: #c678dd; }
+        .c-function { color: #61afef; }
+        .c-string   { color: #98c379; }
+        .c-tag      { color: #e06c75; }
+        .c-attr     { color: #d19a66; }
+        .c-value    { color: #98c379; }
+        .c-jsx      { color: #abb2bf; }
+        .c-number   { color: #d19a66; }
+        .c-context  { color: #e5c07b; }
+
+        .info-box    { background-color: #e8f8fd; border-left: 4px solid #61dafb; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+        .warning-box { background-color: #fff8e6; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+        .success-box { background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+        .error-box   { background-color: #f8d7da; border-left: 4px solid #dc3545; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+
+        ul { margin: 12px 0 12px 35px; }
+        li { margin-bottom: 9px; }
+
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table thead, table tbody { display: table; width: 100%; }
+        table th { background-color: #20232a; color: #61dafb; padding: 13px 15px; text-align: left; white-space: nowrap; }
+        table td { padding: 11px 15px; border: 1px solid #ddd; white-space: nowrap; }
+        table tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .diagram { background-color: white; border: 2px solid #61dafb; border-radius: 8px; margin: 25px 0; overflow: hidden; }
+        .diagram-header { background-color: #20232a; color: #61dafb; padding: 14px 20px; font-weight: bold; text-align: center; }
+        .diagram-step { padding: 13px 20px; border-bottom: 1px solid #e8f8fd; }
+        .diagram-step:last-child { border-bottom: none; }
+        .diagram-step:nth-child(even) { background-color: #f9fdff; }
+        .step-label { color: #2E75B6; font-weight: bold; margin-right: 8px; }
+
+        .step-box { background-color: #f9fdff; border: 1px solid #bee8f8; border-radius: 8px; padding: 18px 20px; margin: 15px 0; }
+        .step-box h4 { color: var(--real); margin-top: 0; margin-bottom: 12px; }
+
+        .step-number { display: inline-flex; align-items: center; justify-content: center; background-color: #61dafb; color: #20232a; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; margin-right: 10px; flex-shrink: 0; }
+
+        .hook-card { background-color: #f9fdff; border: 2px solid #61dafb; border-radius: 8px; margin: 20px 0; overflow: hidden; }
+        .hook-title { background-color: #20232a; color: #61dafb; padding: 12px 20px; font-weight: bold; font-size: 1em; }
+        .hook-body { padding: 20px; }
+
+        .page-break { margin-top: 60px; padding-top: 40px; border-top: 2px solid #e8f8fd; }
+
+        .exercise { background-color: #f0f9ff; border: 2px solid #61dafb; border-radius: 8px; padding: 20px; margin: 25px 0; }
+        .exercise h4 { color: #20232a; margin-top: 0; }
+
+        .concept-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 25px 0; }
+        .concept-card { background-color: #20232a; border-radius: 8px; padding: 20px; color: white; text-align: center; }
+        .concept-card .icon { font-size: 1.5em; color: #61dafb; font-weight: bold; margin-bottom: 10px; }
+        .concept-card h4 { color: #61dafb; margin: 0 0 8px 0; }
+        .concept-card p  { font-size: 0.88em; color: #abb2bf; margin: 0; text-align: center; }
+
+        .comparison-table { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 25px 0; }
+        .comparison-column { border: 2px solid #ddd; border-radius: 8px; overflow: hidden; }
+        .comparison-header { padding: 13px 15px; color: white; text-align: center; font-weight: bold; }
+        .comparison-header.props   { background-color: #e34c26; }
+        .comparison-header.context { background-color: #20232a; color: #61dafb; }
+        .comparison-content { padding: 18px; background-color: #282c34; }
+
+        .result-preview { background-color: white; border: 2px solid #ddd; border-radius: 8px; padding: 20px; margin: 15px 0; }
+        .result-preview .preview-label { background-color: #e8f8fd; border: 1px solid #61dafb; border-radius: 4px; padding: 4px 10px; font-size: 0.8em; font-weight: bold; color: #20232a; display: inline-block; margin-bottom: 12px; }
+
+        /* Thème demo */
+        .demo-clair  { background: #f9f9f9; color: #222; border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin: 8px 0; }
+        .demo-sombre { background: #20232a; color: #abb2bf; border: 1px solid #444; border-radius: 8px; padding: 16px; margin: 8px 0; }
+        .demo-btn    { display: inline-block; padding: 6px 14px; border-radius: 5px; font-size: 0.9em; margin: 4px 6px 4px 0; cursor: pointer; border: none; font-weight: bold; }
+        .demo-btn-clair  { background: #61dafb; color: #20232a; }
+        .demo-btn-sombre { background: #444; color: #61dafb; }
+
+        @media print {
+            .nav-menu, .burger-menu { display: none; }
+            body { background-color: white; }
+            .container { box-shadow: none; }
+        }
+
+        @media (max-width: 900px) {
+            .concept-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 40px 20px; }
+            header h1 { font-size: 1.8em; }
+            .burger-menu { display: flex; }
+            .nav-menu { display: none; padding: 0; max-height: 0; overflow: hidden; }
+            .nav-menu.active { display: block; max-height: 700px; padding: 10px 0; }
+            .nav-menu a { display: block; margin: 0; padding: 12px 20px; border-bottom: 1px solid #333; }
+            .nav-menu a:hover { background-color: #333; }
+            .content { padding: 20px 15px; }
+            h2 { font-size: 1.45em; }
+            h3 { font-size: 1.15em; }
+            .comparison-table { grid-template-columns: 1fr; }
+            .concept-grid { grid-template-columns: 1fr; }
+            .code-block { font-size: 0.82em; padding: 15px; }
+        }
+
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.4em; }
+            .content { padding: 15px 10px; }
+            h2 { font-size: 1.3em; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <span class="react-logo">&#9883;</span>
+        <h1>React — <span>useContext</span></h1>
+        <p class="subtitle">Partager des données sans prop drilling</p>
+        <p class="author">Real Conseil — Formation DWWM</p>
+    </header>
+
+    <div class="burger-menu" onclick="toggleMenu()">
+        <span class="burger-text">Menu useContext</span>
+        <div class="burger-icon"><span></span><span></span><span></span></div>
+    </div>
+
+    <nav class="nav-menu" id="navMenu">
+        <a href="#section1" onclick="closeMenu()">Le problème</a>
+        <a href="#section2" onclick="closeMenu()">Concept</a>
+        <a href="#section3" onclick="closeMenu()">Les 3 étapes</a>
+        <a href="#section4" onclick="closeMenu()">Thème jour/nuit</a>
+        <a href="#section5" onclick="closeMenu()">Utilisateur global</a>
+        <a href="#section6" onclick="closeMenu()">Panier</a>
+        <a href="#section7" onclick="closeMenu()">Bonnes pratiques</a>
+        <a href="#section8" onclick="closeMenu()">Props vs Context</a>
+        <a href="#section9" onclick="closeMenu()">Exercices</a>
+        <a href="#section10" onclick="closeMenu()">Projet</a>
+    </nav>
+
+    <div class="content">
+
+        <!-- SECTION 1 -->
+        <section id="section1">
+            <h2>1. Le problème — Prop Drilling</h2>
+
+            <p>Avec les <span class="highlight">props</span>, les données descendent toujours de parent vers enfant. C'est parfait pour des composants proches. Mais quand la donnée doit traverser 3, 4 ou 5 niveaux de composants, on se retrouve à passer les mêmes props partout — même dans les composants qui n'en ont pas besoin. Ce phénomène s'appelle le <strong>prop drilling</strong>.</p>
+
+            <div class="error-box">
+                <strong>Le prop drilling en action :</strong><br>
+                App possède <code>utilisateur</code>. Seul <code>ProfilBouton</code> (5 niveaux plus bas) en a besoin. On est obligé de passer la prop à travers tous les composants intermédiaires, même s'ils ne l'utilisent pas.
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">Le problème</div>
+                <pre><span class="c-comment">// App.jsx — la donnée "utilisateur" vit ici</span>
+<span class="c-keyword">function</span> <span class="c-function">App</span>() {
+  <span class="c-keyword">const</span> [utilisateur] = <span class="c-function">useState</span>({ nom: <span class="c-string">'Thomas'</span>, role: <span class="c-string">'admin'</span> });
+
+  <span class="c-keyword">return</span> <span class="c-tag">&lt;Page</span> <span class="c-attr">utilisateur</span>=<span class="c-value">{utilisateur}</span> <span class="c-tag">/&gt;</span>;
+}
+
+<span class="c-comment">// Page.jsx — passe la prop sans l'utiliser</span>
+<span class="c-keyword">function</span> <span class="c-function">Page</span>({ utilisateur }) {
+  <span class="c-keyword">return</span> <span class="c-tag">&lt;Header</span> <span class="c-attr">utilisateur</span>=<span class="c-value">{utilisateur}</span> <span class="c-tag">/&gt;</span>;
+}
+
+<span class="c-comment">// Header.jsx — passe la prop sans l'utiliser</span>
+<span class="c-keyword">function</span> <span class="c-function">Header</span>({ utilisateur }) {
+  <span class="c-keyword">return</span> <span class="c-tag">&lt;NavBar</span> <span class="c-attr">utilisateur</span>=<span class="c-value">{utilisateur}</span> <span class="c-tag">/&gt;</span>;
+}
+
+<span class="c-comment">// NavBar.jsx — passe la prop sans l'utiliser</span>
+<span class="c-keyword">function</span> <span class="c-function">NavBar</span>({ utilisateur }) {
+  <span class="c-keyword">return</span> <span class="c-tag">&lt;ProfilBouton</span> <span class="c-attr">utilisateur</span>=<span class="c-value">{utilisateur}</span> <span class="c-tag">/&gt;</span>;
+}
+
+<span class="c-comment">// ProfilBouton.jsx — enfin ! C'est lui qui en avait besoin</span>
+<span class="c-keyword">function</span> <span class="c-function">ProfilBouton</span>({ utilisateur }) {
+  <span class="c-keyword">return</span> <span class="c-tag">&lt;button&gt;</span>{utilisateur.nom}<span class="c-tag">&lt;/button&gt;</span>;
+}</pre>
+            </div>
+
+            <div class="diagram">
+                <div class="diagram-header">Prop Drilling vs useContext</div>
+                <div class="diagram-step">
+                    <span class="step-label">Prop Drilling :</span>
+                    App → Page → Header → NavBar → ProfilBouton. La prop "utilisateur" traverse 4 composants inutilement.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Avec useContext :</span>
+                    App crée un contexte. ProfilBouton le lit directement. Les composants intermédiaires ne savent même pas que la donnée existe.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Analogie :</span>
+                    Les props, c'est passer un colis de main en main dans une chaîne humaine. Le Context, c'est Amazon : tu commandes directement, le colis arrive chez toi sans passer par tes voisins.
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SECTION 2 -->
+        <section id="section2" class="page-break">
+            <h2>2. Qu'est-ce que useContext ?</h2>
+
+            <p><span class="highlight">useContext</span> est un Hook React qui permet de partager des données à travers toute une arborescence de composants sans passer de props manuellement à chaque niveau. On parle de <strong>state global</strong> — une donnée accessible partout dans l'application.</p>
+
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="icon">{ }</div>
+                    <h4>createContext</h4>
+                    <p>Crée la boîte qui va contenir et distribuer la donnée. S'écrit une seule fois, souvent dans un fichier dédié.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="icon">&#9660;</div>
+                    <h4>Provider</h4>
+                    <p>Enveloppe les composants qui ont besoin de la donnée. Tout ce qui est à l'intérieur peut y accéder.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="icon">&#8627;</div>
+                    <h4>useContext</h4>
+                    <p>Le Hook qui permet à un composant de lire la valeur du contexte, peu importe sa profondeur dans l'arbre.</p>
+                </div>
+            </div>
+
+            <h3>2.1 Cas d'usage typiques</h3>
+
+            <div class="diagram">
+                <div class="diagram-header">Quand utiliser useContext ?</div>
+                <div class="diagram-step">
+                    <span class="step-label">Thème (clair / sombre) :</span>
+                    Le thème doit être accessible dans tous les composants, du bouton jusqu'à la page entière.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Utilisateur connecté :</span>
+                    Le nom, le rôle et l'avatar de l'utilisateur sont nécessaires dans la nav, le profil, le dashboard…
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Langue / i18n :</span>
+                    La langue choisie doit être connue de tous les composants qui affichent du texte.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Panier e-commerce :</span>
+                    Le contenu du panier est consulté depuis la nav (badge) et la page panier (liste).
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Notifications :</span>
+                    Un système de toast/alert accessible depuis n'importe quel composant.
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <strong>useContext n'est pas la solution à tout.</strong> Pour des données locales à un seul composant ou à une petite branche, les props restent la bonne approche. useContext brille quand la donnée est vraiment globale ou partagée entre des composants éloignés dans l'arbre.
+            </div>
+
+        </section>
+
+        <!-- SECTION 3 -->
+        <section id="section3" class="page-break">
+            <h2>3. Les 3 étapes — Mécanisme complet</h2>
+
+            <p>useContext fonctionne toujours en 3 étapes dans le même ordre. Apprendre ces 3 étapes, c'est maîtriser useContext à 90%.</p>
+
+            <div class="step-box">
+                <h4><span class="step-number">1</span>Créer le contexte — <code>createContext()</code></h4>
+                <p>On crée la boîte qui va contenir la donnée. Cette ligne s'écrit <strong>en dehors de tout composant</strong>, souvent dans un fichier dédié (ex. <code>ThemeContext.js</code>).</p>
+                <div class="code-block">
+                    <div class="code-label">ThemeContext.js</div>
+                    <pre><span class="c-keyword">import</span> { createContext } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-comment">// Crée le contexte avec une valeur par défaut (optionnel)</span>
+<span class="c-keyword">export const</span> <span class="c-context">ThemeContext</span> = <span class="c-function">createContext</span>(<span class="c-string">'clair'</span>);
+
+<span class="c-comment">// La valeur par défaut est utilisée si un composant
+// utilise useContext SANS être enveloppé par un Provider</span></pre>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <h4><span class="step-number">2</span>Fournir la valeur — <code>Provider</code></h4>
+                <p>On enveloppe les composants qui ont besoin de la donnée avec le <strong>Provider</strong>. Tous les composants à l'intérieur auront accès à la valeur fournie via <code>value={...}</code>.</p>
+                <div class="code-block">
+                    <div class="code-label">App.jsx</div>
+                    <pre><span class="c-keyword">import</span> { useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+<span class="c-keyword">import</span> { <span class="c-context">ThemeContext</span> } <span class="c-keyword">from</span> <span class="c-string">'./ThemeContext'</span>;
+<span class="c-keyword">import</span> Page <span class="c-keyword">from</span> <span class="c-string">'./Page'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">App</span>() {
+  <span class="c-keyword">const</span> [theme, setTheme] = <span class="c-function">useState</span>(<span class="c-string">'clair'</span>);
+
+  <span class="c-keyword">return</span> (
+    <span class="c-comment">{/* Tout ce qui est DANS le Provider reçoit "theme" */}</span>
+    <span class="c-tag">&lt;</span><span class="c-context">ThemeContext</span><span class="c-tag">.Provider</span> <span class="c-attr">value</span>=<span class="c-value">{theme}</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;Page /&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => setTheme(theme === 'clair' ? 'sombre' : 'clair')}</span><span class="c-tag">&gt;</span>
+        Basculer le thème
+      <span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/</span><span class="c-context">ThemeContext</span><span class="c-tag">.Provider&gt;</span>
+  );
+}</pre>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <h4><span class="step-number">3</span>Consommer la valeur — <code>useContext()</code></h4>
+                <p>N'importe quel composant à l'intérieur du Provider peut lire la valeur avec <code>useContext(ThemeContext)</code> — sans recevoir de props, peu importe sa profondeur.</p>
+                <div class="code-block">
+                    <div class="code-label">ProfilBouton.jsx</div>
+                    <pre><span class="c-keyword">import</span> { useContext } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+<span class="c-keyword">import</span> { <span class="c-context">ThemeContext</span> } <span class="c-keyword">from</span> <span class="c-string">'./ThemeContext'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">ProfilBouton</span>() {
+  <span class="c-comment">// Lit la valeur du contexte — aucune prop nécessaire !</span>
+  <span class="c-keyword">const</span> theme = <span class="c-function">useContext</span>(<span class="c-context">ThemeContext</span>);
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;button</span> <span class="c-attr">className</span>=<span class="c-value">{`btn-${theme}`}</span><span class="c-tag">&gt;</span>
+      Mon profil ({theme})
+    <span class="c-tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="c-comment">// ProfilBouton ne reçoit AUCUNE prop
+// Il lit directement depuis le contexte</span></pre>
+                </div>
+            </div>
+
+            <div class="hook-card">
+                <div class="hook-title">Hook : useContext — Résumé syntaxe</div>
+                <div class="hook-body">
+                    <div class="code-block">
+                        <div class="code-label">Syntaxe complète</div>
+                        <pre><span class="c-keyword">import</span> { createContext, useContext, useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-comment">// Étape 1 — Créer (dans un fichier dédié)</span>
+<span class="c-keyword">export const</span> <span class="c-context">MonContexte</span> = <span class="c-function">createContext</span>(valeurParDefaut);
+
+<span class="c-comment">// Étape 2 — Fournir (dans App.jsx ou un composant parent)</span>
+<span class="c-tag">&lt;</span><span class="c-context">MonContexte</span><span class="c-tag">.Provider</span> <span class="c-attr">value</span>=<span class="c-value">{laDonnee}</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;TousLesComposantsEnfants /&gt;</span>
+<span class="c-tag">&lt;/</span><span class="c-context">MonContexte</span><span class="c-tag">.Provider&gt;</span>
+
+<span class="c-comment">// Étape 3 — Consommer (dans n'importe quel composant enfant)</span>
+<span class="c-keyword">const</span> laDonnee = <span class="c-function">useContext</span>(<span class="c-context">MonContexte</span>);</pre>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SECTION 4 -->
+        <section id="section4" class="page-break">
+            <h2>4. Exemple 1 — Thème Jour / Nuit</h2>
+
+            <p>Le cas d'usage le plus classique pour apprendre useContext. L'utilisateur bascule entre un thème clair et sombre. Tous les composants adaptent leur style sans qu'on leur passe une prop <code>theme</code>.</p>
+
+            <h3>4.1 Structure du projet</h3>
+
+            <div class="code-block">
+                <div class="code-label">Structure</div>
+                <pre>src/
+├── context/
+│   └── ThemeContext.jsx   <span class="c-comment">← Étape 1 : création du contexte</span>
+├── components/
+│   ├── Navbar.jsx         <span class="c-comment">← utilise useContext</span>
+│   ├── Carte.jsx          <span class="c-comment">← utilise useContext</span>
+│   └── BoutonTheme.jsx    <span class="c-comment">← modifie le thème via le contexte</span>
+└── App.jsx                <span class="c-comment">← Étape 2 : Provider</span></pre>
+            </div>
+
+            <h3>4.2 ThemeContext.jsx</h3>
+
+            <div class="code-block">
+                <div class="code-label">context/ThemeContext.jsx</div>
+                <pre><span class="c-keyword">import</span> { createContext, useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-comment">// On exporte le contexte pour que les composants puissent l'importer</span>
+<span class="c-keyword">export const</span> <span class="c-context">ThemeContext</span> = <span class="c-function">createContext</span>();
+
+<span class="c-comment">// On crée un composant "Provider personnalisé"
+// C'est une bonne pratique : ça cache la logique</span>
+<span class="c-keyword">export function</span> <span class="c-function">ThemeProvider</span>({ children }) {
+  <span class="c-keyword">const</span> [theme, setTheme] = <span class="c-function">useState</span>(<span class="c-string">'clair'</span>);
+
+  <span class="c-keyword">const</span> <span class="c-function">toggleTheme</span> = () => {
+    <span class="c-function">setTheme</span>(prev => prev === <span class="c-string">'clair'</span> ? <span class="c-string">'sombre'</span> : <span class="c-string">'clair'</span>);
+  };
+
+  <span class="c-comment">// On passe les deux : la valeur ET la fonction pour la modifier</span>
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;</span><span class="c-context">ThemeContext</span><span class="c-tag">.Provider</span> <span class="c-attr">value</span>=<span class="c-value">{{ theme, toggleTheme }}</span><span class="c-tag">&gt;</span>
+      {children}
+    <span class="c-tag">&lt;/</span><span class="c-context">ThemeContext</span><span class="c-tag">.Provider&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <div class="info-box">
+                <strong>Astuce — passer un objet dans value :</strong> On peut passer <strong>plusieurs valeurs</strong> dans le contexte en les regroupant dans un objet : <code>value={{ theme, toggleTheme }}</code>. Le composant consommateur les déstructure ensuite avec <code>const { theme, toggleTheme } = useContext(ThemeContext)</code>.
+            </div>
+
+            <h3>4.3 App.jsx — Brancher le Provider</h3>
+
+            <div class="code-block">
+                <div class="code-label">App.jsx</div>
+                <pre><span class="c-keyword">import</span> { <span class="c-context">ThemeProvider</span> } <span class="c-keyword">from</span> <span class="c-string">'./context/ThemeContext'</span>;
+<span class="c-keyword">import</span> Navbar <span class="c-keyword">from</span> <span class="c-string">'./components/Navbar'</span>;
+<span class="c-keyword">import</span> Carte  <span class="c-keyword">from</span> <span class="c-string">'./components/Carte'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">App</span>() {
+  <span class="c-keyword">return</span> (
+    <span class="c-comment">{/* ThemeProvider enveloppe TOUT — tout le monde a accès au thème */}</span>
+    <span class="c-tag">&lt;</span><span class="c-context">ThemeProvider</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;Navbar /&gt;</span>
+      <span class="c-tag">&lt;main&gt;</span>
+        <span class="c-tag">&lt;Carte /&gt;</span>
+      <span class="c-tag">&lt;/main&gt;</span>
+    <span class="c-tag">&lt;/</span><span class="c-context">ThemeProvider</span><span class="c-tag">&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> App;</pre>
+            </div>
+
+            <h3>4.4 Composants consommateurs</h3>
+
+            <div class="code-block">
+                <div class="code-label">components/Navbar.jsx</div>
+                <pre><span class="c-keyword">import</span> { useContext } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+<span class="c-keyword">import</span> { <span class="c-context">ThemeContext</span> } <span class="c-keyword">from</span> <span class="c-string">'../context/ThemeContext'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">Navbar</span>() {
+  <span class="c-keyword">const</span> { theme, toggleTheme } = <span class="c-function">useContext</span>(<span class="c-context">ThemeContext</span>);
+
+  <span class="c-keyword">const</span> styles = {
+    background: theme === <span class="c-string">'clair'</span> ? <span class="c-string">'#fff'</span> : <span class="c-string">'#20232a'</span>,
+    color:      theme === <span class="c-string">'clair'</span> ? <span class="c-string">'#333'</span> : <span class="c-string">'#abb2bf'</span>,
+    padding:    <span class="c-string">'16px 24px'</span>,
+    display:    <span class="c-string">'flex'</span>,
+    justifyContent: <span class="c-string">'space-between'</span>,
+  };
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;nav</span> <span class="c-attr">style</span>=<span class="c-value">{styles}</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;span&gt;</span>Mon App<span class="c-tag">&lt;/span&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{toggleTheme}</span><span class="c-tag">&gt;</span>
+        {theme === <span class="c-string">'clair'</span> ? <span class="c-string">'Sombre'</span> : <span class="c-string">' Clair'</span>}
+      <span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/nav&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> Navbar;</pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">components/Carte.jsx</div>
+                <pre><span class="c-keyword">import</span> { useContext } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+<span class="c-keyword">import</span> { <span class="c-context">ThemeContext</span> } <span class="c-keyword">from</span> <span class="c-string">'../context/ThemeContext'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">Carte</span>() {
+  <span class="c-keyword">const</span> { theme } = <span class="c-function">useContext</span>(<span class="c-context">ThemeContext</span>);
+
+  <span class="c-keyword">const</span> styles = {
+    background: theme === <span class="c-string">'clair'</span> ? <span class="c-string">'#f9f9f9'</span> : <span class="c-string">'#282c34'</span>,
+    color:      theme === <span class="c-string">'clair'</span> ? <span class="c-string">'#333'</span>   : <span class="c-string">'#abb2bf'</span>,
+    border:     theme === <span class="c-string">'clair'</span> ? <span class="c-string">'1px solid #ddd'</span> : <span class="c-string">'1px solid #444'</span>,
+    borderRadius: <span class="c-string">'8px'</span>,
+    padding: <span class="c-string">'20px'</span>,
+    margin:  <span class="c-string">'20px'</span>,
+  };
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div</span> <span class="c-attr">style</span>=<span class="c-value">{styles}</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;h3&gt;</span>Carte de contenu<span class="c-tag">&lt;/h3&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>Thème actuel : {theme}<span class="c-tag">&lt;/p&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> Carte;</pre>
+            </div>
+
+            <h3>4.5 Aperçu rendu</h3>
+
+            <div class="result-preview">
+                <span class="preview-label">Thème CLAIR</span>
+                <div class="demo-clair">
+                    <strong style="display:flex;justify-content:space-between;">
+                        <span>Mon App</span>
+                        <span class="demo-btn demo-btn-clair">Sombre</span>
+                    </strong>
+                    <div class="demo-clair" style="margin-top:12px;">
+                        <h4 style="margin:0 0 6px;">Carte de contenu</h4>
+                        <p style="margin:0;">Thème actuel : clair</p>
+                    </div>
+                </div>
+                <span class="preview-label" style="margin-top:14px;display:inline-block;">Thème SOMBRE</span>
+                <div class="demo-sombre">
+                    <strong style="display:flex;justify-content:space-between;color:#61dafb;">
+                        <span>Mon App</span>
+                        <span class="demo-btn demo-btn-sombre">Clair</span>
+                    </strong>
+                    <div class="demo-sombre" style="margin-top:12px;">
+                        <h4 style="margin:0 0 6px;color:#61dafb;">Carte de contenu</h4>
+                        <p style="margin:0;">Thème actuel : sombre</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SECTION 5 -->
+        <section id="section5" class="page-break">
+            <h2>5. Exemple 2 — Utilisateur connecté global</h2>
+
+            <p>Deuxième cas d'usage très courant : rendre les infos de l'utilisateur connecté (nom, avatar, rôle) accessibles partout dans l'app — dans la nav, le dashboard, le profil — sans prop drilling.</p>
+
+            <h3>5.1 AuthContext.jsx</h3>
+
+            <div class="code-block">
+                <div class="code-label">context/AuthContext.jsx</div>
+                <pre><span class="c-keyword">import</span> { createContext, useState, useContext } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-keyword">const</span> <span class="c-context">AuthContext</span> = <span class="c-function">createContext</span>();
+
+<span class="c-comment">// Hook personnalisé — bonne pratique pour simplifier l'usage</span>
+<span class="c-keyword">export function</span> <span class="c-function">useAuth</span>() {
+  <span class="c-keyword">return</span> <span class="c-function">useContext</span>(<span class="c-context">AuthContext</span>);
+}
+
+<span class="c-keyword">export function</span> <span class="c-function">AuthProvider</span>({ children }) {
+  <span class="c-keyword">const</span> [utilisateur, setUtilisateur] = <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+
+  <span class="c-keyword">const</span> <span class="c-function">connexion</span> = (nom, role) => {
+    <span class="c-function">setUtilisateur</span>({ nom, role });
+  };
+
+  <span class="c-keyword">const</span> <span class="c-function">deconnexion</span> = () => {
+    <span class="c-function">setUtilisateur</span>(<span class="c-keyword">null</span>);
+  };
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;</span><span class="c-context">AuthContext</span><span class="c-tag">.Provider</span> <span class="c-attr">value</span>=<span class="c-value">{{ utilisateur, connexion, deconnexion }}</span><span class="c-tag">&gt;</span>
+      {children}
+    <span class="c-tag">&lt;/</span><span class="c-context">AuthContext</span><span class="c-tag">.Provider&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <div class="info-box">
+                <strong>Le hook personnalisé <code>useAuth()</code> :</strong> Plutôt que d'écrire <code>useContext(AuthContext)</code> dans chaque composant, on crée un hook <code>useAuth()</code> qui fait ce travail. Le code des composants est plus lisible et si on change l'implémentation un jour, on ne modifie qu'un seul endroit.
+            </div>
+
+            <h3>5.2 Utilisation dans les composants</h3>
+
+            <div class="code-block">
+                <div class="code-label">components/Navbar.jsx</div>
+                <pre><span class="c-keyword">import</span> { <span class="c-function">useAuth</span> } <span class="c-keyword">from</span> <span class="c-string">'../context/AuthContext'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">Navbar</span>() {
+  <span class="c-keyword">const</span> { utilisateur, deconnexion } = <span class="c-function">useAuth</span>();
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;nav&gt;</span>
+      <span class="c-tag">&lt;span&gt;</span>Mon App<span class="c-tag">&lt;/span&gt;</span>
+
+      {utilisateur ? (
+        <span class="c-tag">&lt;div&gt;</span>
+          <span class="c-tag">&lt;span&gt;</span>Bonjour, {utilisateur.nom} ({utilisateur.role})<span class="c-tag">&lt;/span&gt;</span>
+          <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{deconnexion}</span><span class="c-tag">&gt;</span>Se déconnecter<span class="c-tag">&lt;/button&gt;</span>
+        <span class="c-tag">&lt;/div&gt;</span>
+      ) : (
+        <span class="c-tag">&lt;span&gt;</span>Non connecté<span class="c-tag">&lt;/span&gt;</span>
+      )}
+    <span class="c-tag">&lt;/nav&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> Navbar;</pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">pages/Dashboard.jsx</div>
+                <pre><span class="c-keyword">import</span> { <span class="c-function">useAuth</span> } <span class="c-keyword">from</span> <span class="c-string">'../context/AuthContext'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">Dashboard</span>() {
+  <span class="c-keyword">const</span> { utilisateur } = <span class="c-function">useAuth</span>();
+
+  <span class="c-comment">// Redirection si non connecté</span>
+  <span class="c-keyword">if</span> (!utilisateur) {
+    <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>Vous devez vous connecter pour accéder à cette page.<span class="c-tag">&lt;/p&gt;</span>;
+  }
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h1&gt;</span>Dashboard de {utilisateur.nom}<span class="c-tag">&lt;/h1&gt;</span>
+
+      {utilisateur.role === <span class="c-string">'admin'</span> &amp;&amp; (
+        <span class="c-tag">&lt;button&gt;</span>Panneau d'administration<span class="c-tag">&lt;/button&gt;</span>
+      )}
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> Dashboard;</pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">pages/Login.jsx</div>
+                <pre><span class="c-keyword">import</span> { <span class="c-function">useAuth</span> } <span class="c-keyword">from</span> <span class="c-string">'../context/AuthContext'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">Login</span>() {
+  <span class="c-keyword">const</span> { connexion } = <span class="c-function">useAuth</span>();
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h2&gt;</span>Connexion<span class="c-tag">&lt;/h2&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => connexion('Thomas', 'admin')}</span><span class="c-tag">&gt;</span>
+        Se connecter en tant qu'admin
+      <span class="c-tag">&lt;/button&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => connexion('Alice', 'user')}</span><span class="c-tag">&gt;</span>
+        Se connecter en tant qu'utilisateur
+      <span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> Login;</pre>
+            </div>
+
+        </section>
+
+        <!-- SECTION 6 -->
+        <section id="section6" class="page-break">
+            <h2>6. Exemple 3 — Panier e-commerce</h2>
+
+            <p>Cas d'usage avancé : un panier accessible depuis la barre de navigation (badge avec le nombre d'articles) ET depuis la page panier (liste des articles). Deux composants éloignés dans l'arbre qui partagent le même state.</p>
+
+            <h3>6.1 PanierContext.jsx</h3>
+
+            <div class="code-block">
+                <div class="code-label">context/PanierContext.jsx</div>
+                <pre><span class="c-keyword">import</span> { createContext, useContext, useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-keyword">const</span> <span class="c-context">PanierContext</span> = <span class="c-function">createContext</span>();
+
+<span class="c-keyword">export function</span> <span class="c-function">usePanier</span>() {
+  <span class="c-keyword">return</span> <span class="c-function">useContext</span>(<span class="c-context">PanierContext</span>);
+}
+
+<span class="c-keyword">export function</span> <span class="c-function">PanierProvider</span>({ children }) {
+  <span class="c-keyword">const</span> [articles, setArticles] = <span class="c-function">useState</span>([]);
+
+  <span class="c-comment">// Ajouter un article (ou incrémenter la quantité)</span>
+  <span class="c-keyword">const</span> <span class="c-function">ajouterAuPanier</span> = (produit) => {
+    <span class="c-function">setArticles</span>(prev => {
+      <span class="c-keyword">const</span> existe = prev.<span class="c-function">find</span>(a => a.id === produit.id);
+      <span class="c-keyword">if</span> (existe) {
+        <span class="c-keyword">return</span> prev.<span class="c-function">map</span>(a =>
+          a.id === produit.id ? { ...a, quantite: a.quantite + <span class="c-number">1</span> } : a
+        );
+      }
+      <span class="c-keyword">return</span> [...prev, { ...produit, quantite: <span class="c-number">1</span> }];
+    });
+  };
+
+  <span class="c-comment">// Retirer un article</span>
+  <span class="c-keyword">const</span> <span class="c-function">retirerDuPanier</span> = (id) => {
+    <span class="c-function">setArticles</span>(prev => prev.<span class="c-function">filter</span>(a => a.id !== id));
+  };
+
+  <span class="c-comment">// Vider le panier</span>
+  <span class="c-keyword">const</span> <span class="c-function">viderPanier</span> = () => <span class="c-function">setArticles</span>([]);
+
+  <span class="c-comment">// Total calculé (variable dérivée — pas un state)</span>
+  <span class="c-keyword">const</span> totalArticles = articles.<span class="c-function">reduce</span>((acc, a) => acc + a.quantite, <span class="c-number">0</span>);
+  <span class="c-keyword">const</span> prixTotal = articles.<span class="c-function">reduce</span>((acc, a) => acc + a.prix * a.quantite, <span class="c-number">0</span>);
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;</span><span class="c-context">PanierContext</span><span class="c-tag">.Provider</span> <span class="c-attr">value</span>=<span class="c-value">{{
+      articles,
+      ajouterAuPanier,
+      retirerDuPanier,
+      viderPanier,
+      totalArticles,
+      prixTotal
+    }}</span><span class="c-tag">&gt;</span>
+      {children}
+    <span class="c-tag">&lt;/</span><span class="c-context">PanierContext</span><span class="c-tag">.Provider&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <h3>6.2 Badge panier dans la Navbar</h3>
+
+            <div class="code-block">
+                <div class="code-label">components/BadgePanier.jsx</div>
+                <pre><span class="c-keyword">import</span> { <span class="c-function">usePanier</span> } <span class="c-keyword">from</span> <span class="c-string">'../context/PanierContext'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">BadgePanier</span>() {
+  <span class="c-keyword">const</span> { totalArticles } = <span class="c-function">usePanier</span>();
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div</span> <span class="c-attr">style</span>=<span class="c-value">{{ position: 'relative', display: 'inline-block' }}</span><span class="c-tag">&gt;</span>
+      🛒
+      {totalArticles &gt; <span class="c-number">0</span> &amp;&amp; (
+        <span class="c-tag">&lt;span</span> <span class="c-attr">style</span>=<span class="c-value">{{
+          position: 'absolute', top: '-8px', right: '-8px',
+          background: 'red', color: 'white',
+          borderRadius: '50%', width: '18px', height: '18px',
+          fontSize: '11px', display: 'flex',
+          alignItems: 'center', justifyContent: 'center'
+        }}</span><span class="c-tag">&gt;</span>
+          {totalArticles}
+        <span class="c-tag">&lt;/span&gt;</span>
+      )}
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> BadgePanier;</pre>
+            </div>
+
+            <h3>6.3 Carte produit avec ajout au panier</h3>
+
+            <div class="code-block">
+                <div class="code-label">components/CarteProduit.jsx</div>
+                <pre><span class="c-keyword">import</span> { <span class="c-function">usePanier</span> } <span class="c-keyword">from</span> <span class="c-string">'../context/PanierContext'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">CarteProduit</span>({ produit }) {
+  <span class="c-keyword">const</span> { ajouterAuPanier } = <span class="c-function">usePanier</span>();
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h3&gt;</span>{produit.nom}<span class="c-tag">&lt;/h3&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>{produit.prix} €<span class="c-tag">&lt;/p&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => ajouterAuPanier(produit)}</span><span class="c-tag">&gt;</span>
+        Ajouter au panier
+      <span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> CarteProduit;</pre>
+            </div>
+
+            <h3>6.4 Page panier complète</h3>
+
+            <div class="code-block">
+                <div class="code-label">pages/PagePanier.jsx</div>
+                <pre><span class="c-keyword">import</span> { <span class="c-function">usePanier</span> } <span class="c-keyword">from</span> <span class="c-string">'../context/PanierContext'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">PagePanier</span>() {
+  <span class="c-keyword">const</span> { articles, retirerDuPanier, viderPanier, prixTotal } = <span class="c-function">usePanier</span>();
+
+  <span class="c-keyword">if</span> (articles.length === <span class="c-number">0</span>) {
+    <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>Votre panier est vide.<span class="c-tag">&lt;/p&gt;</span>;
+  }
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h2&gt;</span>Mon panier<span class="c-tag">&lt;/h2&gt;</span>
+
+      {articles.<span class="c-function">map</span>(article => (
+        <span class="c-tag">&lt;div</span> <span class="c-attr">key</span>=<span class="c-value">{article.id}</span><span class="c-tag">&gt;</span>
+          <span class="c-tag">&lt;span&gt;</span>{article.nom} x{article.quantite}<span class="c-tag">&lt;/span&gt;</span>
+          <span class="c-tag">&lt;span&gt;</span>{article.prix * article.quantite} €<span class="c-tag">&lt;/span&gt;</span>
+          <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => retirerDuPanier(article.id)}</span><span class="c-tag">&gt;</span>
+            Supprimer
+          <span class="c-tag">&lt;/button&gt;</span>
+        <span class="c-tag">&lt;/div&gt;</span>
+      ))}
+
+      <span class="c-tag">&lt;hr /&gt;</span>
+      <span class="c-tag">&lt;strong&gt;</span>Total : {prixTotal.toFixed(2)} €<span class="c-tag">&lt;/strong&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{viderPanier}</span><span class="c-tag">&gt;</span>Vider le panier<span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> PagePanier;</pre>
+            </div>
+
+        </section>
+
+        <!-- SECTION 7 -->
+        <section id="section7" class="page-break">
+            <h2>7. Bonnes pratiques</h2>
+
+            <h3>7.1 Un fichier par contexte</h3>
+            <p>Toujours créer un fichier dédié pour chaque contexte dans un dossier <code>src/context/</code>. Ne pas créer le contexte directement dans <code>App.jsx</code>.</p>
+
+            <div class="success-box">
+                <strong>Structure recommandée :</strong>
+                <ul style="margin-top:8px;">
+                    <li><code>src/context/ThemeContext.jsx</code> → contexte du thème</li>
+                    <li><code>src/context/AuthContext.jsx</code> → contexte d'authentification</li>
+                    <li><code>src/context/PanierContext.jsx</code> → contexte du panier</li>
+                </ul>
+            </div>
+
+            <h3>7.2 Exporter un hook personnalisé</h3>
+            <p>Plutôt que d'exporter le contexte brut, exporter un hook <code>useMon Contexte()</code> qui encapsule <code>useContext()</code>. Les composants n'ont plus besoin d'importer le contexte, seulement le hook.</p>
+
+            <div class="code-block">
+                <div class="code-label">Bonne pratique</div>
+                <pre><span class="c-comment">//  Moins bien — les composants doivent importer AuthContext ET useContext</span>
+<span class="c-keyword">export const</span> <span class="c-context">AuthContext</span> = <span class="c-function">createContext</span>();
+<span class="c-comment">// Dans les composants : import { AuthContext } from '...' + useContext(AuthContext)</span>
+
+<span class="c-comment">//  Mieux — les composants importent juste useAuth()</span>
+<span class="c-keyword">const</span> <span class="c-context">AuthContext</span> = <span class="c-function">createContext</span>(); <span class="c-comment">// pas exporté</span>
+<span class="c-keyword">export function</span> <span class="c-function">useAuth</span>() {
+  <span class="c-keyword">return</span> <span class="c-function">useContext</span>(<span class="c-context">AuthContext</span>);
+}
+<span class="c-comment">// Dans les composants : import { useAuth } from '...' + useAuth()</span></pre>
+            </div>
+
+            <h3>7.3 Ajouter une vérification d'utilisation</h3>
+            <p>Si un composant appelle <code>useAuth()</code> sans être enveloppé par <code>AuthProvider</code>, React ne produira pas d'erreur claire. On peut ajouter une vérification explicite.</p>
+
+            <div class="code-block">
+                <div class="code-label">Hook avec vérification</div>
+                <pre><span class="c-keyword">export function</span> <span class="c-function">useAuth</span>() {
+  <span class="c-keyword">const</span> ctx = <span class="c-function">useContext</span>(<span class="c-context">AuthContext</span>);
+
+  <span class="c-keyword">if</span> (ctx === <span class="c-keyword">undefined</span>) {
+    <span class="c-keyword">throw new</span> <span class="c-function">Error</span>(<span class="c-string">'useAuth doit être utilisé à l\'intérieur de AuthProvider'</span>);
+  }
+
+  <span class="c-keyword">return</span> ctx;
+}</pre>
+            </div>
+
+            <h3>7.4 Ne pas surcharger un seul contexte</h3>
+
+            <div class="warning-box">
+                <strong>Éviter le "God Context" :</strong> Ne pas mettre toutes les données de l'app dans un seul contexte. Un contexte par domaine fonctionnel : un pour l'auth, un pour le thème, un pour le panier. Cela évite que tous les composants se re-rendent quand une seule donnée change.
+            </div>
+
+        </section>
+
+        <!-- SECTION 8 -->
+        <section id="section8" class="page-break">
+            <h2>8. Props vs useContext — quand choisir ?</h2>
+
+            <div class="comparison-table">
+                <div class="comparison-column">
+                    <div class="comparison-header props">Props</div>
+                    <div class="comparison-content">
+                        <div class="code-block" style="margin:0;border-left:none;border-radius:0;">
+                            <pre><span class="c-comment">// Données locales à une branche</span>
+<span class="c-keyword">function</span> <span class="c-function">CarteProduit</span>({ produit }) {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h3&gt;</span>{produit.nom}<span class="c-tag">&lt;/h3&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>{produit.prix} €<span class="c-tag">&lt;/p&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-comment">//  Bon usage des props :
+// - 1-2 niveaux de profondeur
+// - Données propres à ce composant
+// - Composant réutilisable dans
+//   plusieurs contextes</span></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-column">
+                    <div class="comparison-header context">useContext</div>
+                    <div class="comparison-content">
+                        <div class="code-block" style="margin:0;border-left:none;border-radius:0;">
+                            <pre><span class="c-comment">// Données globales partagées</span>
+<span class="c-keyword">function</span> <span class="c-function">CarteProduit</span>({ produit }) {
+  <span class="c-keyword">const</span> { theme } = <span class="c-function">useTheme</span>();
+  <span class="c-keyword">const</span> { ajouterAuPanier } = <span class="c-function">usePanier</span>();
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div</span> <span class="c-attr">className</span>=<span class="c-value">{theme}</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;h3&gt;</span>{produit.nom}<span class="c-tag">&lt;/h3&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => ajouterAuPanier(produit)}</span><span class="c-tag">&gt;</span>
+        Ajouter
+      <span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-comment">// Bon usage du context :
+// - 3+ niveaux de profondeur
+// - Donnée partagée largement
+// - Thème, auth, panier, langue</span></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critère</th>
+                        <th>Props</th>
+                        <th>useContext</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Profondeur</td><td>1-2 niveaux</td><td>3 niveaux et plus</td></tr>
+                    <tr><td>Portée</td><td>Locale (parent → enfant direct)</td><td>Globale (toute une branche)</td></tr>
+                    <tr><td>Traçabilité</td><td>Facile (flux visible)</td><td>Moins directe (magic implicite)</td></tr>
+                    <tr><td>Réutilisabilité</td><td>Très bonne</td><td>Couplée au contexte</td></tr>
+                    <tr><td>Cas typique</td><td>Données d'une entité (produit, tâche)</td><td>Thème, auth, panier, langue</td></tr>
+                </tbody>
+            </table>
+
+        </section>
+
+        <!-- SECTION 9 -->
+        <section id="section9" class="page-break">
+            <h2>9. Exercices</h2>
+
+            <div class="exercise">
+                <h4>Exercice 1 — Thème jour/nuit (débutant)</h4>
+                <p><strong>Objectif :</strong> Créer un contexte de thème et l'utiliser dans 3 composants.</p>
+                <ol style="margin-left:25px;">
+                    <li>Créer <code>ThemeContext.jsx</code> avec <code>ThemeProvider</code> et <code>useTheme()</code>.</li>
+                    <li>Le Provider gère un state <code>theme</code> (<code>'clair'</code> ou <code>'sombre'</code>) et une fonction <code>toggleTheme()</code>.</li>
+                    <li>Créer un composant <code>BoutonTheme</code> qui appelle <code>toggleTheme()</code> au clic.</li>
+                    <li>Créer un composant <code>Carte</code> qui adapte son background selon le thème.</li>
+                    <li>Brancher le Provider dans <code>App.jsx</code>.</li>
+                </ol>
+                <div class="success-box" style="margin-top:12px;">
+                    <strong>Résultat attendu :</strong> Un clic sur BoutonTheme change l'apparence de toute l'app sans prop drilling.
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercice 2 — Utilisateur connecté (intermédiaire)</h4>
+                <p><strong>Objectif :</strong> Simuler un système d'authentification avec useContext.</p>
+                <ol style="margin-left:25px;">
+                    <li>Créer <code>AuthContext.jsx</code> avec <code>AuthProvider</code> et <code>useAuth()</code>.</li>
+                    <li>Le state contient <code>utilisateur</code> (null si déconnecté, objet si connecté).</li>
+                    <li>Créer une page <code>Login</code> avec deux boutons : "Admin" et "Utilisateur".</li>
+                    <li>Dans la <code>Navbar</code>, afficher le nom de l'utilisateur connecté ou "Non connecté".</li>
+                    <li>Créer un composant <code>PageProtegee</code> qui affiche un message d'erreur si non connecté.</li>
+                </ol>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercice 3 — Combiner deux contextes (avancé)</h4>
+                <p><strong>Objectif :</strong> Utiliser deux contextes dans la même application.</p>
+                <ol style="margin-left:25px;">
+                    <li>Reprendre l'exercice 1 (ThemeContext) et l'exercice 2 (AuthContext).</li>
+                    <li>Brancher les deux Providers dans <code>App.jsx</code> (l'un dans l'autre).</li>
+                    <li>Créer un composant <code>Profil</code> qui utilise <code>useAuth()</code> ET <code>useTheme()</code> simultanément.</li>
+                    <li>Le profil adapte son style au thème et affiche les infos de l'utilisateur connecté.</li>
+                </ol>
+                <div class="code-block">
+                    <div class="code-label">Indice — App.jsx</div>
+                    <pre><span class="c-keyword">function</span> <span class="c-function">App</span>() {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;</span><span class="c-context">AuthProvider</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;</span><span class="c-context">ThemeProvider</span><span class="c-tag">&gt;</span>
+        <span class="c-tag">&lt;Navbar /&gt;</span>
+        <span class="c-tag">&lt;Profil /&gt;</span>
+      <span class="c-tag">&lt;/</span><span class="c-context">ThemeProvider</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;/</span><span class="c-context">AuthProvider</span><span class="c-tag">&gt;</span>
+  );
+}</pre>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SECTION 10 -->
+        <section id="section10" class="page-break">
+            <h2>10. Projet fil rouge — Mini e-commerce</h2>
+
+            <p>Construire une mini boutique en ligne qui utilise <strong>deux contextes</strong> : un pour le thème et un pour le panier. Le projet reprend tous les concepts du cours.</p>
+
+            <h3>10.1 Structure complète</h3>
+
+            <div class="code-block">
+                <div class="code-label">Structure du projet</div>
+                <pre>src/
+├── context/
+│   ├── ThemeContext.jsx   <span class="c-comment">← thème jour/nuit</span>
+│   └── PanierContext.jsx  <span class="c-comment">← panier partagé</span>
+├── components/
+│   ├── Navbar.jsx         <span class="c-comment">← badge panier + bouton thème</span>
+│   ├── CarteProduit.jsx   <span class="c-comment">← affiche un produit + bouton ajout</span>
+│   └── ListeProduits.jsx  <span class="c-comment">← grille de CarteProduit</span>
+├── pages/
+│   ├── Boutique.jsx       <span class="c-comment">← page principale</span>
+│   └── Panier.jsx         <span class="c-comment">← page panier avec résumé</span>
+└── App.jsx                <span class="c-comment">← Providers + Router</span></pre>
+            </div>
+
+            <h3>10.2 App.jsx final</h3>
+
+            <div class="code-block">
+                <div class="code-label">App.jsx</div>
+                <pre><span class="c-keyword">import</span> { BrowserRouter, Routes, Route } <span class="c-keyword">from</span> <span class="c-string">'react-router-dom'</span>;
+<span class="c-keyword">import</span> { <span class="c-context">ThemeProvider</span> }  <span class="c-keyword">from</span> <span class="c-string">'./context/ThemeContext'</span>;
+<span class="c-keyword">import</span> { <span class="c-context">PanierProvider</span> } <span class="c-keyword">from</span> <span class="c-string">'./context/PanierContext'</span>;
+<span class="c-keyword">import</span> Navbar    <span class="c-keyword">from</span> <span class="c-string">'./components/Navbar'</span>;
+<span class="c-keyword">import</span> Boutique  <span class="c-keyword">from</span> <span class="c-string">'./pages/Boutique'</span>;
+<span class="c-keyword">import</span> Panier    <span class="c-keyword">from</span> <span class="c-string">'./pages/Panier'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">App</span>() {
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;</span><span class="c-context">ThemeProvider</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;</span><span class="c-context">PanierProvider</span><span class="c-tag">&gt;</span>
+        <span class="c-tag">&lt;BrowserRouter&gt;</span>
+          <span class="c-tag">&lt;Navbar /&gt;</span>
+          <span class="c-tag">&lt;Routes&gt;</span>
+            <span class="c-tag">&lt;Route</span> <span class="c-attr">path</span>=<span class="c-string">"/"</span>       <span class="c-attr">element</span>=<span class="c-value">{&lt;Boutique /&gt;}</span> <span class="c-tag">/&gt;</span>
+            <span class="c-tag">&lt;Route</span> <span class="c-attr">path</span>=<span class="c-string">"/panier"</span> <span class="c-attr">element</span>=<span class="c-value">{&lt;Panier /&gt;}</span>  <span class="c-tag">/&gt;</span>
+          <span class="c-tag">&lt;/Routes&gt;</span>
+        <span class="c-tag">&lt;/BrowserRouter&gt;</span>
+      <span class="c-tag">&lt;/</span><span class="c-context">PanierProvider</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;/</span><span class="c-context">ThemeProvider</span><span class="c-tag">&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> App;</pre>
+            </div>
+
+            <div class="success-box">
+                <strong>Fonctionnalités à implémenter :</strong>
+                <ul style="margin-top:8px;">
+                    <li>Basculer le thème depuis la navbar — toute l'app change d'apparence</li>
+                    <li>Ajouter un produit au panier — le badge dans la navbar se met à jour instantanément</li>
+                    <li>Naviguer vers /panier — voir la liste des articles, quantités et total</li>
+                    <li>Retirer un article ou vider le panier</li>
+                    <li>Le panier persiste lors de la navigation entre les pages</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <strong>Pour aller plus loin :</strong>
+                <ul style="margin-top:8px;">
+                    <li>Ajouter <code>localStorage</code> dans <code>PanierContext</code> pour persister le panier après rechargement</li>
+                    <li>Combiner avec <code>AuthContext</code> pour protéger la page /panier si non connecté</li>
+                    <li>Remplacer <code>useContext</code> par <code>useReducer</code> dans PanierContext pour les actions complexes (prochain module)</li>
+                </ul>
+            </div>
+
+        </section>
+
+    </div>
+</div>
+
+<script>
+    function toggleMenu() {
+        const burger = document.querySelector('.burger-menu');
+        const nav = document.getElementById('navMenu');
+        burger.classList.toggle('active');
+        nav.classList.toggle('active');
+    }
+
+    function closeMenu() {
+        const burger = document.querySelector('.burger-menu');
+        const nav = document.getElementById('navMenu');
+        burger.classList.remove('active');
+        nav.classList.remove('active');
+    }
+</script>
+
+</body>
+</html>

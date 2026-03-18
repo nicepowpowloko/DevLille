@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>useReducer - React Avancé</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --real: #A0866B;
+            --conseil: #2C3F77;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        header {
+            background: linear-gradient(135deg, #20232a 0%, #2E75B6 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(97,218,251,0.08) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        header h1 { font-size: 2.8em; margin-bottom: 15px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        header h1 span { color: #61dafb; }
+        header .subtitle { font-size: 1.3em; margin-bottom: 10px; opacity: 0.9; position: relative; }
+        header .author   { font-size: 1.05em; font-style: italic; opacity: 0.7; position: relative; }
+        .react-logo { font-size: 3em; color: #61dafb; margin-bottom: 15px; display: block; position: relative; }
+
+        /* Burger */
+        .burger-menu { display: none; background-color: #20232a; padding: 15px 20px; cursor: pointer; position: sticky; top: 0; z-index: 101; align-items: center; justify-content: space-between; }
+        .burger-text { color: #61dafb; font-size: 1em; font-weight: bold; }
+        .burger-icon { display: flex; flex-direction: column; gap: 5px; width: 30px; }
+        .burger-icon span { width: 100%; height: 3px; background-color: #61dafb; transition: 0.3s; display: block; }
+        .burger-menu.active .burger-icon span:nth-child(1) { transform: rotate(45deg) translate(8px, 8px); }
+        .burger-menu.active .burger-icon span:nth-child(2) { opacity: 0; }
+        .burger-menu.active .burger-icon span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+
+        .nav-menu { background-color: #20232a; padding: 14px 40px; position: sticky; top: 0; z-index: 100; }
+        .nav-menu a { color: #abb2bf; text-decoration: none; margin-right: 18px; font-size: 0.88em; transition: color 0.3s; }
+        .nav-menu a:hover { color: var(--real); border-bottom: #61dafb 2px solid; font-weight: bolder; }
+
+        .content { padding: 40px; }
+
+        h2 { color: var(--real); font-size: 1.9em; margin-top: 40px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #61dafb; }
+        h3 { color: var(--conseil); font-size: 1.35em; margin-top: 30px; margin-bottom: 15px; }
+        h4 { color: #404040; font-size: 1.1em; margin-top: 20px; margin-bottom: 10px; }
+        p  { margin-bottom: 15px; }
+
+        .highlight { background-color: #e8f8fd; border: 1px solid #61dafb; padding: 2px 7px; border-radius: 4px; font-weight: bold; color: #20232a; }
+
+        code { font-family: 'Courier New', monospace; background-color: #282c34; color: #61dafb; padding: 2px 7px; border-radius: 4px; font-size: 0.92em; }
+
+        .code-block { background-color: #282c34; border-left: 4px solid #61dafb; padding: 22px; margin: 20px 0; border-radius: 6px; overflow-x: auto; position: relative; }
+        .code-block .code-label { position: absolute; top: 8px; right: 12px; background-color: #61dafb; color: #20232a; font-size: 0.75em; font-weight: bold; padding: 2px 8px; border-radius: 4px; }
+        .code-block pre { font-family: 'Courier New', monospace; font-size: 0.93em; line-height: 1.7; color: #abb2bf; white-space: pre; }
+
+        .c-comment  { color: #5c6370; font-style: italic; }
+        .c-keyword  { color: #c678dd; }
+        .c-function { color: #61afef; }
+        .c-string   { color: #98c379; }
+        .c-tag      { color: #e06c75; }
+        .c-attr     { color: #d19a66; }
+        .c-value    { color: #98c379; }
+        .c-number   { color: #d19a66; }
+        .c-action   { color: #e5c07b; }
+        .c-type     { color: #c678dd; font-style: italic; }
+        .c-ok       { color: #98c379; font-weight: bold; }
+        .c-bad      { color: #e06c75; font-weight: bold; }
+
+        .info-box    { background-color: #e8f8fd; border-left: 4px solid #61dafb; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+        .warning-box { background-color: #fff8e6; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+        .success-box { background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+        .error-box   { background-color: #f8d7da; border-left: 4px solid #dc3545; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+
+        ul { margin: 12px 0 12px 35px; }
+        li { margin-bottom: 9px; }
+
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table thead, table tbody { display: table; width: 100%; }
+        table th { background-color: #20232a; color: #61dafb; padding: 13px 15px; text-align: left; white-space: nowrap; }
+        table td { padding: 11px 15px; border: 1px solid #ddd; }
+        table tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .diagram { background-color: white; border: 2px solid #61dafb; border-radius: 8px; margin: 25px 0; overflow: hidden; }
+        .diagram-header { background-color: #20232a; color: #61dafb; padding: 14px 20px; font-weight: bold; text-align: center; }
+        .diagram-step { padding: 13px 20px; border-bottom: 1px solid #e8f8fd; }
+        .diagram-step:last-child { border-bottom: none; }
+        .diagram-step:nth-child(even) { background-color: #f9fdff; }
+        .step-label { color: #2E75B6; font-weight: bold; margin-right: 8px; }
+
+        .step-box { background-color: #f9fdff; border: 1px solid #bee8f8; border-radius: 8px; padding: 18px 20px; margin: 15px 0; }
+        .step-box h4 { color: var(--real); margin-top: 0; margin-bottom: 12px; }
+        .step-number { display: inline-flex; align-items: center; justify-content: center; background-color: #61dafb; color: #20232a; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; margin-right: 10px; flex-shrink: 0; }
+
+        .hook-card { background-color: #f9fdff; border: 2px solid #61dafb; border-radius: 8px; margin: 20px 0; overflow: hidden; }
+        .hook-title { background-color: #20232a; color: #61dafb; padding: 12px 20px; font-weight: bold; font-size: 1em; }
+        .hook-body { padding: 20px; }
+
+        .page-break { margin-top: 60px; padding-top: 40px; border-top: 2px solid #e8f8fd; }
+
+        .exercise { background-color: #f0f9ff; border: 2px solid #61dafb; border-radius: 8px; padding: 20px; margin: 25px 0; }
+        .exercise h4 { color: #20232a; margin-top: 0; }
+
+        .concept-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 25px 0; }
+        .concept-card { background-color: #20232a; border-radius: 8px; padding: 20px; color: white; text-align: center; }
+        .concept-card .icon { font-size: 1.5em; color: #61dafb; font-weight: bold; margin-bottom: 10px; }
+        .concept-card h4 { color: #61dafb; margin: 0 0 8px 0; }
+        .concept-card p  { font-size: 0.88em; color: #abb2bf; margin: 0; text-align: center; }
+
+        .comparison-table { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 25px 0; }
+        .comparison-column { border: 2px solid #ddd; border-radius: 8px; overflow: hidden; }
+        .comparison-header { padding: 13px 15px; color: white; text-align: center; font-weight: bold; }
+        .comparison-header.usestate  { background-color: #e34c26; }
+        .comparison-header.usereducer { background-color: #20232a; color: #61dafb; }
+        .comparison-content { padding: 18px; background-color: #282c34; }
+
+        .result-preview { background-color: white; border: 2px solid #ddd; border-radius: 8px; padding: 20px; margin: 15px 0; }
+        .result-preview .preview-label { background-color: #e8f8fd; border: 1px solid #61dafb; border-radius: 4px; padding: 4px 10px; font-size: 0.8em; font-weight: bold; color: #20232a; display: inline-block; margin-bottom: 12px; }
+
+        /* Flux animé */
+        .flux-schema { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; margin: 24px 0; }
+        .flux-box { background-color: #20232a; color: #61dafb; border: 2px solid #61dafb; border-radius: 8px; padding: 12px 18px; text-align: center; font-weight: bold; font-size: 0.95em; min-width: 120px; }
+        .flux-box.action  { border-color: #e5c07b; color: #e5c07b; }
+        .flux-box.reducer { border-color: #c678dd; color: #c678dd; }
+        .flux-box.state   { border-color: #98c379; color: #98c379; }
+        .flux-box.ui      { border-color: #61dafb; color: #61dafb; }
+        .flux-arrow { font-size: 1.5em; color: #525252; margin: 0 8px; }
+        .flux-label { font-size: 0.75em; color: #888; display: block; margin-top: 4px; font-weight: normal; font-style: italic; }
+
+        @media print {
+            .nav-menu, .burger-menu { display: none; }
+            body { background-color: white; }
+            .container { box-shadow: none; }
+        }
+
+        @media (max-width: 900px) {
+            .concept-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 40px 20px; }
+            header h1 { font-size: 1.8em; }
+            .burger-menu { display: flex; }
+            .nav-menu { display: none; padding: 0; max-height: 0; overflow: hidden; }
+            .nav-menu.active { display: block; max-height: 700px; padding: 10px 0; }
+            .nav-menu a { display: block; margin: 0; padding: 12px 20px; border-bottom: 1px solid #333; }
+            .content { padding: 20px 15px; }
+            h2 { font-size: 1.45em; }
+            h3 { font-size: 1.15em; }
+            .comparison-table { grid-template-columns: 1fr; }
+            .concept-grid { grid-template-columns: 1fr; }
+            .code-block { font-size: 0.82em; padding: 15px; }
+            .flux-schema { flex-direction: column; }
+            .flux-arrow { transform: rotate(90deg); }
+        }
+
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.4em; }
+            .content { padding: 15px 10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <span class="react-logo">&#9883;</span>
+        <h1>React — <span>useReducer</span></h1>
+        <p class="subtitle">Gérer les états complexes avec des actions</p>
+        <p class="author">Real Conseil — Formation DWWM</p>
+    </header>
+
+    <div class="burger-menu" onclick="toggleMenu()">
+        <span class="burger-text">Menu useReducer</span>
+        <div class="burger-icon"><span></span><span></span><span></span></div>
+    </div>
+
+    <nav class="nav-menu" id="navMenu">
+        <a href="#section1" onclick="closeMenu()">Le problème</a>
+        <a href="#section2" onclick="closeMenu()">Concept</a>
+        <a href="#section3" onclick="closeMenu()">Syntaxe</a>
+        <a href="#section4" onclick="closeMenu()">Compteur</a>
+        <a href="#section5" onclick="closeMenu()">Todo List</a>
+        <a href="#section6" onclick="closeMenu()">Panier</a>
+        <a href="#section7" onclick="closeMenu()">useState vs useReducer</a>
+        <a href="#section8" onclick="closeMenu()">Avec useContext</a>
+        <a href="#section9" onclick="closeMenu()">Exercices</a>
+        <a href="#section10" onclick="closeMenu()">Projet</a>
+    </nav>
+
+    <div class="content">
+
+        <!-- SECTION 1 -->
+        <section id="section1">
+            <h2>1. Le problème — Trop de useState</h2>
+
+            <p>Avec <span class="highlight">useState</span>, chaque donnée a son propre state et son propre setter. Quand le composant devient plus complexe — plusieurs données liées entre elles, plusieurs actions possibles — on se retrouve avec une cascade de <code>setXxx()</code> dans chaque handler. Le code devient difficile à lire et à maintenir.</p>
+
+            <div class="error-box">
+                <strong>Exemple concret — un formulaire multi-étapes avec useState :</strong><br>
+                5 champs, 5 states, 5 setters. Et si une action doit modifier plusieurs champs à la fois, on enchaîne plusieurs setters dans le même handler. Un seul oubli, une seule incohérence, et le bug est difficile à tracer.
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">Le problème — trop de useState</div>
+                <pre><span class="c-keyword">function</span> <span class="c-function">FormulaireCommande</span>() {
+  <span class="c-comment">// 5 states pour 5 données liées</span>
+  <span class="c-keyword">const</span> [nom, setNom]           = <span class="c-function">useState</span>(<span class="c-string">''</span>);
+  <span class="c-keyword">const</span> [email, setEmail]       = <span class="c-function">useState</span>(<span class="c-string">''</span>);
+  <span class="c-keyword">const</span> [quantite, setQuantite] = <span class="c-function">useState</span>(<span class="c-number">1</span>);
+  <span class="c-keyword">const</span> [etape, setEtape]       = <span class="c-function">useState</span>(<span class="c-number">1</span>);
+  <span class="c-keyword">const</span> [erreur, setErreur]     = <span class="c-function">useState</span>(<span class="c-string">''</span>);
+
+  <span class="c-keyword">function</span> <span class="c-function">validerEtape1</span>() {
+    <span class="c-keyword">if</span> (!nom || !email) {
+      <span class="c-function">setErreur</span>(<span class="c-string">'Champs obligatoires'</span>); <span class="c-comment">// setter 1</span>
+      <span class="c-keyword">return</span>;
+    }
+    <span class="c-function">setErreur</span>(<span class="c-string">''</span>);   <span class="c-comment">// setter 1 encore</span>
+    <span class="c-function">setEtape</span>(<span class="c-number">2</span>);    <span class="c-comment">// setter 2 — plusieurs setters dans un handler</span>
+    <span class="c-comment">// Difficile de savoir dans quel ordre ils s'appliquent</span>
+  }
+
+  <span class="c-keyword">function</span> <span class="c-function">annuler</span>() {
+    <span class="c-function">setNom</span>(<span class="c-string">''</span>);       <span class="c-comment">// setter 1</span>
+    <span class="c-function">setEmail</span>(<span class="c-string">''</span>);     <span class="c-comment">// setter 2</span>
+    <span class="c-function">setQuantite</span>(<span class="c-number">1</span>);  <span class="c-comment">// setter 3</span>
+    <span class="c-function">setEtape</span>(<span class="c-number">1</span>);      <span class="c-comment">// setter 4</span>
+    <span class="c-function">setErreur</span>(<span class="c-string">''</span>);    <span class="c-comment">// setter 5 — reset en 5 lignes séparées</span>
+  }
+}</pre>
+            </div>
+
+            <div class="diagram">
+                <div class="diagram-header">Quand useState devient problématique</div>
+                <div class="diagram-step">
+                    <span class="step-label">Trop de states liés :</span>
+                    Quand 3+ données changent toujours ensemble, c'est le signe qu'elles forment un seul "état" à gérer globalement.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Actions complexes :</span>
+                    Quand une seule action utilisateur (ex. "annuler") doit modifier plusieurs champs en même temps.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Logique difficile à tester :</span>
+                    La logique "quoi faire quand X se passe" est éparpillée dans les handlers. Avec useReducer, toute la logique est dans une seule fonction pure, testable en isolation.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Transitions d'état :</span>
+                    Quand le prochain state dépend du state actuel de plusieurs variables (ex. une machine à états finis).
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SECTION 2 -->
+        <section id="section2" class="page-break">
+            <h2>2. Qu'est-ce que useReducer ?</h2>
+
+            <p><span class="highlight">useReducer</span> est un Hook React qui remplace <code>useState</code> quand l'état devient complexe. Au lieu d'appeler un setter directement, on <strong>envoie une action</strong> (<code>dispatch</code>) qui décrit ce qui s'est passé. Une fonction pure appelée <strong>reducer</strong> décide comment mettre à jour l'état en réponse à cette action.</p>
+
+            <p>C'est le même principe que Redux, mais sans bibliothèque externe. Et c'est inspiré du pattern <strong>Command</strong> : au lieu de dire "fais ça", on dit "voilà ce qui s'est passé, qu'est-ce qu'on fait ?"</p>
+
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="icon">{ }</div>
+                    <h4>state</h4>
+                    <p>L'état complet — souvent un objet regroupant toutes les données liées. Une seule variable au lieu de plusieurs useState.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="icon">&#8594;</div>
+                    <h4>dispatch</h4>
+                    <p>Fonction qui envoie une action au reducer. On ne modifie JAMAIS le state directement — on dispatch une action.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="icon">f()</div>
+                    <h4>reducer</h4>
+                    <p>Fonction pure : (state, action) → nouveauState. Toute la logique de mise à jour est centralisée ici.</p>
+                </div>
+            </div>
+
+            <h3>2.1 Le flux complet</h3>
+
+            <div class="flux-schema">
+                <div class="flux-box ui">Interface<span class="flux-label">L'utilisateur clique</span></div>
+                <div class="flux-arrow">→</div>
+                <div class="flux-box action">Action<span class="flux-label">dispatch({ type: 'INCREMENTER' })</span></div>
+                <div class="flux-arrow">→</div>
+                <div class="flux-box reducer">Reducer<span class="flux-label">fonction pure (state, action)</span></div>
+                <div class="flux-arrow">→</div>
+                <div class="flux-box state">Nouveau state<span class="flux-label">{ count: 1 }</span></div>
+                <div class="flux-arrow">→</div>
+                <div class="flux-box ui">Re-rendu<span class="flux-label">React met à jour l'UI</span></div>
+            </div>
+
+            <div class="info-box">
+                <strong>Analogie — le distributeur de billets :</strong><br>
+                Tu ne rentres pas dans le coffre modifier les billets toi-même (mutation directe). Tu insères ta carte, tapes ton code, choisis une action ("retirer 50€"). La machine <em>traite ta demande</em> et te donne le résultat. Le reducer, c'est la machine : il reçoit l'action, applique les règles, retourne le nouvel état.
+            </div>
+
+        </section>
+
+        <!-- SECTION 3 -->
+        <section id="section3" class="page-break">
+            <h2>3. Syntaxe — Les 3 éléments</h2>
+
+            <div class="hook-card">
+                <div class="hook-title">Hook : useReducer — Syntaxe complète</div>
+                <div class="hook-body">
+                    <div class="code-block">
+                        <div class="code-label">Syntaxe</div>
+                        <pre><span class="c-keyword">import</span> { useReducer } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-comment">// ── 1. L'état initial ──</span>
+<span class="c-keyword">const</span> etatInitial = { count: <span class="c-number">0</span>, pas: <span class="c-number">1</span> };
+
+<span class="c-comment">// ── 2. La fonction reducer (HORS du composant) ─
+// Signature : (state, action) → nouveauState
+// Règles :
+//   - Fonction PURE : pas de fetch, pas de setTimeout, pas de mutation
+//   - Retourner TOUJOURS un nouveau state (jamais undefined)
+//   - Jamais muter state directement — toujours un spread ou une copie</span>
+<span class="c-keyword">function</span> <span class="c-function">reducer</span>(state, action) {
+  <span class="c-keyword">switch</span> (action.type) {
+    <span class="c-keyword">case</span> <span class="c-string">'INCREMENTER'</span>:
+      <span class="c-keyword">return</span> { ...state, count: state.count + state.pas };
+    <span class="c-keyword">case</span> <span class="c-string">'DECREMENTER'</span>:
+      <span class="c-keyword">return</span> { ...state, count: state.count - state.pas };
+    <span class="c-keyword">case</span> <span class="c-string">'RESET'</span>:
+      <span class="c-keyword">return</span> etatInitial; <span class="c-comment">// retour à zéro</span>
+    <span class="c-keyword">case</span> <span class="c-string">'SET_PAS'</span>:
+      <span class="c-keyword">return</span> { ...state, pas: action.payload }; <span class="c-comment">// payload = la donnée associée</span>
+    <span class="c-keyword">default</span>:
+      <span class="c-keyword">return</span> state; <span class="c-comment">// action inconnue → state inchangé</span>
+  }
+}
+
+<span class="c-comment">// ── 3. Utilisation dans le composant ──</span>
+<span class="c-keyword">function</span> <span class="c-function">Compteur</span>() {
+  <span class="c-keyword">const</span> [state, dispatch] = <span class="c-function">useReducer</span>(reducer, etatInitial);
+  <span class="c-comment">//          ↑                ↑              ↑
+  //       état actuel      fonction       état initial</span>
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;p&gt;</span>Compteur : {state.count} (pas : {state.pas})<span class="c-tag">&lt;/p&gt;</span>
+
+      <span class="c-comment">{/* dispatch envoie une action au reducer */}</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'INCREMENTER' })}</span><span class="c-tag">&gt;</span>+<span class="c-tag">&lt;/button&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'DECREMENTER' })}</span><span class="c-tag">&gt;</span>-<span class="c-tag">&lt;/button&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'RESET' })}</span><span class="c-tag">&gt;</span>Reset<span class="c-tag">&lt;/button&gt;</span>
+
+      <span class="c-comment">{/* Avec payload — une donnée supplémentaire */}</span>
+      <span class="c-tag">&lt;input</span>
+        <span class="c-attr">type</span>=<span class="c-string">"number"</span>
+        <span class="c-attr">value</span>=<span class="c-value">{state.pas}</span>
+        <span class="c-attr">onChange</span>=<span class="c-value">{(e) => dispatch({ type: 'SET_PAS', payload: Number(e.target.value) })}</span>
+      <span class="c-tag">/&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>3.1 Anatomie d'une action</h3>
+
+            <div class="code-block">
+                <div class="code-label">Structure d'une action</div>
+                <pre><span class="c-comment">// Une action est un simple objet JavaScript
+// Convention : type en MAJUSCULES_UNDERSCORES, payload pour les données</span>
+
+<span class="c-comment">// Action sans donnée supplémentaire</span>
+{ type: <span class="c-string">'RESET'</span> }
+{ type: <span class="c-string">'VIDER_PANIER'</span> }
+{ type: <span class="c-string">'ETAPE_SUIVANTE'</span> }
+
+<span class="c-comment">// Action avec une donnée (payload)</span>
+{ type: <span class="c-string">'AJOUTER_ARTICLE'</span>, payload: { id: <span class="c-number">3</span>, nom: <span class="c-string">'Souris'</span>, prix: <span class="c-number">29</span> } }
+{ type: <span class="c-string">'SUPPRIMER_ARTICLE'</span>, payload: <span class="c-number">3</span> }         <span class="c-comment">// payload = juste l'id</span>
+{ type: <span class="c-string">'CHANGER_QUANTITE'</span>, payload: { id: <span class="c-number">3</span>, quantite: <span class="c-number">2</span> } }
+
+<span class="c-comment">// Bonne pratique — nommer les actions avec des constantes</span>
+<span class="c-keyword">const</span> ACTIONS = {
+  AJOUTER:    <span class="c-string">'AJOUTER_ARTICLE'</span>,
+  SUPPRIMER:  <span class="c-string">'SUPPRIMER_ARTICLE'</span>,
+  VIDER:      <span class="c-string">'VIDER_PANIER'</span>,
+};
+
+<span class="c-comment">// Utilisation avec constantes</span>
+<span class="c-function">dispatch</span>({ type: ACTIONS.AJOUTER, payload: produit });</pre>
+            </div>
+
+            <h3>3.2 Les règles du reducer</h3>
+
+            <div class="code-block">
+                <div class="code-label">Règles à respecter</div>
+                <pre><span class="c-comment">// CORRECT — retourner un NOUVEAU state (spread)</span>
+<span class="c-keyword">case</span> <span class="c-string">'INCREMENTER'</span>:
+  <span class="c-keyword">return</span> { ...state, count: state.count + <span class="c-number">1</span> };
+
+<span class="c-comment">// INTERDIT — muter l'état existant directement</span>
+<span class="c-keyword">case</span> <span class="c-string">'INCREMENTER'</span>:
+  state.count = state.count + <span class="c-number">1</span>; <span class="c-comment">// mutation directe !</span>
+  <span class="c-keyword">return</span> state;                     <span class="c-comment">// React ne détecte pas le changement</span>
+
+<span class="c-comment">// CORRECT — modifier un tableau de façon immuable</span>
+<span class="c-keyword">case</span> <span class="c-string">'SUPPRIMER_ARTICLE'</span>:
+  <span class="c-keyword">return</span> {
+    ...state,
+    articles: state.articles.<span class="c-function">filter</span>(a => a.id !== action.payload)
+  };
+
+<span class="c-comment">// INTERDIT — pas d'effets de bord dans le reducer</span>
+<span class="c-keyword">case</span> <span class="c-string">'CHARGER'</span>:
+  <span class="c-keyword">const</span> data = <span class="c-keyword">await</span> <span class="c-function">fetch</span>(<span class="c-string">'...'</span>); <span class="c-comment">//  jamais d'async dans le reducer</span>
+
+<span class="c-comment">// TOUJOURS — gérer le case default</span>
+<span class="c-keyword">default</span>:
+  <span class="c-keyword">return</span> state; <span class="c-comment">// action inconnue → state inchangé</span></pre>
+            </div>
+
+            <div class="warning-box">
+                <strong>Le reducer doit être une fonction pure :</strong> Pour un même state + une même action en entrée, il retourne TOUJOURS le même nouveau state en sortie. Pas de fetch, pas de setTimeout, pas de Math.random(), pas de mutation. Toute la logique est prévisible et testable.
+            </div>
+
+        </section>
+
+        <!-- SECTION 4 -->
+        <section id="section4" class="page-break">
+            <h2>4. Exemple 1 — Compteur avec pas variable</h2>
+
+            <p>Reprenons le compteur classique de useState, mais en ajoutant plusieurs fonctionnalités liées : valeur, pas d'incrémentation, minimum et maximum. Avec useState, ça nécessiterait 4 states séparés. Avec useReducer, un seul objet state suffit.</p>
+
+            <h3>4.1 Le reducer</h3>
+
+            <div class="code-block">
+                <div class="code-label">compteurReducer.js</div>
+                <pre><span class="c-comment">// État initial — tout ce qui décrit le compteur</span>
+<span class="c-keyword">export const</span> etatInitial = {
+  count: <span class="c-number">0</span>,
+  pas:   <span class="c-number">1</span>,
+  min:  -<span class="c-number">10</span>,
+  max:   <span class="c-number">10</span>,
+};
+
+<span class="c-keyword">export function</span> <span class="c-function">compteurReducer</span>(state, action) {
+  <span class="c-keyword">switch</span> (action.type) {
+
+    <span class="c-keyword">case</span> <span class="c-string">'INCREMENTER'</span>: {
+      <span class="c-comment">// Ne pas dépasser le max</span>
+      <span class="c-keyword">const</span> nouvelleValeur = state.count + state.pas;
+      <span class="c-keyword">return</span> { ...state, count: <span class="c-function">Math.min</span>(nouvelleValeur, state.max) };
+    }
+
+    <span class="c-keyword">case</span> <span class="c-string">'DECREMENTER'</span>: {
+      <span class="c-keyword">const</span> nouvelleValeur = state.count - state.pas;
+      <span class="c-keyword">return</span> { ...state, count: <span class="c-function">Math.max</span>(nouvelleValeur, state.min) };
+    }
+
+    <span class="c-keyword">case</span> <span class="c-string">'SET_PAS'</span>:
+      <span class="c-keyword">return</span> { ...state, pas: action.payload };
+
+    <span class="c-keyword">case</span> <span class="c-string">'SET_MIN'</span>:
+      <span class="c-keyword">return</span> { ...state, min: action.payload };
+
+    <span class="c-keyword">case</span> <span class="c-string">'SET_MAX'</span>:
+      <span class="c-keyword">return</span> { ...state, max: action.payload };
+
+    <span class="c-keyword">case</span> <span class="c-string">'RESET'</span>:
+      <span class="c-keyword">return</span> etatInitial;
+
+    <span class="c-keyword">default</span>:
+      <span class="c-keyword">return</span> state;
+  }
+}</pre>
+            </div>
+
+            <h3>4.2 Le composant</h3>
+
+            <div class="code-block">
+                <div class="code-label">Compteur.jsx</div>
+                <pre><span class="c-keyword">import</span> { useReducer } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+<span class="c-keyword">import</span> { compteurReducer, etatInitial } <span class="c-keyword">from</span> <span class="c-string">'./compteurReducer'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">Compteur</span>() {
+  <span class="c-keyword">const</span> [state, dispatch] = <span class="c-function">useReducer</span>(compteurReducer, etatInitial);
+
+  <span class="c-comment">// Indicateur visuel</span>
+  <span class="c-keyword">const</span> couleur = state.count &gt; <span class="c-number">0</span>
+    ? <span class="c-string">'green'</span>
+    : state.count &lt; <span class="c-number">0</span>
+    ? <span class="c-string">'red'</span>
+    : <span class="c-string">'black'</span>;
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h2</span> <span class="c-attr">style</span>=<span class="c-value">{{ color: couleur, fontSize: '3em' }}</span><span class="c-tag">&gt;</span>
+        {state.count}
+      <span class="c-tag">&lt;/h2&gt;</span>
+
+      <span class="c-tag">&lt;div&gt;</span>
+        <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'DECREMENTER' })}</span><span class="c-tag">&gt;</span>
+          − {state.pas}
+        <span class="c-tag">&lt;/button&gt;</span>
+        <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'INCREMENTER' })}</span><span class="c-tag">&gt;</span>
+          + {state.pas}
+        <span class="c-tag">&lt;/button&gt;</span>
+        <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'RESET' })}</span><span class="c-tag">&gt;</span>
+          Reset
+        <span class="c-tag">&lt;/button&gt;</span>
+      <span class="c-tag">&lt;/div&gt;</span>
+
+      <span class="c-tag">&lt;div&gt;</span>
+        <span class="c-tag">&lt;label&gt;</span>Pas :<span class="c-tag">&lt;/label&gt;</span>
+        <span class="c-tag">&lt;input</span>
+          <span class="c-attr">type</span>=<span class="c-string">"number"</span> <span class="c-attr">value</span>=<span class="c-value">{state.pas}</span> <span class="c-attr">min</span>=<span class="c-string">"1"</span>
+          <span class="c-attr">onChange</span>=<span class="c-value">{e => dispatch({ type: 'SET_PAS', payload: Number(e.target.value) })}</span>
+        <span class="c-tag">/&gt;</span>
+      <span class="c-tag">&lt;/div&gt;</span>
+
+      <span class="c-tag">&lt;p&gt;</span>Limites : {state.min} / {state.max}<span class="c-tag">&lt;/p&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <div class="success-box">
+                <strong>Ce qu'on a gagné par rapport à useState :</strong>
+                <ul style="margin-top: 8px;">
+                    <li>Toute la logique (clamp min/max, calcul du pas) est dans le reducer, hors du composant</li>
+                    <li>Le composant est devenu "bête" : il dispatche des actions sans connaître la logique</li>
+                    <li>On peut tester le reducer indépendamment du composant</li>
+                    <li>Ajouter une nouvelle action = ajouter un case dans le switch, rien d'autre</li>
+                </ul>
+            </div>
+
+        </section>
+
+        <!-- SECTION 5 -->
+        <section id="section5" class="page-break">
+            <h2>5. Exemple 2 — Todo List</h2>
+
+            <p>La Todo List est l'exemple parfait pour useReducer : plusieurs actions (ajouter, supprimer, cocher, filtrer) qui opèrent toutes sur le même tableau de tâches.</p>
+
+            <h3>5.1 Le reducer</h3>
+
+            <div class="code-block">
+                <div class="code-label">todoReducer.js</div>
+                <pre><span class="c-comment">// État initial</span>
+<span class="c-keyword">export const</span> etatInitial = {
+  taches: [],
+  filtre: <span class="c-string">'toutes'</span>,  <span class="c-comment">// 'toutes' | 'actives' | 'terminees'</span>
+  prochainId: <span class="c-number">1</span>,
+};
+
+<span class="c-keyword">export function</span> <span class="c-function">todoReducer</span>(state, action) {
+  <span class="c-keyword">switch</span> (action.type) {
+
+    <span class="c-keyword">case</span> <span class="c-string">'AJOUTER'</span>:
+      <span class="c-keyword">return</span> {
+        ...state,
+        taches: [
+          ...state.taches,
+          {
+            id:       state.prochainId,
+            texte:    action.payload,
+            terminee: <span class="c-keyword">false</span>,
+          }
+        ],
+        prochainId: state.prochainId + <span class="c-number">1</span>,
+      };
+
+    <span class="c-keyword">case</span> <span class="c-string">'SUPPRIMER'</span>:
+      <span class="c-keyword">return</span> {
+        ...state,
+        taches: state.taches.<span class="c-function">filter</span>(t => t.id !== action.payload),
+      };
+
+    <span class="c-keyword">case</span> <span class="c-string">'TOGGLE'</span>:
+      <span class="c-keyword">return</span> {
+        ...state,
+        taches: state.taches.<span class="c-function">map</span>(t =>
+          t.id === action.payload
+            ? { ...t, terminee: !t.terminee }
+            : t
+        ),
+      };
+
+    <span class="c-keyword">case</span> <span class="c-string">'MODIFIER_TEXTE'</span>:
+      <span class="c-keyword">return</span> {
+        ...state,
+        taches: state.taches.<span class="c-function">map</span>(t =>
+          t.id === action.payload.id
+            ? { ...t, texte: action.payload.texte }
+            : t
+        ),
+      };
+
+    <span class="c-keyword">case</span> <span class="c-string">'SET_FILTRE'</span>:
+      <span class="c-keyword">return</span> { ...state, filtre: action.payload };
+
+    <span class="c-keyword">case</span> <span class="c-string">'SUPPRIMER_TERMINEES'</span>:
+      <span class="c-keyword">return</span> {
+        ...state,
+        taches: state.taches.<span class="c-function">filter</span>(t => !t.terminee),
+      };
+
+    <span class="c-keyword">default</span>:
+      <span class="c-keyword">return</span> state;
+  }
+}</pre>
+            </div>
+
+            <h3>5.2 Le composant principal</h3>
+
+            <div class="code-block">
+                <div class="code-label">TodoApp.jsx</div>
+                <pre><span class="c-keyword">import</span> { useReducer, useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+<span class="c-keyword">import</span> { todoReducer, etatInitial } <span class="c-keyword">from</span> <span class="c-string">'./todoReducer'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">TodoApp</span>() {
+  <span class="c-keyword">const</span> [state, dispatch] = <span class="c-function">useReducer</span>(todoReducer, etatInitial);
+  <span class="c-keyword">const</span> [saisie, setSaisie] = <span class="c-function">useState</span>(<span class="c-string">''</span>); <span class="c-comment">// useState OK pour le champ texte local</span>
+
+  <span class="c-comment">// Variable dérivée — calculée, pas stockée</span>
+  <span class="c-keyword">const</span> tachesFiltrees = state.taches.<span class="c-function">filter</span>(t => {
+    <span class="c-keyword">if</span> (state.filtre === <span class="c-string">'actives'</span>)   <span class="c-keyword">return</span> !t.terminee;
+    <span class="c-keyword">if</span> (state.filtre === <span class="c-string">'terminees'</span>) <span class="c-keyword">return</span>  t.terminee;
+    <span class="c-keyword">return true</span>;
+  });
+
+  <span class="c-keyword">const</span> nombreRestantes = state.taches.<span class="c-function">filter</span>(t => !t.terminee).length;
+
+  <span class="c-keyword">function</span> <span class="c-function">ajouterTache</span>(e) {
+    e.<span class="c-function">preventDefault</span>();
+    <span class="c-keyword">if</span> (!saisie.trim()) <span class="c-keyword">return</span>;
+    <span class="c-function">dispatch</span>({ type: <span class="c-string">'AJOUTER'</span>, payload: saisie.trim() });
+    <span class="c-function">setSaisie</span>(<span class="c-string">''</span>);
+  }
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h2&gt;</span>Mes tâches ({nombreRestantes} restantes)<span class="c-tag">&lt;/h2&gt;</span>
+
+      <span class="c-comment">{/* Formulaire d'ajout */}</span>
+      <span class="c-tag">&lt;form</span> <span class="c-attr">onSubmit</span>=<span class="c-value">{ajouterTache}</span><span class="c-tag">&gt;</span>
+        <span class="c-tag">&lt;input</span>
+          <span class="c-attr">value</span>=<span class="c-value">{saisie}</span>
+          <span class="c-attr">onChange</span>=<span class="c-value">{e => setSaisie(e.target.value)}</span>
+          <span class="c-attr">placeholder</span>=<span class="c-string">"Nouvelle tâche..."</span>
+        <span class="c-tag">/&gt;</span>
+        <span class="c-tag">&lt;button</span> <span class="c-attr">type</span>=<span class="c-string">"submit"</span><span class="c-tag">&gt;</span>Ajouter<span class="c-tag">&lt;/button&gt;</span>
+      <span class="c-tag">&lt;/form&gt;</span>
+
+      <span class="c-comment">{/* Filtres */}</span>
+      {[<span class="c-string">'toutes'</span>, <span class="c-string">'actives'</span>, <span class="c-string">'terminees'</span>].<span class="c-function">map</span>(f => (
+        <span class="c-tag">&lt;button</span>
+          <span class="c-attr">key</span>=<span class="c-value">{f}</span>
+          <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'SET_FILTRE', payload: f })}</span>
+          <span class="c-attr">style</span>=<span class="c-value">{{ fontWeight: state.filtre === f ? 'bold' : 'normal' }}</span>
+        <span class="c-tag">&gt;</span>
+          {f}
+        <span class="c-tag">&lt;/button&gt;</span>
+      ))}
+
+      <span class="c-comment">{/* Liste */}</span>
+      {tachesFiltrees.<span class="c-function">map</span>(tache => (
+        <span class="c-tag">&lt;div</span> <span class="c-attr">key</span>=<span class="c-value">{tache.id}</span><span class="c-tag">&gt;</span>
+          <span class="c-tag">&lt;input</span>
+            <span class="c-attr">type</span>=<span class="c-string">"checkbox"</span>
+            <span class="c-attr">checked</span>=<span class="c-value">{tache.terminee}</span>
+            <span class="c-attr">onChange</span>=<span class="c-value">{() => dispatch({ type: 'TOGGLE', payload: tache.id })}</span>
+          <span class="c-tag">/&gt;</span>
+          <span class="c-tag">&lt;span</span> <span class="c-attr">style</span>=<span class="c-value">{{ textDecoration: tache.terminee ? 'line-through' : 'none' }}</span><span class="c-tag">&gt;</span>
+            {tache.texte}
+          <span class="c-tag">&lt;/span&gt;</span>
+          <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'SUPPRIMER', payload: tache.id })}</span><span class="c-tag">&gt;</span>
+            Supprimer
+          <span class="c-tag">&lt;/button&gt;</span>
+        <span class="c-tag">&lt;/div&gt;</span>
+      ))}
+
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'SUPPRIMER_TERMINEES' })}</span><span class="c-tag">&gt;</span>
+        Effacer les tâches terminées
+      <span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <div class="info-box">
+                <strong>useState et useReducer ensemble :</strong> On peut utiliser <code>useState</code> pour l'input de saisie (donnée locale, simple) ET <code>useReducer</code> pour la liste de tâches (donnée complexe, partagée). Les deux hooks coexistent parfaitement dans le même composant.
+            </div>
+
+        </section>
+
+        <!-- SECTION 6 -->
+        <section id="section6" class="page-break">
+            <h2>6. Exemple 3 — Panier e-commerce</h2>
+
+            <p>Le panier est le cas d'usage le plus riche pour useReducer. Les actions sont multiples et certaines ont une logique complexe (incrémenter la quantité si l'article existe déjà, calculer le total…).</p>
+
+            <h3>6.1 Le reducer du panier</h3>
+
+            <div class="code-block">
+                <div class="code-label">panierReducer.js</div>
+                <pre><span class="c-keyword">export const</span> etatInitial = {
+  articles: [],
+  coupon:   <span class="c-keyword">null</span>,  <span class="c-comment">// code promo éventuel</span>
+};
+
+<span class="c-keyword">export function</span> <span class="c-function">panierReducer</span>(state, action) {
+  <span class="c-keyword">switch</span> (action.type) {
+
+    <span class="c-keyword">case</span> <span class="c-string">'AJOUTER'</span>: {
+      <span class="c-keyword">const</span> existe = state.articles.<span class="c-function">find</span>(a => a.id === action.payload.id);
+      <span class="c-keyword">if</span> (existe) {
+        <span class="c-comment">// L'article existe → incrémenter la quantité</span>
+        <span class="c-keyword">return</span> {
+          ...state,
+          articles: state.articles.<span class="c-function">map</span>(a =>
+            a.id === action.payload.id
+              ? { ...a, quantite: a.quantite + <span class="c-number">1</span> }
+              : a
+          ),
+        };
+      }
+      <span class="c-comment">// Nouvel article → l'ajouter avec quantite: 1</span>
+      <span class="c-keyword">return</span> {
+        ...state,
+        articles: [...state.articles, { ...action.payload, quantite: <span class="c-number">1</span> }],
+      };
+    }
+
+    <span class="c-keyword">case</span> <span class="c-string">'RETIRER'</span>:
+      <span class="c-keyword">return</span> {
+        ...state,
+        articles: state.articles.<span class="c-function">filter</span>(a => a.id !== action.payload),
+      };
+
+    <span class="c-keyword">case</span> <span class="c-string">'SET_QUANTITE'</span>: {
+      <span class="c-keyword">const</span> { id, quantite } = action.payload;
+      <span class="c-comment">// Si quantité tombe à 0 → supprimer l'article</span>
+      <span class="c-keyword">if</span> (quantite &lt;= <span class="c-number">0</span>) {
+        <span class="c-keyword">return</span> {
+          ...state,
+          articles: state.articles.<span class="c-function">filter</span>(a => a.id !== id),
+        };
+      }
+      <span class="c-keyword">return</span> {
+        ...state,
+        articles: state.articles.<span class="c-function">map</span>(a =>
+          a.id === id ? { ...a, quantite } : a
+        ),
+      };
+    }
+
+    <span class="c-keyword">case</span> <span class="c-string">'APPLIQUER_COUPON'</span>:
+      <span class="c-keyword">return</span> { ...state, coupon: action.payload };
+
+    <span class="c-keyword">case</span> <span class="c-string">'VIDER'</span>:
+      <span class="c-keyword">return</span> etatInitial;
+
+    <span class="c-keyword">default</span>:
+      <span class="c-keyword">return</span> state;
+  }
+}</pre>
+            </div>
+
+            <h3>6.2 Le composant panier</h3>
+
+            <div class="code-block">
+                <div class="code-label">Panier.jsx</div>
+                <pre><span class="c-keyword">import</span> { useReducer } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+<span class="c-keyword">import</span> { panierReducer, etatInitial } <span class="c-keyword">from</span> <span class="c-string">'./panierReducer'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">Panier</span>() {
+  <span class="c-keyword">const</span> [state, dispatch] = <span class="c-function">useReducer</span>(panierReducer, etatInitial);
+
+  <span class="c-comment">// Variables dérivées</span>
+  <span class="c-keyword">const</span> total = state.articles.<span class="c-function">reduce</span>(
+    (acc, a) => acc + a.prix * a.quantite, <span class="c-number">0</span>
+  );
+  <span class="c-keyword">const</span> totalApplique = state.coupon === <span class="c-string">'PROMO10'</span>
+    ? total * <span class="c-number">0.9</span>
+    : total;
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;h2&gt;</span>Panier ({state.articles.length} articles)<span class="c-tag">&lt;/h2&gt;</span>
+
+      {state.articles.<span class="c-function">map</span>(article => (
+        <span class="c-tag">&lt;div</span> <span class="c-attr">key</span>=<span class="c-value">{article.id}</span><span class="c-tag">&gt;</span>
+          <span class="c-tag">&lt;span&gt;</span>{article.nom}<span class="c-tag">&lt;/span&gt;</span>
+          <span class="c-tag">&lt;input</span>
+            <span class="c-attr">type</span>=<span class="c-string">"number"</span>
+            <span class="c-attr">value</span>=<span class="c-value">{article.quantite}</span>
+            <span class="c-attr">min</span>=<span class="c-string">"0"</span>
+            <span class="c-attr">onChange</span>=<span class="c-value">{e => dispatch({
+              type: 'SET_QUANTITE',
+              payload: { id: article.id, quantite: Number(e.target.value) }
+            })}</span>
+          <span class="c-tag">/&gt;</span>
+          <span class="c-tag">&lt;span&gt;</span>{(article.prix * article.quantite).toFixed(2)} €<span class="c-tag">&lt;/span&gt;</span>
+          <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'RETIRER', payload: article.id })}</span><span class="c-tag">&gt;</span>
+            Retirer
+          <span class="c-tag">&lt;/button&gt;</span>
+        <span class="c-tag">&lt;/div&gt;</span>
+      ))}
+
+      <span class="c-tag">&lt;p&gt;</span>Total : {totalApplique.toFixed(2)} €
+        {state.coupon &amp;&amp; <span class="c-tag">&lt;em&gt;</span> (promo -10%)<span class="c-tag">&lt;/em&gt;</span>}
+      <span class="c-tag">&lt;/p&gt;</span>
+
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'APPLIQUER_COUPON', payload: 'PROMO10' })}</span><span class="c-tag">&gt;</span>
+        Appliquer PROMO10
+      <span class="c-tag">&lt;/button&gt;</span>
+
+      <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'VIDER' })}</span><span class="c-tag">&gt;</span>
+        Vider le panier
+      <span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}</pre>
+            </div>
+
+        </section>
+
+        <!-- SECTION 7 -->
+        <section id="section7" class="page-break">
+            <h2>7. useState vs useReducer — Comment choisir ?</h2>
+
+            <div class="comparison-table">
+                <div class="comparison-column">
+                    <div class="comparison-header usestate">useState</div>
+                    <div class="comparison-content">
+                        <div class="code-block" style="margin:0;border-left:none;border-radius:0;">
+                            <pre><span class="c-comment">// Simple, peu de données</span>
+<span class="c-keyword">const</span> [count, setCount] = <span class="c-function">useState</span>(<span class="c-number">0</span>);
+<span class="c-keyword">const</span> [nom, setNom]     = <span class="c-function">useState</span>(<span class="c-string">''</span>);
+<span class="c-keyword">const</span> [ouvert, setOuvert] = <span class="c-function">useState</span>(<span class="c-keyword">false</span>);
+
+<span class="c-comment">// Utiliser useState quand :
+// - 1-2 données simples et indépendantes
+// - Les mises à jour sont directes
+// - Pas de logique complexe
+// - Données locales à un seul composant
+
+// Exemples parfaits :
+// - Ouverture/fermeture d'un modal
+// - Valeur d'un champ texte
+// - Toggle d'un menu
+// - Compteur simple</span></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-column">
+                    <div class="comparison-header usereducer">useReducer</div>
+                    <div class="comparison-content">
+                        <div class="code-block" style="margin:0;border-left:none;border-radius:0;">
+                            <pre><span class="c-comment">// Complexe, données liées</span>
+<span class="c-keyword">const</span> [state, dispatch] = <span class="c-function">useReducer</span>(
+  reducer,
+  { articles: [], filtre: <span class="c-string">'toutes'</span>, total: <span class="c-number">0</span> }
+);
+
+<span class="c-comment">// Utiliser useReducer quand :
+// - 3+ données qui évoluent ensemble
+// - Plusieurs actions possibles
+// - La logique est complexe
+// - Le prochain state dépend du state actuel
+
+// Exemples parfaits :
+// - Panier e-commerce
+// - Todo List avec filtres
+// - Formulaire multi-étapes
+// - Jeu (score, vies, niveau)</span></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critère</th>
+                        <th>useState</th>
+                        <th>useReducer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Nombre de variables</td><td>1 à 2</td><td>3 et plus (souvent un objet)</td></tr>
+                    <tr><td>Complexité de la logique</td><td>Directe (setVal)</td><td>Complexe (switch + cas)</td></tr>
+                    <tr><td>Nombre d'actions</td><td>1 à 2</td><td>Plusieurs types d'actions</td></tr>
+                    <tr><td>Testabilité</td><td>Difficile (logique dans le composant)</td><td>Facile (reducer = fonction pure)</td></tr>
+                    <tr><td>Lisibilité du composant</td><td>Simple</td><td>Plus épuré (logique externalisée)</td></tr>
+                    <tr><td>Débogage</td><td>Basique</td><td>Actions nommées, plus traçable</td></tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <strong>La règle des 3 :</strong> Si tu as besoin de 3 useState ou plus pour un même "objet fonctionnel" (un panier, une tâche, un formulaire), c'est le signal pour passer à useReducer et regrouper tout dans un seul state objet.
+            </div>
+
+        </section>
+
+        <!-- SECTION 8 -->
+        <section id="section8" class="page-break">
+            <h2>8. useReducer + useContext — Le duo puissant</h2>
+
+            <p>Combiné avec <code>useContext</code> (vu au module précédent), <code>useReducer</code> permet de créer un <strong>state global géré par actions</strong>, accessible dans toute l'application. C'est le pattern qui remplace Redux dans la majorité des cas.</p>
+
+            <h3>8.1 Le principe</h3>
+
+            <div class="diagram">
+                <div class="diagram-header">useReducer + useContext = mini-Redux</div>
+                <div class="diagram-step">
+                    <span class="step-label">useReducer :</span>
+                    Gère l'état et les transitions. Le state est un objet. Chaque action modifie cet objet de façon prévisible.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">useContext :</span>
+                    Rend le state ET dispatch accessibles dans toute l'application, sans prop drilling.
+                </div>
+                <div class="diagram-step">
+                    <span class="step-label">Résultat :</span>
+                    N'importe quel composant peut lire le state global OU déclencher une action — comme avec Redux, mais en natif React.
+                </div>
+            </div>
+
+            <h3>8.2 PanierContext avec useReducer</h3>
+
+            <div class="code-block">
+                <div class="code-label">context/PanierContext.jsx — avec useReducer</div>
+                <pre><span class="c-keyword">import</span> { createContext, useContext, useReducer } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+<span class="c-keyword">import</span> { panierReducer, etatInitial } <span class="c-keyword">from</span> <span class="c-string">'./panierReducer'</span>;
+
+<span class="c-keyword">const</span> PanierContext = <span class="c-function">createContext</span>();
+
+<span class="c-keyword">export function</span> <span class="c-function">usePanier</span>() {
+  <span class="c-keyword">return</span> <span class="c-function">useContext</span>(PanierContext);
+}
+
+<span class="c-keyword">export function</span> <span class="c-function">PanierProvider</span>({ children }) {
+  <span class="c-comment">// useReducer remplace useState ici</span>
+  <span class="c-keyword">const</span> [state, dispatch] = <span class="c-function">useReducer</span>(panierReducer, etatInitial);
+
+  <span class="c-comment">// Variables dérivées calculées ici, accessibles partout</span>
+  <span class="c-keyword">const</span> totalArticles = state.articles.<span class="c-function">reduce</span>(
+    (acc, a) => acc + a.quantite, <span class="c-number">0</span>
+  );
+  <span class="c-keyword">const</span> prixTotal = state.articles.<span class="c-function">reduce</span>(
+    (acc, a) => acc + a.prix * a.quantite, <span class="c-number">0</span>
+  );
+
+  <span class="c-comment">// On expose state, dispatch ET les variables dérivées</span>
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;PanierContext.Provider</span> <span class="c-attr">value</span>=<span class="c-value">{{
+      articles: state.articles,
+      coupon:   state.coupon,
+      totalArticles,
+      prixTotal,
+      dispatch,
+    }}</span><span class="c-tag">&gt;</span>
+      {children}
+    <span class="c-tag">&lt;/PanierContext.Provider&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <h3>8.3 Utilisation dans les composants</h3>
+
+            <div class="code-block">
+                <div class="code-label">components/BoutonAjouter.jsx</div>
+                <pre><span class="c-keyword">import</span> { <span class="c-function">usePanier</span> } <span class="c-keyword">from</span> <span class="c-string">'../context/PanierContext'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">BoutonAjouter</span>({ produit }) {
+  <span class="c-keyword">const</span> { dispatch } = <span class="c-function">usePanier</span>();
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;button</span> <span class="c-attr">onClick</span>=<span class="c-value">{() => dispatch({ type: 'AJOUTER', payload: produit })}</span><span class="c-tag">&gt;</span>
+      Ajouter au panier
+    <span class="c-tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="c-keyword">export default</span> BoutonAjouter;</pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">components/BadgePanier.jsx</div>
+                <pre><span class="c-keyword">import</span> { <span class="c-function">usePanier</span> } <span class="c-keyword">from</span> <span class="c-string">'../context/PanierContext'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">BadgePanier</span>() {
+  <span class="c-keyword">const</span> { totalArticles } = <span class="c-function">usePanier</span>();
+
+  <span class="c-keyword">return</span> <span class="c-tag">&lt;span&gt;</span>🛒 {totalArticles}<span class="c-tag">&lt;/span&gt;</span>;
+}</pre>
+            </div>
+
+            <div class="success-box">
+                <strong>Ce qu'on a gagné :</strong>
+                <ul style="margin-top: 8px;">
+                    <li>Toute la logique panier est dans <code>panierReducer.js</code> — testable, lisible, isolée</li>
+                    <li>N'importe quel composant peut dispatcher une action avec <code>dispatch</code></li>
+                    <li>N'importe quel composant peut lire le state ou les variables dérivées</li>
+                    <li>Ajouter une fonctionnalité = ajouter un <code>case</code> dans le reducer, rien d'autre dans les composants</li>
+                </ul>
+            </div>
+
+        </section>
+
+        <!-- SECTION 9 -->
+        <section id="section9" class="page-break">
+            <h2>9. Exercices</h2>
+
+            <div class="exercise">
+                <h4>Exercice 1 — Compteur avancé (débutant)</h4>
+                <p><strong>Objectif :</strong> Refactoriser un compteur useState en useReducer.</p>
+                <ol style="margin-left:25px;">
+                    <li>Partir d'un compteur avec <code>useState</code> (incrémenter, décrémenter, reset).</li>
+                    <li>Créer un fichier <code>compteurReducer.js</code> avec le reducer et l'état initial.</li>
+                    <li>Remplacer les <code>useState</code> par <code>useReducer(compteurReducer, etatInitial)</code>.</li>
+                    <li>Remplacer les <code>setCount()</code> par <code>dispatch({ type: '...' })</code>.</li>
+                    <li>Ajouter une action <code>SET_VALEUR</code> qui permet de saisir une valeur directement avec un input.</li>
+                </ol>
+                <div class="success-box" style="margin-top:12px;">
+                    <strong>Résultat attendu :</strong> Le composant fait exactement la même chose, mais toute la logique est dans le reducer.
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercice 2 — Formulaire multi-étapes (intermédiaire)</h4>
+                <p><strong>Objectif :</strong> Gérer un formulaire de 3 étapes avec useReducer.</p>
+                <ol style="margin-left:25px;">
+                    <li>Créer un formulaire avec 3 étapes : Identité (nom, prénom) → Coordonnées (email, téléphone) → Confirmation.</li>
+                    <li>L'état contient : <code>etape</code>, <code>nom</code>, <code>prenom</code>, <code>email</code>, <code>telephone</code>, <code>erreurs</code>.</li>
+                    <li>Actions : <code>ETAPE_SUIVANTE</code>, <code>ETAPE_PRECEDENTE</code>, <code>MODIFIER_CHAMP</code>, <code>SET_ERREURS</code>, <code>RESET</code>.</li>
+                    <li>La navigation entre étapes valide les champs de l'étape courante.</li>
+                    <li>L'étape 3 affiche un résumé de toutes les données saisies.</li>
+                </ol>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercice 3 — Panier + useContext (avancé)</h4>
+                <p><strong>Objectif :</strong> Combiner useReducer et useContext pour un panier global.</p>
+                <ol style="margin-left:25px;">
+                    <li>Créer <code>panierReducer.js</code> avec les actions : AJOUTER, RETIRER, SET_QUANTITE, VIDER.</li>
+                    <li>Créer <code>PanierContext.jsx</code> avec <code>PanierProvider</code> utilisant <code>useReducer</code>.</li>
+                    <li>Brancher le Provider dans <code>App.jsx</code>.</li>
+                    <li>Créer une page Boutique avec 4 produits fictifs, chacun avec un bouton "Ajouter au panier".</li>
+                    <li>Afficher le badge avec le nombre d'articles dans la navbar.</li>
+                    <li>Créer une page Panier avec la liste, les quantités modifiables et le total.</li>
+                    <li>Bonus : ajouter une action <code>APPLIQUER_COUPON</code> et un input pour saisir un code promo.</li>
+                </ol>
+            </div>
+
+        </section>
+
+        <!-- SECTION 10 -->
+        <section id="section10" class="page-break">
+            <h2>10. Projet fil rouge — Gestionnaire de tâches avancé</h2>
+
+            <p>Reprendre le projet Todo List du cours de base et le migrer vers <code>useReducer</code> + <code>useContext</code>, en ajoutant de nouvelles fonctionnalités qui justifient le changement.</p>
+
+            <h3>10.1 Structure</h3>
+
+            <div class="code-block">
+                <div class="code-label">Structure</div>
+                <pre>src/
+├── reducers/
+│   └── todoReducer.js       <span class="c-comment">← toute la logique</span>
+├── context/
+│   └── TodoContext.jsx      <span class="c-comment">← useReducer + useContext</span>
+├── components/
+│   ├── FormulaireAjout.jsx  <span class="c-comment">← dispatche AJOUTER</span>
+│   ├── CarteTache.jsx       <span class="c-comment">← dispatche TOGGLE, SUPPRIMER</span>
+│   ├── FiltresBarre.jsx     <span class="c-comment">← dispatche SET_FILTRE</span>
+│   └── Stats.jsx            <span class="c-comment">← lit state, affiche les stats</span>
+└── App.jsx                  <span class="c-comment">← TodoProvider + Router</span></pre>
+            </div>
+
+            <h3>10.2 État initial et actions disponibles</h3>
+
+            <div class="code-block">
+                <div class="code-label">todoReducer.js — état et actions</div>
+                <pre><span class="c-keyword">export const</span> etatInitial = {
+  taches:     [],
+  filtre:     <span class="c-string">'toutes'</span>,       <span class="c-comment">// 'toutes' | 'actives' | 'terminees'</span>
+  tri:        <span class="c-string">'date'</span>,          <span class="c-comment">// 'date' | 'alpha' | 'priorite'</span>
+  prochainId: <span class="c-number">1</span>,
+};
+
+<span class="c-comment">// Actions disponibles
+// AJOUTER         payload: { texte, priorite }
+// SUPPRIMER       payload: id
+// TOGGLE          payload: id
+// MODIFIER_TEXTE  payload: { id, texte }
+// SET_FILTRE      payload: 'toutes' | 'actives' | 'terminees'
+// SET_TRI         payload: 'date' | 'alpha' | 'priorite'
+// SUPPRIMER_TERMINEES  (pas de payload)
+// RESET                (pas de payload)</span></pre>
+            </div>
+
+            <h3>10.3 Le contexte Todo</h3>
+
+            <div class="code-block">
+                <div class="code-label">context/TodoContext.jsx</div>
+                <pre><span class="c-keyword">import</span> { createContext, useContext, useReducer } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+<span class="c-keyword">import</span> { todoReducer, etatInitial } <span class="c-keyword">from</span> <span class="c-string">'../reducers/todoReducer'</span>;
+
+<span class="c-keyword">const</span> TodoContext = <span class="c-function">createContext</span>();
+
+<span class="c-keyword">export function</span> <span class="c-function">useTodo</span>() {
+  <span class="c-keyword">return</span> <span class="c-function">useContext</span>(TodoContext);
+}
+
+<span class="c-keyword">export function</span> <span class="c-function">TodoProvider</span>({ children }) {
+  <span class="c-keyword">const</span> [state, dispatch] = <span class="c-function">useReducer</span>(todoReducer, etatInitial);
+
+  <span class="c-comment">// Variables dérivées</span>
+  <span class="c-keyword">const</span> tachesFiltrees = state.taches
+    .<span class="c-function">filter</span>(t => {
+      <span class="c-keyword">if</span> (state.filtre === <span class="c-string">'actives'</span>)   <span class="c-keyword">return</span> !t.terminee;
+      <span class="c-keyword">if</span> (state.filtre === <span class="c-string">'terminees'</span>) <span class="c-keyword">return</span>  t.terminee;
+      <span class="c-keyword">return true</span>;
+    })
+    .<span class="c-function">sort</span>((a, b) => {
+      <span class="c-keyword">if</span> (state.tri === <span class="c-string">'alpha'</span>) <span class="c-keyword">return</span> a.texte.localeCompare(b.texte);
+      <span class="c-keyword">return</span> <span class="c-number">0</span>; <span class="c-comment">// 'date' : ordre d'insertion</span>
+    });
+
+  <span class="c-keyword">const</span> stats = {
+    total:     state.taches.length,
+    actives:   state.taches.<span class="c-function">filter</span>(t => !t.terminee).length,
+    terminees: state.taches.<span class="c-function">filter</span>(t =>  t.terminee).length,
+  };
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;TodoContext.Provider</span> <span class="c-attr">value</span>=<span class="c-value">{{ state, dispatch, tachesFiltrees, stats }}</span><span class="c-tag">&gt;</span>
+      {children}
+    <span class="c-tag">&lt;/TodoContext.Provider&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <div class="success-box">
+                <strong>Fonctionnalités du projet :</strong>
+                <ul style="margin-top: 8px;">
+                    <li>Ajouter une tâche avec un niveau de priorité (haute / normale / basse)</li>
+                    <li>Cocher une tâche (toggle terminée / active)</li>
+                    <li>Supprimer une tâche ou effacer toutes les terminées</li>
+                    <li>Filtrer par statut et trier par nom ou priorité</li>
+                    <li>Stats en temps réel : total, actives, terminées</li>
+                    <li>Modifier le texte d'une tâche existante en double-cliquant</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <strong>Pour aller plus loin :</strong>
+                <ul style="margin-top: 8px;">
+                    <li>Persister le state dans <code>localStorage</code> : initialiser le reducer avec <code>JSON.parse(localStorage.getItem('taches'))</code> et sauvegarder dans un <code>useEffect</code></li>
+                    <li>Écrire des tests unitaires pour le reducer : c'est une fonction pure, elle se teste comme du JavaScript pur</li>
+                    <li>Passer au module suivant — <strong>Custom Hooks</strong> — pour extraire <code>useFetch</code> et <code>useLocalStorage</code></li>
+                </ul>
+            </div>
+
+        </section>
+
+    </div>
+</div>
+
+<script>
+    function toggleMenu() {
+        const burger = document.querySelector('.burger-menu');
+        const nav = document.getElementById('navMenu');
+        burger.classList.toggle('active');
+        nav.classList.toggle('active');
+    }
+
+    function closeMenu() {
+        const burger = document.querySelector('.burger-menu');
+        const nav = document.getElementById('navMenu');
+        burger.classList.remove('active');
+        nav.classList.remove('active');
+    }
+</script>
+
+</body>
+</html>

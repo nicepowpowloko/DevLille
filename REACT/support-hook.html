@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Hooks - React Avancé</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --real: #A0866B;
+            --conseil: #2C3F77;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: linear-gradient(135deg, var(--conseil) 0%, var(--real) 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        header {
+            background: linear-gradient(135deg, #20232a 0%, #2E75B6 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(97,218,251,0.08) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        header h1 { font-size: 2.8em; margin-bottom: 15px; position: relative; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        header h1 span { color: #61dafb; }
+        header .subtitle { font-size: 1.3em; margin-bottom: 10px; opacity: 0.9; position: relative; }
+        header .author   { font-size: 1.05em; font-style: italic; opacity: 0.7; position: relative; }
+        .react-logo { font-size: 3em; color: #61dafb; margin-bottom: 15px; display: block; position: relative; }
+
+        .burger-menu { display: none; background-color: #20232a; padding: 15px 20px; cursor: pointer; position: sticky; top: 0; z-index: 101; align-items: center; justify-content: space-between; }
+        .burger-text { color: #61dafb; font-size: 1em; font-weight: bold; }
+        .burger-icon { display: flex; flex-direction: column; gap: 5px; width: 30px; }
+        .burger-icon span { width: 100%; height: 3px; background-color: #61dafb; transition: 0.3s; display: block; }
+        .burger-menu.active .burger-icon span:nth-child(1) { transform: rotate(45deg) translate(8px, 8px); }
+        .burger-menu.active .burger-icon span:nth-child(2) { opacity: 0; }
+        .burger-menu.active .burger-icon span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+
+        .nav-menu { background-color: #20232a; padding: 14px 40px; position: sticky; top: 0; z-index: 100; }
+        .nav-menu a { color: #abb2bf; text-decoration: none; margin-right: 18px; font-size: 0.88em; transition: color 0.3s; }
+        .nav-menu a:hover { color: var(--real); border-bottom: #61dafb 2px solid; font-weight: bolder; }
+
+        .content { padding: 40px; }
+
+        h2 { color: var(--real); font-size: 1.9em; margin-top: 40px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #61dafb; }
+        h3 { color: var(--conseil); font-size: 1.35em; margin-top: 30px; margin-bottom: 15px; }
+        h4 { color: #404040; font-size: 1.1em; margin-top: 20px; margin-bottom: 10px; }
+        p  { margin-bottom: 15px; }
+
+        .highlight { background-color: #e8f8fd; border: 1px solid #61dafb; padding: 2px 7px; border-radius: 4px; font-weight: bold; color: #20232a; }
+        code { font-family: 'Courier New', monospace; background-color: #282c34; color: #61dafb; padding: 2px 7px; border-radius: 4px; font-size: 0.92em; }
+
+        .code-block { background-color: #282c34; border-left: 4px solid #61dafb; padding: 22px; margin: 20px 0; border-radius: 6px; overflow-x: auto; position: relative; }
+        .code-block .code-label { position: absolute; top: 8px; right: 12px; background-color: #61dafb; color: #20232a; font-size: 0.75em; font-weight: bold; padding: 2px 8px; border-radius: 4px; }
+        .code-block pre { font-family: 'Courier New', monospace; font-size: 0.93em; line-height: 1.7; color: #abb2bf; white-space: pre; }
+
+        .c-comment  { color: #5c6370; font-style: italic; }
+        .c-keyword  { color: #c678dd; }
+        .c-function { color: #61afef; }
+        .c-string   { color: #98c379; }
+        .c-tag      { color: #e06c75; }
+        .c-attr     { color: #d19a66; }
+        .c-value    { color: #98c379; }
+        .c-number   { color: #d19a66; }
+        .c-hook     { color: #e5c07b; font-weight: bold; }
+
+        .info-box    { background-color: #e8f8fd; border-left: 4px solid #61dafb; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+        .warning-box { background-color: #fff8e6; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+        .success-box { background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+        .error-box   { background-color: #f8d7da; border-left: 4px solid #dc3545; padding: 15px 20px; margin: 20px 0; border-radius: 5px; }
+
+        ul { margin: 12px 0 12px 35px; }
+        li { margin-bottom: 9px; }
+
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; display: block; overflow-x: auto; }
+        table thead, table tbody { display: table; width: 100%; }
+        table th { background-color: #20232a; color: #61dafb; padding: 13px 15px; text-align: left; }
+        table td { padding: 11px 15px; border: 1px solid #ddd; }
+        table tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .diagram { background-color: white; border: 2px solid #61dafb; border-radius: 8px; margin: 25px 0; overflow: hidden; }
+        .diagram-header { background-color: #20232a; color: #61dafb; padding: 14px 20px; font-weight: bold; text-align: center; }
+        .diagram-step { padding: 13px 20px; border-bottom: 1px solid #e8f8fd; }
+        .diagram-step:last-child { border-bottom: none; }
+        .diagram-step:nth-child(even) { background-color: #f9fdff; }
+        .step-label { color: #2E75B6; font-weight: bold; margin-right: 8px; }
+
+        .step-box { background-color: #f9fdff; border: 1px solid #bee8f8; border-radius: 8px; padding: 18px 20px; margin: 15px 0; }
+        .step-box h4 { color: var(--real); margin-top: 0; margin-bottom: 12px; }
+        .step-number { display: inline-flex; align-items: center; justify-content: center; background-color: #61dafb; color: #20232a; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; margin-right: 10px; flex-shrink: 0; }
+
+        .hook-card { background-color: #f9fdff; border: 2px solid #61dafb; border-radius: 8px; margin: 20px 0; overflow: hidden; }
+        .hook-title { background-color: #20232a; color: #61dafb; padding: 12px 20px; font-weight: bold; font-size: 1em; }
+        .hook-body { padding: 20px; }
+
+        .page-break { margin-top: 60px; padding-top: 40px; border-top: 2px solid #e8f8fd; }
+
+        .exercise { background-color: #f0f9ff; border: 2px solid #61dafb; border-radius: 8px; padding: 20px; margin: 25px 0; }
+        .exercise h4 { color: #20232a; margin-top: 0; }
+
+        .concept-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 25px 0; }
+        .concept-card { background-color: #20232a; border-radius: 8px; padding: 20px; color: white; text-align: center; }
+        .concept-card .icon { font-size: 1.5em; color: #61dafb; font-weight: bold; margin-bottom: 10px; }
+        .concept-card h4 { color: #61dafb; margin: 0 0 8px 0; }
+        .concept-card p  { font-size: 0.88em; color: #abb2bf; margin: 0; }
+
+        .comparison-table { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 25px 0; }
+        .comparison-column { border: 2px solid #ddd; border-radius: 8px; overflow: hidden; }
+        .comparison-header { padding: 13px 15px; color: white; text-align: center; font-weight: bold; }
+        .comparison-header.avant  { background-color: #e34c26; }
+        .comparison-header.apres  { background-color: #20232a; color: #61dafb; }
+        .comparison-content { padding: 18px; background-color: #282c34; }
+
+        .result-preview { background-color: white; border: 2px solid #ddd; border-radius: 8px; padding: 20px; margin: 15px 0; }
+        .result-preview .preview-label { background-color: #e8f8fd; border: 1px solid #61dafb; border-radius: 4px; padding: 4px 10px; font-size: 0.8em; font-weight: bold; color: #20232a; display: inline-block; margin-bottom: 12px; }
+
+        /* Hook catalogue cards */
+        .hook-catalogue { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 20px 0; }
+        .hook-cat-card { background-color: #f9fdff; border: 2px solid #61dafb; border-radius: 8px; padding: 16px 18px; }
+        .hook-cat-card h4 { color: #20232a; margin: 0 0 6px 0; font-family: 'Courier New', monospace; font-size: 1em; }
+        .hook-cat-card .hook-tag { display: inline-block; background-color: #e8f8fd; color: #2E75B6; font-size: 0.75em; font-weight: bold; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; }
+        .hook-cat-card p { font-size: 0.88em; color: #555; margin: 0; line-height: 1.5; }
+
+        @media print {
+            .nav-menu, .burger-menu { display: none; }
+            body { background-color: white; }
+            .container { box-shadow: none; }
+        }
+
+        @media (max-width: 900px) {
+            .concept-grid { grid-template-columns: 1fr 1fr; }
+            .hook-catalogue { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 40px 20px; }
+            header h1 { font-size: 1.8em; }
+            .burger-menu { display: flex; }
+            .nav-menu { display: none; padding: 0; max-height: 0; overflow: hidden; }
+            .nav-menu.active { display: block; max-height: 800px; padding: 10px 0; }
+            .nav-menu a { display: block; margin: 0; padding: 12px 20px; border-bottom: 1px solid #333; }
+            .content { padding: 20px 15px; }
+            h2 { font-size: 1.45em; }
+            h3 { font-size: 1.15em; }
+            .comparison-table { grid-template-columns: 1fr; }
+            .concept-grid { grid-template-columns: 1fr; }
+            .code-block { font-size: 0.82em; padding: 15px; }
+        }
+
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.4em; }
+            .content { padding: 15px 10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <span class="react-logo">&#9883;</span>
+        <h1>React — <span>Custom Hooks</span></h1>
+        <p class="subtitle">Extraire et réutiliser la logique entre composants</p>
+        <p class="author">Real Conseil — Formation DWWM</p>
+    </header>
+
+    <div class="burger-menu" onclick="toggleMenu()">
+        <span class="burger-text">Menu Custom Hooks</span>
+        <div class="burger-icon"><span></span><span></span><span></span></div>
+    </div>
+
+    <nav class="nav-menu" id="navMenu">
+        <a href="#section1" onclick="closeMenu()">Le problème</a>
+        <a href="#section2" onclick="closeMenu()">Qu'est-ce que c'est</a>
+        <a href="#section3" onclick="closeMenu()">Règles</a>
+        <a href="#section4" onclick="closeMenu()">useFetch</a>
+        <a href="#section5" onclick="closeMenu()">useLocalStorage</a>
+        <a href="#section6" onclick="closeMenu()">useDebounce</a>
+        <a href="#section7" onclick="closeMenu()">useForm</a>
+        <a href="#section8" onclick="closeMenu()">useWindowSize</a>
+        <a href="#section9" onclick="closeMenu()">Exercices</a>
+        <a href="#section10" onclick="closeMenu()">Projet</a>
+    </nav>
+
+    <div class="content">
+
+        <!-- SECTION 1 -->
+        <section id="section1">
+            <h2>1. Le problème — La logique dupliquée</h2>
+
+            <p>Dans les projets React, on se retrouve souvent à écrire <strong>la même logique</strong> dans plusieurs composants différents. Par exemple : trois composants qui appellent chacun une URL différente répètent exactement le même code <code>useState + useEffect + fetch</code>, seule l'URL change.</p>
+
+            <div class="error-box">
+                <strong>La duplication de code — le vrai problème :</strong><br>
+                Si le comportement doit changer (ajouter un état d'erreur, gérer un timeout, changer le format des données), il faut modifier chaque composant un par un. Si on en oublie un, on a un bug silencieux.
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">Avant — logique dupliquée dans 3 composants</div>
+                <pre><span class="c-comment">// ListeUsers.jsx — fetch répété</span>
+<span class="c-keyword">function</span> <span class="c-function">ListeUsers</span>() {
+  <span class="c-keyword">const</span> [data, setData]       = <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+  <span class="c-keyword">const</span> [loading, setLoading] = <span class="c-function">useState</span>(<span class="c-keyword">true</span>);
+  <span class="c-keyword">const</span> [erreur, setErreur]   = <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+
+  <span class="c-function">useEffect</span>(() => {
+    <span class="c-function">fetch</span>(<span class="c-string">'https://api.exemple.com/users'</span>)
+      .<span class="c-function">then</span>(r => r.<span class="c-function">json</span>())
+      .<span class="c-function">then</span>(setData)
+      .<span class="c-function">catch</span>(setErreur)
+      .<span class="c-function">finally</span>(() => <span class="c-function">setLoading</span>(<span class="c-keyword">false</span>));
+  }, []);
+  <span class="c-comment">// ...</span>
+}
+
+<span class="c-comment">// ListeProduits.jsx — MÊME code, URL différente</span>
+<span class="c-keyword">function</span> <span class="c-function">ListeProduits</span>() {
+  <span class="c-keyword">const</span> [data, setData]       = <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+  <span class="c-keyword">const</span> [loading, setLoading] = <span class="c-function">useState</span>(<span class="c-keyword">true</span>);
+  <span class="c-keyword">const</span> [erreur, setErreur]   = <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+
+  <span class="c-function">useEffect</span>(() => {
+    <span class="c-function">fetch</span>(<span class="c-string">'https://api.exemple.com/products'</span>) <span class="c-comment">// seule différence</span>
+      .<span class="c-function">then</span>(r => r.<span class="c-function">json</span>())
+      .<span class="c-function">then</span>(setData)
+      .<span class="c-function">catch</span>(setErreur)
+      .<span class="c-function">finally</span>(() => <span class="c-function">setLoading</span>(<span class="c-keyword">false</span>));
+  }, []);
+  <span class="c-comment">// ...</span>
+}
+
+<span class="c-comment">// ListeCommandes.jsx — MÊME code encore</span>
+<span class="c-keyword">function</span> <span class="c-function">ListeCommandes</span>() { <span class="c-comment">/* même chose... */</span> }</pre>
+            </div>
+
+            <div class="success-box">
+                <strong>La solution — un Custom Hook :</strong><br>
+                On extrait cette logique dans une fonction <code>useFetch(url)</code>. Les 3 composants deviennent chacun une seule ligne. Si on doit modifier le comportement de fetch, on le fait en un seul endroit.
+            </div>
+
+        </section>
+
+        <!-- SECTION 2 -->
+        <section id="section2" class="page-break">
+            <h2>2. Qu'est-ce qu'un Custom Hook ?</h2>
+
+            <p>Un <span class="highlight">Custom Hook</span> est une <strong>fonction JavaScript ordinaire</strong> dont le nom commence par <code>use</code> et qui peut appeler d'autres Hooks React (<code>useState</code>, <code>useEffect</code>, <code>useContext</code>…). Ce n'est pas une magie React — c'est juste une convention de nommage qui permet à React d'appliquer ses règles correctement.</p>
+
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="icon">use</div>
+                    <h4>Nom en "use"</h4>
+                    <p>La seule règle obligatoire. <code>useFetch</code>, <code>useLocalStorage</code>, <code>useForm</code>... React reconnaît les hooks à ce préfixe.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="icon">&#8635;</div>
+                    <h4>Réutilisable</h4>
+                    <p>Le même hook peut être appelé dans autant de composants qu'on veut. Chaque appel crée son propre state isolé — pas de partage accidentel.</p>
+                </div>
+                <div class="concept-card">
+                    <div class="icon">{ }</div>
+                    <h4>Retourne ce qu'on veut</h4>
+                    <p>Un hook peut retourner une valeur, un tableau, un objet, une fonction — ce dont le composant a besoin pour fonctionner.</p>
+                </div>
+            </div>
+
+            <h3>2.1 Anatomie d'un Custom Hook</h3>
+
+            <div class="code-block">
+                <div class="code-label">Structure type</div>
+                <pre><span class="c-comment">// Un custom hook = une fonction qui commence par "use"</span>
+<span class="c-keyword">function</span> <span class="c-hook">useMonHook</span>(parametre) {
+  <span class="c-comment">// 1. Peut utiliser tous les hooks React</span>
+  <span class="c-keyword">const</span> [valeur, setValeur] = <span class="c-function">useState</span>(parametre);
+
+  <span class="c-comment">// 2. Peut contenir toute la logique nécessaire</span>
+  <span class="c-function">useEffect</span>(() => {
+    <span class="c-comment">// effets de bord, subscriptions, API...</span>
+  }, [parametre]);
+
+  <span class="c-keyword">function</span> <span class="c-function">modifier</span>(nouvelleValeur) {
+    <span class="c-function">setValeur</span>(nouvelleValeur);
+  }
+
+  <span class="c-comment">// 3. Retourne ce dont le composant a besoin</span>
+  <span class="c-keyword">return</span> { valeur, modifier };
+  <span class="c-comment">// ou : return [valeur, modifier];
+  // ou : return valeur;
+  // Libre choix selon ce qui est le plus pratique</span>
+}
+
+<span class="c-comment">// Utilisation dans un composant — comme un hook React natif</span>
+<span class="c-keyword">function</span> <span class="c-function">MonComposant</span>() {
+  <span class="c-keyword">const</span> { valeur, modifier } = <span class="c-hook">useMonHook</span>(<span class="c-string">'initial'</span>);
+  <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>{valeur}<span class="c-tag">&lt;/p&gt;</span>;
+}</pre>
+            </div>
+
+            <h3>2.2 Où placer les Custom Hooks ?</h3>
+
+            <div class="code-block">
+                <div class="code-label">Structure recommandée</div>
+                <pre>src/
+├── hooks/               <span class="c-comment">← dossier dédié aux custom hooks</span>
+│   ├── useFetch.js
+│   ├── useLocalStorage.js
+│   ├── useDebounce.js
+│   ├── useForm.js
+│   └── useWindowSize.js
+├── components/
+├── context/
+└── App.jsx</pre>
+            </div>
+
+            <div class="info-box">
+                <strong>Un fichier par hook :</strong> Chaque custom hook dans son propre fichier dans <code>src/hooks/</code>. C'est la convention la plus répandue en équipe. On retrouve facilement les hooks disponibles, et on les importe proprement depuis n'importe quel composant.
+            </div>
+
+        </section>
+
+        <!-- SECTION 3 -->
+        <section id="section3" class="page-break">
+            <h2>3. Les règles des Hooks — Rappel important</h2>
+
+            <p>Les Custom Hooks suivent exactement les mêmes règles que les hooks React natifs. Ces règles s'appliquent aussi bien à <code>useState</code> qu'à un hook qu'on crée soi-même.</p>
+
+            <div class="error-box">
+                <strong>Règle 1 — Appeler les hooks uniquement au niveau supérieur</strong><br>
+                Ne jamais appeler un hook à l'intérieur d'une condition, d'une boucle ou d'une fonction imbriquée. React doit toujours appeler les hooks dans le même ordre à chaque rendu.
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">Règles des hooks</div>
+                <pre><span class="c-comment">//  INTERDIT — hook dans une condition</span>
+<span class="c-keyword">function</span> <span class="c-function">MonComposant</span>({ estConnecte }) {
+  <span class="c-keyword">if</span> (estConnecte) {
+    <span class="c-keyword">const</span> data = <span class="c-hook">useFetch</span>(<span class="c-string">'/api/profil'</span>); <span class="c-comment">// </span>
+  }
+}
+
+<span class="c-comment">// INTERDIT — hook dans une boucle</span>
+<span class="c-keyword">function</span> <span class="c-function">MonComposant</span>({ ids }) {
+  ids.<span class="c-function">forEach</span>(id => {
+    <span class="c-keyword">const</span> data = <span class="c-hook">useFetch</span>(<span class="c-string">`/api/item/${id}`</span>); <span class="c-comment">// </span>
+  });
+}
+
+<span class="c-comment">// CORRECT — hook au niveau supérieur du composant</span>
+<span class="c-keyword">function</span> <span class="c-function">MonComposant</span>({ url, estConnecte }) {
+  <span class="c-keyword">const</span> { data, loading } = <span class="c-hook">useFetch</span>(url); <span class="c-comment">//  toujours appelé</span>
+
+  <span class="c-keyword">if</span> (!estConnecte) <span class="c-keyword">return</span> <span class="c-keyword">null</span>; <span class="c-comment">// la condition APRÈS le hook</span>
+}
+
+<span class="c-comment">//  CORRECT — hook dans un custom hook</span>
+<span class="c-keyword">function</span> <span class="c-hook">useFetch</span>(url) {
+  <span class="c-keyword">const</span> [data, setData] = <span class="c-function">useState</span>(<span class="c-keyword">null</span>); <span class="c-comment">//  niveau supérieur du hook</span>
+  <span class="c-comment">// ...</span>
+}
+
+<span class="c-comment">// Règle 2 — Appeler les hooks uniquement depuis :
+// → des composants React (fonctions qui retournent du JSX)
+// → d'autres custom hooks (fonctions dont le nom commence par "use")</span></pre>
+            </div>
+
+            <div class="warning-box">
+                <strong>Pourquoi ces règles ?</strong> React mémorise l'état de chaque hook dans un tableau interne, dans l'ordre où ils sont appelés. Si l'ordre change d'un rendu à l'autre (à cause d'une condition), React perd la correspondance entre les hooks et leurs états. Cela provoque des bugs imprévisibles.
+            </div>
+
+        </section>
+
+        <!-- SECTION 4 -->
+        <section id="section4" class="page-break">
+            <h2>4. useFetch — Récupérer des données depuis une API</h2>
+
+            <p>Le hook le plus utile à connaître. Il encapsule le pattern <code>useState + useEffect + fetch</code> et le rend réutilisable pour n'importe quelle URL.</p>
+
+            <h3>4.1 Version simple</h3>
+
+            <div class="code-block">
+                <div class="code-label">hooks/useFetch.js — version de base</div>
+                <pre><span class="c-keyword">import</span> { useState, useEffect } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-keyword">function</span> <span class="c-hook">useFetch</span>(url) {
+  <span class="c-keyword">const</span> [data, setData]       = <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+  <span class="c-keyword">const</span> [loading, setLoading] = <span class="c-function">useState</span>(<span class="c-keyword">true</span>);
+  <span class="c-keyword">const</span> [erreur, setErreur]   = <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+
+  <span class="c-function">useEffect</span>(() => {
+    <span class="c-comment">// Réinitialiser à chaque changement d'URL</span>
+    <span class="c-function">setLoading</span>(<span class="c-keyword">true</span>);
+    <span class="c-function">setErreur</span>(<span class="c-keyword">null</span>);
+
+    <span class="c-function">fetch</span>(url)
+      .<span class="c-function">then</span>(response => {
+        <span class="c-keyword">if</span> (!response.ok) {
+          <span class="c-keyword">throw new</span> <span class="c-function">Error</span>(<span class="c-string">`Erreur HTTP : ${response.status}`</span>);
+        }
+        <span class="c-keyword">return</span> response.<span class="c-function">json</span>();
+      })
+      .<span class="c-function">then</span>(setData)
+      .<span class="c-function">catch</span>(err => <span class="c-function">setErreur</span>(err.message))
+      .<span class="c-function">finally</span>(() => <span class="c-function">setLoading</span>(<span class="c-keyword">false</span>));
+  }, [url]); <span class="c-comment">// se relance si l'URL change</span>
+
+  <span class="c-keyword">return</span> { data, loading, erreur };
+}
+
+<span class="c-keyword">export default</span> <span class="c-hook">useFetch</span>;</pre>
+            </div>
+
+            <h3>4.2 Utilisation dans les composants</h3>
+
+            <div class="comparison-table">
+                <div class="comparison-column">
+                    <div class="comparison-header avant">Avant — logique dans le composant</div>
+                    <div class="comparison-content">
+                        <div class="code-block" style="margin:0;border-left:none;border-radius:0;">
+                            <pre><span class="c-keyword">function</span> <span class="c-function">ListeUsers</span>() {
+  <span class="c-keyword">const</span> [data, setData] =
+    <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+  <span class="c-keyword">const</span> [loading, setLoading] =
+    <span class="c-function">useState</span>(<span class="c-keyword">true</span>);
+  <span class="c-keyword">const</span> [erreur, setErreur] =
+    <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+
+  <span class="c-function">useEffect</span>(() => {
+    <span class="c-function">fetch</span>(<span class="c-string">'/api/users'</span>)
+      .<span class="c-function">then</span>(r => r.<span class="c-function">json</span>())
+      .<span class="c-function">then</span>(setData)
+      .<span class="c-function">catch</span>(setErreur)
+      .<span class="c-function">finally</span>(()=>
+        <span class="c-function">setLoading</span>(<span class="c-keyword">false</span>));
+  }, []);
+
+  <span class="c-keyword">if</span> (loading) <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>...<span class="c-tag">&lt;/p&gt;</span>;
+  <span class="c-keyword">if</span> (erreur)  <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>Erreur<span class="c-tag">&lt;/p&gt;</span>;
+  <span class="c-keyword">return</span> <span class="c-tag">&lt;ul&gt;</span>...<span class="c-tag">&lt;/ul&gt;</span>;
+}</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-column">
+                    <div class="comparison-header apres">Après — useFetch</div>
+                    <div class="comparison-content">
+                        <div class="code-block" style="margin:0;border-left:none;border-radius:0;">
+                            <pre><span class="c-keyword">import</span> <span class="c-hook">useFetch</span> <span class="c-keyword">from</span>
+  <span class="c-string">'../hooks/useFetch'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">ListeUsers</span>() {
+  <span class="c-keyword">const</span> { data, loading, erreur } =
+    <span class="c-hook">useFetch</span>(<span class="c-string">'/api/users'</span>);
+
+  <span class="c-keyword">if</span> (loading) <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>...<span class="c-tag">&lt;/p&gt;</span>;
+  <span class="c-keyword">if</span> (erreur)  <span class="c-keyword">return</span> <span class="c-tag">&lt;p&gt;</span>Erreur<span class="c-tag">&lt;/p&gt;</span>;
+  <span class="c-keyword">return</span> <span class="c-tag">&lt;ul&gt;</span>...<span class="c-tag">&lt;/ul&gt;</span>;
+}
+
+<span class="c-comment">// 3 composants qui appellent
+// chacun une URL différente</span>
+<span class="c-keyword">function</span> <span class="c-function">ListeProduits</span>() {
+  <span class="c-keyword">const</span> { data } =
+    <span class="c-hook">useFetch</span>(<span class="c-string">'/api/products'</span>);
+}
+<span class="c-keyword">function</span> <span class="c-function">ListeCommandes</span>() {
+  <span class="c-keyword">const</span> { data } =
+    <span class="c-hook">useFetch</span>(<span class="c-string">'/api/orders'</span>);
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>4.3 Version avancée — avec AbortController</h3>
+
+            <div class="code-block">
+                <div class="code-label">hooks/useFetch.js — version complète</div>
+                <pre><span class="c-keyword">import</span> { useState, useEffect } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-keyword">function</span> <span class="c-hook">useFetch</span>(url) {
+  <span class="c-keyword">const</span> [data, setData]       = <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+  <span class="c-keyword">const</span> [loading, setLoading] = <span class="c-function">useState</span>(<span class="c-keyword">true</span>);
+  <span class="c-keyword">const</span> [erreur, setErreur]   = <span class="c-function">useState</span>(<span class="c-keyword">null</span>);
+
+  <span class="c-function">useEffect</span>(() => {
+    <span class="c-comment">// AbortController : annule la requête si le composant se démonte
+    // ou si l'URL change avant la fin du fetch</span>
+    <span class="c-keyword">const</span> controller = <span class="c-keyword">new</span> <span class="c-function">AbortController</span>();
+
+    <span class="c-function">setLoading</span>(<span class="c-keyword">true</span>);
+    <span class="c-function">setErreur</span>(<span class="c-keyword">null</span>);
+
+    <span class="c-function">fetch</span>(url, { signal: controller.signal })
+      .<span class="c-function">then</span>(response => {
+        <span class="c-keyword">if</span> (!response.ok) <span class="c-keyword">throw new</span> <span class="c-function">Error</span>(<span class="c-string">`Erreur ${response.status}`</span>);
+        <span class="c-keyword">return</span> response.<span class="c-function">json</span>();
+      })
+      .<span class="c-function">then</span>(json => {
+        <span class="c-function">setData</span>(json);
+        <span class="c-function">setLoading</span>(<span class="c-keyword">false</span>);
+      })
+      .<span class="c-function">catch</span>(err => {
+        <span class="c-comment">// Ignorer l'erreur d'annulation — c'est intentionnel</span>
+        <span class="c-keyword">if</span> (err.name !== <span class="c-string">'AbortError'</span>) {
+          <span class="c-function">setErreur</span>(err.message);
+          <span class="c-function">setLoading</span>(<span class="c-keyword">false</span>);
+        }
+      });
+
+    <span class="c-comment">// Fonction de nettoyage — appelée avant le prochain effet</span>
+    <span class="c-keyword">return</span> () => controller.<span class="c-function">abort</span>();
+  }, [url]);
+
+  <span class="c-keyword">return</span> { data, loading, erreur };
+}
+
+<span class="c-keyword">export default</span> <span class="c-hook">useFetch</span>;</pre>
+            </div>
+
+            <div class="info-box">
+                <strong>Pourquoi AbortController ?</strong> Si l'utilisateur navigue vers une autre page avant que le fetch soit terminé, React va essayer de mettre à jour un composant démonté et afficher un avertissement. L'<code>AbortController</code> annule proprement la requête et le nettoyage dans le <code>return</code> de <code>useEffect</code> est automatiquement appelé.
+            </div>
+
+            <h3>4.4 Utilisation avec une URL dynamique</h3>
+
+            <div class="code-block">
+                <div class="code-label">Recherche dynamique avec useFetch</div>
+                <pre><span class="c-keyword">function</span> <span class="c-function">RecherchePokemon</span>() {
+  <span class="c-keyword">const</span> [nom, setNom] = <span class="c-function">useState</span>(<span class="c-string">'pikachu'</span>);
+
+  <span class="c-comment">// L'URL change quand "nom" change → useFetch se relance automatiquement</span>
+  <span class="c-keyword">const</span> { data, loading, erreur } = <span class="c-hook">useFetch</span>(
+    <span class="c-string">`https://pokeapi.co/api/v2/pokemon/${nom}`</span>
+  );
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;input</span>
+        <span class="c-attr">value</span>=<span class="c-value">{nom}</span>
+        <span class="c-attr">onChange</span>=<span class="c-value">{e => setNom(e.target.value)}</span>
+        <span class="c-attr">placeholder</span>=<span class="c-string">"Nom du Pokémon"</span>
+      <span class="c-tag">/&gt;</span>
+
+      {loading &amp;&amp; <span class="c-tag">&lt;p&gt;</span>Chargement...<span class="c-tag">&lt;/p&gt;</span>}
+      {erreur  &amp;&amp; <span class="c-tag">&lt;p&gt;</span>Pokémon introuvable : {erreur}<span class="c-tag">&lt;/p&gt;</span>}
+      {data    &amp;&amp; <span class="c-tag">&lt;p&gt;</span>{data.name} — HP : {data.stats[<span class="c-number">0</span>].base_stat}<span class="c-tag">&lt;/p&gt;</span>}
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}</pre>
+            </div>
+
+        </section>
+
+        <!-- SECTION 5 -->
+        <section id="section5" class="page-break">
+            <h2>5. useLocalStorage — Persister l'état</h2>
+
+            <p>Ce hook remplace <code>useState</code> mais synchronise automatiquement la valeur avec le <code>localStorage</code> du navigateur. L'état persiste même après un rechargement de page.</p>
+
+            <div class="code-block">
+                <div class="code-label">hooks/useLocalStorage.js</div>
+                <pre><span class="c-keyword">import</span> { useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-keyword">function</span> <span class="c-hook">useLocalStorage</span>(cle, valeurInitiale) {
+  <span class="c-comment">// Initialiser depuis le localStorage si la clé existe déjà</span>
+  <span class="c-keyword">const</span> [valeur, setValeur] = <span class="c-function">useState</span>(() => {
+    <span class="c-keyword">try</span> {
+      <span class="c-keyword">const</span> stockee = <span class="c-function">localStorage.getItem</span>(cle);
+      <span class="c-keyword">return</span> stockee !== <span class="c-keyword">null</span>
+        ? <span class="c-function">JSON.parse</span>(stockee)
+        : valeurInitiale;
+    } <span class="c-keyword">catch</span> {
+      <span class="c-keyword">return</span> valeurInitiale;
+    }
+  });
+
+  <span class="c-comment">// Setter qui met à jour state ET localStorage en même temps</span>
+  <span class="c-keyword">const</span> <span class="c-function">setValeurStockee</span> = (nouvelleValeur) => {
+    <span class="c-keyword">try</span> {
+      <span class="c-comment">// Accepte une valeur directe OU une fonction (comme useState)</span>
+      <span class="c-keyword">const</span> valeurAStorer = nouvelleValeur <span class="c-keyword">instanceof</span> Function
+        ? <span class="c-function">nouvelleValeur</span>(valeur)
+        : nouvelleValeur;
+
+      <span class="c-function">setValeur</span>(valeurAStorer);
+      <span class="c-function">localStorage.setItem</span>(cle, <span class="c-function">JSON.stringify</span>(valeurAStorer));
+    } <span class="c-keyword">catch</span> (err) {
+      console.<span class="c-function">error</span>(<span class="c-string">'useLocalStorage — erreur écriture :'</span>, err);
+    }
+  };
+
+  <span class="c-keyword">return</span> [valeur, setValeurStockee];
+  <span class="c-comment">// Même signature que useState — facile à remplacer</span>
+}
+
+<span class="c-keyword">export default</span> <span class="c-hook">useLocalStorage</span>;</pre>
+            </div>
+
+            <h3>5.1 Utilisation</h3>
+
+            <div class="code-block">
+                <div class="code-label">Exemples d'utilisation</div>
+                <pre><span class="c-keyword">import</span> <span class="c-hook">useLocalStorage</span> <span class="c-keyword">from</span> <span class="c-string">'../hooks/useLocalStorage'</span>;
+
+<span class="c-comment">// Thème persistant — survit au rechargement</span>
+<span class="c-keyword">function</span> <span class="c-function">App</span>() {
+  <span class="c-keyword">const</span> [theme, setTheme] = <span class="c-hook">useLocalStorage</span>(<span class="c-string">'theme'</span>, <span class="c-string">'clair'</span>);
+  <span class="c-comment">// Même API que useState — juste la clé en plus</span>
+}
+
+<span class="c-comment">// Préférences utilisateur</span>
+<span class="c-keyword">function</span> <span class="c-function">Parametres</span>() {
+  <span class="c-keyword">const</span> [langue, setLangue] =
+    <span class="c-hook">useLocalStorage</span>(<span class="c-string">'langue'</span>, <span class="c-string">'fr'</span>);
+
+  <span class="c-keyword">const</span> [notifs, setNotifs] =
+    <span class="c-hook">useLocalStorage</span>(<span class="c-string">'notifications'</span>, <span class="c-keyword">true</span>);
+}
+
+<span class="c-comment">// Panier persistant</span>
+<span class="c-keyword">function</span> <span class="c-function">PanierProvider</span>({ children }) {
+  <span class="c-keyword">const</span> [articles, setArticles] =
+    <span class="c-hook">useLocalStorage</span>(<span class="c-string">'panier'</span>, []);
+  <span class="c-comment">// Le panier survive au rechargement de la page !</span>
+}
+
+<span class="c-comment">// Setter fonctionnel — comme useState</span>
+<span class="c-function">setArticles</span>(prev => [...prev, nouvelArticle]);</pre>
+            </div>
+
+            <div class="success-box">
+                <strong>Avantage clé :</strong> Le hook a exactement la même signature que <code>useState</code>. Pour rendre un state persistant, il suffit de remplacer <code>useState('clair')</code> par <code>useLocalStorage('theme', 'clair')</code>. Zéro refactorisation du reste du composant.
+            </div>
+
+        </section>
+
+        <!-- SECTION 6 -->
+        <section id="section6" class="page-break">
+            <h2>6. useDebounce — Retarder les mises à jour</h2>
+
+            <p>Le debounce retarde l'exécution d'une action jusqu'à ce que l'utilisateur s'arrête de taper. Indispensable pour les champs de recherche : sans ça, on envoie une requête API à chaque lettre frappée.</p>
+
+            <div class="code-block">
+                <div class="code-label">hooks/useDebounce.js</div>
+                <pre><span class="c-keyword">import</span> { useState, useEffect } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-comment">// Retourne la valeur "retardée" — mise à jour seulement
+// si l'utilisateur ne modifie plus pendant "delai" ms</span>
+<span class="c-keyword">function</span> <span class="c-hook">useDebounce</span>(valeur, delai = <span class="c-number">400</span>) {
+  <span class="c-keyword">const</span> [valeurRetardee, setValeurRetardee] = <span class="c-function">useState</span>(valeur);
+
+  <span class="c-function">useEffect</span>(() => {
+    <span class="c-comment">// Programmer la mise à jour après "delai" ms</span>
+    <span class="c-keyword">const</span> timer = <span class="c-function">setTimeout</span>(() => {
+      <span class="c-function">setValeurRetardee</span>(valeur);
+    }, delai);
+
+    <span class="c-comment">// Si "valeur" change avant la fin du timer → annuler et repartir</span>
+    <span class="c-keyword">return</span> () => <span class="c-function">clearTimeout</span>(timer);
+  }, [valeur, delai]);
+
+  <span class="c-keyword">return</span> valeurRetardee;
+}
+
+<span class="c-keyword">export default</span> <span class="c-hook">useDebounce</span>;</pre>
+            </div>
+
+            <h3>6.1 Utilisation avec la recherche</h3>
+
+            <div class="code-block">
+                <div class="code-label">Recherche avec debounce + useFetch</div>
+                <pre><span class="c-keyword">import</span> <span class="c-hook">useDebounce</span> <span class="c-keyword">from</span> <span class="c-string">'../hooks/useDebounce'</span>;
+<span class="c-keyword">import</span> <span class="c-hook">useFetch</span>    <span class="c-keyword">from</span> <span class="c-string">'../hooks/useFetch'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">RechercheAvancee</span>() {
+  <span class="c-keyword">const</span> [saisie, setSaisie] = <span class="c-function">useState</span>(<span class="c-string">''</span>);
+
+  <span class="c-comment">// saisie change à chaque frappe
+  // rechercheDebounced ne change qu'après 500ms sans frappe</span>
+  <span class="c-keyword">const</span> rechercheDebounced = <span class="c-hook">useDebounce</span>(saisie, <span class="c-number">500</span>);
+
+  <span class="c-comment">// useFetch ne se relance que quand rechercheDebounced change</span>
+  <span class="c-keyword">const</span> { data, loading } = <span class="c-hook">useFetch</span>(
+    rechercheDebounced
+      ? <span class="c-string">`https://api.exemple.com/search?q=${rechercheDebounced}`</span>
+      : <span class="c-keyword">null</span>
+  );
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;input</span>
+        <span class="c-attr">value</span>=<span class="c-value">{saisie}</span>
+        <span class="c-attr">onChange</span>=<span class="c-value">{e => setSaisie(e.target.value)}</span>
+        <span class="c-attr">placeholder</span>=<span class="c-string">"Rechercher..."</span>
+      <span class="c-tag">/&gt;</span>
+      <span class="c-comment">{/* Indicateur visuel */}</span>
+      {saisie !== rechercheDebounced &amp;&amp; <span class="c-tag">&lt;span&gt;</span>En attente...<span class="c-tag">&lt;/span&gt;</span>}
+      {loading &amp;&amp; <span class="c-tag">&lt;span&gt;</span>Recherche...<span class="c-tag">&lt;/span&gt;</span>}
+      {data &amp;&amp; <span class="c-tag">&lt;p&gt;</span>{data.length} résultats<span class="c-tag">&lt;/p&gt;</span>}
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-comment">// Sans debounce : 10 frappes = 10 requêtes API
+// Avec debounce 500ms : 10 frappes rapides = 1 requête</span></pre>
+            </div>
+
+        </section>
+
+        <!-- SECTION 7 -->
+        <section id="section7" class="page-break">
+            <h2>7. useForm — Gérer un formulaire</h2>
+
+            <p>Un hook qui centralise la gestion d'un formulaire multi-champs : état, modification et réinitialisation en une seule ligne dans le composant.</p>
+
+            <div class="code-block">
+                <div class="code-label">hooks/useForm.js</div>
+                <pre><span class="c-keyword">import</span> { useState } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-keyword">function</span> <span class="c-hook">useForm</span>(valeursInitiales) {
+  <span class="c-keyword">const</span> [values, setValues] = <span class="c-function">useState</span>(valeursInitiales);
+  <span class="c-keyword">const</span> [erreurs, setErreurs] = <span class="c-function">useState</span>({});
+
+  <span class="c-comment">// Gestionnaire générique pour tous les champs
+  // Utilise e.target.name pour cibler le bon champ</span>
+  <span class="c-keyword">const</span> <span class="c-function">handleChange</span> = (e) => {
+    <span class="c-keyword">const</span> { name, value, type, checked } = e.target;
+    <span class="c-function">setValues</span>(prev => ({
+      ...prev,
+      [name]: type === <span class="c-string">'checkbox'</span> ? checked : value,
+    }));
+    <span class="c-comment">// Effacer l'erreur du champ modifié</span>
+    <span class="c-keyword">if</span> (erreurs[name]) {
+      <span class="c-function">setErreurs</span>(prev => ({ ...prev, [name]: <span class="c-keyword">undefined</span> }));
+    }
+  };
+
+  <span class="c-comment">// Réinitialiser le formulaire</span>
+  <span class="c-keyword">const</span> <span class="c-function">reset</span> = () => {
+    <span class="c-function">setValues</span>(valeursInitiales);
+    <span class="c-function">setErreurs</span>({});
+  };
+
+  <span class="c-comment">// Définir des erreurs manuellement (après validation)</span>
+  <span class="c-keyword">const</span> <span class="c-function">setErreur</span> = (name, message) => {
+    <span class="c-function">setErreurs</span>(prev => ({ ...prev, [name]: message }));
+  };
+
+  <span class="c-keyword">return</span> { values, erreurs, handleChange, reset, setErreur };
+}
+
+<span class="c-keyword">export default</span> <span class="c-hook">useForm</span>;</pre>
+            </div>
+
+            <h3>7.1 Utilisation dans un composant</h3>
+
+            <div class="code-block">
+                <div class="code-label">FormulaireContact.jsx</div>
+                <pre><span class="c-keyword">import</span> <span class="c-hook">useForm</span> <span class="c-keyword">from</span> <span class="c-string">'../hooks/useForm'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">FormulaireContact</span>() {
+  <span class="c-keyword">const</span> { values, erreurs, handleChange, reset, setErreur } =
+    <span class="c-hook">useForm</span>({ nom: <span class="c-string">''</span>, email: <span class="c-string">''</span>, message: <span class="c-string">''</span> });
+
+  <span class="c-keyword">const</span> <span class="c-function">handleSubmit</span> = (e) => {
+    e.<span class="c-function">preventDefault</span>();
+
+    <span class="c-comment">// Validation</span>
+    <span class="c-keyword">if</span> (!values.nom.trim()) {
+      <span class="c-function">setErreur</span>(<span class="c-string">'nom'</span>, <span class="c-string">'Le nom est obligatoire'</span>);
+      <span class="c-keyword">return</span>;
+    }
+    <span class="c-keyword">if</span> (!values.email.includes(<span class="c-string">'@'</span>)) {
+      <span class="c-function">setErreur</span>(<span class="c-string">'email'</span>, <span class="c-string">'Email invalide'</span>);
+      <span class="c-keyword">return</span>;
+    }
+
+    <span class="c-comment">// Envoi</span>
+    console.<span class="c-function">log</span>(<span class="c-string">'Envoi :'</span>, values);
+    <span class="c-function">reset</span>();
+  };
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;form</span> <span class="c-attr">onSubmit</span>=<span class="c-value">{handleSubmit}</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;div&gt;</span>
+        <span class="c-tag">&lt;input</span>
+          <span class="c-attr">name</span>=<span class="c-string">"nom"</span>
+          <span class="c-attr">value</span>=<span class="c-value">{values.nom}</span>
+          <span class="c-attr">onChange</span>=<span class="c-value">{handleChange}</span>
+          <span class="c-attr">placeholder</span>=<span class="c-string">"Votre nom"</span>
+        <span class="c-tag">/&gt;</span>
+        {erreurs.nom &amp;&amp; <span class="c-tag">&lt;span</span> <span class="c-attr">style</span>=<span class="c-value">{{ color: 'red' }}</span><span class="c-tag">&gt;</span>{erreurs.nom}<span class="c-tag">&lt;/span&gt;</span>}
+      <span class="c-tag">&lt;/div&gt;</span>
+
+      <span class="c-tag">&lt;div&gt;</span>
+        <span class="c-tag">&lt;input</span>
+          <span class="c-attr">name</span>=<span class="c-string">"email"</span>
+          <span class="c-attr">type</span>=<span class="c-string">"email"</span>
+          <span class="c-attr">value</span>=<span class="c-value">{values.email}</span>
+          <span class="c-attr">onChange</span>=<span class="c-value">{handleChange}</span>
+          <span class="c-attr">placeholder</span>=<span class="c-string">"Votre email"</span>
+        <span class="c-tag">/&gt;</span>
+        {erreurs.email &amp;&amp; <span class="c-tag">&lt;span</span> <span class="c-attr">style</span>=<span class="c-value">{{ color: 'red' }}</span><span class="c-tag">&gt;</span>{erreurs.email}<span class="c-tag">&lt;/span&gt;</span>}
+      <span class="c-tag">&lt;/div&gt;</span>
+
+      <span class="c-tag">&lt;textarea</span>
+        <span class="c-attr">name</span>=<span class="c-string">"message"</span>
+        <span class="c-attr">value</span>=<span class="c-value">{values.message}</span>
+        <span class="c-attr">onChange</span>=<span class="c-value">{handleChange}</span>
+        <span class="c-attr">placeholder</span>=<span class="c-string">"Votre message"</span>
+      <span class="c-tag">/&gt;</span>
+
+      <span class="c-tag">&lt;button</span> <span class="c-attr">type</span>=<span class="c-string">"submit"</span><span class="c-tag">&gt;</span>Envoyer<span class="c-tag">&lt;/button&gt;</span>
+      <span class="c-tag">&lt;button</span> <span class="c-attr">type</span>=<span class="c-string">"button"</span> <span class="c-attr">onClick</span>=<span class="c-value">{reset}</span><span class="c-tag">&gt;</span>Réinitialiser<span class="c-tag">&lt;/button&gt;</span>
+    <span class="c-tag">&lt;/form&gt;</span>
+  );
+}
+
+<span class="c-comment">// Un seul handleChange pour tous les champs — grâce à name + computed property</span></pre>
+            </div>
+
+            <div class="info-box">
+                <strong>La clé — <code>[name]: value</code> :</strong> La notation <code>[e.target.name]: e.target.value</code> utilise le nom de l'attribut <code>name</code> du champ comme clé de l'objet. Un seul <code>handleChange</code> gère tous les champs, peu importe leur nombre. Plus jamais de <code>setNom</code>, <code>setEmail</code>, <code>setMessage</code> séparés.
+            </div>
+
+        </section>
+
+        <!-- SECTION 8 -->
+        <section id="section8" class="page-break">
+            <h2>8. useWindowSize — Réagir à la taille de la fenêtre</h2>
+
+            <p>Un hook utile pour adapter le rendu selon la taille de l'écran directement en JavaScript — utile quand du CSS seul ne suffit pas (ex. changer le nombre de colonnes dans un composant, masquer du contenu complexe).</p>
+
+            <div class="code-block">
+                <div class="code-label">hooks/useWindowSize.js</div>
+                <pre><span class="c-keyword">import</span> { useState, useEffect } <span class="c-keyword">from</span> <span class="c-string">'react'</span>;
+
+<span class="c-keyword">function</span> <span class="c-hook">useWindowSize</span>() {
+  <span class="c-keyword">const</span> [taille, setTaille] = <span class="c-function">useState</span>({
+    largeur:  window.innerWidth,
+    hauteur: window.innerHeight,
+  });
+
+  <span class="c-function">useEffect</span>(() => {
+    <span class="c-keyword">const</span> <span class="c-function">mettreAJour</span> = () => {
+      <span class="c-function">setTaille</span>({
+        largeur:  window.innerWidth,
+        hauteur: window.innerHeight,
+      });
+    };
+
+    window.<span class="c-function">addEventListener</span>(<span class="c-string">'resize'</span>, mettreAJour);
+
+    <span class="c-comment">// Nettoyage — retire le listener quand le composant se démonte</span>
+    <span class="c-keyword">return</span> () => window.<span class="c-function">removeEventListener</span>(<span class="c-string">'resize'</span>, mettreAJour);
+  }, []); <span class="c-comment">// [] = une seule fois au montage</span>
+
+  <span class="c-keyword">return</span> taille;
+}
+
+<span class="c-keyword">export default</span> <span class="c-hook">useWindowSize</span>;</pre>
+            </div>
+
+            <h3>8.1 Utilisation et dérivation</h3>
+
+            <div class="code-block">
+                <div class="code-label">Utilisation dans un composant</div>
+                <pre><span class="c-keyword">import</span> <span class="c-hook">useWindowSize</span> <span class="c-keyword">from</span> <span class="c-string">'../hooks/useWindowSize'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">GrilleProduits</span>({ produits }) {
+  <span class="c-keyword">const</span> { largeur } = <span class="c-hook">useWindowSize</span>();
+
+  <span class="c-comment">// Nombre de colonnes selon la largeur</span>
+  <span class="c-keyword">const</span> colonnes = largeur &gt; <span class="c-number">1024</span> ? <span class="c-number">4</span>
+                  : largeur &gt;  <span class="c-number">768</span> ? <span class="c-number">3</span>
+                  : largeur &gt;  <span class="c-number">480</span> ? <span class="c-number">2</span>
+                  : <span class="c-number">1</span>;
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div</span> <span class="c-attr">style</span>=<span class="c-value">{{
+      display: 'grid',
+      gridTemplateColumns: `repeat(${colonnes}, 1fr)`,
+      gap: '16px',
+    }}</span><span class="c-tag">&gt;</span>
+      {produits.<span class="c-function">map</span>(p => <span class="c-tag">&lt;CarteProduit</span> <span class="c-attr">key</span>=<span class="c-value">{p.id}</span> <span class="c-attr">produit</span>=<span class="c-value">{p}</span> <span class="c-tag">/&gt;</span>)}
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="c-comment">// Hook dérivé — isMobile basé sur useWindowSize</span>
+<span class="c-keyword">function</span> <span class="c-hook">useIsMobile</span>(breakpoint = <span class="c-number">768</span>) {
+  <span class="c-keyword">const</span> { largeur } = <span class="c-hook">useWindowSize</span>();
+  <span class="c-keyword">return</span> largeur &lt; breakpoint;
+}
+
+<span class="c-comment">// Un custom hook peut appeler un autre custom hook !</span>
+<span class="c-keyword">function</span> <span class="c-function">Navigation</span>() {
+  <span class="c-keyword">const</span> isMobile = <span class="c-hook">useIsMobile</span>();
+  <span class="c-keyword">return</span> isMobile ? <span class="c-tag">&lt;NavMobile /&gt;</span> : <span class="c-tag">&lt;NavDesktop /&gt;</span>;
+}</pre>
+            </div>
+
+            <div class="info-box">
+                <strong>Un custom hook peut appeler un autre custom hook.</strong> <code>useIsMobile</code> appelle <code>useWindowSize</code> — c'est parfaitement valide et même encouragé. On compose les hooks comme des briques LEGO pour construire des abstractions de plus en plus spécialisées.
+            </div>
+
+            <h3>8.2 Catalogue des hooks courants</h3>
+
+            <div class="hook-catalogue">
+                <div class="hook-cat-card">
+                    <h4>useFetch(url)</h4>
+                    <span class="hook-tag">Données</span>
+                    <p>Charge des données depuis une API. Retourne <code>{ data, loading, erreur }</code>.</p>
+                </div>
+                <div class="hook-cat-card">
+                    <h4>useLocalStorage(clé, init)</h4>
+                    <span class="hook-tag">Persistance</span>
+                    <p>State synchronisé avec localStorage. Même API que useState.</p>
+                </div>
+                <div class="hook-cat-card">
+                    <h4>useDebounce(valeur, ms)</h4>
+                    <span class="hook-tag">Performance</span>
+                    <p>Retarde la propagation d'une valeur. Idéal pour la recherche en live.</p>
+                </div>
+                <div class="hook-cat-card">
+                    <h4>useForm(valeursInit)</h4>
+                    <span class="hook-tag">Formulaire</span>
+                    <p>Gère values + erreurs + handleChange + reset pour tout formulaire.</p>
+                </div>
+                <div class="hook-cat-card">
+                    <h4>useWindowSize()</h4>
+                    <span class="hook-tag">UI</span>
+                    <p>Retourne la largeur et hauteur courantes de la fenêtre, mise à jour au resize.</p>
+                </div>
+                <div class="hook-cat-card">
+                    <h4>useToggle(init)</h4>
+                    <span class="hook-tag">UI</span>
+                    <p>Booléen avec fonction toggle. Parfait pour modals, menus, accordéons.</p>
+                </div>
+                <div class="hook-cat-card">
+                    <h4>useClickOutside(ref, cb)</h4>
+                    <span class="hook-tag">UI</span>
+                    <p>Détecte un clic en dehors d'un élément. Fermeture automatique de dropdown.</p>
+                </div>
+                <div class="hook-cat-card">
+                    <h4>usePrevious(valeur)</h4>
+                    <span class="hook-tag">State</span>
+                    <p>Retourne la valeur précédente d'une variable — utile pour les animations de diff.</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SECTION 9 -->
+        <section id="section9" class="page-break">
+            <h2>9. Exercices</h2>
+
+            <div class="exercise">
+                <h4>Exercice 1 — useFetch (débutant)</h4>
+                <p><strong>Objectif :</strong> Créer et utiliser <code>useFetch</code> dans deux composants différents.</p>
+                <ol style="margin-left:25px;">
+                    <li>Créer le fichier <code>src/hooks/useFetch.js</code> avec la version simple (sans AbortController).</li>
+                    <li>Créer un composant <code>ListeUsers</code> qui affiche les utilisateurs depuis <code>jsonplaceholder.typicode.com/users</code>.</li>
+                    <li>Créer un composant <code>ListePosts</code> qui affiche les articles depuis <code>jsonplaceholder.typicode.com/posts</code>.</li>
+                    <li>Les deux composants utilisent <code>useFetch</code> — chacun avec son URL.</li>
+                    <li>Chaque composant gère l'état <code>loading</code> et <code>erreur</code> en affichant un message adapté.</li>
+                </ol>
+                <div class="success-box" style="margin-top:12px;">
+                    <strong>Résultat attendu :</strong> Les deux composants fonctionnent indépendamment avec le même hook. Si on modifie useFetch, les deux s'améliorent en même temps.
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercice 2 — useLocalStorage + useToggle (intermédiaire)</h4>
+                <p><strong>Objectif :</strong> Créer deux hooks et les combiner dans une app de préférences.</p>
+                <ol style="margin-left:25px;">
+                    <li>Créer <code>useLocalStorage(clé, valeurInitiale)</code>.</li>
+                    <li>Créer <code>useToggle(valeurInitiale)</code> qui retourne <code>[valeur, toggle]</code>.</li>
+                    <li>Dans <code>App.jsx</code>, utiliser <code>useLocalStorage('theme', 'clair')</code> pour le thème.</li>
+                    <li>Utiliser <code>useToggle(false)</code> pour gérer l'ouverture/fermeture d'un menu.</li>
+                    <li>Recharger la page — le thème doit être mémorisé.</li>
+                </ol>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercice 3 — useFetch + useDebounce (avancé)</h4>
+                <p><strong>Objectif :</strong> Construire une recherche en live optimisée en combinant trois hooks.</p>
+                <ol style="margin-left:25px;">
+                    <li>Créer <code>useDebounce(valeur, 500)</code>.</li>
+                    <li>Créer un composant <code>RechercheGithub</code> avec un input de recherche.</li>
+                    <li>Utiliser <code>useDebounce</code> sur la valeur de l'input.</li>
+                    <li>Utiliser <code>useFetch</code> avec l'URL <code>https://api.github.com/search/users?q=</code> + la valeur debounced.</li>
+                    <li>N'envoyer la requête que si la valeur debounced n'est pas vide.</li>
+                    <li>Afficher les 5 premiers résultats (avatar + login + lien vers le profil).</li>
+                    <li>Afficher "En attente..." quand la saisie est en cours mais pas encore debounced.</li>
+                </ol>
+            </div>
+
+            <div class="exercise">
+                <h4>Exercice 4 — useForm complet (avancé)</h4>
+                <p><strong>Objectif :</strong> Implémenter <code>useForm</code> avec validation en temps réel.</p>
+                <ol style="margin-left:25px;">
+                    <li>Créer <code>useForm(valeursInitiales)</code> avec <code>values</code>, <code>erreurs</code>, <code>handleChange</code>, <code>reset</code>.</li>
+                    <li>Créer un formulaire d'inscription : prénom, nom, email, mot de passe, confirmation.</li>
+                    <li>Ajouter la validation : tous les champs obligatoires, email avec @, mot de passe min 8 caractères, confirmation identique au mot de passe.</li>
+                    <li>Afficher les erreurs en rouge sous chaque champ concerné.</li>
+                    <li>Le bouton "S'inscrire" est désactivé si le formulaire contient des erreurs.</li>
+                </ol>
+            </div>
+
+        </section>
+
+        <!-- SECTION 10 -->
+        <section id="section10" class="page-break">
+            <h2>10. Projet fil rouge — Bibliothèque de hooks réutilisables</h2>
+
+            <p>L'objectif est de construire un dossier <code>src/hooks/</code> complet et de l'utiliser dans une mini-application de gestion de films (liste, recherche, favoris persistants).</p>
+
+            <h3>10.1 Les hooks à créer</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hook</th>
+                        <th>Rôle dans le projet</th>
+                        <th>Hooks utilisés en interne</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>useFetch(url)</code></td><td>Charger la liste des films depuis l'API TMDB</td><td>useState, useEffect</td></tr>
+                    <tr><td><code>useDebounce(val, ms)</code></td><td>Optimiser la recherche par titre</td><td>useState, useEffect</td></tr>
+                    <tr><td><code>useLocalStorage(clé, init)</code></td><td>Persister les films favoris</td><td>useState</td></tr>
+                    <tr><td><code>useForm(init)</code></td><td>Gérer le formulaire de recherche avancée</td><td>useState</td></tr>
+                    <tr><td><code>useWindowSize()</code></td><td>Adapter la grille (2, 3 ou 4 colonnes)</td><td>useState, useEffect</td></tr>
+                </tbody>
+            </table>
+
+            <h3>10.2 Structure du projet</h3>
+
+            <div class="code-block">
+                <div class="code-label">Structure</div>
+                <pre>src/
+├── hooks/
+│   ├── useFetch.js
+│   ├── useDebounce.js
+│   ├── useLocalStorage.js
+│   ├── useForm.js
+│   └── useWindowSize.js
+├── components/
+│   ├── CarteFilm.jsx       <span class="c-comment">← props : film + isFavori + onToggleFavori</span>
+│   ├── GrilleFilms.jsx     <span class="c-comment">← useWindowSize pour les colonnes</span>
+│   └── BarreRecherche.jsx  <span class="c-comment">← useDebounce sur l'input</span>
+├── pages/
+│   ├── Accueil.jsx         <span class="c-comment">← useFetch + useDebounce</span>
+│   └── Favoris.jsx         <span class="c-comment">← useLocalStorage</span>
+└── App.jsx</pre>
+            </div>
+
+            <h3>10.3 Le composant Accueil</h3>
+
+            <div class="code-block">
+                <div class="code-label">pages/Accueil.jsx</div>
+                <pre><span class="c-keyword">import</span> <span class="c-hook">useFetch</span>         <span class="c-keyword">from</span> <span class="c-string">'../hooks/useFetch'</span>;
+<span class="c-keyword">import</span> <span class="c-hook">useDebounce</span>      <span class="c-keyword">from</span> <span class="c-string">'../hooks/useDebounce'</span>;
+<span class="c-keyword">import</span> <span class="c-hook">useLocalStorage</span>  <span class="c-keyword">from</span> <span class="c-string">'../hooks/useLocalStorage'</span>;
+
+<span class="c-keyword">function</span> <span class="c-function">Accueil</span>() {
+  <span class="c-keyword">const</span> [recherche, setRecherche] = <span class="c-function">useState</span>(<span class="c-string">''</span>);
+  <span class="c-keyword">const</span> [favoris, setFavoris]     = <span class="c-hook">useLocalStorage</span>(<span class="c-string">'favoris'</span>, []);
+
+  <span class="c-keyword">const</span> rechercheDebounced = <span class="c-hook">useDebounce</span>(recherche, <span class="c-number">400</span>);
+
+  <span class="c-keyword">const</span> url = rechercheDebounced
+    ? <span class="c-string">`https://api.themoviedb.org/3/search/movie?query=${rechercheDebounced}&api_key=VOTRE_CLE`</span>
+    : <span class="c-string">`https://api.themoviedb.org/3/movie/popular?api_key=VOTRE_CLE`</span>;
+
+  <span class="c-keyword">const</span> { data, loading, erreur } = <span class="c-hook">useFetch</span>(url);
+
+  <span class="c-keyword">const</span> <span class="c-function">toggleFavori</span> = (film) => {
+    <span class="c-function">setFavoris</span>(prev =>
+      prev.<span class="c-function">find</span>(f => f.id === film.id)
+        ? prev.<span class="c-function">filter</span>(f => f.id !== film.id)
+        : [...prev, film]
+    );
+  };
+
+  <span class="c-keyword">return</span> (
+    <span class="c-tag">&lt;div&gt;</span>
+      <span class="c-tag">&lt;input</span>
+        <span class="c-attr">value</span>=<span class="c-value">{recherche}</span>
+        <span class="c-attr">onChange</span>=<span class="c-value">{e => setRecherche(e.target.value)}</span>
+        <span class="c-attr">placeholder</span>=<span class="c-string">"Rechercher un film..."</span>
+      <span class="c-tag">/&gt;</span>
+      {loading &amp;&amp; <span class="c-tag">&lt;p&gt;</span>Chargement...<span class="c-tag">&lt;/p&gt;</span>}
+      {erreur  &amp;&amp; <span class="c-tag">&lt;p&gt;</span>Erreur : {erreur}<span class="c-tag">&lt;/p&gt;</span>}
+      <span class="c-tag">&lt;GrilleFilms</span>
+        <span class="c-attr">films</span>=<span class="c-value">{data?.results || []}</span>
+        <span class="c-attr">favoris</span>=<span class="c-value">{favoris}</span>
+        <span class="c-attr">onToggleFavori</span>=<span class="c-value">{toggleFavori}</span>
+      <span class="c-tag">/&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  );
+}</pre>
+            </div>
+
+            <div class="success-box">
+                <strong>Ce que le projet démontre :</strong>
+                <ul style="margin-top: 8px;">
+                    <li>Chaque hook est indépendant et réutilisable dans n'importe quel composant</li>
+                    <li>Modifier <code>useFetch</code> améliore tous les composants qui l'utilisent en même temps</li>
+                    <li>Les composants sont épurés : ils orchestrent des hooks, ils ne contiennent plus de logique technique</li>
+                    <li>Les hooks peuvent être testés en isolation — ce sont des fonctions pures ou quasi-pures</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <strong>Prochaine étape — module 4 : Formulaires avancés :</strong>
+                <ul style="margin-top: 8px;">
+                    <li>Validation en temps réel avec des règles paramétrables</li>
+                    <li>Composants de champs réutilisables (<code>ChampTexte</code>, <code>ChampSelect</code>)</li>
+                    <li>Introduction à <code>react-hook-form</code> — la bibliothèque de référence en entreprise</li>
+                    <li>Formulaires multi-étapes avec navigation et récapitulatif</li>
+                </ul>
+            </div>
+
+        </section>
+
+    </div>
+</div>
+
+<script>
+    function toggleMenu() {
+        const burger = document.querySelector('.burger-menu');
+        const nav = document.getElementById('navMenu');
+        burger.classList.toggle('active');
+        nav.classList.toggle('active');
+    }
+
+    function closeMenu() {
+        const burger = document.querySelector('.burger-menu');
+        const nav = document.getElementById('navMenu');
+        burger.classList.remove('active');
+        nav.classList.remove('active');
+    }
+</script>
+
+</body>
+</html>
