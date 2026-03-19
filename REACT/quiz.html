@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Interactif React — Étape par étape</title>
+<style>
+:root {
+    --bg:#080b0f; --card:#0d1117; --surface:#111820;
+    --border:#1e2d3d; --accent:#61dafb; --accent2:#a8efff;
+    --green:#44D62C; --yellow:#f7df1e; --red:#ff7b72; --purple:#c084fc;
+    --orange:#ffa657;
+    --text:#e6edf3; --muted:#7d8590; --dim:#3d444d;
+    --title:#161b22; --mono:'SF Mono','Fira Code','Consolas',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(97,218,251,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(97,218,251,.012) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;width:230px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.85rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.68rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(97,218,251,.06);color:var(--text);}
+.nav-link.active{background:rgba(97,218,251,.1);color:var(--accent);}
+.nav-num{font-family:var(--mono);font-size:.64rem;color:var(--dim);flex-shrink:0;width:18px;}
+
+.content{margin-left:230px;padding:48px 48px 80px;max-width:calc(100% - 230px);}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:52px;}
+.page-header h1{font-size:2.4rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.b{background:rgba(97,218,251,.08);border-color:rgba(97,218,251,.3);color:var(--accent);}
+.obj.p{background:rgba(192,132,252,.08);border-color:rgba(192,132,252,.3);color:var(--purple);}
+.obj.g{background:rgba(68,214,44,.08);border-color:rgba(68,214,44,.3);color:var(--green);}
+.obj.o{background:rgba(255,166,87,.08);border-color:rgba(255,166,87,.3);color:var(--orange);}
+.obj.y{background:rgba(247,223,30,.08);border-color:rgba(247,223,30,.3);color:var(--yellow);}
+
+/* ÉTAPE */
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(97,218,251,.15);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.35rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.75;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(255,255,255,.07);border:1px solid var(--border);padding:1px 6px;border-radius:3px;color:var(--accent);}
+
+/* CALLOUT */
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.callout.info{background:rgba(97,218,251,.07);border:1px solid rgba(97,218,251,.2);color:#a0d8ef;}
+.callout.tip{background:rgba(247,223,30,.07);border:1px solid rgba(247,223,30,.2);color:#e8d86a;}
+.callout.warn{background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.2);color:#ffb07a;}
+.callout.success{background:rgba(68,214,44,.07);border:1px solid rgba(68,214,44,.2);color:#9fdb8a;}
+.callout.purple{background:rgba(192,132,252,.07);border:1px solid rgba(192,132,252,.2);color:#d8b4fe;}
+.callout strong{color:inherit;}
+.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.2);padding:1px 5px;border-radius:3px;}
+
+/* CODE BLOCK */
+.code-block{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.cb-head{background:var(--title);padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.dots{display:flex;gap:5px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:var(--muted);flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;}
+.cb-badge.new{background:rgba(68,214,44,.1);border:1px solid rgba(68,214,44,.3);color:var(--green);}
+.cb-badge.mod{background:rgba(255,107,0,.12);border:1px solid rgba(255,107,0,.3);color:var(--orange);}
+.cb-badge.data{background:rgba(97,218,251,.1);border:1px solid rgba(97,218,251,.3);color:var(--accent);}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--dim);font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(97,218,251,.1);border-color:rgba(97,218,251,.3);color:var(--accent);}
+.cb-copy.ok{color:var(--green);}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;}
+.kw{color:#ff7b72;font-weight:600;}
+.fn{color:#d2a8ff;}
+.str{color:#a5d6ff;}
+.num{color:#f8c555;}
+.cmt{color:var(--dim);font-style:italic;}
+.vr{color:#79c0ff;}
+.tag{color:var(--accent);}
+.attr{color:#ffa657;}
+.jsx{color:var(--accent2);}
+
+/* RÉSULTAT */
+.resultat{background:var(--surface);border:1px solid rgba(97,218,251,.15);border-radius:10px;padding:16px 20px;margin-bottom:14px;}
+.resultat-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.resultat-body{font-size:.88rem;color:var(--muted);line-height:1.8;}
+
+/* SCHÉMA */
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.82rem;line-height:2.2;}
+.sc-app{color:var(--accent);font-weight:700;}
+.sc-comp{color:var(--accent2);}
+.sc-props{color:var(--orange);}
+.sc-dim{color:var(--dim);}
+
+/* CHECKPOINT */
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(97,218,251,.05);border:1px solid rgba(97,218,251,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-size:1.1rem;flex-shrink:0;font-family:var(--mono);color:var(--accent);}
+.cp-text{font-size:.84rem;color:#a0d8ef;line-height:1.6;}
+.cp-text strong{color:var(--accent);}
+
+/* QUIZ SECTION */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(97,218,251,.3);color:var(--text);}
+.opt.correct{border-color:rgba(68,214,44,.5);background:rgba(68,214,44,.08);color:var(--green);}
+.opt.wrong{border-color:rgba(255,123,114,.4);background:rgba(255,123,114,.06);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(68,214,44,.08);border:1px solid rgba(68,214,44,.2);color:#9fdb8a;}
+.fb.ko{background:rgba(255,123,114,.07);border:1px solid rgba(255,123,114,.2);color:var(--red);}
+
+/* ─── APERÇU QUIZ INTERACTIF ─── */
+.pv-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:14px;max-width:680px;}
+.pv-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.pv-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.pv-label span{color:var(--accent);}
+.pv-timer{font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--orange);}
+.pv-timer.urgent{color:var(--red);}
+.pv-progress-track{height:4px;background:var(--border);border-radius:2px;margin-bottom:24px;overflow:hidden;}
+.pv-progress-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .3s ease;}
+.pv-question{font-size:1rem;font-weight:700;color:var(--text);line-height:1.55;margin-bottom:20px;min-height:48px;}
+.pv-options{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.pv-opt{padding:11px 16px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:.85rem;cursor:pointer;transition:all .15s;text-align:left;font-family:inherit;width:100%;}
+.pv-opt:hover:not(:disabled){border-color:rgba(97,218,251,.35);color:var(--text);background:rgba(97,218,251,.05);}
+.pv-opt:disabled{cursor:default;}
+.pv-opt.sel{border-color:rgba(97,218,251,.5);color:var(--accent);background:rgba(97,218,251,.07);}
+.pv-opt.good{border-color:rgba(68,214,44,.5);color:var(--green);background:rgba(68,214,44,.08);}
+.pv-opt.bad{border-color:rgba(255,123,114,.4);color:var(--red);background:rgba(255,123,114,.06);}
+.pv-feedback{font-size:.83rem;padding:10px 14px;border-radius:7px;line-height:1.6;min-height:20px;margin-bottom:16px;display:none;}
+.pv-feedback.show{display:block;}
+.pv-feedback.ok{background:rgba(68,214,44,.07);border:1px solid rgba(68,214,44,.2);color:#9fdb8a;}
+.pv-feedback.ko{background:rgba(255,123,114,.06);border:1px solid rgba(255,123,114,.2);color:var(--red);}
+.pv-actions{display:flex;gap:10px;}
+.pv-btn{padding:9px 22px;border-radius:7px;cursor:pointer;font-family:var(--mono);font-size:.78rem;font-weight:700;transition:all .15s;border:1px solid rgba(97,218,251,.3);background:rgba(97,218,251,.08);color:var(--accent);}
+.pv-btn:hover{background:rgba(97,218,251,.15);}
+.pv-btn:disabled{opacity:.35;cursor:default;}
+.pv-btn.secondary{border-color:var(--border);background:transparent;color:var(--muted);}
+.pv-btn.secondary:hover{color:var(--text);background:rgba(255,255,255,.04);}
+.pv-result{text-align:center;padding:12px 0 4px;}
+.pv-result-score{font-family:var(--mono);font-size:2.8rem;font-weight:900;color:var(--accent);line-height:1;}
+.pv-result-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:16px;margin-top:4px;}
+.pv-result-msg{font-size:.9rem;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+.pv-result-detail{display:flex;gap:24px;justify-content:center;margin-bottom:20px;}
+.pv-detail-item{text-align:center;}
+.pv-detail-val{font-family:var(--mono);font-size:1.2rem;font-weight:700;}
+.pv-detail-lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
+
+.divider{height:1px;background:var(--border);margin:48px 0;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <span>[ ] Quiz React</span>
+        <p>Construction</p>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Préparation</div>
+        <a href="#plan" class="nav-link active"><span class="nav-num">00</span>Plan du projet</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Composants</div>
+        <a href="#etape1" class="nav-link"><span class="nav-num">01</span>Données JSON</a>
+        <a href="#etape2" class="nav-link"><span class="nav-num">02</span>ProgressBar</a>
+        <a href="#etape3" class="nav-link"><span class="nav-num">03</span>Question + Options</a>
+        <a href="#etape4" class="nav-link"><span class="nav-num">04</span>State dans App</a>
+        <a href="#etape5" class="nav-link"><span class="nav-num">05</span>Logique de réponse</a>
+        <a href="#etape6" class="nav-link"><span class="nav-num">06</span>useEffect — Timer</a>
+        <a href="#etape7" class="nav-link"><span class="nav-num">07</span>Ecran de résultats</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Résultat</div>
+        <a href="#final" class="nav-link"><span class="nav-num">08</span>Code final complet</a>
+        <a href="#quiz" class="nav-link"><span class="nav-num">09</span>Quiz</a>
+    </div>
+</aside>
+
+<!-- CONTENU -->
+<main class="content">
+
+<div class="page-header">
+    <h1>Construction<br><span class="hl">Quiz Interactif en React</span></h1>
+    <p>On va construire un quiz complet pas à pas : données en JSON, composants réutilisables, gestion du state, timer avec <strong>useEffect</strong>, et écran de résultats. Chaque composant a une responsabilité unique.</p>
+    <div class="objectifs">
+        <span class="obj b">useState</span>
+        <span class="obj p">useEffect</span>
+        <span class="obj y">map()</span>
+        <span class="obj o">Données JSON</span>
+        <span class="obj g">Composants réutilisables</span>
+    </div>
+</div>
+
+<!-- ── 00 PLAN ── -->
+<section class="etape" id="plan">
+    <div class="etape-header">
+        <div class="etape-num">00</div>
+        <div class="etape-info">
+            <div class="etape-tag">Préparation</div>
+            <h2>Le plan — ce qu'on va construire</h2>
+        </div>
+    </div>
+
+    <p class="prose">Un quiz c'est une suite de questions, chacune avec plusieurs options. L'utilisateur choisit une réponse, reçoit un feedback, puis passe à la suivante. À la fin, on affiche le score. On découpe en <strong>5 composants</strong> :</p>
+
+    <div class="schema">
+<span class="sc-app">App</span>                              <span class="sc-dim">← STATE : index, reponse, score, termine, temps</span>
+  │                                  <span class="sc-dim">← EFFECT : timer par question</span>
+  │
+  ├── <span class="sc-comp">ProgressBar</span>                  <span class="sc-dim">← barre de progression + compteur</span>
+  │     <span class="sc-props">props: actuelle, total</span>
+  │
+  ├── <span class="sc-comp">QuestionCard</span>                 <span class="sc-dim">← la question en cours</span>
+  │     <span class="sc-props">props: question, reponse, temps, onReponse</span>
+  │     ├── <span class="sc-comp">Timer</span>                  <span class="sc-dim">← barre de temps visuelle</span>
+  │     │     <span class="sc-props">props: temps, duree</span>
+  │     └── <span class="sc-comp">OptionButton</span> x N      <span class="sc-dim">← chaque choix (composant réutilisable)</span>
+  │           <span class="sc-props">props: texte, etat, onClick</span>
+  │
+  └── <span class="sc-comp">ResultScreen</span>                 <span class="sc-dim">← ecran final score + replay</span>
+        <span class="sc-props">props: score, total, details[], onReplay</span>
+    </div>
+
+    <div class="callout info">
+        <span>i</span>
+        <div><strong>Separation of concerns.</strong> Chaque composant a une seule raison d'exister : <code>ProgressBar</code> ne sait pas ce qu'est un quiz, il affiche juste une fraction. <code>OptionButton</code> ne sait pas si la réponse est bonne, il affiche juste un état. C'est App qui possède la logique.</div>
+    </div>
+
+    <p class="prose">Les <strong>états possibles d'une option</strong> sont le coeur du composant <code>OptionButton</code> :</p>
+
+    <div class="resultat">
+        <div class="resultat-label">Etats d'un OptionButton</div>
+        <div class="resultat-body">
+            <strong style="color:var(--text)">null</strong> — état initial, aucune réponse donnée — cliquable<br>
+            <strong style="color:var(--text)">"selectionne"</strong> — l'utilisateur a cliqué cette option, en attente — non cliquable<br>
+            <strong style="color:var(--text)">"correct"</strong> — cette option est la bonne réponse — surlignée en vert<br>
+            <strong style="color:var(--text)">"incorrect"</strong> — cette option était sélectionnée mais c'est la mauvaise — surlignée en rouge
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 01 DONNÉES JSON ── -->
+<section class="etape" id="etape1">
+    <div class="etape-header">
+        <div class="etape-num">01</div>
+        <div class="etape-info">
+            <div class="etape-tag">Étape 1 — La source de données</div>
+            <h2>Les données JSON — structure et typage</h2>
+        </div>
+    </div>
+
+    <p class="prose">Tout part d'un fichier de données. En React, on sépare les données du code des composants. Le JSON contient les questions, les options, la bonne réponse et une explication affichée après la réponse.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">questions.json</span><span class="cb-badge data">données</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">// questions.json</span>
+[
+    {
+        <span class="str">"id"</span>: <span class="num">1</span>,
+        <span class="str">"question"</span>: <span class="str">"Que retourne useState() ?"</span>,
+        <span class="str">"options"</span>: [
+            <span class="str">"Une valeur et une fonction de mise à jour"</span>,
+            <span class="str">"Un objet avec get() et set()"</span>,
+            <span class="str">"Un tableau immuable"</span>,
+            <span class="str">"Une promesse"</span>
+        ],
+        <span class="str">"correct"</span>: <span class="num">0</span>,    <span class="cmt">// index de la bonne réponse dans options[]</span>
+        <span class="str">"explication"</span>: <span class="str">"useState retourne un tableau de 2 éléments : [valeur, setValeur]."</span>
+    },
+    {
+        <span class="str">"id"</span>: <span class="num">2</span>,
+        <span class="str">"question"</span>: <span class="str">"Quand useEffect se déclenche-t-il avec [] comme dépendances ?"</span>,
+        <span class="str">"options"</span>: [
+            <span class="str">"À chaque render"</span>,
+            <span class="str">"Une seule fois au montage du composant"</span>,
+            <span class="str">"Jamais"</span>,
+            <span class="str">"Uniquement sur les mises à jour"</span>
+        ],
+        <span class="str">"correct"</span>: <span class="num">1</span>,
+        <span class="str">"explication"</span>: <span class="str">"Le tableau vide [] signifie aucune dépendance : l'effet ne tourne qu'au premier render."</span>
+    }
+    <span class="cmt">// ... autres questions</span>
+]</code></pre>
+    </div>
+
+    <div class="callout tip">
+        <span>!</span>
+        <div><strong>correct: 0 = index.</strong> On stocke l'index de la bonne réponse dans le tableau <code>options</code>, pas le texte. Si on changeait le libellé d'une option, il ne faudrait pas toucher à <code>correct</code>. C'est plus robuste et évite la duplication.</div>
+    </div>
+
+    <p class="prose">Dans une vraie app React, on importe le JSON directement :</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">App.jsx — import du JSON</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="kw">import</span> <span class="vr">questions</span> <span class="kw">from</span> <span class="str">'./questions.json'</span>
+
+<span class="cmt">// questions est maintenant un tableau JavaScript normal</span>
+<span class="cmt">// questions.length  → nombre de questions</span>
+<span class="cmt">// questions[0]      → première question</span>
+<span class="cmt">// questions[0].options.map(...)  → générer les boutons d'options</span></code></pre>
+    </div>
+
+    <div class="callout info">
+        <span>i</span>
+        <div><strong>Vite et Create React App supportent l'import JSON nativement.</strong> Webpack/Vite transforment le JSON en module ES lors du build. Pas besoin de <code>fetch</code> ni de <code>useEffect</code> pour charger le fichier — c'est disponible au moment du rendu initial.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 02 PROGRESSBAR ── -->
+<section class="etape" id="etape2">
+    <div class="etape-header">
+        <div class="etape-num">02</div>
+        <div class="etape-info">
+            <div class="etape-tag">Étape 2 — Composant réutilisable</div>
+            <h2>ProgressBar — un composant sans état</h2>
+        </div>
+    </div>
+
+    <p class="prose"><code>ProgressBar</code> est le plus simple des composants : il reçoit deux chiffres et affiche une barre. Aucun state, aucune logique. C'est un composant <strong>purement présentationnel</strong> — il ne fait que transformer des props en JSX. Ce pattern est très courant en React.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">ProgressBar.jsx</span><span class="cb-badge new">nouveau</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">// ProgressBar.jsx</span>
+<span class="cmt">// Props : actuelle (number), total (number)</span>
+<span class="cmt">// Exemple : actuelle=3, total=8 → barre à 37.5%</span>
+
+<span class="kw">function</span> <span class="fn">ProgressBar</span>({ <span class="vr">actuelle</span>, <span class="vr">total</span> }) {
+    <span class="kw">const</span> <span class="vr">pct</span> = (<span class="vr">actuelle</span> / <span class="vr">total</span>) * <span class="num">100</span>
+
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"progress-wrap"</span><span class="tag">&gt;</span>
+
+            <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"progress-label"</span><span class="tag">&gt;</span>
+                Question <span class="jsx">{actuelle}</span> / <span class="jsx">{total}</span>
+            <span class="tag">&lt;/span&gt;</span>
+
+            <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"progress-track"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;div</span>
+                    <span class="attr">className</span>=<span class="str">"progress-bar"</span>
+                    <span class="attr">style</span>=<span class="jsx">{{ width: `${pct}%` }}</span>
+                <span class="tag">/&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+
+        <span class="tag">&lt;/div&gt;</span>
+    )
+}
+
+<span class="kw">export default</span> <span class="fn">ProgressBar</span></code></pre>
+    </div>
+
+    <div class="callout success">
+        <span>+</span>
+        <div><strong>Réutilisabilité.</strong> Ce composant peut servir dans n'importe quel contexte : upload de fichier, étapes d'un formulaire, chargement. Il ne sait pas ce qu'est un quiz. Ses props sont génériques (<code>actuelle</code>, <code>total</code>) et non spécifiques (<code>questionActuelle</code>). C'est ça un bon composant réutilisable.</div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">OptionButton.jsx — autre composant réutilisable</span><span class="cb-badge new">nouveau</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">// OptionButton.jsx</span>
+<span class="cmt">// Props :</span>
+<span class="cmt">//   texte   → string  — le libellé de l'option</span>
+<span class="cmt">//   etat    → null | "selectionne" | "correct" | "incorrect"</span>
+<span class="cmt">//   onClick → function — appelée au clic</span>
+
+<span class="kw">function</span> <span class="fn">OptionButton</span>({ <span class="vr">texte</span>, <span class="vr">etat</span>, <span class="vr">onClick</span> }) {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;button</span>
+            <span class="attr">className</span>=<span class="jsx">{`option-btn ${etat ?? ''}`}</span>
+            <span class="attr">onClick</span>=<span class="jsx">{onClick}</span>
+            <span class="attr">disabled</span>=<span class="jsx">{etat !== null}</span>
+        <span class="tag">&gt;</span>
+            <span class="jsx">{texte}</span>
+        <span class="tag">&lt;/button&gt;</span>
+    )
+}
+
+<span class="kw">export default</span> <span class="fn">OptionButton</span></code></pre>
+    </div>
+
+    <div class="callout purple">
+        <span>?</span>
+        <div><strong>disabled={etat !== null}</strong> — le bouton est désactivé dès qu'un état est défini, c'est-à-dire dès que l'utilisateur a répondu. Une seule condition couvre les trois états post-réponse (<code>"selectionne"</code>, <code>"correct"</code>, <code>"incorrect"</code>). Plus besoin de <code>etat === "selectionne" || etat === "correct" || ...</code>.</div>
+    </div>
+
+    <div class="checkpoint">
+        <span class="cp-icon">&gt;</span>
+        <div class="cp-text"><strong>A ce stade :</strong> deux composants réutilisables sans état, prêts à recevoir leurs props. On peut les tester en isolation en leur passant des valeurs en dur. La vraie logique viendra d'App.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 03 QUESTIONCARD ── -->
+<section class="etape" id="etape3">
+    <div class="etape-header">
+        <div class="etape-num">03</div>
+        <div class="etape-info">
+            <div class="etape-tag">Étape 3 — Assemblage</div>
+            <h2>QuestionCard — assembler les sous-composants</h2>
+        </div>
+    </div>
+
+    <p class="prose"><code>QuestionCard</code> assemble le texte de la question, les options via <code>map()</code>, le timer visuel et le feedback. Il reçoit la question courante (objet JSON) et la réponse donnée, et calcule l'état de chaque option.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">QuestionCard.jsx</span><span class="cb-badge new">nouveau</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">// QuestionCard.jsx</span>
+<span class="cmt">// Props :</span>
+<span class="cmt">//   question  → { id, question, options[], correct, explication }</span>
+<span class="cmt">//   reponse   → number | null — index de l'option choisie</span>
+<span class="cmt">//   temps     → number — secondes restantes</span>
+<span class="cmt">//   duree     → number — durée totale (pour la barre de timer)</span>
+<span class="cmt">//   onReponse → function(index) — appelée au clic sur une option</span>
+
+<span class="kw">function</span> <span class="fn">QuestionCard</span>({ <span class="vr">question</span>, <span class="vr">reponse</span>, <span class="vr">temps</span>, <span class="vr">duree</span>, <span class="vr">onReponse</span> }) {
+
+    <span class="cmt">// Calcule l'état de chaque option depuis reponse + question.correct</span>
+    <span class="kw">function</span> <span class="fn">getEtat</span>(<span class="vr">index</span>) {
+        <span class="kw">if</span> (<span class="vr">reponse</span> === <span class="kw">null</span>) <span class="kw">return null</span>            <span class="cmt">// pas encore répondu</span>
+        <span class="kw">if</span> (<span class="vr">index</span> === <span class="vr">question</span>.<span class="vr">correct</span>) <span class="kw">return</span> <span class="str">'correct'</span>  <span class="cmt">// toujours verte</span>
+        <span class="kw">if</span> (<span class="vr">index</span> === <span class="vr">reponse</span>) <span class="kw">return</span> <span class="str">'incorrect'</span>      <span class="cmt">// rouge si c'était celle choisie</span>
+        <span class="kw">return</span> <span class="str">'selectionne'</span>                            <span class="cmt">// autres → désactivées</span>
+    }
+
+    <span class="kw">const</span> <span class="vr">aRepondu</span> = <span class="vr">reponse</span> !== <span class="kw">null</span>
+    <span class="kw">const</span> <span class="vr">correct</span>  = <span class="vr">reponse</span> === <span class="vr">question</span>.<span class="vr">correct</span>
+
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"question-card"</span><span class="tag">&gt;</span>
+
+            <span class="cmt">{/* Barre de timer */}</span>
+            <span class="tag">&lt;Timer</span> <span class="attr">temps</span>=<span class="jsx">{temps}</span> <span class="attr">duree</span>=<span class="jsx">{duree}</span> <span class="tag">/&gt;</span>
+
+            <span class="cmt">{/* Texte de la question */}</span>
+            <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="str">"question-texte"</span><span class="tag">&gt;</span><span class="jsx">{question.question}</span><span class="tag">&lt;/p&gt;</span>
+
+            <span class="cmt">{/* Options — map() sur le tableau JSON */}</span>
+            <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"options"</span><span class="tag">&gt;</span>
+                <span class="jsx">{question.options.<span class="fn">map</span>((<span class="vr">texte</span>, <span class="vr">i</span>) => (
+                    <span class="tag">&lt;OptionButton</span>
+                        <span class="attr">key</span>=<span class="jsx">{i}</span>
+                        <span class="attr">texte</span>=<span class="jsx">{texte}</span>
+                        <span class="attr">etat</span>=<span class="jsx">{getEtat(i)}</span>
+                        <span class="attr">onClick</span>=<span class="jsx">{() => onReponse(i)}</span>
+                    <span class="tag">/&gt;</span>
+                ))}</span>
+            <span class="tag">&lt;/div&gt;</span>
+
+            <span class="cmt">{/* Feedback — affiché seulement après réponse */}</span>
+            <span class="jsx">{aRepondu && (
+                <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="jsx">{`feedback ${correct ? 'ok' : 'ko'}`}</span><span class="tag">&gt;</span>
+                    <span class="jsx">{question.explication}</span>
+                <span class="tag">&lt;/div&gt;</span>
+            )}</span>
+
+        <span class="tag">&lt;/div&gt;</span>
+    )
+}
+
+<span class="kw">export default</span> <span class="fn">QuestionCard</span></code></pre>
+    </div>
+
+    <div class="callout warn">
+        <span>!</span>
+        <div><strong>getEtat() : le seul endroit où on décide de la couleur.</strong> La logique d'affichage est centralisée dans cette fonction locale. <code>OptionButton</code> ne sait pas si c'est une bonne ou mauvaise réponse — il affiche juste l'état qu'on lui passe. Si demain les règles d'affichage changent, on ne modifie que <code>getEtat</code>.</div>
+    </div>
+
+    <p class="prose">Le composant <code>Timer</code> est minimal — juste une barre CSS dont la largeur dépend du temps restant :</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Timer.jsx</span><span class="cb-badge new">nouveau</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">// Timer.jsx</span>
+<span class="cmt">// Props : temps (secondes restantes), duree (durée totale)</span>
+
+<span class="kw">function</span> <span class="fn">Timer</span>({ <span class="vr">temps</span>, <span class="vr">duree</span> }) {
+    <span class="kw">const</span> <span class="vr">pct</span>     = (<span class="vr">temps</span> / <span class="vr">duree</span>) * <span class="num">100</span>
+    <span class="kw">const</span> <span class="vr">urgent</span>  = <span class="vr">temps</span> <= <span class="num">5</span>
+    <span class="kw">const</span> <span class="vr">couleur</span> = <span class="vr">urgent</span> ? <span class="str">'#ff7b72'</span> : <span class="str">'#61dafb'</span>
+
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"timer-wrap"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"timer-track"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;div</span>
+                    <span class="attr">className</span>=<span class="str">"timer-bar"</span>
+                    <span class="attr">style</span>=<span class="jsx">{{ width: `${pct}%`, background: couleur }}</span>
+                <span class="tag">/&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="jsx">{`timer-val ${urgent ? 'urgent' : ''}`}</span><span class="tag">&gt;</span>
+                <span class="jsx">{temps}</span>s
+            <span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+    )
+}
+
+<span class="kw">export default</span> <span class="fn">Timer</span></code></pre>
+    </div>
+
+    <div class="checkpoint">
+        <span class="cp-icon">&gt;</span>
+        <div class="cp-text"><strong>A ce stade :</strong> <code>QuestionCard</code> affiche une question complète avec ses options et son timer. On peut le tester en lui passant une question JSON en dur et <code>reponse={null}</code>. Les options sont cliquables mais rien ne se passe encore — la logique est dans App.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 04 STATE ── -->
+<section class="etape" id="etape4">
+    <div class="etape-header">
+        <div class="etape-num">04</div>
+        <div class="etape-info">
+            <div class="etape-tag">Étape 4 — Le state central</div>
+            <h2>Le State dans App</h2>
+        </div>
+    </div>
+
+    <p class="prose">App est le chef d'orchestre. Il détient tout le state et distribue les props. On a besoin de <strong>5 useState</strong> pour couvrir l'ensemble du jeu.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">App.jsx — état initial</span><span class="cb-badge new">nouveau</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="kw">import</span> { <span class="fn">useState</span>, <span class="fn">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> <span class="vr">questions</span> <span class="kw">from</span> <span class="str">'./questions.json'</span>
+<span class="kw">import</span> <span class="fn">ProgressBar</span>   <span class="kw">from</span> <span class="str">'./ProgressBar'</span>
+<span class="kw">import</span> <span class="fn">QuestionCard</span>  <span class="kw">from</span> <span class="str">'./QuestionCard'</span>
+<span class="kw">import</span> <span class="fn">ResultScreen</span>  <span class="kw">from</span> <span class="str">'./ResultScreen'</span>
+
+<span class="kw">const</span> <span class="vr">DUREE</span> = <span class="num">20</span>  <span class="cmt">// secondes par question</span>
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+    <span class="cmt">// Index de la question affichée (0 à questions.length - 1)</span>
+    <span class="kw">const</span> [<span class="vr">index</span>,    <span class="fn">setIndex</span>]    = <span class="fn">useState</span>(<span class="num">0</span>)
+
+    <span class="cmt">// Réponse donnée pour la question courante (null = pas encore répondu)</span>
+    <span class="kw">const</span> [<span class="vr">reponse</span>,  <span class="fn">setReponse</span>]  = <span class="fn">useState</span>(<span class="kw">null</span>)
+
+    <span class="cmt">// Nombre de bonnes réponses</span>
+    <span class="kw">const</span> [<span class="vr">score</span>,    <span class="fn">setScore</span>]    = <span class="fn">useState</span>(<span class="num">0</span>)
+
+    <span class="cmt">// Résultats détaillés pour l'écran final</span>
+    <span class="kw">const</span> [<span class="vr">details</span>,  <span class="fn">setDetails</span>]  = <span class="fn">useState</span>([])
+
+    <span class="cmt">// Secondes restantes pour la question en cours</span>
+    <span class="kw">const</span> [<span class="vr">temps</span>,    <span class="fn">setTemps</span>]    = <span class="fn">useState</span>(<span class="vr">DUREE</span>)
+
+    <span class="cmt">// Valeurs dérivées — calculées depuis le state existant</span>
+    <span class="kw">const</span> <span class="vr">questionCourante</span> = <span class="vr">questions</span>[<span class="vr">index</span>]
+    <span class="kw">const</span> <span class="vr">termine</span>          = <span class="vr">index</span> >= <span class="vr">questions</span>.<span class="vr">length</span>
+
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"app"</span><span class="tag">&gt;</span>
+            <span class="jsx">{termine ? (
+                <span class="tag">&lt;ResultScreen</span>
+                    <span class="attr">score</span>=<span class="jsx">{score}</span>
+                    <span class="attr">total</span>=<span class="jsx">{questions.length}</span>
+                    <span class="attr">details</span>=<span class="jsx">{details}</span>
+                    <span class="attr">onReplay</span>=<span class="jsx">{replay}</span>
+                <span class="tag">/&gt;</span>
+            ) : (
+                <span class="tag">&lt;&gt;</span>
+                    <span class="tag">&lt;ProgressBar</span>
+                        <span class="attr">actuelle</span>=<span class="jsx">{index + 1}</span>
+                        <span class="attr">total</span>=<span class="jsx">{questions.length}</span>
+                    <span class="tag">/&gt;</span>
+                    <span class="tag">&lt;QuestionCard</span>
+                        <span class="attr">question</span>=<span class="jsx">{questionCourante}</span>
+                        <span class="attr">reponse</span>=<span class="jsx">{reponse}</span>
+                        <span class="attr">temps</span>=<span class="jsx">{temps}</span>
+                        <span class="attr">duree</span>=<span class="jsx">{DUREE}</span>
+                        <span class="attr">onReponse</span>=<span class="jsx">{repondre}</span>
+                    <span class="tag">/&gt;</span>
+                <span class="tag">&lt;/&gt;</span>
+            )}</span>
+        <span class="tag">&lt;/div&gt;</span>
+    )
+}
+
+<span class="kw">export default</span> <span class="fn">App</span></code></pre>
+    </div>
+
+    <div class="resultat">
+        <div class="resultat-label">Rôle de chaque state</div>
+        <div class="resultat-body">
+            <strong style="color:var(--text)">index</strong> — la question affichée. Incrémenté à chaque "Suivant".<br>
+            <strong style="color:var(--text)">reponse</strong> — l'option choisie pour la question courante. Remise à <code>null</code> à chaque nouvelle question.<br>
+            <strong style="color:var(--text)">score</strong> — compteur de bonnes réponses. Incrémenté uniquement si <code>reponse === question.correct</code>.<br>
+            <strong style="color:var(--text)">details</strong> — tableau accumulé pour l'écran final : chaque question + réponse donnée.<br>
+            <strong style="color:var(--text)">temps</strong> — secondes restantes. Géré par useEffect (étape 6).
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 05 LOGIQUE ── -->
+<section class="etape" id="etape5">
+    <div class="etape-header">
+        <div class="etape-num">05</div>
+        <div class="etape-info">
+            <div class="etape-tag">Étape 5 — Les actions</div>
+            <h2>Logique de réponse et navigation</h2>
+        </div>
+    </div>
+
+    <p class="prose">Trois fonctions couvrent toute la logique du jeu : <code>repondre</code> quand on clique une option, <code>suivant</code> pour passer à la question suivante, et <code>replay</code> pour tout remettre à zéro.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">App.jsx — fonctions repondre, suivant, replay</span><span class="cb-badge mod">modifier</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="kw">function</span> <span class="fn">repondre</span>(<span class="vr">indexOption</span>) {
+    <span class="cmt">// 1. Ignorer si déjà répondu</span>
+    <span class="kw">if</span> (<span class="vr">reponse</span> !== <span class="kw">null</span>) <span class="kw">return</span>
+
+    <span class="cmt">// 2. Enregistrer la réponse</span>
+    <span class="fn">setReponse</span>(<span class="vr">indexOption</span>)
+
+    <span class="cmt">// 3. Mettre à jour le score si correct</span>
+    <span class="kw">if</span> (<span class="vr">indexOption</span> === <span class="vr">questionCourante</span>.<span class="vr">correct</span>) {
+        <span class="fn">setScore</span>(<span class="vr">s</span> => <span class="vr">s</span> + <span class="num">1</span>)
+    }
+
+    <span class="cmt">// 4. Stocker dans les détails pour l'écran final</span>
+    <span class="fn">setDetails</span>(<span class="vr">d</span> => [...<span class="vr">d</span>, {
+        <span class="vr">question</span>:    <span class="vr">questionCourante</span>.<span class="vr">question</span>,
+        <span class="vr">donnee</span>:      <span class="vr">indexOption</span>,
+        <span class="vr">correcte</span>:    <span class="vr">questionCourante</span>.<span class="vr">correct</span>,
+        <span class="vr">ok</span>:          <span class="vr">indexOption</span> === <span class="vr">questionCourante</span>.<span class="vr">correct</span>,
+    }])
+}
+
+<span class="kw">function</span> <span class="fn">suivant</span>() {
+    <span class="fn">setIndex</span>(<span class="vr">i</span> => <span class="vr">i</span> + <span class="num">1</span>)   <span class="cmt">// avancer à la question suivante</span>
+    <span class="fn">setReponse</span>(<span class="kw">null</span>)         <span class="cmt">// réinitialiser la réponse</span>
+    <span class="fn">setTemps</span>(<span class="vr">DUREE</span>)          <span class="cmt">// remettre le timer à zéro</span>
+}
+
+<span class="kw">function</span> <span class="fn">replay</span>() {
+    <span class="fn">setIndex</span>(<span class="num">0</span>)
+    <span class="fn">setReponse</span>(<span class="kw">null</span>)
+    <span class="fn">setScore</span>(<span class="num">0</span>)
+    <span class="fn">setDetails</span>([])
+    <span class="fn">setTemps</span>(<span class="vr">DUREE</span>)
+}</code></pre>
+    </div>
+
+    <div class="callout info">
+        <span>i</span>
+        <div><strong>setScore(s => s + 1) — forme fonctionnelle.</strong> On utilise la forme avec callback plutôt que <code>setScore(score + 1)</code> pour éviter les closures stales : la callback reçoit toujours la valeur la plus récente de <code>score</code>, même si plusieurs mises à jour sont en file.</div>
+    </div>
+
+    <div class="callout tip">
+        <span>!</span>
+        <div><strong>details[] = source de vérité de l'écran final.</strong> On accumule dans <code>details</code> tout ce dont <code>ResultScreen</code> aura besoin : question posée, réponse donnée, bonne réponse, résultat. Aucun recalcul à faire dans <code>ResultScreen</code> — il reçoit tout prêt.</div>
+    </div>
+
+    <div class="checkpoint">
+        <span class="cp-icon">&gt;</span>
+        <div class="cp-text"><strong>A ce stade :</strong> le quiz est jouable. On répond, le feedback s'affiche, on passe à la suivante. Le timer s'affiche mais ne défile pas encore — c'est l'étape suivante.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 06 USEEFFECT TIMER ── -->
+<section class="etape" id="etape6">
+    <div class="etape-header">
+        <div class="etape-num">06</div>
+        <div class="etape-info">
+            <div class="etape-tag">Étape 6 — useEffect</div>
+            <h2>useEffect — le timer et ses effets de bord</h2>
+        </div>
+    </div>
+
+    <p class="prose">Le timer est l'exemple parfait d'un <strong>effet de bord</strong> : il utilise <code>setInterval</code> qui existe en dehors du cycle React. On a besoin d'<strong>un effect pour le lancer</strong> et d'une <strong>fonction de nettoyage pour l'arrêter</strong>. Deux cas doivent arrêter le timer : l'utilisateur répond, ou le temps est écoulé.</p>
+
+    <div class="callout purple">
+        <span>?</span>
+        <div><strong>Rappel useEffect.</strong> <code>useEffect(fn, [deps])</code> exécute <code>fn</code> après chaque render où <code>deps</code> a changé. Si <code>fn</code> retourne une fonction, React l'appelle avant le prochain déclenchement de l'effet ou au démontage. Ce <code>return () =&gt; ...</code> est la <strong>fonction de nettoyage</strong> — indispensable pour les intervals.</div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">App.jsx — useEffect du timer</span><span class="cb-badge new">nouveau</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="fn">useEffect</span>(() => {
+    <span class="cmt">// Pas de timer si la partie est terminée</span>
+    <span class="kw">if</span> (<span class="vr">termine</span>) <span class="kw">return</span>
+
+    <span class="cmt">// Pas de timer si l'utilisateur a déjà répondu</span>
+    <span class="kw">if</span> (<span class="vr">reponse</span> !== <span class="kw">null</span>) <span class="kw">return</span>
+
+    <span class="cmt">// Décrémenter chaque seconde</span>
+    <span class="kw">const</span> <span class="vr">id</span> = <span class="fn">setInterval</span>(() => {
+        <span class="fn">setTemps</span>(<span class="vr">t</span> => {
+            <span class="kw">if</span> (<span class="vr">t</span> <= <span class="num">1</span>) {
+                <span class="cmt">// Temps écoulé → forcer une réponse incorrecte (-1 = timeout)</span>
+                <span class="fn">repondre</span>(-<span class="num">1</span>)
+                <span class="kw">return</span> <span class="num">0</span>
+            }
+            <span class="kw">return</span> <span class="vr">t</span> - <span class="num">1</span>
+        })
+    }, <span class="num">1000</span>)
+
+    <span class="cmt">// Nettoyage — stopper l'interval quand :</span>
+    <span class="cmt">// - l'utilisateur répond (reponse change)</span>
+    <span class="cmt">// - on passe à la question suivante (index change)</span>
+    <span class="cmt">// - la partie se termine (termine change)</span>
+    <span class="kw">return</span> () => <span class="fn">clearInterval</span>(<span class="vr">id</span>)
+
+}, [<span class="vr">index</span>, <span class="vr">reponse</span>, <span class="vr">termine</span>])  <span class="cmt">// redémarre à chaque nouvelle question</span></code></pre>
+    </div>
+
+    <div class="callout warn">
+        <span>!</span>
+        <div><strong>repondre(-1) pour le timeout.</strong> Quand le temps est écoulé, on appelle <code>repondre(-1)</code> : <code>-1</code> n'est jamais un index valide donc la réponse sera toujours incorrecte, le feedback s'affiche, et la logique de question répond reste identique. Pas besoin d'un cas spécial "timeout" dans le reste du code.</div>
+    </div>
+
+    <div class="callout warn">
+        <span>!</span>
+        <div><strong>[index, reponse, termine] comme dépendances.</strong> Le tableau de dépendances inclut <code>index</code> pour redémarrer le timer à chaque nouvelle question, <code>reponse</code> pour stopper le timer dès qu'on répond, et <code>termine</code> pour ne pas démarrer de timer sur l'écran final.</div>
+    </div>
+
+    <div class="checkpoint">
+        <span class="cp-icon">&gt;</span>
+        <div class="cp-text"><strong>Le quiz est complet.</strong> Le timer défile, se fige quand on répond, se remet à zéro pour la suivante. Si le temps est écoulé, la question est comptée comme incorrecte.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 07 RESULTSCREEN ── -->
+<section class="etape" id="etape7">
+    <div class="etape-header">
+        <div class="etape-num">07</div>
+        <div class="etape-info">
+            <div class="etape-tag">Étape 7 — Ecran final</div>
+            <h2>ResultScreen — afficher les résultats</h2>
+        </div>
+    </div>
+
+    <p class="prose"><code>ResultScreen</code> est un composant purement présentationnel qui reçoit tout ce dont il a besoin depuis App. Il utilise <code>map()</code> sur le tableau <code>details</code> pour afficher le récapitulatif question par question.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">ResultScreen.jsx</span><span class="cb-badge new">nouveau</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">// ResultScreen.jsx</span>
+<span class="cmt">// Props :</span>
+<span class="cmt">//   score    → number — nombre de bonnes réponses</span>
+<span class="cmt">//   total    → number — nombre total de questions</span>
+<span class="cmt">//   details  → { question, donnee, correcte, ok }[]</span>
+<span class="cmt">//   onReplay → function — appelée au clic sur Rejouer</span>
+
+<span class="kw">function</span> <span class="fn">ResultScreen</span>({ <span class="vr">score</span>, <span class="vr">total</span>, <span class="vr">details</span>, <span class="vr">onReplay</span> }) {
+    <span class="kw">const</span> <span class="vr">pct</span>     = <span class="fn">Math</span>.<span class="fn">round</span>((<span class="vr">score</span> / <span class="vr">total</span>) * <span class="num">100</span>)
+    <span class="kw">const</span> <span class="vr">message</span> = <span class="vr">pct</span> === <span class="num">100</span> ? <span class="str">'Score parfait !'</span>
+                  : <span class="vr">pct</span> >= <span class="num">75</span>  ? <span class="str">'Bonne maitrise du sujet.'</span>
+                  : <span class="vr">pct</span> >= <span class="num">50</span>  ? <span class="str">'Encore un peu de travail.'</span>
+                  :                <span class="str">'Reprends le cours depuis le début.'</span>
+
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"result-screen"</span><span class="tag">&gt;</span>
+
+            <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"result-score"</span><span class="tag">&gt;</span>
+                <span class="jsx">{score}</span><span class="tag">&lt;span</span><span class="tag">&gt;</span>/<span class="jsx">{total}</span><span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+
+            <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="str">"result-msg"</span><span class="tag">&gt;</span><span class="jsx">{message}</span><span class="tag">&lt;/p&gt;</span>
+
+            <span class="cmt">{/* Récapitulatif — map() sur le tableau details */}</span>
+            <span class="tag">&lt;ul</span> <span class="attr">className</span>=<span class="str">"detail-list"</span><span class="tag">&gt;</span>
+                <span class="jsx">{details.<span class="fn">map</span>((<span class="vr">d</span>, <span class="vr">i</span>) => (
+                    <span class="tag">&lt;li</span> <span class="attr">key</span>=<span class="jsx">{i}</span> <span class="attr">className</span>=<span class="jsx">{`detail-item ${d.ok ? 'ok' : 'ko'}`}</span><span class="tag">&gt;</span>
+                        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"detail-icon"</span><span class="tag">&gt;</span><span class="jsx">{d.ok ? 'V' : 'X'}</span><span class="tag">&lt;/span&gt;</span>
+                        <span class="jsx">{d.question}</span>
+                    <span class="tag">&lt;/li&gt;</span>
+                ))}</span>
+            <span class="tag">&lt;/ul&gt;</span>
+
+            <span class="tag">&lt;button</span> <span class="attr">className</span>=<span class="str">"btn-replay"</span> <span class="attr">onClick</span>=<span class="jsx">{onReplay}</span><span class="tag">&gt;</span>
+                Rejouer
+            <span class="tag">&lt;/button&gt;</span>
+
+        <span class="tag">&lt;/div&gt;</span>
+    )
+}
+
+<span class="kw">export default</span> <span class="fn">ResultScreen</span></code></pre>
+    </div>
+
+    <div class="callout success">
+        <span>+</span>
+        <div><strong>ResultScreen ne recalcule rien.</strong> Tout a été préparé par App lors du remplissage de <code>details</code>. <code>ResultScreen</code> fait du rendu pur. C'est le principe Single Responsibility : chaque composant a un seul rôle. App calcule, les composants affichent.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 08 CODE FINAL ── -->
+<section class="etape" id="final">
+    <div class="etape-header">
+        <div class="etape-num">08</div>
+        <div class="etape-info">
+            <div class="etape-tag">Code complet</div>
+            <h2>Version finale — un seul fichier simplifié</h2>
+        </div>
+    </div>
+
+    <p class="prose">Voici le code complet en un seul fichier React autonome, avec les données JSON inline et tous les styles en inline. Version condensée pour avoir la vision globale de toute l'architecture.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Quiz.jsx — code complet, un fichier</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="kw">import</span> { <span class="fn">useState</span>, <span class="fn">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="cmt">// ── Données JSON ───────────────────────────────────────────────</span>
+<span class="kw">const</span> <span class="vr">QUESTIONS</span> = [
+    { <span class="vr">id</span>:<span class="num">1</span>, <span class="vr">question</span>:<span class="str">"Que retourne useState() ?"</span>,
+      <span class="vr">options</span>:[<span class="str">"Une valeur et une fonction de mise à jour"</span>,<span class="str">"Un objet avec get() et set()"</span>,<span class="str">"Un tableau immuable"</span>,<span class="str">"Une promesse"</span>],
+      <span class="vr">correct</span>:<span class="num">0</span>, <span class="vr">explication</span>:<span class="str">"useState retourne [valeur, setValeur] — un tableau de 2 éléments."</span> },
+
+    { <span class="vr">id</span>:<span class="num">2</span>, <span class="vr">question</span>:<span class="str">"Que signifie [] comme tableau de dépendances de useEffect ?"</span>,
+      <span class="vr">options</span>:[<span class="str">"L'effet tourne à chaque render"</span>,<span class="str">"L'effet tourne une seule fois au montage"</span>,<span class="str">"L'effet ne tourne jamais"</span>,<span class="str">"L'effet tourne uniquement sur les updates"</span>],
+      <span class="vr">correct</span>:<span class="num">1</span>, <span class="vr">explication</span>:<span class="str">"[] = aucune dépendance : l'effet ne se lance qu'au premier render (montage)."</span> },
+
+    { <span class="vr">id</span>:<span class="num">3</span>, <span class="vr">question</span>:<span class="str">"Pourquoi utiliser key={id} plutôt que key={index} dans un map() ?"</span>,
+      <span class="vr">options</span>:[<span class="str">"L'id est toujours un nombre, index peut être une chaîne"</span>,<span class="str">"key={index} ne fonctionne pas"</span>,<span class="str">"L'id est stable même si la liste est réordonnée — évite des bugs visuels"</span>,<span class="str">"Pour des raisons de performance uniquement"</span>],
+      <span class="vr">correct</span>:<span class="num">2</span>, <span class="vr">explication</span>:<span class="str">"React utilise key pour identifier les éléments. Si la liste change d'ordre, un index deviendrait instable."</span> },
+
+    { <span class="vr">id</span>:<span class="num">4</span>, <span class="vr">question</span>:<span class="str">"Qu'est-ce qu'une valeur dérivée en React ?"</span>,
+      <span class="vr">options</span>:[<span class="str">"Un state calculé par useReducer"</span>,<span class="str">"Une valeur calculée depuis le state existant — pas dans useState"</span>,<span class="str">"Le résultat d'un useEffect"</span>,<span class="str">"Un props reçu d'un composant parent"</span>],
+      <span class="vr">correct</span>:<span class="num">1</span>, <span class="vr">explication</span>:<span class="str">"Si une valeur se calcule depuis le state, la mettre dans useState créerait une duplication risquant une désynchronisation."</span> },
+
+    { <span class="vr">id</span>:<span class="num">5</span>, <span class="vr">question</span>:<span class="str">"Pourquoi la fonction de nettoyage de useEffect est-elle importante pour setInterval ?"</span>,
+      <span class="vr">options</span>:[<span class="str">"Elle stoppe le rendu du composant"</span>,<span class="str">"Elle annule le dernier setState appelé"</span>,<span class="str">"Elle évite que l'interval continue de tourner après le démontage ou le changement de dépendance"</span>,<span class="str">"Elle est purement optionnelle"</span>],
+      <span class="vr">correct</span>:<span class="num">2</span>, <span class="vr">explication</span>:<span class="str">"Sans clearInterval dans le nettoyage, l'interval continue même après changement de question ou de composant."</span> },
+]
+
+<span class="kw">const</span> <span class="vr">DUREE</span> = <span class="num">20</span>
+
+<span class="cmt">// ── ProgressBar ────────────────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">ProgressBar</span>({ <span class="vr">actuelle</span>, <span class="vr">total</span> }) {
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ marginBottom:<span class="str">'20px'</span> }}</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ display:<span class="str">'flex'</span>, justifyContent:<span class="str">'space-between'</span>, fontSize:<span class="str">'.72rem'</span>, color:<span class="str">'#7d8590'</span>, fontFamily:<span class="str">'monospace'</span>, marginBottom:<span class="str">'6px'</span> }}</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;span</span><span class="tag">&gt;</span>Question <span class="jsx">{actuelle}</span> / <span class="jsx">{total}</span><span class="tag">&lt;/span&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">style</span>=<span class="jsx">{{ color:<span class="str">'#61dafb'</span> }}</span><span class="tag">&gt;</span><span class="jsx">{Math.round((actuelle/total)*100)}</span>%<span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ height:<span class="str">'4px'</span>, background:<span class="str">'#1e2d3d'</span>, borderRadius:<span class="str">'2px'</span>, overflow:<span class="str">'hidden'</span> }}</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ height:<span class="str">'100%'</span>, width:`${(actuelle/total)*100}%`, background:<span class="str">'#61dafb'</span>, borderRadius:<span class="str">'2px'</span>, transition:<span class="str">'width .3s'</span> }}</span> <span class="tag">/&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+    )
+}
+
+<span class="cmt">// ── OptionButton ───────────────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">OptionButton</span>({ <span class="vr">texte</span>, <span class="vr">etat</span>, <span class="vr">onClick</span> }) {
+    <span class="kw">const</span> <span class="vr">colors</span> = {
+        <span class="vr">correct</span>:    { <span class="vr">bg</span>:<span class="str">'rgba(68,214,44,.1)'</span>,    <span class="vr">border</span>:<span class="str">'rgba(68,214,44,.5)'</span>,    <span class="vr">color</span>:<span class="str">'#44D62C'</span> },
+        <span class="vr">incorrect</span>:  { <span class="vr">bg</span>:<span class="str">'rgba(255,123,114,.08)'</span>, <span class="vr">border</span>:<span class="str">'rgba(255,123,114,.4)'</span>, <span class="vr">color</span>:<span class="str">'#ff7b72'</span> },
+        <span class="vr">selectionne</span>:{ <span class="vr">bg</span>:<span class="str">'transparent'</span>,           <span class="vr">border</span>:<span class="str">'#1e2d3d'</span>,            <span class="vr">color</span>:<span class="str">'#3d444d'</span> },
+    }
+    <span class="kw">const</span> <span class="vr">s</span> = <span class="vr">colors</span>[<span class="vr">etat</span>] ?? { <span class="vr">bg</span>:<span class="str">'#0d1117'</span>, <span class="vr">border</span>:<span class="str">'#1e2d3d'</span>, <span class="vr">color</span>:<span class="str">'#7d8590'</span> }
+    <span class="kw">return</span> (
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>=<span class="jsx">{onClick}</span> <span class="attr">disabled</span>=<span class="jsx">{etat !== null}</span>
+            <span class="attr">style</span>=<span class="jsx">{{ width:<span class="str">'100%'</span>, padding:<span class="str">'11px 16px'</span>, textAlign:<span class="str">'left'</span>, borderRadius:<span class="str">'8px'</span>, border:`1px solid ${s.border}`, background:s.bg, color:s.color, fontSize:<span class="str">'.87rem'</span>, cursor: etat === null ? <span class="str">'pointer'</span> : <span class="str">'default'</span>, transition:<span class="str">'all .15s'</span>, fontFamily:<span class="str">'inherit'</span> }}</span>
+        <span class="tag">&gt;</span><span class="jsx">{texte}</span><span class="tag">&lt;/button&gt;</span>
+    )
+}
+
+<span class="cmt">// ── Composant principal ────────────────────────────────────────</span>
+<span class="kw">export default function</span> <span class="fn">Quiz</span>() {
+    <span class="kw">const</span> [<span class="vr">index</span>,   <span class="fn">setIndex</span>]   = <span class="fn">useState</span>(<span class="num">0</span>)
+    <span class="kw">const</span> [<span class="vr">reponse</span>, <span class="fn">setReponse</span>] = <span class="fn">useState</span>(<span class="kw">null</span>)
+    <span class="kw">const</span> [<span class="vr">score</span>,   <span class="fn">setScore</span>]   = <span class="fn">useState</span>(<span class="num">0</span>)
+    <span class="kw">const</span> [<span class="vr">details</span>, <span class="fn">setDetails</span>] = <span class="fn">useState</span>([])
+    <span class="kw">const</span> [<span class="vr">temps</span>,   <span class="fn">setTemps</span>]   = <span class="fn">useState</span>(<span class="vr">DUREE</span>)
+
+    <span class="kw">const</span> <span class="vr">q</span>       = <span class="vr">QUESTIONS</span>[<span class="vr">index</span>]
+    <span class="kw">const</span> <span class="vr">termine</span> = <span class="vr">index</span> >= <span class="vr">QUESTIONS</span>.<span class="vr">length</span>
+
+    <span class="fn">useEffect</span>(() => {
+        <span class="kw">if</span> (<span class="vr">termine</span> || <span class="vr">reponse</span> !== <span class="kw">null</span>) <span class="kw">return</span>
+        <span class="kw">const</span> <span class="vr">id</span> = <span class="fn">setInterval</span>(() => {
+            <span class="fn">setTemps</span>(<span class="vr">t</span> => {
+                <span class="kw">if</span> (<span class="vr">t</span> <= <span class="num">1</span>) { <span class="fn">repondre</span>(-<span class="num">1</span>); <span class="kw">return</span> <span class="num">0</span> }
+                <span class="kw">return</span> <span class="vr">t</span> - <span class="num">1</span>
+            })
+        }, <span class="num">1000</span>)
+        <span class="kw">return</span> () => <span class="fn">clearInterval</span>(<span class="vr">id</span>)
+    }, [<span class="vr">index</span>, <span class="vr">reponse</span>, <span class="vr">termine</span>])
+
+    <span class="kw">function</span> <span class="fn">repondre</span>(<span class="vr">i</span>) {
+        <span class="kw">if</span> (<span class="vr">reponse</span> !== <span class="kw">null</span>) <span class="kw">return</span>
+        <span class="fn">setReponse</span>(<span class="vr">i</span>)
+        <span class="kw">if</span> (<span class="vr">i</span> === <span class="vr">q</span>.<span class="vr">correct</span>) <span class="fn">setScore</span>(<span class="vr">s</span> => <span class="vr">s</span> + <span class="num">1</span>)
+        <span class="fn">setDetails</span>(<span class="vr">d</span> => [...<span class="vr">d</span>, { <span class="vr">question</span>:<span class="vr">q</span>.<span class="vr">question</span>, <span class="vr">ok</span>: <span class="vr">i</span> === <span class="vr">q</span>.<span class="vr">correct</span> }])
+    }
+
+    <span class="kw">function</span> <span class="fn">suivant</span>() {
+        <span class="fn">setIndex</span>(<span class="vr">i</span> => <span class="vr">i</span> + <span class="num">1</span>); <span class="fn">setReponse</span>(<span class="kw">null</span>); <span class="fn">setTemps</span>(<span class="vr">DUREE</span>)
+    }
+
+    <span class="kw">function</span> <span class="fn">replay</span>() {
+        <span class="fn">setIndex</span>(<span class="num">0</span>); <span class="fn">setReponse</span>(<span class="kw">null</span>); <span class="fn">setScore</span>(<span class="num">0</span>); <span class="fn">setDetails</span>([]); <span class="fn">setTemps</span>(<span class="vr">DUREE</span>)
+    }
+
+    <span class="kw">const</span> <span class="vr">S</span> = { <span class="vr">wrap</span>:{ minHeight:<span class="str">'100vh'</span>, background:<span class="str">'#080b0f'</span>, display:<span class="str">'flex'</span>, alignItems:<span class="str">'center'</span>, justifyContent:<span class="str">'center'</span>, fontFamily:<span class="str">'system-ui'</span> }, <span class="vr">box</span>:{ width:<span class="str">'100%'</span>, maxWidth:<span class="str">'560px'</span>, padding:<span class="str">'32px'</span>, background:<span class="str">'#0d1117'</span>, border:<span class="str">'1px solid #1e2d3d'</span>, borderRadius:<span class="str">'14px'</span> } }
+
+    <span class="kw">if</span> (<span class="vr">termine</span>) <span class="kw">return</span> (
+        <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{S.wrap}</span><span class="tag">&gt;</span><span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{S.box}</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ textAlign:<span class="str">'center'</span>, marginBottom:<span class="str">'28px'</span> }}</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ fontSize:<span class="str">'3.5rem'</span>, fontWeight:<span class="num">900</span>, color:<span class="str">'#61dafb'</span>, fontFamily:<span class="str">'monospace'</span> }}</span><span class="tag">&gt;</span><span class="jsx">{score}</span><span class="tag">&lt;span</span> <span class="attr">style</span>=<span class="jsx">{{fontSize:<span class="str">'1.5rem'</span>,color:<span class="str">'#7d8590'</span>}}</span><span class="tag">&gt;</span>/<span class="jsx">{QUESTIONS.length}</span><span class="tag">&lt;/span&gt;&lt;/div&gt;</span>
+                <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ color:<span class="str">'#7d8590'</span>, fontSize:<span class="str">'.8rem'</span>, marginTop:<span class="str">'8px'</span> }}</span><span class="tag">&gt;</span><span class="jsx">{score === QUESTIONS.length ? 'Score parfait !' : score >= QUESTIONS.length * .75 ? 'Bonne maitrise.' : 'A retravailler.'}</span><span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;ul</span> <span class="attr">style</span>=<span class="jsx">{{ listStyle:<span class="str">'none'</span>, display:<span class="str">'flex'</span>, flexDirection:<span class="str">'column'</span>, gap:<span class="str">'8px'</span>, marginBottom:<span class="str">'24px'</span> }}</span><span class="tag">&gt;</span>
+                <span class="jsx">{details.<span class="fn">map</span>((<span class="vr">d</span>,<span class="vr">i</span>) => (
+                    <span class="tag">&lt;li</span> <span class="attr">key</span>=<span class="jsx">{i}</span> <span class="attr">style</span>=<span class="jsx">{{ display:<span class="str">'flex'</span>, gap:<span class="str">'10px'</span>, alignItems:<span class="str">'flex-start'</span>, fontSize:<span class="str">'.82rem'</span>, padding:<span class="str">'8px 12px'</span>, borderRadius:<span class="str">'7px'</span>, background: d.ok ? <span class="str">'rgba(68,214,44,.06)'</span> : <span class="str">'rgba(255,123,114,.05)'</span>, border: `1px solid ${d.ok ? 'rgba(68,214,44,.2)' : 'rgba(255,123,114,.2)'}` }}</span><span class="tag">&gt;</span>
+                        <span class="tag">&lt;span</span> <span class="attr">style</span>=<span class="jsx">{{ fontFamily:<span class="str">'monospace'</span>, fontWeight:<span class="num">700</span>, color: d.ok ? <span class="str">'#44D62C'</span> : <span class="str">'#ff7b72'</span>, flexShrink:<span class="num">0</span> }}</span><span class="tag">&gt;</span><span class="jsx">{d.ok ? 'V' : 'X'}</span><span class="tag">&lt;/span&gt;</span>
+                        <span class="tag">&lt;span</span> <span class="attr">style</span>=<span class="jsx">{{ color:<span class="str">'#7d8590'</span> }}</span><span class="tag">&gt;</span><span class="jsx">{d.question}</span><span class="tag">&lt;/span&gt;</span>
+                    <span class="tag">&lt;/li&gt;</span>
+                ))}</span>
+            <span class="tag">&lt;/ul&gt;</span>
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>=<span class="jsx">{replay}</span> <span class="attr">style</span>=<span class="jsx">{{ width:<span class="str">'100%'</span>, padding:<span class="str">'11px'</span>, background:<span class="str">'rgba(97,218,251,.1)'</span>, border:<span class="str">'1px solid rgba(97,218,251,.3)'</span>, color:<span class="str">'#61dafb'</span>, borderRadius:<span class="str">'8px'</span>, cursor:<span class="str">'pointer'</span>, fontWeight:<span class="num">700</span>, fontFamily:<span class="str">'monospace'</span> }}</span><span class="tag">&gt;</span>Rejouer<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/div&gt;&lt;/div&gt;</span>
+    )
+
+    <span class="kw">const</span> <span class="vr">urgent</span> = <span class="vr">temps</span> <= <span class="num">5</span>
+    <span class="kw">return</span> (
+        <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{S.wrap}</span><span class="tag">&gt;</span><span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{S.box}</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;ProgressBar</span> <span class="attr">actuelle</span>=<span class="jsx">{index + 1}</span> <span class="attr">total</span>=<span class="jsx">{QUESTIONS.length}</span> <span class="tag">/&gt;</span>
+            <span class="cmt">{/* Timer */}</span>
+            <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ display:<span class="str">'flex'</span>, alignItems:<span class="str">'center'</span>, gap:<span class="str">'10px'</span>, marginBottom:<span class="str">'18px'</span> }}</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ flex:<span class="num">1</span>, height:<span class="str">'5px'</span>, background:<span class="str">'#1e2d3d'</span>, borderRadius:<span class="str">'3px'</span>, overflow:<span class="str">'hidden'</span> }}</span><span class="tag">&gt;</span>
+                    <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ height:<span class="str">'100%'</span>, width:`${(temps/DUREE)*100}%`, background: urgent ? <span class="str">'#ff7b72'</span> : <span class="str">'#61dafb'</span>, transition:<span class="str">'width 1s linear, background .3s'</span> }}</span> <span class="tag">/&gt;</span>
+                <span class="tag">&lt;/div&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">style</span>=<span class="jsx">{{ fontFamily:<span class="str">'monospace'</span>, fontSize:<span class="str">'.85rem'</span>, color: urgent ? <span class="str">'#ff7b72'</span> : <span class="str">'#ffa657'</span>, minWidth:<span class="str">'32px'</span> }}</span><span class="tag">&gt;</span><span class="jsx">{temps}</span>s<span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="cmt">{/* Question */}</span>
+            <span class="tag">&lt;p</span> <span class="attr">style</span>=<span class="jsx">{{ fontSize:<span class="str">'1rem'</span>, fontWeight:<span class="num">700</span>, color:<span class="str">'#e6edf3'</span>, marginBottom:<span class="str">'18px'</span>, lineHeight:<span class="str">'1.55'</span> }}</span><span class="tag">&gt;</span><span class="jsx">{q.question}</span><span class="tag">&lt;/p&gt;</span>
+            <span class="cmt">{/* Options */}</span>
+            <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ display:<span class="str">'flex'</span>, flexDirection:<span class="str">'column'</span>, gap:<span class="str">'8px'</span>, marginBottom:<span class="str">'16px'</span> }}</span><span class="tag">&gt;</span>
+                <span class="jsx">{q.options.<span class="fn">map</span>((<span class="vr">txt</span>, <span class="vr">i</span>) => {
+                    <span class="kw">let</span> <span class="vr">etat</span> = <span class="kw">null</span>
+                    <span class="kw">if</span> (<span class="vr">reponse</span> !== <span class="kw">null</span>) {
+                        <span class="kw">if</span> (<span class="vr">i</span> === <span class="vr">q</span>.<span class="vr">correct</span>) <span class="vr">etat</span> = <span class="str">'correct'</span>
+                        <span class="kw">else if</span> (<span class="vr">i</span> === <span class="vr">reponse</span>) <span class="vr">etat</span> = <span class="str">'incorrect'</span>
+                        <span class="kw">else</span> <span class="vr">etat</span> = <span class="str">'selectionne'</span>
+                    }
+                    <span class="kw">return</span> <span class="tag">&lt;OptionButton</span> <span class="attr">key</span>=<span class="jsx">{i}</span> <span class="attr">texte</span>=<span class="jsx">{txt}</span> <span class="attr">etat</span>=<span class="jsx">{etat}</span> <span class="attr">onClick</span>=<span class="jsx">{() => repondre(i)}</span> <span class="tag">/&gt;</span>
+                })}</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="cmt">{/* Feedback */}</span>
+            <span class="jsx">{reponse !== null && (
+                <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ padding:<span class="str">'10px 14px'</span>, borderRadius:<span class="str">'7px'</span>, fontSize:<span class="str">'.82rem'</span>, marginBottom:<span class="str">'16px'</span>, background: reponse===q.correct ? <span class="str">'rgba(68,214,44,.07)'</span> : <span class="str">'rgba(255,123,114,.06)'</span>, border: `1px solid ${reponse===q.correct ? 'rgba(68,214,44,.2)' : 'rgba(255,123,114,.2)'}`, color: reponse===q.correct ? <span class="str">'#9fdb8a'</span> : <span class="str">'#ff7b72'</span> }}</span><span class="tag">&gt;</span>
+                    <span class="jsx">{q.explication}</span>
+                <span class="tag">&lt;/div&gt;</span>
+            )}</span>
+            <span class="cmt">{/* Navigation */}</span>
+            <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ display:<span class="str">'flex'</span>, justifyContent:<span class="str">'flex-end'</span> }}</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;button</span> <span class="attr">onClick</span>=<span class="jsx">{suivant}</span> <span class="attr">disabled</span>=<span class="jsx">{reponse === null}</span>
+                    <span class="attr">style</span>=<span class="jsx">{{ padding:<span class="str">'9px 24px'</span>, background: reponse !== null ? <span class="str">'rgba(97,218,251,.1)'</span> : <span class="str">'transparent'</span>, border:<span class="str">'1px solid rgba(97,218,251,.3)'</span>, color: reponse !== null ? <span class="str">'#61dafb'</span> : <span class="str">'#3d444d'</span>, borderRadius:<span class="str">'7px'</span>, cursor: reponse !== null ? <span class="str">'pointer'</span> : <span class="str">'default'</span>, fontWeight:<span class="num">700</span>, fontFamily:<span class="str">'monospace'</span>, fontSize:<span class="str">'.8rem'</span> }}</span>
+                <span class="tag">&gt;</span>
+                    <span class="jsx">{index === QUESTIONS.length - 1 ? 'Voir le score' : 'Suivant'}</span>
+                <span class="tag">&lt;/button&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;/div&gt;&lt;/div&gt;</span>
+    )
+}</code></pre>
+    </div>
+
+    <!-- APERÇU INTERACTIF -->
+    <p class="prose" style="margin-top:8px;">Aperçu interactif — le vrai quiz :</p>
+    <div class="pv-wrap" id="pv-root"></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── QUIZ ── -->
+<section class="etape" id="quiz">
+    <div class="etape-header">
+        <div class="etape-num">09</div>
+        <div class="etape-info">
+            <div class="etape-tag">Quiz</div>
+            <h2>Vérifie ta compréhension</h2>
+        </div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q1.</span> Dans <code>OptionButton</code>, on écrit <code>disabled={etat !== null}</code>. Quelle est la différence avec <code>disabled={etat === 'selectionne' || etat === 'correct' || etat === 'incorrect'}</code> ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q1',false)">Il n'y en a aucune, c'est équivalent</button>
+            <button class="opt" onclick="ans(this,'q1',true)">etat !== null couvre tous les états post-réponse en une seule condition — plus robuste si on ajoute un nouvel état plus tard</button>
+            <button class="opt" onclick="ans(this,'q1',false)">etat !== null ne fonctionne pas avec disabled</button>
+        </div>
+        <div class="fb" id="fb-q1"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q2.</span> Pourquoi <code>termine</code> est-il une valeur dérivée (<code>index >= questions.length</code>) plutôt qu'un <code>useState</code> séparé ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q2',false)">useState ne peut pas stocker un booléen</button>
+            <button class="opt" onclick="ans(this,'q2',true)">Il se calcule directement depuis index — le stocker séparément risquerait une désynchronisation si on oublie de le mettre à jour</button>
+            <button class="opt" onclick="ans(this,'q2',false)">Pour éviter un re-render supplémentaire</button>
+        </div>
+        <div class="fb" id="fb-q2"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q3.</span> Le useEffect du timer a <code>[index, reponse, termine]</code> comme dépendances. Pourquoi <code>index</code> est-il nécessaire ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q3',true)">Chaque nouvelle question doit relancer le timer depuis le début — sans index dans les dépendances, le timer ne redémarrerait pas au changement de question</button>
+            <button class="opt" onclick="ans(this,'q3',false)">Pour éviter que le timer tourne deux fois sur la même question</button>
+            <button class="opt" onclick="ans(this,'q3',false)">React exige au moins une dépendance numérique dans useEffect</button>
+        </div>
+        <div class="fb" id="fb-q3"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q4.</span> Dans <code>getEtat()</code> de QuestionCard, la bonne réponse retourne toujours <code>'correct'</code> même si l'utilisateur n'a pas sélectionné cette option. Pourquoi ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q4',false)">Pour faciliter la triche</button>
+            <button class="opt" onclick="ans(this,'q4',false)">C'est une erreur — seule l'option sélectionnée devrait changer de couleur</button>
+            <button class="opt" onclick="ans(this,'q4',true)">Après une mauvaise réponse, on montre toujours quelle était la bonne — c'est un retour pédagogique essentiel</button>
+        </div>
+        <div class="fb" id="fb-q4"></div>
+    </div>
+
+    <div id="score-box" style="display:none;text-align:center;padding:28px;background:var(--card);border:1px solid rgba(97,218,251,.2);border-radius:12px;margin-top:12px;">
+        <div id="s-emoji" style="font-size:1.5rem;font-family:var(--mono);font-weight:900;color:var(--accent);margin-bottom:10px;"></div>
+        <div id="s-text" style="font-family:var(--mono);font-size:.95rem;color:var(--text);"></div>
+    </div>
+</section>
+
+</main>
+</div>
+
+<script>
+// ── Nav scroll spy ──
+const sections = document.querySelectorAll('.etape[id]')
+const navLinks = document.querySelectorAll('.nav-link')
+const obs = new IntersectionObserver(e => {
+    e.forEach(entry => {
+        if (entry.isIntersecting) {
+            navLinks.forEach(l => l.classList.remove('active'))
+            const l = document.querySelector(`.nav-link[href="#${entry.target.id}"]`)
+            if (l) l.classList.add('active')
+        }
+    })
+}, { threshold: 0.2 })
+sections.forEach(s => obs.observe(s))
+
+// ── Copy ──
+function cp(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre')
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = '✓'; btn.classList.add('ok')
+        setTimeout(() => { btn.textContent = 'copier'; btn.classList.remove('ok') }, 1800)
+    })
+}
+
+// ── Aperçu Quiz interactif ──────────────────────────────────────
+const PV_QUESTIONS = [
+    { id:1, question:"Que retourne useState() ?",
+      options:["Une valeur et une fonction de mise à jour","Un objet avec get() et set()","Un tableau immuable","Une promesse"],
+      correct:0, explication:"useState retourne [valeur, setValeur] — un tableau de 2 éléments." },
+    { id:2, question:"Que signifie [] comme dépendances de useEffect ?",
+      options:["L'effet tourne à chaque render","L'effet tourne une seule fois au montage","L'effet ne tourne jamais","Uniquement sur les updates"],
+      correct:1, explication:"[] = aucune dépendance : l'effet ne se lance qu'au premier render (montage)." },
+    { id:3, question:"Pourquoi utiliser key={id} plutôt que key={index} dans un map() ?",
+      options:["L'id est toujours un nombre","key={index} ne fonctionne pas","L'id est stable même si la liste est réordonnée","Pour la performance uniquement"],
+      correct:2, explication:"React utilise key pour identifier les éléments. Un index devient instable si la liste change d'ordre." },
+    { id:4, question:"Qu'est-ce qu'une valeur dérivée en React ?",
+      options:["Un state calculé par useReducer","Une valeur calculée depuis le state — pas dans useState","Le résultat d'un useEffect","Un props reçu du parent"],
+      correct:1, explication:"Si une valeur se calcule depuis le state, la stocker séparément risque une désynchronisation." },
+    { id:5, question:"A quoi sert la fonction de nettoyage (return) dans useEffect ?",
+      options:["Elle stoppe le rendu","Elle annule le dernier setState","Elle évite qu'un interval continue après changement de dépendance","Elle est purement optionnelle"],
+      correct:2, explication:"Sans clearInterval dans le nettoyage, l'interval continue même après changement de question." },
+]
+const PV_DUREE = 20
+
+let pvIndex   = 0
+let pvReponse = null
+let pvScore   = 0
+let pvDetails = []
+let pvTemps   = PV_DUREE
+let pvTimer   = null
+
+function pvRender() {
+    const root = document.getElementById('pv-root')
+    const q = PV_QUESTIONS[pvIndex]
+    const termine = pvIndex >= PV_QUESTIONS.length
+
+    if (termine) {
+        root.innerHTML = ''
+        const pct = Math.round((pvScore / PV_QUESTIONS.length) * 100)
+        const msg = pvScore === PV_QUESTIONS.length ? 'Score parfait !'
+                  : pct >= 75 ? 'Bonne maitrise du sujet.'
+                  : pct >= 50 ? 'Encore un peu de travail.'
+                  : 'Reprends le cours depuis le debut.'
+
+        const scoreDiv = document.createElement('div')
+        scoreDiv.className = 'pv-result'
+        scoreDiv.innerHTML = `
+            <div class="pv-result-score">${pvScore}<span style="font-size:1.4rem;color:#7d8590">/${PV_QUESTIONS.length}</span></div>
+            <div class="pv-result-label">score final</div>
+            <div class="pv-result-msg">${msg}</div>
+        `
+
+        const detailList = document.createElement('ul')
+        detailList.style.cssText = 'list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:20px;'
+        pvDetails.forEach(d => {
+            const li = document.createElement('li')
+            li.style.cssText = `display:flex;gap:10px;align-items:flex-start;font-size:.82rem;padding:8px 12px;border-radius:7px;background:${d.ok?'rgba(68,214,44,.06)':'rgba(255,123,114,.05)'};border:1px solid ${d.ok?'rgba(68,214,44,.2)':'rgba(255,123,114,.2)'};`
+            li.innerHTML = `<span style="font-family:monospace;font-weight:700;color:${d.ok?'#44D62C':'#ff7b72'};flex-shrink:0">${d.ok?'V':'X'}</span><span style="color:#7d8590">${d.question}</span>`
+            detailList.appendChild(li)
+        })
+
+        const replayBtn = document.createElement('button')
+        replayBtn.className = 'pv-btn'
+        replayBtn.style.width = '100%'
+        replayBtn.textContent = 'Rejouer'
+        replayBtn.addEventListener('click', pvReplay)
+
+        root.appendChild(scoreDiv)
+        root.appendChild(detailList)
+        root.appendChild(replayBtn)
+        return
+    }
+
+    root.innerHTML = ''
+
+    // Top bar
+    const topbar = document.createElement('div')
+    topbar.className = 'pv-topbar'
+    topbar.innerHTML = `
+        <span class="pv-label">Question <span>${pvIndex + 1}</span> / ${PV_QUESTIONS.length}</span>
+        <span class="pv-timer${pvTemps <= 5 ? ' urgent' : ''}" id="pv-timerval">${pvTemps}s</span>
+    `
+    root.appendChild(topbar)
+
+    // Progress bar
+    const ptrack = document.createElement('div')
+    ptrack.className = 'pv-progress-track'
+    const pbar = document.createElement('div')
+    pbar.className = 'pv-progress-bar'
+    pbar.style.width = `${((pvIndex + 1) / PV_QUESTIONS.length) * 100}%`
+    ptrack.appendChild(pbar)
+    root.appendChild(ptrack)
+
+    // Timer bar
+    const trow = document.createElement('div')
+    trow.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:18px;'
+    const ttrack = document.createElement('div')
+    ttrack.style.cssText = 'flex:1;height:5px;background:#1e2d3d;border-radius:3px;overflow:hidden;'
+    const tbar = document.createElement('div')
+    tbar.id = 'pv-tbar'
+    tbar.style.cssText = `height:100%;border-radius:3px;transition:width 1s linear,background .3s;width:${(pvTemps/PV_DUREE)*100}%;background:${pvTemps<=5?'#ff7b72':'#61dafb'};`
+    ttrack.appendChild(tbar)
+    trow.appendChild(ttrack)
+    root.appendChild(trow)
+
+    // Question
+    const qEl = document.createElement('p')
+    qEl.className = 'pv-question'
+    qEl.textContent = q.question
+    root.appendChild(qEl)
+
+    // Options
+    const optsDiv = document.createElement('div')
+    optsDiv.className = 'pv-options'
+    q.options.forEach((txt, i) => {
+        let etat = null
+        if (pvReponse !== null) {
+            if (i === q.correct)   etat = 'good'
+            else if (i === pvReponse) etat = 'bad'
+            else etat = 'sel'
+        }
+        const btn = document.createElement('button')
+        btn.className = 'pv-opt' + (etat ? ' ' + etat : '')
+        btn.textContent = txt
+        btn.disabled = (pvReponse !== null)
+        if (pvReponse === null) {
+            btn.addEventListener('click', () => pvRepondre(i))
+        }
+        optsDiv.appendChild(btn)
+    })
+    root.appendChild(optsDiv)
+
+    // Feedback
+    const fb = document.createElement('div')
+    fb.className = 'pv-feedback' + (pvReponse !== null ? ' show ' + (pvReponse === q.correct ? 'ok' : 'ko') : '')
+    fb.textContent = q.explication
+    root.appendChild(fb)
+
+    // Actions
+    const actions = document.createElement('div')
+    actions.className = 'pv-actions'
+    actions.style.justifyContent = 'flex-end'
+
+    const nextBtn = document.createElement('button')
+    nextBtn.className = 'pv-btn'
+    nextBtn.textContent = pvIndex === PV_QUESTIONS.length - 1 ? 'Voir le score' : 'Suivant'
+    nextBtn.disabled = (pvReponse === null)
+    if (pvReponse !== null) {
+        nextBtn.addEventListener('click', pvSuivant)
+    }
+    actions.appendChild(nextBtn)
+    root.appendChild(actions)
+}
+
+function pvStartTimer() {
+    pvStopTimer()
+    if (pvReponse !== null) return
+    pvTimer = setInterval(() => {
+        pvTemps--
+        // Mettre à jour juste le timer sans re-render complet
+        const tv = document.getElementById('pv-timerval')
+        const tb = document.getElementById('pv-tbar')
+        if (tv) { tv.textContent = pvTemps + 's'; tv.className = 'pv-timer' + (pvTemps <= 5 ? ' urgent' : '') }
+        if (tb) { tb.style.width = (pvTemps / PV_DUREE * 100) + '%'; tb.style.background = pvTemps <= 5 ? '#ff7b72' : '#61dafb' }
+        if (pvTemps <= 0) {
+            pvStopTimer()
+            pvRepondre(-1)
+        }
+    }, 1000)
+}
+
+function pvStopTimer() {
+    if (pvTimer) { clearInterval(pvTimer); pvTimer = null }
+}
+
+function pvRepondre(i) {
+    if (pvReponse !== null) return
+    pvStopTimer()
+    pvReponse = i
+    const q = PV_QUESTIONS[pvIndex]
+    if (i === q.correct) pvScore++
+    pvDetails.push({ question: q.question, ok: i === q.correct })
+    pvRender()
+}
+
+function pvSuivant() {
+    pvIndex++
+    pvReponse = null
+    pvTemps = PV_DUREE
+    pvRender()
+    pvStartTimer()
+}
+
+function pvReplay() {
+    pvIndex = 0; pvReponse = null; pvScore = 0; pvDetails = []; pvTemps = PV_DUREE
+    pvRender()
+    pvStartTimer()
+}
+
+pvRender()
+pvStartTimer()
+
+// ── Quiz auto-évaluation ──
+const fbs = {
+    q1: {
+        ok: 'Exact ! etat !== null est plus concis et plus robuste : si on ajoute un nouvel état "expire" ou "timeout" dans le futur, le button sera automatiquement désactivé sans toucher à cette condition. La forme longue devrait être mise à jour manuellement.',
+        ko: 'Non. Les deux se valent fonctionnellement dans le cas présent, mais etat !== null est préférable : il couvre tout état non-null sans être lié à l\'énumération actuelle. Ajouter un nouvel état ne nécessite pas de modifier cette condition.'
+    },
+    q2: {
+        ok: 'Parfait ! C\'est la règle fondamentale des valeurs dérivées : si une valeur se calcule instantanément depuis le state existant, on ne la met pas dans useState. Deux sources de vérité pour la même information, c\'est une source de bugs assurée.',
+        ko: 'Non. Le problème n\'est pas les re-renders, mais la désynchronisation. Si termine était un useState séparé, il faudrait le passer à true manuellement quand index dépasse la longueur. Un oubli, et le quiz continuerait à afficher des questions après la fin.'
+    },
+    q3: {
+        ok: 'Exact ! Sans index dans les dépendances, le useEffect ne se relancerait pas quand on passe à la question suivante. Le timer resterait sur l\'intervalle précédent, avec la valeur de temps de la question précédente en closure. Chaque dépendance du tableau déclenche un redémarrage de l\'effet.',
+        ko: 'Non. index est nécessaire pour relancer le timer à chaque nouvelle question. Sans lui, le useEffect n\'observe pas le changement de question — l\'interval précédent continue indéfiniment avec ses valeurs capturées, sans jamais repartir de DUREE.'
+    },
+    q4: {
+        ok: 'Parfait ! C\'est un choix pédagogique délibéré. Quand un utilisateur se trompe, il voit sa réponse en rouge ET la bonne réponse en vert. Il comprend immédiatement quelle était la bonne option. Si on n\'affichait que l\'erreur sans montrer la bonne réponse, le feedback serait moins utile.',
+        ko: 'Non. C\'est intentionnel. Après une réponse incorrecte, on veut montrer quelle était la bonne réponse — c\'est le retour pédagogique le plus important. L\'utilisateur voit sa réponse en rouge et la bonne en vert, ce qui est bien plus informatif que juste signaler l\'erreur.'
+    }
+}
+const rep = {}
+function ans(btn, qid, ok) {
+    if (rep[qid] !== undefined) return
+    rep[qid] = ok
+    btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => o.disabled = true)
+    btn.classList.add(ok ? 'correct' : 'wrong')
+    if (!ok) btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => {
+        if (o.onclick?.toString().includes(',true)')) o.classList.add('correct')
+    })
+    const fb = document.getElementById('fb-' + qid)
+    fb.innerHTML = fbs[qid][ok ? 'ok' : 'ko']
+    fb.className = 'fb show ' + (ok ? 'ok' : 'ko')
+    if (Object.keys(rep).length === 4) {
+        const g = Object.values(rep).filter(Boolean).length
+        const box = document.getElementById('score-box')
+        box.style.display = 'block'
+        document.getElementById('s-emoji').textContent = ['0/4','1/4','2/4','3/4','4/4'][g]
+        document.getElementById('s-text').innerHTML = `Score : <strong style="color:var(--accent)">${g}/4</strong> — ${g===4?'Maitrise parfaite de useState, useEffect et la composabilité.':g>=3?'Quasi parfait — relis la partie manquée.':'Reprends depuis le début.'}`
+        box.scrollIntoView({ behavior:'smooth', block:'center' })
+    }
+}
+</script>
+</body>
+</html>
