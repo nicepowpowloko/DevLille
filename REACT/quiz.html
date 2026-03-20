@@ -852,7 +852,7 @@ pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;l
 
 <span class="kw">const</span> <span class="vr">DUREE</span> = <span class="num">20</span>
 
-<span class="cmt">// ── ProgressBar ────────────────────────────────────────────────</span>
+<span class="cmt">// ── ProgressBar ───</span>
 <span class="kw">function</span> <span class="fn">ProgressBar</span>({ <span class="vr">actuelle</span>, <span class="vr">total</span> }) {
     <span class="kw">return</span> (
         <span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="jsx">{{ marginBottom:<span class="str">'20px'</span> }}</span><span class="tag">&gt;</span>
@@ -867,7 +867,7 @@ pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;l
     )
 }
 
-<span class="cmt">// ── OptionButton ───────────────────────────────────────────────</span>
+<span class="cmt">// ── OptionButton ─────</span>
 <span class="kw">function</span> <span class="fn">OptionButton</span>({ <span class="vr">texte</span>, <span class="vr">etat</span>, <span class="vr">onClick</span> }) {
     <span class="kw">const</span> <span class="vr">colors</span> = {
         <span class="vr">correct</span>:    { <span class="vr">bg</span>:<span class="str">'rgba(68,214,44,.1)'</span>,    <span class="vr">border</span>:<span class="str">'rgba(68,214,44,.5)'</span>,    <span class="vr">color</span>:<span class="str">'#44D62C'</span> },
@@ -882,7 +882,7 @@ pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;l
     )
 }
 
-<span class="cmt">// ── Composant principal ────────────────────────────────────────</span>
+<span class="cmt">// ── Composant principal ───</span>
 <span class="kw">export default function</span> <span class="fn">Quiz</span>() {
     <span class="kw">const</span> [<span class="vr">index</span>,   <span class="fn">setIndex</span>]   = <span class="fn">useState</span>(<span class="num">0</span>)
     <span class="kw">const</span> [<span class="vr">reponse</span>, <span class="fn">setReponse</span>] = <span class="fn">useState</span>(<span class="kw">null</span>)
@@ -1073,7 +1073,7 @@ function cp(btn) {
     })
 }
 
-// ── Aperçu Quiz interactif ──────────────────────────────────────
+// ── Aperçu Quiz interactif ───
 const PV_QUESTIONS = [
     { id:1, question:"Que retourne useState() ?",
       options:["Une valeur et une fonction de mise à jour","Un objet avec get() et set()","Un tableau immuable","Une promesse"],
