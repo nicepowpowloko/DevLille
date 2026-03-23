@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 01 — Introduction</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#7c3aed;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--orange:#c2410c;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:'SF Mono','Fira Code','Consolas',monospace;--sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);--shm:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.05);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(124,58,237,.07);color:var(--text);}
+.nav-link.active{background:rgba(124,58,237,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;transition:color .15s;}
+.nav-serie-link:hover{color:var(--accent);}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.v{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.o{background:rgba(194,65,12,.07);border-color:rgba(194,65,12,.25);color:var(--orange);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(124,58,237,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;align-items:flex-start;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}
+.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}
+.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}
+.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;}
+.cb-badge.new{background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.php{background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;}
+.cb-badge.html{background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.3);color:#93c5fd;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(124,58,237,.2);border-color:rgba(124,58,237,.4);color:#c4b5fd;}
+.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.php-tag{color:#f38ba8;font-weight:700;}
+.html-tag{color:#89b4fa;}.html-attr{color:#fab387;}.hl-line{background:rgba(124,58,237,.12);display:block;margin:0 -20px;padding:0 20px;border-left:2px solid #a855f7;}
+.resultat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:14px;box-shadow:var(--sh);}
+.resultat-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.resultat-body{font-size:.88rem;color:var(--muted);line-height:1.8;}
+.resultat-body code{font-family:var(--mono);font-size:.8rem;color:var(--accent);}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.82rem;line-height:2.2;box-shadow:var(--sh);}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}
+.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}tr:hover td{background:rgba(124,58,237,.02);}
+/* DEMO INTERACTIVE */
+.demo-zone{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.demo-head{background:var(--title);padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.demo-head-label{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--muted);}
+.demo-head-badge{font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:3px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:var(--accent);}
+.demo-body{padding:20px;}
+.demo-editor{width:100%;min-height:90px;padding:12px 14px;border-radius:8px;border:1px solid var(--border);background:#1e1e2e;color:#cdd6f4;font-family:var(--mono);font-size:.82rem;line-height:1.7;resize:vertical;outline:none;}
+.demo-editor:focus{border-color:rgba(124,58,237,.4);}
+.demo-run{margin-top:10px;padding:8px 20px;border-radius:7px;cursor:pointer;font-family:var(--mono);font-size:.78rem;font-weight:700;transition:all .15s;border:1px solid rgba(124,58,237,.3);background:rgba(124,58,237,.08);color:var(--accent);}
+.demo-run:hover{background:rgba(124,58,237,.16);}
+.demo-output{margin-top:12px;background:#1e1e2e;border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:.82rem;color:#cdd6f4;min-height:36px;line-height:1.7;white-space:pre-wrap;}
+.demo-output .out-ok{color:#a6e3a1;}
+.demo-output .out-err{color:#f38ba8;}
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(124,58,237,.3);color:var(--text);background:rgba(124,58,237,.04);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span>[ ] PHP — Bloc 1</span>
+    <p>Les bases du langage</p>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>Comment PHP fonctionne</a>
+    <a href="#etape1" class="nav-link"><span class="nav-num">01</span>Les balises PHP</a>
+    <a href="#etape2" class="nav-link"><span class="nav-num">02</span>echo et print</a>
+    <a href="#etape3" class="nav-link"><span class="nav-num">03</span>Commentaires</a>
+    <a href="#etape4" class="nav-link"><span class="nav-num">04</span>Inclusion de fichiers</a>
+    <a href="#etape5" class="nav-link"><span class="nav-num">05</span>Exercice complet</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">06</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 1 — Bases</div>
+    <a href="php-01-intro.html" class="nav-serie-link current">01 — Introduction PHP</a>
+    <a href="php-02-variables.html" class="nav-serie-link">02 — Variables et types</a>
+    <a href="php-03-structures.html" class="nav-serie-link">03 — Structures de contrôle</a>
+    <a href="php-04-fonctions.html" class="nav-serie-link">04 — Fonctions</a>
+    <a href="php-05-tableaux.html" class="nav-serie-link">05 — Tableaux</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 1 · Support 1/5</div>
+  <h1>Introduction<br><span class="hl">à PHP</span></h1>
+  <p>PHP est un langage de programmation exécuté côté serveur. Le navigateur ne voit jamais le code PHP — il reçoit uniquement le HTML généré. Ce support explique comment PHP s'intègre dans une page web et les fondations du langage.</p>
+  <div class="objectifs">
+    <span class="obj v">Balises PHP</span>
+    <span class="obj g">echo / print</span>
+    <span class="obj b">Commentaires</span>
+    <span class="obj o">include / require</span>
+  </div>
+</div>
+
+<!-- 00 -->
+<section class="etape" id="plan">
+  <div class="etape-header">
+    <div class="etape-num">00</div>
+    <div class="etape-info">
+      <div class="etape-tag">Fondamentaux</div>
+      <h2>Comment PHP fonctionne — le modèle serveur</h2>
+    </div>
+  </div>
+  <p class="prose">PHP est un langage <strong>côté serveur</strong>. Quand un visiteur demande une page <code>.php</code>, le serveur exécute le code PHP, génère du HTML, et envoie uniquement ce HTML au navigateur. Le navigateur ne voit jamais une ligne de PHP.</p>
+  <div class="schema" style="font-size:.8rem;line-height:1.9;">
+<span style="color:var(--blue);font-weight:700">1. Navigateur</span>  <span style="color:var(--dim)">→ demande</span>  <span style="color:var(--accent)">GET /index.php</span>
+         <span style="color:var(--dim)">↓</span>
+<span style="color:var(--orange);font-weight:700">2. Serveur</span>     <span style="color:var(--dim)">→ lit le fichier, exécute PHP</span>
+         <span style="color:var(--dim)">↓</span>
+<span style="color:var(--orange);font-weight:700">3. PHP</span>         <span style="color:var(--dim)">→ remplace le code par du HTML</span>
+<span style="color:var(--dim)">               &lt;?php echo "Bonjour"; ?&gt;  devient  <span style="color:var(--green)">Bonjour</span></span>
+         <span style="color:var(--dim)">↓</span>
+<span style="color:var(--blue);font-weight:700">4. Navigateur</span>  <span style="color:var(--dim)">← reçoit du HTML pur, pas de PHP</span>
+  </div>
+  <div class="callout info">
+    <span class="ci">i</span>
+    <div><strong>HTML et PHP peuvent cohabiter dans le même fichier.</strong> Un fichier <code>.php</code> peut contenir du HTML ordinaire autour des blocs PHP. Tout ce qui est en dehors des balises <code>&lt;?php ?&gt;</code> est envoyé tel quel au navigateur.</div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Langage</th><th>Exécuté où</th><th>Le navigateur voit</th><th>Extension</th></tr></thead>
+      <tbody>
+        <tr><td>PHP</td><td>Serveur</td><td>Le résultat HTML uniquement</td><td>.php</td></tr>
+        <tr><td>JavaScript</td><td>Navigateur</td><td>Le code source complet</td><td>.js</td></tr>
+        <tr><td>HTML/CSS</td><td>Navigateur</td><td>Le code source complet</td><td>.html .css</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 01 -->
+<section class="etape" id="etape1">
+  <div class="etape-header">
+    <div class="etape-num">01</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 1 — La syntaxe de base</div>
+      <h2>Les balises PHP — délimiter le code</h2>
+    </div>
+  </div>
+  <p class="prose">Le code PHP s'écrit entre des <strong>balises d'ouverture et de fermeture</strong>. Tout ce qui est dans ces balises est du PHP. Tout ce qui est en dehors est du HTML brut envoyé directement au navigateur.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">index.php — HTML et PHP ensemble</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="html-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="html-tag">&lt;html&gt;</span>
+<span class="html-tag">&lt;body&gt;</span>
+
+    <span class="html-tag">&lt;h1&gt;</span>Bienvenue<span class="html-tag">&lt;/h1&gt;</span>  <span class="cmt">&lt;!-- HTML pur, envoyé tel quel --&gt;</span>
+
+    <span class="php-tag">&lt;?php</span>
+        <span class="cmt">// Ici c'est du PHP</span>
+        <span class="kw">echo</span> <span class="str">"Bonjour depuis le serveur !"</span>;
+    <span class="php-tag">?&gt;</span>
+
+    <span class="html-tag">&lt;p&gt;</span>Encore du HTML<span class="html-tag">&lt;/p&gt;</span>
+
+<span class="html-tag">&lt;/body&gt;</span>
+<span class="html-tag">&lt;/html&gt;</span></code></pre>
+  </div>
+
+  <div class="resultat">
+    <div class="resultat-label">Ce que le navigateur reçoit</div>
+    <div class="resultat-body">
+      <code>&lt;!DOCTYPE html&gt;<br>&lt;html&gt;<br>&lt;body&gt;<br>&nbsp;&nbsp;&nbsp;&lt;h1&gt;Bienvenue&lt;/h1&gt;<br>&nbsp;&nbsp;&nbsp;Bonjour depuis le serveur !<br>&nbsp;&nbsp;&nbsp;&lt;p&gt;Encore du HTML&lt;/p&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;</code><br><br>
+      Le <code>&lt;?php ... ?&gt;</code> a été <strong>remplacé par son résultat</strong>.
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Les 3 formes de balises PHP</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="cmt">// Forme 1 : balise standard (recommandée — toujours disponible)</span>
+<span class="php-tag">&lt;?php</span>
+    <span class="kw">echo</span> <span class="str">"standard"</span>;
+<span class="php-tag">?&gt;</span>
+
+<span class="cmt">// Forme 2 : balise courte echo (disponible en PHP 5.4+)</span>
+<span class="php-tag">&lt;?=</span> <span class="str">"équivalent à &lt;?php echo"</span> <span class="php-tag">?&gt;</span>
+
+<span class="cmt">// Forme 3 : fichier PHP pur (pas de balise de fermeture)</span>
+<span class="cmt">// Si le fichier est 100% PHP, omettre ?> en fin de fichier</span>
+<span class="cmt">// Évite les espaces parasites après ?></span>
+<span class="php-tag">&lt;?php</span>
+    <span class="kw">echo</span> <span class="str">"fichier PHP pur"</span>;
+<span class="cmt">// pas de ?> ici</span></code></pre>
+  </div>
+
+  <div class="callout tip">
+    <span class="ci">!</span>
+    <div><strong>Omettre la balise de fermeture <code>?&gt;</code> en fin de fichier PHP pur.</strong> Si un fichier ne contient que du PHP (pas de HTML), ne pas mettre <code>?&gt;</code> à la fin. Un espace ou un saut de ligne après <code>?&gt;</code> serait envoyé au navigateur avant les en-têtes HTTP — ce qui casse <code>header()</code>, <code>setcookie()</code> et les sessions.</div>
+  </div>
+
+  <div class="callout warn">
+    <span class="ci">!</span>
+    <div><strong>Ne jamais utiliser <code>&lt;?</code> sans le p.</strong> Les balises courtes <code>&lt;?</code> dépendent d'une configuration serveur (<code>short_open_tag</code>) et peuvent ne pas fonctionner. Toujours utiliser <code>&lt;?php</code>. Exception : <code>&lt;?=</code> est toujours disponible depuis PHP 5.4.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 02 -->
+<section class="etape" id="etape2">
+  <div class="etape-header">
+    <div class="etape-num">02</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 2 — Afficher du contenu</div>
+      <h2>echo et print — afficher du texte</h2>
+    </div>
+  </div>
+  <p class="prose"><code>echo</code> est la construction la plus utilisée en PHP pour envoyer du contenu vers le navigateur. Ce n'est pas une fonction — c'est une construction du langage. On peut omettre les parenthèses.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">echo — tout ce qu'on peut afficher</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// Afficher une chaîne</span>
+<span class="kw">echo</span> <span class="str">"Bonjour le monde"</span>;
+
+<span class="cmt">// Afficher plusieurs valeurs (echo accepte une liste)</span>
+<span class="kw">echo</span> <span class="str">"Bonjour"</span>, <span class="str">" "</span>, <span class="str">"Thomas"</span>;
+
+<span class="cmt">// Afficher du HTML</span>
+<span class="kw">echo</span> <span class="str">"&lt;h2&gt;Titre généré en PHP&lt;/h2&gt;"</span>;
+
+<span class="cmt">// Guillemets doubles : les variables sont interprétées</span>
+<span class="vr">$prenom</span> = <span class="str">"Alice"</span>;
+<span class="kw">echo</span> <span class="str">"Bonjour <span class="vr">$prenom</span>"</span>;    <span class="cmt">// affiche : Bonjour Alice</span>
+
+<span class="cmt">// Guillemets simples : texte brut, variables NON interprétées</span>
+<span class="kw">echo</span> <span class="str">'Bonjour $prenom'</span>;   <span class="cmt">// affiche : Bonjour $prenom</span>
+
+<span class="cmt">// Concaténation avec le point .</span>
+<span class="kw">echo</span> <span class="str">"Bonjour "</span> . <span class="vr">$prenom</span> . <span class="str">" !"</span>;
+
+<span class="cmt">// Afficher un nombre</span>
+<span class="kw">echo</span> <span class="num">42</span>;
+<span class="kw">echo</span> <span class="num">3.14</span>;
+
+<span class="cmt">// echo court dans du HTML</span>
+<span class="php-tag">?&gt;</span>
+<span class="html-tag">&lt;p&gt;</span>Bonjour <span class="php-tag">&lt;?=</span> <span class="vr">$prenom</span> <span class="php-tag">?&gt;</span><span class="html-tag">&lt;/p&gt;</span></code></pre>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Construction</th><th>Syntaxe</th><th>Différence</th></tr></thead>
+      <tbody>
+        <tr><td>echo</td><td><code>echo "texte";</code></td><td>Peut afficher plusieurs valeurs séparées par virgule. Légèrement plus rapide.</td></tr>
+        <tr><td>print</td><td><code>print "texte";</code></td><td>N'accepte qu'une valeur. Retourne toujours 1 (utilisable dans une expression).</td></tr>
+        <tr><td>&lt;?=</td><td><code>&lt;?= $var ?&gt;</code></td><td>Raccourci pour echo dans du HTML. Identique à &lt;?php echo.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout info">
+    <span class="ci">i</span>
+    <div><strong>Guillemets doubles vs simples — règle pratique.</strong> Utilisez des guillemets doubles <code>"..."</code> quand vous avez des variables à interpoler. Utilisez des guillemets simples <code>'...'</code> pour les chaînes fixes sans variable — c'est légèrement plus performant et évite les surprises.</div>
+  </div>
+
+  <!-- DEMO INTERACTIVE -->
+  <div class="demo-zone">
+    <div class="demo-head">
+      <div class="demo-head-label">Simulateur echo</div>
+      <div class="demo-head-badge">Interactif</div>
+    </div>
+    <div class="demo-body">
+      <p style="font-size:.83rem;color:var(--muted);margin-bottom:10px;">Modifiez le code et cliquez Exécuter pour voir le résultat simulé :</p>
+      <textarea class="demo-editor" id="echo-editor"><?php
+$prenom = "Alice";
+$age    = 25;
+
+echo "Bonjour " . $prenom . " !";
+echo "<br>";
+echo "Tu as $age ans.";
+echo "<br>";
+echo 'Variable non interprétée : $prenom';
+?></textarea>
+      <button class="demo-run" onclick="runEcho()">Exécuter</button>
+      <div class="demo-output" id="echo-output">Le résultat s'affiche ici...</div>
+    </div>
+  </div>
+
+  <div class="checkpoint">
+    <span class="cp-icon">OK</span>
+    <div class="cp-text"><strong>A retenir :</strong> <code>echo</code> envoie du contenu au navigateur. Guillemets doubles = variables interprétées. Guillemets simples = texte brut. Le point <code>.</code> concatène des chaînes.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 03 -->
+<section class="etape" id="etape3">
+  <div class="etape-header">
+    <div class="etape-num">03</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 3 — Documenter le code</div>
+      <h2>Commentaires — les trois syntaxes</h2>
+    </div>
+  </div>
+  <p class="prose">Les commentaires sont ignorés par PHP et n'apparaissent jamais dans le HTML envoyé au navigateur. Ils servent à documenter le code, expliquer une logique complexe, ou désactiver temporairement une ligne.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Les 3 types de commentaires PHP</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// Commentaire sur une ligne (style C++)</span>
+<span class="cmt">// Tout ce qui suit // jusqu'à la fin de ligne est ignoré</span>
+<span class="kw">echo</span> <span class="str">"visible"</span>; <span class="cmt">// commentaire en fin de ligne</span>
+
+<span class="cmt"># Commentaire sur une ligne (style shell)</span>
+<span class="cmt"># Même comportement que // — moins courant en PHP</span>
+
+<span class="cmt">/*
+ * Commentaire sur plusieurs lignes
+ * Utile pour les blocs d'explication
+ * ou pour désactiver du code temporairement
+ */</span>
+<span class="kw">echo</span> <span class="str">"toujours visible"</span>;
+
+<span class="cmt">/**
+ * PHPDoc — commentaire de documentation
+ * Utilisé avant les fonctions et classes
+ *
+ * @param string $prenom Le prénom de l'utilisateur
+ * @return string        Le message de bienvenue
+ */</span>
+<span class="kw">function</span> <span class="fn">bienvenue</span>(<span class="vr">$prenom</span>) {
+    <span class="kw">return</span> <span class="str">"Bonjour "</span> . <span class="vr">$prenom</span>;
+}</code></pre>
+  </div>
+
+  <div class="callout success">
+    <span class="ci">+</span>
+    <div><strong>Bonne pratique : commenter le pourquoi, pas le quoi.</strong> <code>// incrémente $i</code> ne sert à rien — le code l'exprime déjà. En revanche <code>// l'utilisateur doit exister avant d'incrémenter son score</code> explique une règle métier invisible dans le code seul.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 04 -->
+<section class="etape" id="etape4">
+  <div class="etape-header">
+    <div class="etape-num">04</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 4 — Organisation des fichiers</div>
+      <h2>Inclusion de fichiers — include et require</h2>
+    </div>
+  </div>
+  <p class="prose">PHP permet d'<strong>inclure le contenu d'un fichier dans un autre</strong>. C'est le mécanisme fondamental pour éviter la répétition : un en-tête commun, un pied de page partagé, une configuration centralisée.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Les 4 fonctions d'inclusion</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// include : inclure un fichier — AVERTISSEMENT si absent</span>
+<span class="kw">include</span> <span class="str">'header.php'</span>;         <span class="cmt">// warning, le script continue</span>
+
+<span class="cmt">// require : inclure un fichier — ERREUR FATALE si absent</span>
+<span class="kw">require</span> <span class="str">'config.php'</span>;         <span class="cmt">// fatal error, le script s'arrête</span>
+
+<span class="cmt">// include_once / require_once : inclure UNE SEULE fois</span>
+<span class="cmt">// Si le fichier a déjà été inclus, PHP l'ignore</span>
+<span class="kw">include_once</span> <span class="str">'fonctions.php'</span>;
+<span class="kw">require_once</span> <span class="str">'config.php'</span>;    <span class="cmt">// inclus une seule fois même si appelé 2x</span></code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Structure typique d'un projet PHP simple</span><span class="cb-badge php">Projet</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="cmt">// Structure des fichiers</span>
+<span class="cmt">// projet/</span>
+<span class="cmt">// ├── index.php         ← page d'accueil</span>
+<span class="cmt">// ├── config.php        ← configuration (BDD, constantes)</span>
+<span class="cmt">// └── includes/</span>
+<span class="cmt">//     ├── header.php    ← en-tête HTML commun</span>
+<span class="cmt">//     └── footer.php    ← pied de page commun</span>
+
+<span class="cmt">// --- config.php ---</span>
+<span class="php-tag">&lt;?php</span>
+<span class="kw">define</span>(<span class="str">'NOM_SITE'</span>,  <span class="str">'Ma boutique'</span>);
+<span class="kw">define</span>(<span class="str">'VERSION'</span>,   <span class="str">'1.0'</span>);
+<span class="cmt">// pas de ?> en fin de fichier PHP pur</span>
+
+<span class="cmt">// --- includes/header.php ---</span>
+<span class="php-tag">&lt;?php</span> <span class="kw">require_once</span> <span class="str">'../config.php'</span>; <span class="php-tag">?&gt;</span>
+<span class="html-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="html-tag">&lt;html&gt;&lt;head&gt;&lt;title&gt;</span><span class="php-tag">&lt;?=</span> <span class="fn">NOM_SITE</span> <span class="php-tag">?&gt;</span><span class="html-tag">&lt;/title&gt;&lt;/head&gt;</span>
+<span class="html-tag">&lt;body&gt;</span>
+
+<span class="cmt">// --- index.php ---</span>
+<span class="php-tag">&lt;?php</span>
+<span class="kw">require_once</span> <span class="str">'includes/header.php'</span>;
+<span class="kw">echo</span> <span class="str">"&lt;h1&gt;Bienvenue sur "</span> . <span class="fn">NOM_SITE</span> . <span class="str">"&lt;/h1&gt;"</span>;
+<span class="kw">require_once</span> <span class="str">'includes/footer.php'</span>;
+<span class="php-tag">?&gt;</span></code></pre>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Fonction</th><th>Fichier absent</th><th>Inclus deux fois</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>include</td><td>Warning — continue</td><td>Inclus deux fois</td><td>Contenu optionnel (widget, pub)</td></tr>
+        <tr><td>require</td><td>Fatal error — stop</td><td>Inclus deux fois</td><td>Fichier indispensable (config)</td></tr>
+        <tr><td>include_once</td><td>Warning — continue</td><td>Ignoré</td><td>Fonctions incluses de partout</td></tr>
+        <tr><td>require_once</td><td>Fatal error — stop</td><td>Ignoré</td><td>Config, classes (usage standard)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout tip">
+    <span class="ci">!</span>
+    <div><strong>require_once est votre choix par défaut.</strong> Pour les fichiers de configuration et de fonctions, préférez toujours <code>require_once</code>. Si le fichier est absent, le script s'arrête proprement avec un message d'erreur au lieu de continuer à produire un résultat incorrect.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 05 EXERCICE -->
+<section class="etape" id="etape5">
+  <div class="etape-header">
+    <div class="etape-num">05</div>
+    <div class="etape-info">
+      <div class="etape-tag">Mise en pratique</div>
+      <h2>Exercice — une mini page PHP complète</h2>
+    </div>
+  </div>
+  <p class="prose">Créer une page PHP qui utilise tout ce qu'on vient de voir : balises, echo, variables, commentaires, et inclusion d'un header/footer.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">config.php — à créer en premier</span><span class="cb-badge new">fichier 1</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">// config.php — configuration globale du projet</span>
+
+<span class="kw">define</span>(<span class="str">'NOM_SITE'</span>, <span class="str">'Mon premier projet PHP'</span>);
+<span class="kw">define</span>(<span class="str">'AUTEUR'</span>,   <span class="str">'Thomas'</span>);
+
+<span class="cmt">// Pas de balise de fermeture — fichier PHP pur</span></code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">includes/header.php</span><span class="cb-badge new">fichier 2</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span> <span class="kw">require_once</span> <span class="str">__DIR__</span> . <span class="str">'/../config.php'</span>; <span class="php-tag">?&gt;</span>
+<span class="html-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="html-tag">&lt;html lang="fr"&gt;</span>
+<span class="html-tag">&lt;head&gt;</span>
+    <span class="html-tag">&lt;meta</span> <span class="html-attr">charset</span>=<span class="str">"UTF-8"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;title&gt;</span><span class="php-tag">&lt;?=</span> <span class="fn">NOM_SITE</span> <span class="php-tag">?&gt;</span><span class="html-tag">&lt;/title&gt;</span>
+<span class="html-tag">&lt;/head&gt;</span>
+<span class="html-tag">&lt;body&gt;</span>
+<span class="html-tag">&lt;header&gt;</span>
+    <span class="html-tag">&lt;h1&gt;</span><span class="php-tag">&lt;?=</span> <span class="fn">NOM_SITE</span> <span class="php-tag">?&gt;</span><span class="html-tag">&lt;/h1&gt;</span>
+<span class="html-tag">&lt;/header&gt;</span>
+<span class="html-tag">&lt;main&gt;</span></code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">index.php — page principale</span><span class="cb-badge new">fichier 3</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">// Inclure l'en-tête (charge aussi config.php)</span>
+<span class="kw">require_once</span> <span class="str">'includes/header.php'</span>;
+
+<span class="cmt">// Contenu de la page</span>
+<span class="vr">$heure</span>    = <span class="fn">date</span>(<span class="str">'H'</span>);   <span class="cmt">// heure actuelle (0-23)</span>
+<span class="vr">$message</span>  = <span class="str">"Bonjour"</span>;
+
+<span class="kw">echo</span> <span class="str">"&lt;p&gt;Il est "</span> . <span class="fn">date</span>(<span class="str">'H:i'</span>) . <span class="str">"&lt;/p&gt;"</span>;
+<span class="kw">echo</span> <span class="str">"&lt;p&gt;"</span> . <span class="vr">$message</span> . <span class="str">" depuis "</span> . <span class="fn">AUTEUR</span> . <span class="str">"&lt;/p&gt;"</span>;
+<span class="kw">echo</span> <span class="str">"&lt;p&gt;PHP version : "</span> . <span class="fn">phpversion</span>() . <span class="str">"&lt;/p&gt;"</span>;
+
+<span class="cmt">// Inclure le pied de page</span>
+<span class="kw">require_once</span> <span class="str">'includes/footer.php'</span>;
+<span class="php-tag">?&gt;</span></code></pre>
+  </div>
+
+  <div class="checkpoint">
+    <span class="cp-icon">OK</span>
+    <div class="cp-text"><strong>Ce que cette mini page démontre :</strong> les balises <code>&lt;?php</code> et <code>&lt;?=</code>, <code>echo</code> avec concaténation, les commentaires, <code>require_once</code>, les constantes <code>define()</code>, et la séparation en plusieurs fichiers.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- QUIZ -->
+<section class="etape" id="quiz">
+  <div class="etape-header">
+    <div class="etape-num">06</div>
+    <div class="etape-info">
+      <div class="etape-tag">Évaluation</div>
+      <h2>Quiz — vérifiez votre compréhension</h2>
+    </div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Un visiteur ouvre une page <code>index.php</code>. Que voit-il dans son navigateur ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">Le code PHP source tel quel</button>
+      <button class="opt" onclick="ans(this,'q1',true)">Le HTML généré — le code PHP a été exécuté et remplacé par son résultat</button>
+      <button class="opt" onclick="ans(this,'q1',false)">Une erreur, le navigateur ne comprend pas PHP</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Quelle est la différence entre <code>echo "Bonjour $nom"</code> et <code>echo 'Bonjour $nom'</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',false)">Aucune — les deux affichent la valeur de $nom</button>
+      <button class="opt" onclick="ans(this,'q2',true)">Les guillemets doubles interprètent la variable, les simples affichent le texte brut $nom</button>
+      <button class="opt" onclick="ans(this,'q2',false)">Les guillemets simples sont plus rapides mais moins lisibles</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Pourquoi préférer <code>require_once</code> à <code>include</code> pour un fichier de configuration ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',false)">require_once est plus rapide à charger</button>
+      <button class="opt" onclick="ans(this,'q3',true)">Si le fichier est absent, require_once arrête le script immédiatement — pas de risque d'exécuter du code avec une config manquante. Le _once évite de définir les constantes en double.</button>
+      <button class="opt" onclick="ans(this,'q3',false)">include ne fonctionne pas avec les fichiers de configuration</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Pourquoi omettre la balise <code>?&gt;</code> en fin d'un fichier PHP pur ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',false)">Pour respecter la norme PSR-12</button>
+      <button class="opt" onclick="ans(this,'q4',false)">PHP l'exige pour les fichiers sans HTML</button>
+      <button class="opt" onclick="ans(this,'q4',true)">Un espace ou saut de ligne après ?> serait envoyé comme output avant les en-têtes HTTP, ce qui casse setcookie(), header() et les sessions</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;box-shadow:var(--sh);">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+// scroll spy
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector(`.nav-link[href="#${x.target.id}"]`);if(l)l.classList.add('active');}});},{threshold:.2}).observe&&secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector(`.nav-link[href="#${x.target.id}"]`);if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copié';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+
+// Simulateur echo
+function runEcho(){
+  const code=document.getElementById('echo-editor').value;
+  const out=document.getElementById('echo-output');
+  // Simulation PHP echo en JS
+  let result='';
+  try{
+    // Extraire contenu entre <?php et ?>
+    const inner=code.replace(/<\?php/g,'').replace(/\?>/g,'');
+    // Traiter ligne par ligne
+    const lines=inner.split('\n');
+    lines.forEach(line=>{
+      line=line.trim();
+      if(!line||line.startsWith('//')) return;
+      // echo simple
+      const m=line.match(/^echo\s+(.+?);?\s*$/);
+      if(m){
+        let val=m[1];
+        // variable interpolation
+        val=val.replace(/\$(\w+)/g,(_, v)=>{
+          const vars={prenom:'Alice',age:'25',message:'Bonjour',heure:'14'};
+          return vars[v]!==undefined?vars[v]:'$'+v;
+        });
+        // remove quotes
+        val=val.replace(/["']([^"']*)['"]/g,'$1');
+        // concatenation
+        val=val.replace(/\s*\.\s*/g,'');
+        val=val.replace(/<br>/g,'\n');
+        result+=val;
+      }
+    });
+    out.innerHTML='<span class="out-ok">'+(result||'(aucun output)')+' </span>';
+  }catch(e){out.innerHTML='<span class="out-err">Erreur : '+e.message+'</span>';}
+}
+
+// Quiz
+const fbs={
+  q1:{ok:'Exact. PHP s\'exécute sur le serveur. Le code PHP est remplacé par son résultat HTML avant que la réponse soit envoyée au navigateur. F12 → Sources dans Chrome ne montre que du HTML — jamais du PHP.',ko:'Non. PHP est un langage serveur. Le serveur exécute le code PHP et envoie uniquement le HTML résultant au navigateur. Le visiteur ne peut jamais voir le source PHP.'},
+  q2:{ok:'Exact. Les guillemets doubles interprètent les variables : $nom est remplacé par sa valeur. Les guillemets simples traitent tout comme du texte brut : $nom s\'affiche tel quel. C\'est l\'une des distinctions les plus importantes en PHP.',ko:'Non. La différence est fondamentale : guillemets doubles = interpolation des variables ($nom devient sa valeur). Guillemets simples = texte brut ($nom s\'affiche littéralement).'},
+  q3:{ok:'Exact. require_once combine deux protections : si le fichier manque, le script s\'arrête avec une erreur fatale (pas de risque de continuer avec une config absente). Le _once empêche de définir des constantes ou des fonctions deux fois (erreur en PHP).',ko:'Non. La raison principale est la sécurité : si config.php manque, require_once arrête le script immédiatement — on ne continue pas avec une configuration incomplète. Le _once évite aussi les erreurs "constant already defined" si le fichier est inclus deux fois.'},
+  q4:{ok:'Exact. En PHP, tout ce qui suit la balise ?> est envoyé directement au navigateur comme output. Un espace ou un saut de ligne parasite déclenche un envoi de données avant les en-têtes HTTP, ce qui rend impossible d\'utiliser header(), setcookie() ou session_start() par la suite.',ko:'Non. La raison technique est que tout output (même un espace) après ?> est envoyé au navigateur avant les en-têtes HTTP. Cela rend impossible l\'utilisation de header(), setcookie() ou session_start() qui exigent que les en-têtes ne soient pas encore envoyés.'},
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick?.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);
+  fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===4){
+    const g=Object.values(rep).filter(Boolean).length;
+    const box=document.getElementById('score-box');box.style.display='block';
+    document.getElementById('s-score').textContent=g+'/4';
+    document.getElementById('s-text').innerHTML=g===4?'Parfait — bases de PHP maîtrisées.':g>=3?'Bien — relisez le point manqué.':'Reprenez le support depuis le début.';
+    box.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+</script>
+</body>
+</html>

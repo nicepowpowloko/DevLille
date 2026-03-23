@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 04 — Fonctions</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#0369a1;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--purple:#7c3aed;--orange:#c2410c;--teal:#0f766e;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:'SF Mono','Fira Code','Consolas',monospace;--sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);--shm:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.05);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(3,105,161,.07);color:var(--text);}
+.nav-link.active{background:rgba(3,105,161,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;transition:color .15s;}
+.nav-serie-link:hover{color:var(--accent);}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.b{background:rgba(3,105,161,.07);border-color:rgba(3,105,161,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--teal);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(3,105,161,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(3,105,161,.07);border:1px solid rgba(3,105,161,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;align-items:flex-start;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}
+.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}
+.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}
+.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;}
+.cb-badge.php{background:rgba(3,105,161,.15);border:1px solid rgba(3,105,161,.3);color:#7dd3fc;}
+.cb-badge.new{background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(3,105,161,.2);border-color:rgba(3,105,161,.4);color:#7dd3fc;}
+.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.php-tag{color:#f38ba8;font-weight:700;}
+.op{color:#89dceb;}.bool{color:#fab387;font-weight:600;}.type-hint{color:#fab387;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}
+.cp-text strong{color:var(--green);}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.82rem;line-height:2.2;box-shadow:var(--sh);}
+.scope-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.scope-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;box-shadow:var(--sh);}
+.scope-box-title{font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;}
+.scope-var{font-family:var(--mono);font-size:.8rem;padding:4px 8px;border-radius:4px;margin-bottom:5px;}
+.scope-var.global{background:rgba(3,105,161,.07);border:1px solid rgba(3,105,161,.2);color:var(--accent);}
+.scope-var.local{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:var(--green);}
+.scope-var.accessible{background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.2);color:var(--yellow);}
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(3,105,161,.3);color:var(--text);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}.scope-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span>[ ] PHP — Bloc 1</span>
+    <p>Les bases du langage</p>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>Pourquoi des fonctions</a>
+    <a href="#etape1" class="nav-link"><span class="nav-num">01</span>Déclarer une fonction</a>
+    <a href="#etape2" class="nav-link"><span class="nav-num">02</span>Paramètres et retour</a>
+    <a href="#etape3" class="nav-link"><span class="nav-num">03</span>Paramètres avancés</a>
+    <a href="#etape4" class="nav-link"><span class="nav-num">04</span>Portée des variables</a>
+    <a href="#etape5" class="nav-link"><span class="nav-num">05</span>Fonctions anonymes</a>
+    <a href="#etape6" class="nav-link"><span class="nav-num">06</span>Fonctions PHP natives</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">07</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 1 — Bases</div>
+    <a href="php-01-intro.html" class="nav-serie-link">01 — Introduction PHP</a>
+    <a href="php-02-variables.html" class="nav-serie-link">02 — Variables et types</a>
+    <a href="php-03-structures.html" class="nav-serie-link">03 — Structures de contrôle</a>
+    <a href="php-04-fonctions.html" class="nav-serie-link current">04 — Fonctions</a>
+    <a href="php-05-tableaux.html" class="nav-serie-link">05 — Tableaux</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 1 · Support 4/5</div>
+  <h1>Les fonctions<br><span class="hl">en PHP</span></h1>
+  <p>Une fonction est un bloc de code réutilisable avec un nom. On la définit une fois, on l'appelle autant de fois qu'on veut. Les fonctions sont le premier outil de lutte contre la duplication de code.</p>
+  <div class="objectifs">
+    <span class="obj b">Déclaration</span>
+    <span class="obj g">Paramètres</span>
+    <span class="obj y">return</span>
+    <span class="obj p">Portée</span>
+    <span class="obj t">Closures</span>
+  </div>
+</div>
+
+<!-- 00 -->
+<section class="etape" id="plan">
+  <div class="etape-header">
+    <div class="etape-num">00</div>
+    <div class="etape-info">
+      <div class="etape-tag">Concept fondamental</div>
+      <h2>Pourquoi créer des fonctions — DRY</h2>
+    </div>
+  </div>
+  <p class="prose">Le principe <strong>DRY (Don't Repeat Yourself)</strong> est la règle d'or du développement. Si vous écrivez le même code à deux endroits, créez une fonction. Les fonctions permettent aussi de <strong>nommer une intention</strong> : <code>calculerTTC($prix)</code> est plus lisible que les 3 lignes de calcul inline.</p>
+  <div class="schema" style="font-size:.8rem;line-height:1.9;">
+<span style="color:var(--red);font-weight:700">AVANT — code dupliqué :</span>
+<span style="color:var(--muted)">// Page 1</span>
+<span style="color:#89b4fa">$prix_ttc</span> = <span style="color:#89b4fa">$prix</span> * <span style="color:#fab387">1.20</span>;
+<span style="color:#89b4fa">$prix_ttc</span> = <span style="color:#fab387">round</span>(<span style="color:#89b4fa">$prix_ttc</span>, <span style="color:#fab387">2</span>);
+
+<span style="color:var(--muted)">// Page 2 — copié-collé</span>
+<span style="color:#89b4fa">$total_ttc</span> = <span style="color:#89b4fa">$total</span> * <span style="color:#fab387">1.20</span>;
+<span style="color:#89b4fa">$total_ttc</span> = <span style="color:#fab387">round</span>(<span style="color:#89b4fa">$total_ttc</span>, <span style="color:#fab387">2</span>);
+
+<span style="color:var(--green);font-weight:700">APRÈS — fonction :</span>
+<span style="color:#cba6f7;font-weight:600">function</span> <span style="color:#89dceb">calculerTTC</span>(<span style="color:#89b4fa">$prix_ht</span>) {
+    <span style="color:#cba6f7;font-weight:600">return</span> <span style="color:#fab387">round</span>(<span style="color:#89b4fa">$prix_ht</span> * <span style="color:#fab387">1.20</span>, <span style="color:#fab387">2</span>);
+}
+<span style="color:#89dceb">calculerTTC</span>(<span style="color:#89b4fa">$prix</span>);   <span style="color:var(--dim)">// Page 1</span>
+<span style="color:#89dceb">calculerTTC</span>(<span style="color:#89b4fa">$total</span>);  <span style="color:var(--dim)">// Page 2</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 01 -->
+<section class="etape" id="etape1">
+  <div class="etape-header">
+    <div class="etape-num">01</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 1 — Définition</div>
+      <h2>Déclarer et appeler une fonction</h2>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Anatomie d'une fonction PHP</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">//    mot-clé  nom          paramètre</span>
+<span class="kw">function</span> <span class="fn">direBonjour</span>(<span class="vr">$prenom</span>) {
+    <span class="kw">echo</span> <span class="str">"Bonjour, "</span> . <span class="vr">$prenom</span> . <span class="str">" !"</span>;
+}
+<span class="cmt">//                   argument</span>
+<span class="fn">direBonjour</span>(<span class="str">"Alice"</span>);   <span class="cmt">// Bonjour, Alice !</span>
+<span class="fn">direBonjour</span>(<span class="str">"Bob"</span>);     <span class="cmt">// Bonjour, Bob !</span>
+
+<span class="cmt">// Fonction sans paramètre</span>
+<span class="kw">function</span> <span class="fn">afficherDate</span>() {
+    <span class="kw">echo</span> <span class="fn">date</span>(<span class="str">"d/m/Y"</span>);
+}
+<span class="fn">afficherDate</span>();   <span class="cmt">// 15/12/2024</span>
+
+<span class="cmt">// Les fonctions peuvent être déclarées APRÈS leur appel</span>
+<span class="cmt">// (hoisting en PHP — contrairement aux fonctions anonymes)</span>
+<span class="fn">maSuperFonction</span>();
+
+<span class="kw">function</span> <span class="fn">maSuperFonction</span>() {
+    <span class="kw">echo</span> <span class="str">"Ca fonctionne meme declarée après !"</span>;
+}</code></pre>
+  </div>
+
+  <div class="callout info">
+    <span class="ci">i</span>
+    <div><strong>Convention de nommage.</strong> En PHP, les fonctions utilisent le <code>camelCase</code> : <code>calculerPrixTTC()</code>, <code>envoyerEmail()</code>. Le nom doit décrire <em>ce que fait</em> la fonction — idéalement un verbe + complément. Évitez <code>fonction1()</code> ou <code>traiter()</code> qui ne décrivent rien.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 02 -->
+<section class="etape" id="etape2">
+  <div class="etape-header">
+    <div class="etape-num">02</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 2 — Données en entrée et en sortie</div>
+      <h2>Paramètres et valeur de retour — return</h2>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">return — renvoyer une valeur</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// Fonction qui retourne une valeur</span>
+<span class="kw">function</span> <span class="fn">additionner</span>(<span class="vr">$a</span>, <span class="vr">$b</span>) {
+    <span class="kw">return</span> <span class="vr">$a</span> <span class="op">+</span> <span class="vr">$b</span>;   <span class="cmt">// arrête la fonction ET renvoie la valeur</span>
+}
+
+<span class="vr">$resultat</span> = <span class="fn">additionner</span>(<span class="num">5</span>, <span class="num">3</span>);
+<span class="kw">echo</span> <span class="vr">$resultat</span>;   <span class="cmt">// 8</span>
+
+<span class="cmt">// On peut utiliser le retour directement</span>
+<span class="kw">echo</span> <span class="fn">additionner</span>(<span class="num">10</span>, <span class="num">20</span>);         <span class="cmt">// 30</span>
+<span class="kw">echo</span> <span class="fn">additionner</span>(<span class="num">5</span>, <span class="num">3</span>) <span class="op">*</span> <span class="num">2</span>;        <span class="cmt">// 16</span>
+
+<span class="cmt">// return arrête l'exécution de la fonction</span>
+<span class="kw">function</span> <span class="fn">verifierAge</span>(<span class="vr">$age</span>) {
+    <span class="kw">if</span> (<span class="vr">$age</span> <span class="op">&lt;</span> <span class="num">0</span>) {
+        <span class="kw">return</span> <span class="bool">false</span>;   <span class="cmt">// sort immédiatement</span>
+    }
+    <span class="kw">if</span> (<span class="vr">$age</span> <span class="op">>=</span> <span class="num">18</span>) {
+        <span class="kw">return</span> <span class="str">"majeur"</span>;
+    }
+    <span class="kw">return</span> <span class="str">"mineur"</span>;
+}
+
+<span class="kw">echo</span> <span class="fn">verifierAge</span>(<span class="num">25</span>);    <span class="cmt">// majeur</span>
+<span class="kw">echo</span> <span class="fn">verifierAge</span>(<span class="num">16</span>);    <span class="cmt">// mineur</span>
+<span class="kw">echo</span> <span class="fn">verifierAge</span>(<span class="op">-</span><span class="num">5</span>);    <span class="cmt">// (rien — retourne false)</span>
+
+<span class="cmt">// Fonction sans return — retourne null implicitement</span>
+<span class="kw">function</span> <span class="fn">logMessage</span>(<span class="vr">$msg</span>) {
+    <span class="kw">echo</span> <span class="str">"[LOG] "</span> . <span class="vr">$msg</span>;
+    <span class="cmt">// pas de return → retourne null</span>
+}</code></pre>
+  </div>
+
+  <div class="callout tip">
+    <span class="ci">!</span>
+    <div><strong>echo vs return — ne pas confondre.</strong> <code>echo</code> envoie directement au navigateur et ne peut pas être récupéré. <code>return</code> renvoie la valeur à l'appelant qui peut la stocker, la transformer, la comparer. Préférez <code>return</code> : ça rend les fonctions plus testables et réutilisables.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 03 -->
+<section class="etape" id="etape3">
+  <div class="etape-header">
+    <div class="etape-num">03</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 3 — Paramètres avancés</div>
+      <h2>Valeurs par défaut, types, passage par référence</h2>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Valeurs par défaut et type hints</span><span class="cb-badge php">PHP 7+</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// Paramètre avec valeur par défaut</span>
+<span class="kw">function</span> <span class="fn">saluer</span>(<span class="vr">$prenom</span>, <span class="vr">$formule</span> = <span class="str">"Bonjour"</span>) {
+    <span class="kw">echo</span> <span class="vr">$formule</span> . <span class="str">" "</span> . <span class="vr">$prenom</span>;
+}
+<span class="fn">saluer</span>(<span class="str">"Alice"</span>);              <span class="cmt">// Bonjour Alice</span>
+<span class="fn">saluer</span>(<span class="str">"Alice"</span>, <span class="str">"Bonsoir"</span>);   <span class="cmt">// Bonsoir Alice</span>
+
+<span class="cmt">// Type hints (déclaration du type attendu — PHP 7+)</span>
+<span class="kw">function</span> <span class="fn">calculerTTC</span>(<span class="type-hint">float</span> <span class="vr">$prix_ht</span>, <span class="type-hint">float</span> <span class="vr">$taux</span> = <span class="num">0.20</span>): <span class="type-hint">float</span> {
+    <span class="cmt">//            type param1       type param2     type retour</span>
+    <span class="kw">return</span> <span class="fn">round</span>(<span class="vr">$prix_ht</span> * (<span class="num">1</span> + <span class="vr">$taux</span>), <span class="num">2</span>);
+}
+
+<span class="kw">echo</span> <span class="fn">calculerTTC</span>(<span class="num">100</span>);          <span class="cmt">// 120.0</span>
+<span class="kw">echo</span> <span class="fn">calculerTTC</span>(<span class="num">100</span>, <span class="num">0.055</span>);  <span class="cmt">// 105.5 (TVA 5.5%)</span>
+<span class="cmt">// calculerTTC("bonjour") → TypeError en mode strict</span>
+
+<span class="cmt">// Types disponibles pour les hints</span>
+<span class="cmt">// int, float, string, bool, array, object, null, mixed, void</span>
+
+<span class="cmt">// Type de retour void — ne retourne rien</span>
+<span class="kw">function</span> <span class="fn">afficher</span>(<span class="type-hint">string</span> <span class="vr">$msg</span>): <span class="type-hint">void</span> {
+    <span class="kw">echo</span> <span class="vr">$msg</span>;
+    <span class="cmt">// return; ou rien</span>
+}
+
+<span class="cmt">// Passage par référence — modifie la variable d'origine</span>
+<span class="kw">function</span> <span class="fn">doubler</span>(<span class="op">&amp;</span><span class="vr">$valeur</span>) {   <span class="cmt">// & = référence</span>
+    <span class="vr">$valeur</span> <span class="op">*=</span> <span class="num">2</span>;
+}
+<span class="vr">$n</span> = <span class="num">5</span>;
+<span class="fn">doubler</span>(<span class="vr">$n</span>);
+<span class="kw">echo</span> <span class="vr">$n</span>;   <span class="cmt">// 10 — $n a été modifié !</span>
+
+<span class="cmt">// Nombre variable de paramètres</span>
+<span class="kw">function</span> <span class="fn">somme</span>(...<span class="vr">$nombres</span>) {   <span class="cmt">// ... = variadic</span>
+    <span class="kw">return</span> <span class="fn">array_sum</span>(<span class="vr">$nombres</span>);
+}
+<span class="kw">echo</span> <span class="fn">somme</span>(<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>);   <span class="cmt">// 15</span></code></pre>
+  </div>
+
+  <div class="callout success">
+    <span class="ci">+</span>
+    <div><strong>Utilisez les type hints systématiquement.</strong> Ils documentent les paramètres attendus, permettent à votre IDE de vous aider, et font remonter les erreurs de type tôt. En ajoutant <code>declare(strict_types=1);</code> en début de fichier, les erreurs de type deviennent des exceptions plutôt que des conversions silencieuses.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 04 -->
+<section class="etape" id="etape4">
+  <div class="etape-header">
+    <div class="etape-num">04</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 4 — Scope</div>
+      <h2>Portée des variables — local vs global</h2>
+    </div>
+  </div>
+  <p class="prose">En PHP, les variables définies dans une fonction sont <strong>locales</strong> : elles n'existent que pendant l'exécution de la fonction. Les variables définies hors des fonctions sont <strong>globales</strong> : elles ne sont pas automatiquement accessibles dans les fonctions — il faut les demander explicitement.</p>
+
+  <div class="scope-grid">
+    <div class="scope-box">
+      <div class="scope-box-title">Portée globale (hors fonction)</div>
+      <div class="scope-var global">$config = "prod"</div>
+      <div class="scope-var global">$nom = "Alice"</div>
+      <div class="scope-var global">$total = 0</div>
+      <p style="font-size:.77rem;color:var(--muted);margin-top:8px;">Variables accessibles partout dans le fichier, mais PAS dans les fonctions sans global.</p>
+    </div>
+    <div class="scope-box">
+      <div class="scope-box-title">Portée locale (dans la fonction)</div>
+      <div class="scope-var local">$resultat = 42</div>
+      <div class="scope-var local">$temp = []</div>
+      <div class="scope-var accessible">$config via global $config</div>
+      <p style="font-size:.77rem;color:var(--muted);margin-top:8px;">Variables créées dans la fonction. Détruites à la fin de la fonction.</p>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Portée et mot-clé global</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$compteur</span> = <span class="num">0</span>;   <span class="cmt">// variable globale</span>
+
+<span class="kw">function</span> <span class="fn">incrementer</span>() {
+    <span class="cmt">// $compteur n'est PAS accessible ici directement</span>
+    <span class="kw">echo</span> <span class="vr">$compteur</span>;  <span class="cmt">// Warning : variable non définie</span>
+}
+
+<span class="kw">function</span> <span class="fn">incrementerCorrect</span>() {
+    <span class="kw">global</span> <span class="vr">$compteur</span>;   <span class="cmt">// demander l'accès à la variable globale</span>
+    <span class="vr">$compteur</span><span class="op">++</span>;
+}
+
+<span class="fn">incrementerCorrect</span>();
+<span class="fn">incrementerCorrect</span>();
+<span class="kw">echo</span> <span class="vr">$compteur</span>;   <span class="cmt">// 2</span>
+
+<span class="cmt">// static — conserver la valeur entre les appels</span>
+<span class="kw">function</span> <span class="fn">compter</span>() {
+    <span class="kw">static</span> <span class="vr">$n</span> = <span class="num">0</span>;  <span class="cmt">// initialisé une seule fois</span>
+    <span class="vr">$n</span><span class="op">++</span>;
+    <span class="kw">echo</span> <span class="vr">$n</span> . <span class="str">" "</span>;
+}
+<span class="fn">compter</span>();   <span class="cmt">// 1</span>
+<span class="fn">compter</span>();   <span class="cmt">// 2</span>
+<span class="fn">compter</span>();   <span class="cmt">// 3</span></code></pre>
+  </div>
+
+  <div class="callout warn">
+    <span class="ci">!</span>
+    <div><strong>Évitez global au maximum.</strong> <code>global</code> crée un couplage fort entre la fonction et l'état global. Passez plutôt la valeur en paramètre et retournez le résultat. C'est plus propre, plus testable, sans effets de bord. <code>static</code> est acceptable dans des cas précis (compteurs, caches légers).</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 05 -->
+<section class="etape" id="etape5">
+  <div class="etape-header">
+    <div class="etape-num">05</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 5 — Fonctions modernes</div>
+      <h2>Fonctions anonymes et fléchées</h2>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Closures et fonctions fléchées</span><span class="cb-badge new">PHP 7.4+</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// Fonction anonyme (closure) — assignée à une variable</span>
+<span class="vr">$multiplier</span> = <span class="kw">function</span>(<span class="vr">$a</span>, <span class="vr">$b</span>) {
+    <span class="kw">return</span> <span class="vr">$a</span> <span class="op">*</span> <span class="vr">$b</span>;
+};
+<span class="kw">echo</span> <span class="vr">$multiplier</span>(<span class="num">4</span>, <span class="num">5</span>);   <span class="cmt">// 20</span>
+
+<span class="cmt">// Closure avec accès à une variable extérieure via use</span>
+<span class="vr">$taux</span> = <span class="num">0.20</span>;
+<span class="vr">$calculerTTC</span> = <span class="kw">function</span>(<span class="vr">$prix</span>) <span class="kw">use</span> (<span class="vr">$taux</span>) {
+    <span class="kw">return</span> <span class="vr">$prix</span> * (<span class="num">1</span> + <span class="vr">$taux</span>);
+};
+<span class="kw">echo</span> <span class="vr">$calculerTTC</span>(<span class="num">100</span>);   <span class="cmt">// 120</span>
+
+<span class="cmt">// Passage d'une fonction en argument (callback)</span>
+<span class="vr">$nombres</span> = [<span class="num">3</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">1</span>, <span class="num">5</span>, <span class="num">9</span>];
+<span class="fn">usort</span>(<span class="vr">$nombres</span>, <span class="kw">function</span>(<span class="vr">$a</span>, <span class="vr">$b</span>) {
+    <span class="kw">return</span> <span class="vr">$a</span> <span class="op">-</span> <span class="vr">$b</span>;   <span class="cmt">// tri croissant</span>
+});
+
+<span class="cmt">// Fonction fléchée — PHP 7.4+ (accès auto aux variables du scope parent)</span>
+<span class="vr">$taux</span>   = <span class="num">0.20</span>;
+<span class="vr">$calcul</span> = <span class="kw">fn</span>(<span class="vr">$prix</span>) => <span class="vr">$prix</span> * (<span class="num">1</span> + <span class="vr">$taux</span>);
+<span class="cmt">// pas besoin de use — $taux est capturé automatiquement</span>
+<span class="kw">echo</span> <span class="vr">$calcul</span>(<span class="num">100</span>);   <span class="cmt">// 120</span>
+
+<span class="cmt">// Utilisation typique avec array_map / array_filter</span>
+<span class="vr">$prix</span> = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">50</span>];
+
+<span class="vr">$prix_ttc</span>  = <span class="fn">array_map</span>(<span class="kw">fn</span>(<span class="vr">$p</span>) => <span class="vr">$p</span> * <span class="num">1.20</span>, <span class="vr">$prix</span>);
+<span class="vr">$chers</span>     = <span class="fn">array_filter</span>(<span class="vr">$prix</span>, <span class="kw">fn</span>(<span class="vr">$p</span>) => <span class="vr">$p</span> <span class="op">></span> <span class="num">20</span>);</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 06 -->
+<section class="etape" id="etape6">
+  <div class="etape-header">
+    <div class="etape-num">06</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 6 — La bibliothèque PHP</div>
+      <h2>Fonctions PHP natives — les incontournables</h2>
+    </div>
+  </div>
+  <p class="prose">PHP embarque des milliers de fonctions natives. Voici les plus utilisées pour les chaînes, les nombres et les dates. PHP.net est la référence complète.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Fonctions sur les chaînes</span><span class="cb-badge php">string</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$s</span> = <span class="str">"  Bonjour le monde  "</span>;
+
+<span class="fn">strlen</span>(<span class="vr">$s</span>)                    <span class="cmt">// longueur en octets : 20</span>
+<span class="fn">mb_strlen</span>(<span class="vr">$s</span>)                 <span class="cmt">// longueur Unicode (accents) : 20</span>
+<span class="fn">trim</span>(<span class="vr">$s</span>)                      <span class="cmt">// "Bonjour le monde" (espaces retirés)</span>
+<span class="fn">strtolower</span>(<span class="vr">$s</span>)                <span class="cmt">// "  bonjour le monde  "</span>
+<span class="fn">strtoupper</span>(<span class="vr">$s</span>)                <span class="cmt">// "  BONJOUR LE MONDE  "</span>
+<span class="fn">ucfirst</span>(<span class="str">"bonjour"</span>)            <span class="cmt">// "Bonjour"</span>
+<span class="fn">str_replace</span>(<span class="str">"monde"</span>, <span class="str">"PHP"</span>, <span class="vr">$s</span>) <span class="cmt">// "  Bonjour le PHP  "</span>
+<span class="fn">strpos</span>(<span class="vr">$s</span>, <span class="str">"monde"</span>)            <span class="cmt">// 14 (position) ou false</span>
+<span class="fn">substr</span>(<span class="vr">$s</span>, <span class="num">2</span>, <span class="num">7</span>)               <span class="cmt">// "Bonjour" (depuis pos 2, 7 chars)</span>
+<span class="fn">explode</span>(<span class="str">" "</span>, <span class="fn">trim</span>(<span class="vr">$s</span>))         <span class="cmt">// ["Bonjour", "le", "monde"]</span>
+<span class="fn">implode</span>(<span class="str">", "</span>, [<span class="str">"a"</span>,<span class="str">"b"</span>,<span class="str">"c"</span>])  <span class="cmt">// "a, b, c"</span>
+<span class="fn">str_contains</span>(<span class="vr">$s</span>, <span class="str">"monde"</span>)     <span class="cmt">// true (PHP 8+)</span>
+<span class="fn">str_starts_with</span>(<span class="vr">$s</span>, <span class="str">"  Bo"</span>)  <span class="cmt">// true (PHP 8+)</span>
+<span class="fn">htmlspecialchars</span>(<span class="str">"&lt;b&gt;ok&lt;/b&gt;"</span>) <span class="cmt">// "&amp;lt;b&amp;gt;ok" (sécurité XSS)</span>
+<span class="fn">strip_tags</span>(<span class="str">"&lt;b&gt;ok&lt;/b&gt;"</span>)      <span class="cmt">// "ok" (retire les balises)</span>
+<span class="fn">sprintf</span>(<span class="str">"%.2f €"</span>, <span class="num">12.3</span>)       <span class="cmt">// "12.30 €"</span></code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Fonctions mathématiques et dates</span><span class="cb-badge php">math / date</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">// Maths</span>
+<span class="fn">abs</span>(<span class="op">-</span><span class="num">42</span>)             <span class="cmt">// 42</span>
+<span class="fn">round</span>(<span class="num">3.567</span>, <span class="num">2</span>)      <span class="cmt">// 3.57 (arrondi à 2 décimales)</span>
+<span class="fn">floor</span>(<span class="num">3.9</span>)           <span class="cmt">// 3   (arrondi vers le bas)</span>
+<span class="fn">ceil</span>(<span class="num">3.1</span>)            <span class="cmt">// 4   (arrondi vers le haut)</span>
+<span class="fn">min</span>(<span class="num">5</span>, <span class="num">3</span>, <span class="num">8</span>)         <span class="cmt">// 3</span>
+<span class="fn">max</span>(<span class="num">5</span>, <span class="num">3</span>, <span class="num">8</span>)         <span class="cmt">// 8</span>
+<span class="fn">rand</span>(<span class="num">1</span>, <span class="num">100</span>)         <span class="cmt">// entier aléatoire entre 1 et 100</span>
+<span class="fn">pow</span>(<span class="num">2</span>, <span class="num">10</span>)           <span class="cmt">// 1024</span>
+<span class="fn">sqrt</span>(<span class="num">16</span>)             <span class="cmt">// 4</span>
+
+<span class="cmt">// Dates</span>
+<span class="fn">date</span>(<span class="str">"d/m/Y"</span>)                    <span class="cmt">// "15/12/2024"</span>
+<span class="fn">date</span>(<span class="str">"H:i:s"</span>)                    <span class="cmt">// "14:35:22"</span>
+<span class="fn">date</span>(<span class="str">"Y-m-d H:i:s"</span>)              <span class="cmt">// "2024-12-15 14:35:22"</span>
+<span class="fn">time</span>()                           <span class="cmt">// timestamp Unix (secondes)</span>
+<span class="fn">mktime</span>(<span class="num">0</span>,<span class="num">0</span>,<span class="num">0</span>, <span class="num">12</span>, <span class="num">25</span>, <span class="num">2024</span>)    <span class="cmt">// timestamp pour le 25/12/2024</span>
+<span class="fn">strtotime</span>(<span class="str">"next monday"</span>)         <span class="cmt">// timestamp du prochain lundi</span>
+<span class="fn">strtotime</span>(<span class="str">"+30 days"</span>)           <span class="cmt">// timestamp dans 30 jours</span></code></pre>
+  </div>
+
+  <div class="checkpoint">
+    <span class="cp-icon">OK</span>
+    <div class="cp-text"><strong>Réflexe PHP.net :</strong> avant d'écrire une fonction soi-même, chercher si PHP en a déjà une. PHP a des centaines de fonctions natives pour les chaînes, tableaux, dates, fichiers, maths, regex. La documentation sur <code>php.net</code> est complète et inclut des exemples pour chaque fonction.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- QUIZ -->
+<section class="etape" id="quiz">
+  <div class="etape-header">
+    <div class="etape-num">07</div>
+    <div class="etape-info">
+      <div class="etape-tag">Évaluation</div>
+      <h2>Quiz — fonctions PHP</h2>
+    </div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Quelle est la différence entre <code>echo</code> dans une fonction et <code>return</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">Aucune — les deux affichent la valeur</button>
+      <button class="opt" onclick="ans(this,'q1',true)">echo envoie directement au navigateur, return renvoie la valeur à l'appelant qui peut la stocker ou la transformer</button>
+      <button class="opt" onclick="ans(this,'q1',false)">return est réservé aux fonctions récursives</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Dans une fonction PHP, peut-on accéder directement à une variable globale définie hors de la fonction ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',false)">Oui — les variables globales sont accessibles partout</button>
+      <button class="opt" onclick="ans(this,'q2',true)">Non — PHP isole le scope des fonctions. Il faut déclarer global $var ou passer la valeur en paramètre</button>
+      <button class="opt" onclick="ans(this,'q2',false)">Oui, mais seulement si la variable commence par $_</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Que fait le type hint dans <code>function calcul(float $prix): float</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',false)">Il convertit automatiquement le paramètre en float</button>
+      <button class="opt" onclick="ans(this,'q3',true)">Il documente les types attendus et peut déclencher une TypeError si le type ne correspond pas (en strict_types=1)</button>
+      <button class="opt" onclick="ans(this,'q3',false)">Il n'a aucun effet en PHP — c'est décoratif</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Qu'est-ce qu'une variable <code>static</code> dans une fonction ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',true)">Une variable locale initialisée une seule fois et qui conserve sa valeur entre les appels successifs à la fonction</button>
+      <button class="opt" onclick="ans(this,'q4',false)">Une variable qui ne peut pas être modifiée (constante)</button>
+      <button class="opt" onclick="ans(this,'q4',false)">Une variable accessible depuis toutes les fonctions du fichier</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> Quelle est la différence entre une closure (<code>function() {}</code>) et une fonction fléchée (<code>fn() =></code>) ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q5',false)">La fonction fléchée est plus rapide</button>
+      <button class="opt" onclick="ans(this,'q5',true)">La fonction fléchée capture automatiquement les variables du scope parent sans use(). La closure nécessite use() explicite pour accéder aux variables extérieures.</button>
+      <button class="opt" onclick="ans(this,'q5',false)">Les deux sont identiques en PHP 8</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;box-shadow:var(--sh);">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector(`.nav-link[href="#${x.target.id}"]`);if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copié';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+const fbs={
+  q1:{ok:'Exact. echo envoie directement au navigateur — une fois affiché, on ne peut pas récupérer cette valeur pour la stocker ou la transformer. return renvoie la valeur à l\'appelant qui peut la stocker dans une variable, la passer à une autre fonction, ou la comparer. Préférez return pour des fonctions réutilisables et testables.',ko:'Non. La différence est fondamentale. echo = sortie directe au navigateur, irrécupérable. return = renvoie la valeur à l\'appelant. $result = maFonction() fonctionne seulement si la fonction utilise return. echo dans la fonction affiche pendant l\'exécution, return donne la main à l\'appelant.'},
+  q2:{ok:'Exact. PHP isole le scope des fonctions — les variables globales ne "traversent" pas automatiquement. Il faut soit déclarer global $variable en début de fonction, soit (mieux) passer la valeur en paramètre. Cette isolation est une bonne chose : elle évite les effets de bord et rend les fonctions prévisibles.',ko:'Non. PHP isole strictement le scope des fonctions. Une variable $nom définie hors de la fonction n\'est pas accessible dedans — elle ne provoque pas d\'erreur, PHP crée simplement une nouvelle variable locale vide. Il faut global $nom au début de la fonction, ou passer $nom en paramètre (solution recommandée).'},
+  q3:{ok:'Exact. Les type hints servent de documentation et de vérification. En mode normal, PHP essaie de convertir le type. Avec declare(strict_types=1) en début de fichier, un mauvais type déclenche une TypeError. Ils aident aussi l\'IDE à vous prévenir des erreurs avant l\'exécution.',ko:'Non. Les type hints ne convertissent pas automatiquement (cela dépend de strict_types). En mode normal, PHP peut convertir int en float. Avec declare(strict_types=1), passer le mauvais type déclenche une TypeError. Leur rôle principal est la documentation et la détection d\'erreurs.'},
+  q4:{ok:'Exact. Une variable static est initialisée la première fois que la fonction est appelée, puis conserve sa valeur entre les appels suivants — contrairement aux variables locales qui sont réinitialisées à chaque appel. Utile pour des compteurs d\'appels, des caches internes, ou mémoriser un état sans variable globale.',ko:'Non. static dans une fonction crée une variable locale persistante entre les appels. Elle est initialisée une seule fois (première exécution), puis conserve sa valeur à travers tous les appels suivants. Ce n\'est pas une constante (on peut la modifier) et ce n\'est pas accessible depuis d\'autres fonctions.'},
+  q5:{ok:'Exact. La différence clé est la capture des variables du scope parent. Une closure nécessite use($var) explicite pour capturer chaque variable extérieure. Une fonction fléchée (fn() =>) capture automatiquement toutes les variables du scope parent par valeur — plus concis mais sans pouvoir modifier ces variables.',ko:'Non. La différence principale est la capture du scope. Closure = nécessite use($taux) pour accéder à $taux du scope parent. Fonction fléchée = capture automatiquement les variables du scope parent, pas besoin de use(). Aussi, la fonction fléchée ne peut contenir qu\'une expression (pas de bloc {}).'},
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick?.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);
+  fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){
+    const g=Object.values(rep).filter(Boolean).length;
+    const box=document.getElementById('score-box');box.style.display='block';
+    document.getElementById('s-score').textContent=g+'/5';
+    document.getElementById('s-text').innerHTML=g===5?'Parfait — fonctions PHP maîtrisées.':g>=4?'Très bien.':g>=3?'Revoir scope et return vs echo.':'Reprendre les bases des fonctions.';
+    box.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+</script>
+</body>
+</html>

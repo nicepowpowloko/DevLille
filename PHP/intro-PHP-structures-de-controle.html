@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 03 — Structures de contrôle</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#b45309;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--purple:#7c3aed;--orange:#c2410c;--teal:#0f766e;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:'SF Mono','Fira Code','Consolas',monospace;--sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);--shm:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.05);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(180,83,9,.07);color:var(--text);}
+.nav-link.active{background:rgba(180,83,9,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;transition:color .15s;}
+.nav-serie-link:hover{color:var(--accent);}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(180,83,9,.08);border:1px solid rgba(180,83,9,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--teal);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(180,83,9,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;align-items:flex-start;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}
+.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}
+.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}
+.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;}
+.cb-badge.php{background:rgba(180,83,9,.15);border:1px solid rgba(180,83,9,.3);color:#fcd34d;}
+.cb-badge.warn{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#f87171;}
+.cb-badge.loop{background:rgba(15,118,110,.12);border:1px solid rgba(15,118,110,.3);color:#5eead4;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(180,83,9,.2);border-color:rgba(180,83,9,.4);color:#fcd34d;}
+.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.php-tag{color:#f38ba8;font-weight:700;}
+.op{color:#89dceb;}.bool{color:#fab387;font-weight:600;}
+.resultat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:14px;box-shadow:var(--sh);}
+.resultat-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.resultat-body{font-size:.88rem;color:var(--muted);line-height:1.8;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}
+.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+/* LOOP VISUALIZER */
+.loop-vis{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.lv-head{background:var(--title);padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.lv-label{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--muted);}
+.lv-badge{font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:3px;background:rgba(180,83,9,.1);border:1px solid rgba(180,83,9,.2);color:var(--accent);}
+.lv-body{padding:20px;}
+.lv-controls{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.lv-select,.lv-input{padding:7px 11px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.82rem;outline:none;}
+.lv-select:focus,.lv-input:focus{border-color:rgba(180,83,9,.4);}
+.lv-input{width:80px;}
+.lv-btn{padding:7px 18px;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:.78rem;font-weight:700;border:1px solid rgba(180,83,9,.3);background:rgba(180,83,9,.08);color:var(--accent);transition:all .15s;}
+.lv-btn:hover{background:rgba(180,83,9,.16);}
+.lv-steps{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;}
+.lv-step{padding:4px 10px;border-radius:5px;font-family:var(--mono);font-size:.8rem;border:1px solid var(--border);background:var(--surface);color:var(--muted);opacity:0;transform:translateY(4px);transition:all .2s;}
+.lv-step.show{opacity:1;transform:translateY(0);}
+.lv-step.active{background:rgba(180,83,9,.1);border-color:rgba(180,83,9,.3);color:var(--accent);}
+.lv-code-out{margin-top:12px;background:#1e1e2e;border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:.78rem;color:#cdd6f4;min-height:32px;}
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(180,83,9,.3);color:var(--text);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span>[ ] PHP — Bloc 1</span>
+    <p>Les bases du langage</p>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>Prendre des décisions</a>
+    <a href="#etape1" class="nav-link"><span class="nav-num">01</span>if / elseif / else</a>
+    <a href="#etape2" class="nav-link"><span class="nav-num">02</span>switch / match</a>
+    <a href="#etape3" class="nav-link"><span class="nav-num">03</span>Boucle for</a>
+    <a href="#etape4" class="nav-link"><span class="nav-num">04</span>Boucle while</a>
+    <a href="#etape5" class="nav-link"><span class="nav-num">05</span>Boucle foreach</a>
+    <a href="#etape6" class="nav-link"><span class="nav-num">06</span>break et continue</a>
+    <a href="#etape7" class="nav-link"><span class="nav-num">07</span>Visualiseur de boucles</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">08</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 1 — Bases</div>
+    <a href="php-01-intro.html" class="nav-serie-link">01 — Introduction PHP</a>
+    <a href="php-02-variables.html" class="nav-serie-link">02 — Variables et types</a>
+    <a href="php-03-structures.html" class="nav-serie-link current">03 — Structures de contrôle</a>
+    <a href="php-04-fonctions.html" class="nav-serie-link">04 — Fonctions</a>
+    <a href="php-05-tableaux.html" class="nav-serie-link">05 — Tableaux</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 1 · Support 3/5</div>
+  <h1>Structures<br><span class="hl">de contrôle</span></h1>
+  <p>Les structures de contrôle permettent de diriger l'exécution du code : prendre des décisions avec <code>if/else</code> et <code>switch</code>, et répéter des opérations avec les boucles <code>for</code>, <code>while</code> et <code>foreach</code>.</p>
+  <div class="objectifs">
+    <span class="obj y">if / else</span>
+    <span class="obj y">switch / match</span>
+    <span class="obj g">for</span>
+    <span class="obj b">while / do-while</span>
+    <span class="obj p">foreach</span>
+    <span class="obj t">break / continue</span>
+  </div>
+</div>
+
+<!-- 00 -->
+<section class="etape" id="plan">
+  <div class="etape-header">
+    <div class="etape-num">00</div>
+    <div class="etape-info">
+      <div class="etape-tag">Vue d'ensemble</div>
+      <h2>Les deux familles de structures</h2>
+    </div>
+  </div>
+  <p class="prose">Sans structures de contrôle, PHP exécute le code de haut en bas, ligne par ligne, sans jamais s'arrêter ni répéter. Les structures de contrôle permettent deux choses fondamentales : <strong>choisir</strong> quel code exécuter selon une condition, et <strong>répéter</strong> du code un certain nombre de fois.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Famille</th><th>Structures</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>Conditions</td><td>if, elseif, else, switch, match</td><td>Exécuter du code selon une condition</td></tr>
+        <tr><td>Boucles</td><td>for, while, do-while, foreach</td><td>Répéter du code un certain nombre de fois</td></tr>
+        <tr><td>Contrôle de boucle</td><td>break, continue, return</td><td>Interrompre ou sauter des itérations</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 01 -->
+<section class="etape" id="etape1">
+  <div class="etape-header">
+    <div class="etape-num">01</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 1 — Conditions</div>
+      <h2>if / elseif / else — prendre des décisions</h2>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Structure if complète — toutes les variantes</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$age</span> = <span class="num">17</span>;
+
+<span class="cmt">// if seul</span>
+<span class="kw">if</span> (<span class="vr">$age</span> <span class="op">>=</span> <span class="num">18</span>) {
+    <span class="kw">echo</span> <span class="str">"Majeur"</span>;
+}
+
+<span class="cmt">// if + else</span>
+<span class="kw">if</span> (<span class="vr">$age</span> <span class="op">>=</span> <span class="num">18</span>) {
+    <span class="kw">echo</span> <span class="str">"Majeur"</span>;
+} <span class="kw">else</span> {
+    <span class="kw">echo</span> <span class="str">"Mineur"</span>;
+}
+
+<span class="cmt">// if + elseif + else (plusieurs branches)</span>
+<span class="kw">if</span> (<span class="vr">$age</span> <span class="op"><</span> <span class="num">13</span>) {
+    <span class="kw">echo</span> <span class="str">"Enfant"</span>;
+} <span class="kw">elseif</span> (<span class="vr">$age</span> <span class="op"><</span> <span class="num">18</span>) {
+    <span class="kw">echo</span> <span class="str">"Adolescent"</span>;
+} <span class="kw">elseif</span> (<span class="vr">$age</span> <span class="op"><</span> <span class="num">65</span>) {
+    <span class="kw">echo</span> <span class="str">"Adulte"</span>;
+} <span class="kw">else</span> {
+    <span class="kw">echo</span> <span class="str">"Senior"</span>;
+}
+
+<span class="cmt">// Conditions multiples avec && et ||</span>
+<span class="vr">$note</span> = <span class="num">14</span>;
+<span class="kw">if</span> (<span class="vr">$note</span> <span class="op">>=</span> <span class="num">10</span> <span class="op">&amp;&amp;</span> <span class="vr">$note</span> <span class="op"><</span> <span class="num">20</span>) {
+    <span class="kw">echo</span> <span class="str">"Admis"</span>;
+}
+
+<span class="cmt">// Syntaxe alternative (dans les templates HTML)</span>
+<span class="php-tag">&lt;?php</span> <span class="kw">if</span> (<span class="vr">$age</span> <span class="op">>=</span> <span class="num">18</span>): <span class="php-tag">?&gt;</span>
+    <span class="html-tag">&lt;p&gt;</span>Contenu pour les majeurs<span class="html-tag">&lt;/p&gt;</span>
+<span class="php-tag">&lt;?php</span> <span class="kw">else</span>: <span class="php-tag">?&gt;</span>
+    <span class="html-tag">&lt;p&gt;</span>Contenu pour les mineurs<span class="html-tag">&lt;/p&gt;</span>
+<span class="php-tag">&lt;?php</span> <span class="kw">endif</span>; <span class="php-tag">?&gt;</span></code></pre>
+  </div>
+
+  <div class="callout tip">
+    <span class="ci">!</span>
+    <div><strong>La syntaxe alternative (<code>if(): ... endif;</code>)</strong> est plus lisible quand on mélange PHP et HTML dans les vues. Elle évite de perdre le fil des accolades dans du HTML dense. Choisissez-la systématiquement dans vos templates.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 02 -->
+<section class="etape" id="etape2">
+  <div class="etape-header">
+    <div class="etape-num">02</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 2 — Choix multiples</div>
+      <h2>switch et match — comparer une valeur à plusieurs cas</h2>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">switch — comparaison souple</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$jour</span> = <span class="str">"lundi"</span>;
+
+<span class="kw">switch</span> (<span class="vr">$jour</span>) {
+    <span class="kw">case</span> <span class="str">"lundi"</span>:
+    <span class="kw">case</span> <span class="str">"mardi"</span>:
+    <span class="kw">case</span> <span class="str">"mercredi"</span>:
+    <span class="kw">case</span> <span class="str">"jeudi"</span>:
+    <span class="kw">case</span> <span class="str">"vendredi"</span>:
+        <span class="kw">echo</span> <span class="str">"Jour de semaine"</span>;
+        <span class="kw">break</span>;   <span class="cmt">// OBLIGATOIRE pour arrêter ici</span>
+
+    <span class="kw">case</span> <span class="str">"samedi"</span>:
+    <span class="kw">case</span> <span class="str">"dimanche"</span>:
+        <span class="kw">echo</span> <span class="str">"Week-end"</span>;
+        <span class="kw">break</span>;
+
+    <span class="kw">default</span>:            <span class="cmt">// aucun case ne correspond</span>
+        <span class="kw">echo</span> <span class="str">"Jour inconnu"</span>;
+}
+<span class="cmt">// switch utilise == (comparaison lâche)</span></code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">match — comparaison stricte (PHP 8+)</span><span class="cb-badge php">PHP 8</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$statut</span> = <span class="num">2</span>;
+
+<span class="cmt">// match retourne une valeur, utilise === (strict)</span>
+<span class="vr">$label</span> = <span class="kw">match</span>(<span class="vr">$statut</span>) {
+    <span class="num">1</span>       => <span class="str">"En attente"</span>,
+    <span class="num">2</span>, <span class="num">3</span>   => <span class="str">"En cours"</span>,     <span class="cmt">// plusieurs valeurs possibles</span>
+    <span class="num">4</span>       => <span class="str">"Terminé"</span>,
+    <span class="num">0</span>       => <span class="str">"Annulé"</span>,
+    <span class="kw">default</span> => <span class="str">"Inconnu"</span>,
+};
+<span class="kw">echo</span> <span class="vr">$label</span>;  <span class="cmt">// "En cours"</span>
+
+<span class="cmt">// Différences switch vs match :</span>
+<span class="cmt">// match utilise === (strict), switch utilise == (lâche)</span>
+<span class="cmt">// match retourne une valeur, switch exécute des instructions</span>
+<span class="cmt">// match lève une erreur si aucun cas ne correspond (sans default)</span>
+<span class="cmt">// match n'a pas besoin de break</span></code></pre>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Critère</th><th>switch</th><th>match (PHP 8+)</th></tr></thead>
+      <tbody>
+        <tr><td>Comparaison</td><td>== (lâche)</td><td>=== (stricte)</td></tr>
+        <tr><td>Retourne une valeur</td><td>Non — exécute des blocs</td><td>Oui — peut être assigné</td></tr>
+        <tr><td>break requis</td><td>Oui</td><td>Non</td></tr>
+        <tr><td>Cas sans correspondance</td><td>Ignore (si pas default)</td><td>Erreur UnhandledMatchError</td></tr>
+        <tr><td>Plusieurs valeurs par cas</td><td>Plusieurs case empilés</td><td>Virgule dans le cas</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 03 -->
+<section class="etape" id="etape3">
+  <div class="etape-header">
+    <div class="etape-num">03</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 3 — Boucles</div>
+      <h2>Boucle for — quand on connaît le nombre d'itérations</h2>
+    </div>
+  </div>
+  <p class="prose">La boucle <code>for</code> s'utilise quand on connaît à l'avance le nombre de répétitions. Elle est composée de trois parties : initialisation, condition, incrément.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Boucle for — anatomie et exemples</span><span class="cb-badge loop">Boucle</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">//    init   condition    incrément</span>
+<span class="kw">for</span> (<span class="vr">$i</span>=<span class="num">0</span>; <span class="vr">$i</span> <span class="op">&lt;</span> <span class="num">5</span>;  <span class="vr">$i</span><span class="op">++</span>) {
+    <span class="kw">echo</span> <span class="vr">$i</span> . <span class="str">" "</span>;
+}
+<span class="cmt">// Affiche : 0 1 2 3 4</span>
+
+<span class="cmt">// Compter à rebours</span>
+<span class="kw">for</span> (<span class="vr">$i</span> = <span class="num">5</span>; <span class="vr">$i</span> <span class="op">></span> <span class="num">0</span>; <span class="vr">$i</span><span class="op">--</span>) {
+    <span class="kw">echo</span> <span class="vr">$i</span> . <span class="str">" "</span>;
+}
+<span class="cmt">// Affiche : 5 4 3 2 1</span>
+
+<span class="cmt">// Incrément par pas de 2</span>
+<span class="kw">for</span> (<span class="vr">$i</span> = <span class="num">0</span>; <span class="vr">$i</span> <span class="op">&lt;=</span> <span class="num">10</span>; <span class="vr">$i</span> <span class="op">+=</span> <span class="num">2</span>) {
+    <span class="kw">echo</span> <span class="vr">$i</span> . <span class="str">" "</span>;
+}
+<span class="cmt">// Affiche : 0 2 4 6 8 10</span>
+
+<span class="cmt">// Générer un tableau HTML</span>
+<span class="kw">echo</span> <span class="str">"&lt;ul&gt;"</span>;
+<span class="kw">for</span> (<span class="vr">$i</span> = <span class="num">1</span>; <span class="vr">$i</span> <span class="op">&lt;=</span> <span class="num">5</span>; <span class="vr">$i</span><span class="op">++</span>) {
+    <span class="kw">echo</span> <span class="str">"&lt;li&gt;Élément "</span> . <span class="vr">$i</span> . <span class="str">"&lt;/li&gt;"</span>;
+}
+<span class="kw">echo</span> <span class="str">"&lt;/ul&gt;"</span>;</code></pre>
+  </div>
+
+  <div class="resultat">
+    <div class="resultat-label">Exécution étape par étape</div>
+    <div class="resultat-body">
+      <code>for ($i=0; $i &lt; 5; $i++)</code><br><br>
+      <strong>Tour 1 :</strong> init: $i=0 → condition: 0&lt;5 = true → echo 0 → incrément: $i=1<br>
+      <strong>Tour 2 :</strong> condition: 1&lt;5 = true → echo 1 → $i=2<br>
+      <strong>Tour 3 :</strong> condition: 2&lt;5 = true → echo 2 → $i=3<br>
+      <strong>Tour 4 :</strong> condition: 3&lt;5 = true → echo 3 → $i=4<br>
+      <strong>Tour 5 :</strong> condition: 4&lt;5 = true → echo 4 → $i=5<br>
+      <strong>Stop :</strong> condition: 5&lt;5 = false → la boucle s'arrête
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 04 -->
+<section class="etape" id="etape4">
+  <div class="etape-header">
+    <div class="etape-num">04</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 4 — Boucles conditionnelles</div>
+      <h2>while et do-while — répéter tant que</h2>
+    </div>
+  </div>
+  <p class="prose"><code>while</code> s'utilise quand on ne connaît pas le nombre de répétitions à l'avance. On répète tant qu'une condition est vraie. <code>do-while</code> garantit au moins une exécution.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">while et do-while</span><span class="cb-badge loop">Boucle</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// while : condition vérifiée AVANT chaque tour</span>
+<span class="vr">$compteur</span> = <span class="num">1</span>;
+<span class="kw">while</span> (<span class="vr">$compteur</span> <span class="op">&lt;=</span> <span class="num">5</span>) {
+    <span class="kw">echo</span> <span class="vr">$compteur</span> . <span class="str">" "</span>;
+    <span class="vr">$compteur</span><span class="op">++</span>;
+}
+<span class="cmt">// Affiche : 1 2 3 4 5</span>
+
+<span class="cmt">// Exemple réel : lire des lignes d'un fichier</span>
+<span class="vr">$fichier</span> = <span class="fn">fopen</span>(<span class="str">"data.txt"</span>, <span class="str">"r"</span>);
+<span class="kw">while</span> ((<span class="vr">$ligne</span> = <span class="fn">fgets</span>(<span class="vr">$fichier</span>)) !== <span class="bool">false</span>) {
+    <span class="kw">echo</span> <span class="vr">$ligne</span>;
+}
+<span class="fn">fclose</span>(<span class="vr">$fichier</span>);
+
+<span class="cmt">// do-while : condition vérifiée APRÈS chaque tour</span>
+<span class="cmt">// Garantit au moins 1 exécution</span>
+<span class="vr">$n</span> = <span class="num">10</span>;
+<span class="kw">do</span> {
+    <span class="kw">echo</span> <span class="vr">$n</span>;      <span class="cmt">// s'exécute même si $n = 10 > 5</span>
+    <span class="vr">$n</span><span class="op">++</span>;
+} <span class="kw">while</span> (<span class="vr">$n</span> <span class="op">&lt;</span> <span class="num">5</span>);
+<span class="cmt">// Affiche : 10 (une seule fois — puis la condition est false)</span>
+
+<span class="cmt">// Cas d'usage do-while : demander une saisie valide</span>
+<span class="kw">do</span> {
+    <span class="vr">$saisie</span> = <span class="fn">readline</span>(<span class="str">"Entrez un nombre positif : "</span>);
+} <span class="kw">while</span> (!<span class="fn">is_numeric</span>(<span class="vr">$saisie</span>) || <span class="vr">$saisie</span> <span class="op">&lt;=</span> <span class="num">0</span>);</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <span class="ci">!</span>
+    <div><strong>Boucle infinie — le danger du while.</strong> Si la condition de <code>while</code> reste toujours vraie, le script tourne indéfiniment et provoque un timeout. Toujours vérifier que la variable testée est bien modifiée à l'intérieur de la boucle.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 05 -->
+<section class="etape" id="etape5">
+  <div class="etape-header">
+    <div class="etape-num">05</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 5 — Parcourir des tableaux</div>
+      <h2>foreach — la boucle des tableaux</h2>
+    </div>
+  </div>
+  <p class="prose"><code>foreach</code> est conçu spécifiquement pour parcourir des tableaux. Il est plus simple que <code>for</code> car pas besoin de gérer l'index manuellement. C'est la boucle la plus utilisée en PHP sur des données.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">foreach — toutes les formes</span><span class="cb-badge loop">Boucle</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// Tableau indexé — accès à la valeur seule</span>
+<span class="vr">$fruits</span> = [<span class="str">"pomme"</span>, <span class="str">"banane"</span>, <span class="str">"cerise"</span>];
+
+<span class="kw">foreach</span> (<span class="vr">$fruits</span> <span class="kw">as</span> <span class="vr">$fruit</span>) {
+    <span class="kw">echo</span> <span class="vr">$fruit</span> . <span class="str">"&lt;br&gt;"</span>;
+}
+
+<span class="cmt">// Tableau indexé — accès à l'index ET la valeur</span>
+<span class="kw">foreach</span> (<span class="vr">$fruits</span> <span class="kw">as</span> <span class="vr">$index</span> => <span class="vr">$fruit</span>) {
+    <span class="kw">echo</span> <span class="vr">$index</span> . <span class="str">" : "</span> . <span class="vr">$fruit</span> . <span class="str">"&lt;br&gt;"</span>;
+}
+<span class="cmt">// Affiche : 0 : pomme / 1 : banane / 2 : cerise</span>
+
+<span class="cmt">// Tableau associatif — clé => valeur</span>
+<span class="vr">$utilisateur</span> = [
+    <span class="str">"nom"</span>    => <span class="str">"Dupont"</span>,
+    <span class="str">"prenom"</span> => <span class="str">"Alice"</span>,
+    <span class="str">"age"</span>    => <span class="num">25</span>,
+];
+
+<span class="kw">foreach</span> (<span class="vr">$utilisateur</span> <span class="kw">as</span> <span class="vr">$cle</span> => <span class="vr">$valeur</span>) {
+    <span class="kw">echo</span> <span class="vr">$cle</span> . <span class="str">" : "</span> . <span class="vr">$valeur</span> . <span class="str">"&lt;br&gt;"</span>;
+}
+
+<span class="cmt">// Tableau de tableaux — données BDD typiques</span>
+<span class="vr">$produits</span> = [
+    [<span class="str">"nom"</span> => <span class="str">"T-shirt"</span>, <span class="str">"prix"</span> => <span class="num">19.99</span>],
+    [<span class="str">"nom"</span> => <span class="str">"Jean"</span>,    <span class="str">"prix"</span> => <span class="num">49.99</span>],
+    [<span class="str">"nom"</span> => <span class="str">"Veste"</span>,   <span class="str">"prix"</span> => <span class="num">89.99</span>],
+];
+
+<span class="kw">echo</span> <span class="str">"&lt;table&gt;"</span>;
+<span class="kw">foreach</span> (<span class="vr">$produits</span> <span class="kw">as</span> <span class="vr">$produit</span>) {
+    <span class="kw">echo</span> <span class="str">"&lt;tr&gt;&lt;td&gt;"</span> . <span class="vr">$produit</span>[<span class="str">'nom'</span>] . <span class="str">"&lt;/td&gt;"</span>;
+    <span class="kw">echo</span> <span class="str">"&lt;td&gt;"</span> . <span class="vr">$produit</span>[<span class="str">'prix'</span>] . <span class="str">" €&lt;/td&gt;&lt;/tr&gt;"</span>;
+}
+<span class="kw">echo</span> <span class="str">"&lt;/table&gt;"</span>;</code></pre>
+  </div>
+
+  <div class="callout info">
+    <span class="ci">i</span>
+    <div><strong>foreach travaille sur une copie.</strong> Par défaut, <code>foreach</code> copie le tableau — les modifications de <code>$valeur</code> n'affectent pas le tableau original. Pour modifier le tableau en place, utiliser une référence : <code>foreach ($tab as &$val)</code>. Ne pas oublier <code>unset($val)</code> après la boucle pour éviter les effets de bord.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 06 -->
+<section class="etape" id="etape6">
+  <div class="etape-header">
+    <div class="etape-num">06</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 6 — Contrôle fin</div>
+      <h2>break et continue — interrompre ou sauter</h2>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">break et continue</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// break — sortir complètement de la boucle</span>
+<span class="kw">for</span> (<span class="vr">$i</span> = <span class="num">0</span>; <span class="vr">$i</span> <span class="op">&lt;</span> <span class="num">10</span>; <span class="vr">$i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">$i</span> <span class="op">===</span> <span class="num">5</span>) {
+        <span class="kw">break</span>;      <span class="cmt">// sort de la boucle quand i = 5</span>
+    }
+    <span class="kw">echo</span> <span class="vr">$i</span> . <span class="str">" "</span>;
+}
+<span class="cmt">// Affiche : 0 1 2 3 4</span>
+
+<span class="cmt">// continue — passer à l'itération suivante</span>
+<span class="kw">for</span> (<span class="vr">$i</span> = <span class="num">0</span>; <span class="vr">$i</span> <span class="op">&lt;</span> <span class="num">10</span>; <span class="vr">$i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">$i</span> <span class="op">%</span> <span class="num">2</span> <span class="op">===</span> <span class="num">0</span>) {
+        <span class="kw">continue</span>;   <span class="cmt">// saute les nombres pairs</span>
+    }
+    <span class="kw">echo</span> <span class="vr">$i</span> . <span class="str">" "</span>;
+}
+<span class="cmt">// Affiche : 1 3 5 7 9</span>
+
+<span class="cmt">// Cas réel : chercher un élément dans un tableau</span>
+<span class="vr">$emails</span> = [<span class="str">"a@ex.fr"</span>, <span class="str">"b@ex.fr"</span>, <span class="str">"c@ex.fr"</span>];
+<span class="vr">$cible</span>  = <span class="str">"b@ex.fr"</span>;
+<span class="vr">$trouve</span> = <span class="bool">false</span>;
+
+<span class="kw">foreach</span> (<span class="vr">$emails</span> <span class="kw">as</span> <span class="vr">$email</span>) {
+    <span class="kw">if</span> (<span class="vr">$email</span> <span class="op">===</span> <span class="vr">$cible</span>) {
+        <span class="vr">$trouve</span> = <span class="bool">true</span>;
+        <span class="kw">break</span>;  <span class="cmt">// inutile de continuer après avoir trouvé</span>
+    }
+}
+<span class="kw">echo</span> <span class="vr">$trouve</span> ? <span class="str">"Trouvé"</span> : <span class="str">"Absent"</span>;</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 07 VISUALISEUR -->
+<section class="etape" id="etape7">
+  <div class="etape-header">
+    <div class="etape-num">07</div>
+    <div class="etape-info">
+      <div class="etape-tag">Interactif</div>
+      <h2>Visualiseur de boucles — suivre l'exécution</h2>
+    </div>
+  </div>
+  <p class="prose">Choisissez un type de boucle et paramétrez-la. Le visualiseur montre chaque itération pas à pas.</p>
+  <div class="loop-vis">
+    <div class="lv-head">
+      <div class="lv-label">Visualiseur d'itérations</div>
+      <div class="lv-badge">Simulation</div>
+    </div>
+    <div class="lv-body">
+      <div class="lv-controls">
+        <select class="lv-select" id="lv-type">
+          <option value="for">for ($i=0; $i &lt; N; $i++)</option>
+          <option value="fordown">for ($i=N; $i &gt; 0; $i--)</option>
+          <option value="forstep">for ($i=0; $i &lt;= N; $i+=2)</option>
+          <option value="while">while ($i &lt; N)</option>
+          <option value="foreach">foreach ($tableau as $val)</option>
+        </select>
+        <label style="font-family:var(--mono);font-size:.78rem;color:var(--muted);">N =</label>
+        <input class="lv-input" type="number" id="lv-n" value="5" min="1" max="15">
+        <button class="lv-btn" onclick="runVis()">Visualiser</button>
+      </div>
+      <div class="lv-steps" id="lv-steps"></div>
+      <div class="lv-code-out" id="lv-code"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- QUIZ -->
+<section class="etape" id="quiz">
+  <div class="etape-header">
+    <div class="etape-num">08</div>
+    <div class="etape-info">
+      <div class="etape-tag">Évaluation</div>
+      <h2>Quiz — structures de contrôle</h2>
+    </div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Combien de fois s'exécute la boucle <code>for ($i=1; $i <= 5; $i++)</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">4 fois (1, 2, 3, 4)</button>
+      <button class="opt" onclick="ans(this,'q1',true)">5 fois (1, 2, 3, 4, 5)</button>
+      <button class="opt" onclick="ans(this,'q1',false)">6 fois (0, 1, 2, 3, 4, 5)</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Dans un <code>switch</code>, à quoi sert <code>break</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',false)">A terminer le script PHP</button>
+      <button class="opt" onclick="ans(this,'q2',true)">A arrêter l'exécution du switch — sans break, PHP continue d'exécuter les case suivants (fall-through)</button>
+      <button class="opt" onclick="ans(this,'q2',false)">A passer au case suivant</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Quelle est la différence entre <code>break</code> et <code>continue</code> dans une boucle ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',true)">break sort complètement de la boucle, continue saute au tour suivant sans sortir</button>
+      <button class="opt" onclick="ans(this,'q3',false)">Ce sont des synonymes — même comportement</button>
+      <button class="opt" onclick="ans(this,'q3',false)">continue sort de la boucle, break saute au tour suivant</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Quelle boucle choisiriez-vous pour parcourir un tableau associatif retourné par une requête SQL ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',false)">for — plus performant sur les tableaux</button>
+      <button class="opt" onclick="ans(this,'q4',true)">foreach — conçu pour parcourir des tableaux, accès direct clé/valeur sans gérer l'index</button>
+      <button class="opt" onclick="ans(this,'q4',false)">while — adapté aux données de base de données</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> Quelle est la différence principale entre <code>match</code> et <code>switch</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q5',false)">match est plus rapide car il utilise une table de hachage</button>
+      <button class="opt" onclick="ans(this,'q5',true)">match utilise === (strict), retourne une valeur, pas de break nécessaire — switch utilise == (lâche)</button>
+      <button class="opt" onclick="ans(this,'q5',false)">switch ne fonctionne qu'avec des strings, match avec les entiers</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;box-shadow:var(--sh);">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector(`.nav-link[href="#${x.target.id}"]`);if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copié';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+
+// Loop Visualiser
+function runVis(){
+  const type=document.getElementById('lv-type').value;
+  const n=Math.min(15,Math.max(1,parseInt(document.getElementById('lv-n').value)||5));
+  const steps=document.getElementById('lv-steps');
+  const codeOut=document.getElementById('lv-code');
+  steps.innerHTML='';
+  const fruits=['pomme','banane','cerise','raisin','kiwi','mangue','fraise','citron','ananas','pêche','poire','melon','prune','figue','noix'];
+  let iters=[],codeStr='';
+  if(type==='for'){iters=Array.from({length:n},(_,i)=>({label:'i='+i,note:'tour '+(i+1)}));codeStr='for ($i=0; $i < '+n+'; $i++) { echo $i; }\nAffiche : '+iters.map(x=>x.label.split('=')[1]).join(' ');}
+  else if(type==='fordown'){iters=Array.from({length:n},(_,i)=>({label:'i='+(n-i),note:'tour '+(i+1)}));codeStr='for ($i='+n+'; $i > 0; $i--) { echo $i; }\nAffiche : '+iters.map(x=>x.label.split('=')[1]).join(' ');}
+  else if(type==='forstep'){const vals=[];for(let i=0;i<=n;i+=2)vals.push(i);iters=vals.map((v,i)=>({label:'i='+v,note:'tour '+(i+1)}));codeStr='for ($i=0; $i <= '+n+'; $i+=2) { echo $i; }\nAffiche : '+vals.join(' ');}
+  else if(type==='while'){iters=Array.from({length:n},(_,i)=>({label:'i='+i,note:'condition: '+i+'<'+n+' = true'}));codeStr='$i=0; while ($i < '+n+') { echo $i; $i++; }\nAffiche : '+iters.map(x=>x.label.split('=')[1]).join(' ');}
+  else if(type==='foreach'){iters=fruits.slice(0,n).map((f,i)=>({label:'$val="'+f+'"',note:'index '+i}));codeStr='foreach ($fruits as $val) { echo $val; }\nAffiche : '+fruits.slice(0,n).join(', ');}
+
+  iters.forEach((it,i)=>{
+    const el=document.createElement('div');
+    el.className='lv-step';
+    el.innerHTML='<span style="color:var(--dim);font-size:.68rem;">'+it.note+'</span><br>'+it.label;
+    steps.appendChild(el);
+    setTimeout(()=>el.classList.add('show','active'),i*120);
+    setTimeout(()=>el.classList.remove('active'),i*120+600);
+  });
+  setTimeout(()=>codeOut.textContent=codeStr,iters.length*120+200);
+}
+
+const fbs={
+  q1:{ok:'Exact. La condition est $i <= 5. Elle est vraie pour i=1, 2, 3, 4, 5 — soit 5 tours. À i=6, la condition 6<=5 est fausse et la boucle s\'arrête. Avec $i < 5 (strict), ce serait 4 tours (1, 2, 3, 4).',ko:'Non. La condition est $i <= 5 (inférieur ou égal). Elle est vraie pour i=1, 2, 3, 4 et 5 — 5 tours au total. Quand $i vaut 6, la condition est fausse et la boucle s\'arrête.'},
+  q2:{ok:'Exact. C\'est le comportement "fall-through" du switch : sans break, l\'exécution continue dans le case suivant, puis le suivant, jusqu\'à la fin du switch. C\'est parfois voulu (grouper des cases), mais le plus souvent c\'est un bug. break arrête l\'exécution au bon endroit.',ko:'Non. break dans un switch arrête l\'exécution du switch à ce point. Sans break, PHP continue d\'exécuter les cases suivants même s\'ils ne correspondent pas à la valeur — c\'est le "fall-through". C\'est souvent la source de bugs inattendus dans les switch.'},
+  q3:{ok:'Exact. break sort complètement de la boucle — le code après la boucle continue. continue saute le reste du corps de la boucle pour le tour courant et passe directement à l\'itération suivante.',ko:'Non. break et continue ont des comportements opposés. break = sortir de la boucle complètement. continue = sauter le reste du corps de la boucle pour ce tour et passer au tour suivant.'},
+  q4:{ok:'Exact. foreach est conçu pour les tableaux. La syntaxe foreach ($tableau as $cle => $valeur) donne directement accès aux clés et valeurs sans index numérique. C\'est la boucle standard pour les résultats de BDD, les formulaires, les objets JSON.',ko:'Non. foreach est le choix évident pour un tableau associatif. for nécessiterait de connaître les clés à l\'avance. while pourrait fonctionner avec array_shift() mais c\'est maladroit. foreach gère nativement les tableaux indexés et associatifs.'},
+  q5:{ok:'Exact. match utilise === (comparaison stricte — type + valeur), retourne une valeur directement assignable, n\'a pas besoin de break, et lève une UnhandledMatchError si aucun cas ne correspond (sans default). switch utilise == (lâche), exécute des blocs d\'instructions, et nécessite break.',ko:'Non. La différence principale est la comparaison : match utilise === (strict, comme === en PHP), switch utilise == (lâche, comme ==). match retourne aussi une valeur, pas besoin de break, et provoque une erreur si aucun cas ne correspond — comportements différents de switch.'},
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick?.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);
+  fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){
+    const g=Object.values(rep).filter(Boolean).length;
+    const box=document.getElementById('score-box');box.style.display='block';
+    document.getElementById('s-score').textContent=g+'/5';
+    document.getElementById('s-text').innerHTML=g===5?'Parfait — structures de contrôle maîtrisées.':g>=4?'Très bien.':g>=3?'Revoir break/continue et switch vs match.':'Reprendre from scratch les boucles.';
+    box.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+</script>
+</body>
+</html>

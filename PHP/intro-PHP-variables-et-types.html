@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 02 — Variables et types</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#0f766e;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--purple:#7c3aed;--orange:#c2410c;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:'SF Mono','Fira Code','Consolas',monospace;--sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);--shm:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.05);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(15,118,110,.07);color:var(--text);}
+.nav-link.active{background:rgba(15,118,110,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;transition:color .15s;}
+.nav-serie-link:hover{color:var(--accent);}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(15,118,110,.08);border:1px solid rgba(15,118,110,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.o{background:rgba(194,65,12,.07);border-color:rgba(194,65,12,.25);color:var(--orange);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(15,118,110,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(15,118,110,.07);border:1px solid rgba(15,118,110,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;align-items:flex-start;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}
+.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}
+.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}
+.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;}
+.cb-badge.php{background:rgba(15,118,110,.15);border:1px solid rgba(15,118,110,.3);color:#5eead4;}
+.cb-badge.warn{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#f87171;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(15,118,110,.2);border-color:rgba(15,118,110,.4);color:#5eead4;}
+.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.php-tag{color:#f38ba8;font-weight:700;}
+.op{color:#89dceb;}.bool{color:#fab387;font-weight:600;}
+.resultat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:14px;box-shadow:var(--sh);}
+.resultat-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.resultat-body{font-size:.88rem;color:var(--muted);line-height:1.8;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}
+.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}tr:hover td{background:rgba(15,118,110,.02);}
+/* TYPE INSPECTOR */
+.type-inspector{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.ti-head{background:var(--title);padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.ti-label{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--muted);}
+.ti-badge{font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:3px;background:rgba(15,118,110,.1);border:1px solid rgba(15,118,110,.2);color:var(--accent);}
+.ti-body{padding:20px;}
+.ti-input-row{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+.ti-input{padding:8px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.85rem;flex:1;min-width:200px;outline:none;transition:border-color .15s;}
+.ti-input:focus{border-color:rgba(15,118,110,.4);}
+.ti-btn{padding:8px 18px;border-radius:7px;cursor:pointer;font-family:var(--mono);font-size:.78rem;font-weight:700;transition:all .15s;border:1px solid rgba(15,118,110,.3);background:rgba(15,118,110,.08);color:var(--accent);}
+.ti-btn:hover{background:rgba(15,118,110,.16);}
+.ti-result{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
+.ti-card{background:#1e1e2e;border-radius:8px;padding:12px 14px;}
+.ti-card-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:#6c7086;margin-bottom:6px;}
+.ti-card-val{font-family:var(--mono);font-size:.9rem;font-weight:700;}
+/* OP TABLE */
+.op-group{margin-bottom:20px;}
+.op-group-title{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(15,118,110,.3);color:var(--text);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}.ti-result{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span>[ ] PHP — Bloc 1</span>
+    <p>Les bases du langage</p>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>Variables en PHP</a>
+    <a href="#etape1" class="nav-link"><span class="nav-num">01</span>Déclarer une variable</a>
+    <a href="#etape2" class="nav-link"><span class="nav-num">02</span>Les 8 types PHP</a>
+    <a href="#etape3" class="nav-link"><span class="nav-num">03</span>Opérateurs</a>
+    <a href="#etape4" class="nav-link"><span class="nav-num">04</span>Conversions de types</a>
+    <a href="#etape5" class="nav-link"><span class="nav-num">05</span>Constantes</a>
+    <a href="#etape6" class="nav-link"><span class="nav-num">06</span>Inspecteur interactif</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">07</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 1 — Bases</div>
+    <a href="php-01-intro.html" class="nav-serie-link">01 — Introduction PHP</a>
+    <a href="php-02-variables.html" class="nav-serie-link current">02 — Variables et types</a>
+    <a href="php-03-structures.html" class="nav-serie-link">03 — Structures de contrôle</a>
+    <a href="php-04-fonctions.html" class="nav-serie-link">04 — Fonctions</a>
+    <a href="php-05-tableaux.html" class="nav-serie-link">05 — Tableaux</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 1 · Support 2/5</div>
+  <h1>Variables et<br><span class="hl">types en PHP</span></h1>
+  <p>Une variable est une boîte nommée qui stocke une valeur. PHP est un langage à typage dynamique : le type d'une variable est déterminé automatiquement selon la valeur qu'on lui assigne. Ce support couvre les 8 types fondamentaux et tous les opérateurs.</p>
+  <div class="objectifs">
+    <span class="obj t">Variables</span>
+    <span class="obj g">8 types</span>
+    <span class="obj b">Opérateurs</span>
+    <span class="obj o">Conversions</span>
+    <span class="obj p">Constantes</span>
+  </div>
+</div>
+
+<!-- 00 -->
+<section class="etape" id="plan">
+  <div class="etape-header">
+    <div class="etape-num">00</div>
+    <div class="etape-info">
+      <div class="etape-tag">Concept fondamental</div>
+      <h2>Les variables en PHP — stockage en mémoire</h2>
+    </div>
+  </div>
+  <p class="prose">Une variable est un espace en mémoire avec un nom. En PHP, toutes les variables commencent par <code>$</code>. PHP est un langage à <strong>typage dynamique faible</strong> : pas besoin de déclarer le type, PHP le détermine tout seul selon la valeur assignée — et peut le changer automatiquement si nécessaire.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Les règles de nommage des variables</span><span class="cb-badge php">PHP</span></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// Noms VALIDES</span>
+<span class="vr">$prenom</span>      = <span class="str">"Alice"</span>;   <span class="cmt">// lettres minuscules</span>
+<span class="vr">$nom_complet</span> = <span class="str">"Dupont"</span>;  <span class="cmt">// underscore autorisé</span>
+<span class="vr">$age</span>         = <span class="num">25</span>;
+<span class="vr">$_privee</span>     = <span class="str">"ok"</span>;      <span class="cmt">// peut commencer par _</span>
+<span class="vr">$var2</span>        = <span class="str">"ok"</span>;      <span class="cmt">// chiffre (pas en premier)</span>
+<span class="vr">$PrenomNom</span>   = <span class="str">"ok"</span>;      <span class="cmt">// camelCase / PascalCase</span>
+
+<span class="cmt">// Noms INVALIDES</span>
+<span class="cmt">// $2var    → commence par un chiffre</span>
+<span class="cmt">// $mon-nom → tiret interdit (opérateur moins)</span>
+<span class="cmt">// $class   → mot réservé PHP</span>
+
+<span class="cmt">// PHP est sensible à la casse</span>
+<span class="vr">$age</span>  = <span class="num">25</span>;
+<span class="vr">$Age</span>  = <span class="num">30</span>;   <span class="cmt">// variable DIFFÉRENTE de $age</span>
+<span class="vr">$AGE</span>  = <span class="num">35</span>;   <span class="cmt">// encore une autre variable</span></code></pre>
+  </div>
+
+  <div class="callout info">
+    <span class="ci">i</span>
+    <div><strong>Convention de nommage PHP.</strong> Le standard PSR recommande le <code>camelCase</code> pour les variables (<code>$nomComplet</code>) et le <code>snake_case</code> pour les variables de configuration (<code>$base_de_donnees</code>). L'important est d'être cohérent dans tout le projet.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 01 -->
+<section class="etape" id="etape1">
+  <div class="etape-header">
+    <div class="etape-num">01</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 1 — Déclaration</div>
+      <h2>Déclarer et assigner une variable</h2>
+    </div>
+  </div>
+  <p class="prose">En PHP, il n'y a pas de mot-clé de déclaration comme <code>var</code> ou <code>let</code> en JavaScript. On crée directement la variable en lui assignant une valeur avec <code>=</code>.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Déclaration et manipulation de variables</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// Assignation simple</span>
+<span class="vr">$message</span> = <span class="str">"Bonjour"</span>;
+
+<span class="cmt">// Réassignation — la variable change de valeur</span>
+<span class="vr">$message</span> = <span class="str">"Au revoir"</span>;    <span class="cmt">// la valeur précédente est perdue</span>
+
+<span class="cmt">// Assignation multiple</span>
+<span class="vr">$a</span> = <span class="vr">$b</span> = <span class="vr">$c</span> = <span class="num">0</span>;           <span class="cmt">// les trois valent 0</span>
+
+<span class="cmt">// Assignation par valeur vs par référence</span>
+<span class="vr">$x</span> = <span class="num">10</span>;
+<span class="vr">$y</span> = <span class="vr">$x</span>;      <span class="cmt">// copie de valeur — y est indépendant</span>
+<span class="vr">$x</span> = <span class="num">20</span>;
+<span class="kw">echo</span> <span class="vr">$y</span>;     <span class="cmt">// affiche 10 — y n'a pas changé</span>
+
+<span class="vr">$a</span> = <span class="num">10</span>;
+<span class="vr">$b</span> = &amp;<span class="vr">$a</span>;    <span class="cmt">// référence — b pointe vers a</span>
+<span class="vr">$a</span> = <span class="num">20</span>;
+<span class="kw">echo</span> <span class="vr">$b</span>;     <span class="cmt">// affiche 20 — b suit a</span>
+
+<span class="cmt">// Vérifier si une variable existe</span>
+<span class="kw">if</span> (<span class="fn">isset</span>(<span class="vr">$message</span>)) {
+    <span class="kw">echo</span> <span class="vr">$message</span>;
+}
+
+<span class="cmt">// Supprimer une variable</span>
+<span class="fn">unset</span>(<span class="vr">$message</span>);
+<span class="cmt">// isset($message) retourne maintenant false</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 02 -->
+<section class="etape" id="etape2">
+  <div class="etape-header">
+    <div class="etape-num">02</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 2 — Les types de données</div>
+      <h2>Les 8 types PHP</h2>
+    </div>
+  </div>
+  <p class="prose">PHP possède <strong>8 types de données</strong>, répartis en 3 catégories : scalaires (une seule valeur), composés (plusieurs valeurs) et spéciaux.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Les 8 types PHP avec exemples</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// ── Types scalaires (une seule valeur) ──────────────────────────</span>
+
+<span class="cmt">// 1. int — entier</span>
+<span class="vr">$age</span>         = <span class="num">25</span>;
+<span class="vr">$negatif</span>     = <span class="op">-</span><span class="num">10</span>;
+<span class="vr">$hexadecimal</span> = <span class="num">0xFF</span>;     <span class="cmt">// 255</span>
+<span class="vr">$binaire</span>     = <span class="num">0b1010</span>;   <span class="cmt">// 10</span>
+
+<span class="cmt">// 2. float — nombre à virgule flottante</span>
+<span class="vr">$prix</span>        = <span class="num">19.99</span>;
+<span class="vr">$pi</span>          = <span class="num">3.14159</span>;
+<span class="vr">$scientifique</span>= <span class="num">1.5e3</span>;    <span class="cmt">// 1500.0</span>
+
+<span class="cmt">// 3. string — chaîne de caractères</span>
+<span class="vr">$prenom</span>      = <span class="str">"Alice"</span>;
+<span class="vr">$vide</span>        = <span class="str">""</span>;
+<span class="vr">$multiline</span>   = <span class="str">"ligne 1\nligne 2"</span>;  <span class="cmt">// \n = saut de ligne</span>
+
+<span class="cmt">// 4. bool — booléen</span>
+<span class="vr">$actif</span>       = <span class="bool">true</span>;
+<span class="vr">$desactive</span>   = <span class="bool">false</span>;
+
+<span class="cmt">// ── Types composés (plusieurs valeurs) ──────────────────────────</span>
+
+<span class="cmt">// 5. array — tableau (voir support 05)</span>
+<span class="vr">$couleurs</span>    = [<span class="str">"rouge"</span>, <span class="str">"vert"</span>, <span class="str">"bleu"</span>];
+
+<span class="cmt">// 6. object — objet (voir POO)</span>
+<span class="cmt">// $user = new User();</span>
+
+<span class="cmt">// ── Types spéciaux ───────────────────────────────────────────────</span>
+
+<span class="cmt">// 7. null — absence de valeur</span>
+<span class="vr">$inconnu</span>     = <span class="bool">null</span>;
+<span class="vr">$nonDefinie</span>;                     <span class="cmt">// variable non initialisée = null</span>
+
+<span class="cmt">// 8. resource — référence vers une ressource externe</span>
+<span class="cmt">// $fichier = fopen("data.txt", "r");  ← type resource</span>
+
+<span class="cmt">// Vérifier le type d'une variable</span>
+<span class="kw">echo</span> <span class="fn">gettype</span>(<span class="vr">$age</span>);      <span class="cmt">// integer</span>
+<span class="kw">echo</span> <span class="fn">gettype</span>(<span class="vr">$prix</span>);     <span class="cmt">// double (float)</span>
+<span class="kw">echo</span> <span class="fn">gettype</span>(<span class="vr">$prenom</span>);   <span class="cmt">// string</span>
+<span class="kw">echo</span> <span class="fn">gettype</span>(<span class="vr">$actif</span>);    <span class="cmt">// boolean</span>
+
+<span class="cmt">// Fonctions de vérification de type (retournent bool)</span>
+<span class="fn">is_int</span>(<span class="vr">$age</span>)       <span class="cmt">// true</span>
+<span class="fn">is_float</span>(<span class="vr">$prix</span>)    <span class="cmt">// true</span>
+<span class="fn">is_string</span>(<span class="vr">$prenom</span>) <span class="cmt">// true</span>
+<span class="fn">is_bool</span>(<span class="vr">$actif</span>)    <span class="cmt">// true</span>
+<span class="fn">is_null</span>(<span class="vr">$inconnu</span>)  <span class="cmt">// true</span>
+<span class="fn">is_array</span>(<span class="vr">$couleurs</span>)<span class="cmt">// true</span>
+
+<span class="cmt">// var_dump() — type + valeur (idéal pour déboguer)</span>
+<span class="fn">var_dump</span>(<span class="vr">$age</span>);    <span class="cmt">// int(25)</span>
+<span class="fn">var_dump</span>(<span class="vr">$prix</span>);   <span class="cmt">// float(19.99)</span>
+<span class="fn">var_dump</span>(<span class="vr">$actif</span>);  <span class="cmt">// bool(true)</span></code></pre>
+  </div>
+
+  <div class="callout tip">
+    <span class="ci">!</span>
+    <div><strong>var_dump() est votre meilleur outil de débogage.</strong> Contrairement à <code>echo</code> qui affiche juste la valeur, <code>var_dump()</code> affiche le type et la valeur. Sur un tableau, il montre toute la structure. Indispensable pour comprendre ce que contient une variable.</div>
+  </div>
+
+  <div class="callout warn">
+    <span class="ci">!</span>
+    <div><strong>Les valeurs "falsy" en PHP.</strong> En PHP, ces valeurs sont considérées comme <code>false</code> dans un test booléen : <code>false</code>, <code>0</code>, <code>0.0</code>, <code>""</code> (chaîne vide), <code>"0"</code>, <code>[]</code> (tableau vide), <code>null</code>. Toute autre valeur est <code>true</code>.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 03 -->
+<section class="etape" id="etape3">
+  <div class="etape-header">
+    <div class="etape-num">03</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 3 — Les opérateurs</div>
+      <h2>Opérateurs — arithmétiques, comparaison, logiques</h2>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Opérateurs arithmétiques</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$a</span> = <span class="num">10</span>;  <span class="vr">$b</span> = <span class="num">3</span>;
+
+<span class="kw">echo</span> <span class="vr">$a</span> <span class="op">+</span>  <span class="vr">$b</span>;   <span class="cmt">// 13   — addition</span>
+<span class="kw">echo</span> <span class="vr">$a</span> <span class="op">-</span>  <span class="vr">$b</span>;   <span class="cmt">// 7    — soustraction</span>
+<span class="kw">echo</span> <span class="vr">$a</span> <span class="op">*</span>  <span class="vr">$b</span>;   <span class="cmt">// 30   — multiplication</span>
+<span class="kw">echo</span> <span class="vr">$a</span> <span class="op">/</span>  <span class="vr">$b</span>;   <span class="cmt">// 3.33 — division (retourne float si non entier)</span>
+<span class="kw">echo</span> <span class="vr">$a</span> <span class="op">%</span>  <span class="vr">$b</span>;   <span class="cmt">// 1    — modulo (reste de la division entière)</span>
+<span class="kw">echo</span> <span class="vr">$a</span> <span class="op">**</span> <span class="vr">$b</span>;   <span class="cmt">// 1000 — puissance (10³)</span>
+
+<span class="cmt">// Opérateurs d'incrémentation/décrémentation</span>
+<span class="vr">$i</span> = <span class="num">5</span>;
+<span class="vr">$i</span><span class="op">++</span>;          <span class="cmt">// $i vaut maintenant 6 (post-incrémentation)</span>
+<span class="vr">$i</span><span class="op">--</span>;          <span class="cmt">// $i vaut maintenant 5</span>
+<span class="op">++</span><span class="vr">$i</span>;          <span class="cmt">// pré-incrémentation (incrémente AVANT d'utiliser)</span>
+
+<span class="cmt">// Opérateurs d'assignation combinés</span>
+<span class="vr">$total</span>  = <span class="num">100</span>;
+<span class="vr">$total</span> <span class="op">+=</span> <span class="num">20</span>;   <span class="cmt">// $total = $total + 20  → 120</span>
+<span class="vr">$total</span> <span class="op">-=</span> <span class="num">10</span>;   <span class="cmt">// $total = $total - 10  → 110</span>
+<span class="vr">$total</span> <span class="op">*=</span> <span class="num">2</span>;    <span class="cmt">// $total = $total * 2   → 220</span>
+<span class="vr">$total</span> <span class="op">/=</span> <span class="num">4</span>;    <span class="cmt">// $total = $total / 4   → 55</span>
+<span class="vr">$total</span> <span class="op">%=</span> <span class="num">10</span>;   <span class="cmt">// $total = $total % 10  → 5</span>
+
+<span class="cmt">// Concaténation de chaînes avec .</span>
+<span class="vr">$texte</span>  = <span class="str">"Bonjour"</span>;
+<span class="vr">$texte</span> <span class="op">.=</span> <span class="str">" monde"</span>;   <span class="cmt">// "Bonjour monde"</span></code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Opérateurs de comparaison — == vs ===</span><span class="cb-badge warn">Piège classique</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">// == égalité AVEC conversion de type (loose comparison)</span>
+<span class="kw">var_dump</span>(<span class="num">0</span>   <span class="op">==</span>  <span class="str">"0"</span>);    <span class="cmt">// bool(true)  — PHP convertit "0" en 0</span>
+<span class="kw">var_dump</span>(<span class="num">1</span>   <span class="op">==</span>  <span class="str">"1"</span>);    <span class="cmt">// bool(true)</span>
+<span class="kw">var_dump</span>(<span class="bool">true</span> <span class="op">==</span> <span class="num">1</span>);     <span class="cmt">// bool(true)  — true converti en 1</span>
+<span class="kw">var_dump</span>(<span class="bool">false</span> <span class="op">==</span> <span class="num">0</span>);    <span class="cmt">// bool(true)</span>
+<span class="kw">var_dump</span>(<span class="bool">null</span>  <span class="op">==</span> <span class="bool">false</span>); <span class="cmt">// bool(true)  — DANGER !</span>
+
+<span class="cmt">// === égalité STRICTE (valeur ET type — recommandé)</span>
+<span class="kw">var_dump</span>(<span class="num">0</span>   <span class="op">===</span> <span class="str">"0"</span>);   <span class="cmt">// bool(false) — int ≠ string</span>
+<span class="kw">var_dump</span>(<span class="num">1</span>   <span class="op">===</span> <span class="str">"1"</span>);   <span class="cmt">// bool(false)</span>
+<span class="kw">var_dump</span>(<span class="bool">true</span> <span class="op">===</span> <span class="num">1</span>);    <span class="cmt">// bool(false) — bool ≠ int</span>
+
+<span class="cmt">// Autres opérateurs de comparaison</span>
+<span class="vr">$a</span> = <span class="num">5</span>;  <span class="vr">$b</span> = <span class="num">10</span>;
+<span class="vr">$a</span> <span class="op">!=</span>  <span class="vr">$b</span>    <span class="cmt">// inégalité (avec conversion)</span>
+<span class="vr">$a</span> <span class="op">!==</span> <span class="vr">$b</span>    <span class="cmt">// inégalité stricte</span>
+<span class="vr">$a</span> <span class="op">&lt;</span>   <span class="vr">$b</span>    <span class="cmt">// strictement inférieur → true</span>
+<span class="vr">$a</span> <span class="op">&gt;</span>   <span class="vr">$b</span>    <span class="cmt">// strictement supérieur → false</span>
+<span class="vr">$a</span> <span class="op">&lt;=</span>  <span class="vr">$b</span>    <span class="cmt">// inférieur ou égal     → true</span>
+<span class="vr">$a</span> <span class="op">&gt;=</span>  <span class="vr">$b</span>    <span class="cmt">// supérieur ou égal     → false</span>
+<span class="vr">$a</span> <span class="op">&lt;=&gt;</span> <span class="vr">$b</span>   <span class="cmt">// spaceship : -1 si a<b, 0 si égal, 1 si a>b</span></code></pre>
+  </div>
+
+  <div class="callout warn">
+    <span class="ci">!</span>
+    <div><strong>Toujours préférer <code>===</code> à <code>==</code>.</strong> L'opérateur <code>==</code> fait des conversions implicites qui créent des comportements inattendus. <code>0 == "bonjour"</code> retourne <code>true</code> en PHP (PHP convertit "bonjour" en 0). L'opérateur <code>===</code> compare la valeur ET le type sans conversion — résultat toujours prévisible.</div>
+  </div>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Opérateurs logiques</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$connecte</span> = <span class="bool">true</span>;
+<span class="vr">$admin</span>    = <span class="bool">false</span>;
+
+<span class="cmt">// && (et)  — les DEUX doivent être true</span>
+<span class="kw">if</span> (<span class="vr">$connecte</span> <span class="op">&amp;&amp;</span> <span class="vr">$admin</span>) {  <span class="cmt">// false</span>
+    <span class="kw">echo</span> <span class="str">"Accès admin"</span>;
+}
+
+<span class="cmt">// || (ou)  — AU MOINS UN doit être true</span>
+<span class="kw">if</span> (<span class="vr">$connecte</span> <span class="op">||</span> <span class="vr">$admin</span>) {  <span class="cmt">// true</span>
+    <span class="kw">echo</span> <span class="str">"Accès utilisateur"</span>;
+}
+
+<span class="cmt">// ! (non)  — inverse la valeur</span>
+<span class="kw">if</span> (!<span class="vr">$admin</span>) {              <span class="cmt">// !false = true</span>
+    <span class="kw">echo</span> <span class="str">"Pas admin"</span>;
+}
+
+<span class="cmt">// Opérateur ternaire : condition ? valeur_si_vrai : valeur_si_faux</span>
+<span class="vr">$role</span> = <span class="vr">$admin</span> ? <span class="str">"admin"</span> : <span class="str">"utilisateur"</span>;
+
+<span class="cmt">// Opérateur null coalescing ?? (PHP 7+)</span>
+<span class="vr">$nom</span> = <span class="vr">$_GET</span>[<span class="str">'nom'</span>] ?? <span class="str">"inconnu"</span>;
+<span class="cmt">// Si $_GET['nom'] n'existe pas ou est null → "inconnu"</span>
+
+<span class="cmt">// Opérateur d'assignation null coalescing ??= (PHP 7.4+)</span>
+<span class="vr">$compteur</span> ??= <span class="num">0</span>;   <span class="cmt">// si $compteur est null, l'assigner à 0</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 04 -->
+<section class="etape" id="etape4">
+  <div class="etape-header">
+    <div class="etape-num">04</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 4 — Conversions</div>
+      <h2>Conversions de types — casting et juggling</h2>
+    </div>
+  </div>
+  <p class="prose">PHP fait des conversions automatiques (<strong>type juggling</strong>) dans certaines situations. On peut aussi forcer une conversion (<strong>type casting</strong>) explicitement.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Conversions explicites (casting)</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// Cast vers int</span>
+<span class="kw">$a</span> = (<span class="kw">int</span>) <span class="str">"42px"</span>;     <span class="cmt">// 42   — s'arrête au premier non-chiffre</span>
+<span class="kw">$b</span> = (<span class="kw">int</span>) <span class="str">"bonjour"</span>; <span class="cmt">// 0    — pas de chiffre en début</span>
+<span class="kw">$c</span> = (<span class="kw">int</span>) <span class="num">19.9</span>;       <span class="cmt">// 19   — troncature (pas d'arrondi)</span>
+<span class="kw">$d</span> = (<span class="kw">int</span>) <span class="bool">true</span>;       <span class="cmt">// 1</span>
+<span class="kw">$e</span> = (<span class="kw">int</span>) <span class="bool">false</span>;      <span class="cmt">// 0</span>
+<span class="kw">$f</span> = (<span class="kw">int</span>) <span class="bool">null</span>;       <span class="cmt">// 0</span>
+
+<span class="cmt">// Cast vers float</span>
+<span class="kw">$g</span> = (<span class="kw">float</span>) <span class="str">"3.14px"</span>; <span class="cmt">// 3.14</span>
+
+<span class="cmt">// Cast vers string</span>
+<span class="kw">$h</span> = (<span class="kw">string</span>) <span class="num">42</span>;      <span class="cmt">// "42"</span>
+<span class="kw">$i</span> = (<span class="kw">string</span>) <span class="bool">true</span>;    <span class="cmt">// "1"</span>
+<span class="kw">$j</span> = (<span class="kw">string</span>) <span class="bool">false</span>;   <span class="cmt">// ""   (chaîne vide !)</span>
+<span class="kw">$k</span> = (<span class="kw">string</span>) <span class="bool">null</span>;    <span class="cmt">// ""</span>
+
+<span class="cmt">// Cast vers bool</span>
+<span class="kw">$l</span> = (<span class="kw">bool</span>) <span class="num">0</span>;          <span class="cmt">// false</span>
+<span class="kw">$m</span> = (<span class="kw">bool</span>) <span class="num">1</span>;          <span class="cmt">// true</span>
+<span class="kw">$n</span> = (<span class="kw">bool</span>) <span class="str">""</span>;         <span class="cmt">// false</span>
+<span class="kw">$o</span> = (<span class="kw">bool</span>) <span class="str">"bonjour"</span>; <span class="cmt">// true</span>
+
+<span class="cmt">// Fonctions de conversion (plus explicites)</span>
+<span class="fn">intval</span>(<span class="str">"42px"</span>)          <span class="cmt">// 42</span>
+<span class="fn">floatval</span>(<span class="str">"3.14px"</span>)     <span class="cmt">// 3.14</span>
+<span class="fn">strval</span>(<span class="num">42</span>)             <span class="cmt">// "42"</span>
+<span class="fn">settype</span>(<span class="vr">$var</span>, <span class="str">"int"</span>)   <span class="cmt">// modifie $var en place</span></code></pre>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Valeur source</th><th>→ int</th><th>→ float</th><th>→ string</th><th>→ bool</th></tr></thead>
+      <tbody>
+        <tr><td>true</td><td>1</td><td>1.0</td><td>"1"</td><td>true</td></tr>
+        <tr><td>false</td><td>0</td><td>0.0</td><td>""</td><td>false</td></tr>
+        <tr><td>null</td><td>0</td><td>0.0</td><td>""</td><td>false</td></tr>
+        <tr><td>0</td><td>0</td><td>0.0</td><td>"0"</td><td style="color:var(--red);font-weight:600">false</td></tr>
+        <tr><td>"0"</td><td>0</td><td>0.0</td><td>"0"</td><td style="color:var(--red);font-weight:600">false</td></tr>
+        <tr><td>""</td><td>0</td><td>0.0</td><td>""</td><td style="color:var(--red);font-weight:600">false</td></tr>
+        <tr><td>"42px"</td><td>42</td><td>42.0</td><td>"42px"</td><td style="color:var(--green);font-weight:600">true</td></tr>
+        <tr><td>[]</td><td>0</td><td>0.0</td><td>Erreur</td><td style="color:var(--red);font-weight:600">false</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 05 -->
+<section class="etape" id="etape5">
+  <div class="etape-header">
+    <div class="etape-num">05</div>
+    <div class="etape-info">
+      <div class="etape-tag">Étape 5 — Valeurs immuables</div>
+      <h2>Constantes — define() et const</h2>
+    </div>
+  </div>
+  <p class="prose">Une constante est une valeur nommée qui ne peut pas être modifiée après sa définition. Contrairement aux variables, pas de <code>$</code> devant son nom. Par convention, les constantes s'écrivent en MAJUSCULES.</p>
+
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">define() vs const</span><span class="cb-badge php">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// define() — peut être appelé n'importe où dans le code</span>
+<span class="kw">define</span>(<span class="str">'TVA'</span>, <span class="num">0.20</span>);
+<span class="kw">define</span>(<span class="str">'NOM_SITE'</span>, <span class="str">'Ma boutique'</span>);
+<span class="kw">define</span>(<span class="str">'MAX_CONNEXIONS'</span>, <span class="num">100</span>);
+
+<span class="cmt">// const — doit être au niveau supérieur (hors fonction)</span>
+<span class="kw">const</span> <span class="fn">VERSION</span> = <span class="str">'2.1.0'</span>;
+<span class="kw">const</span> <span class="fn">DEBUG</span>   = <span class="bool">false</span>;
+
+<span class="cmt">// Utilisation — pas de $ !</span>
+<span class="vr">$prix_ht</span> = <span class="num">100</span>;
+<span class="vr">$prix_ttc</span> = <span class="vr">$prix_ht</span> <span class="op">*</span> (<span class="num">1</span> <span class="op">+</span> <span class="fn">TVA</span>);
+<span class="kw">echo</span> <span class="str">"Prix TTC : "</span> . <span class="vr">$prix_ttc</span>;   <span class="cmt">// 120</span>
+
+<span class="cmt">// Vérifier si une constante existe</span>
+<span class="kw">if</span> (<span class="fn">defined</span>(<span class="str">'TVA'</span>)) {
+    <span class="kw">echo</span> <span class="fn">TVA</span>;
+}
+
+<span class="cmt">// Constantes prédéfinies PHP (très utiles)</span>
+<span class="kw">echo</span> <span class="fn">PHP_VERSION</span>;       <span class="cmt">// "8.2.0"</span>
+<span class="kw">echo</span> <span class="fn">PHP_EOL</span>;           <span class="cmt">// fin de ligne (\n sur Linux)</span>
+<span class="kw">echo</span> <span class="fn">PHP_INT_MAX</span>;       <span class="cmt">// entier maximum</span>
+<span class="kw">echo</span> <span class="fn">__FILE__</span>;          <span class="cmt">// chemin absolu du fichier courant</span>
+<span class="kw">echo</span> <span class="fn">__DIR__</span>;           <span class="cmt">// dossier du fichier courant</span>
+<span class="kw">echo</span> <span class="fn">__LINE__</span>;          <span class="cmt">// numéro de ligne courante</span></code></pre>
+  </div>
+
+  <div class="checkpoint">
+    <span class="cp-icon">OK</span>
+    <div class="cp-text"><strong>A retenir :</strong> les constantes n'ont pas de <code>$</code>, s'écrivent en MAJUSCULES, et ne peuvent pas être modifiées. Utilisez-les pour les valeurs de configuration (TVA, URL, limites) partagées dans tout le projet.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 06 INSPECTEUR -->
+<section class="etape" id="etape6">
+  <div class="etape-header">
+    <div class="etape-num">06</div>
+    <div class="etape-info">
+      <div class="etape-tag">Interactif</div>
+      <h2>Inspecteur de types — testez vos valeurs</h2>
+    </div>
+  </div>
+  <p class="prose">Entrez une valeur et observez son type PHP, sa valeur booléenne, et sa conversion dans les autres types.</p>
+  <div class="type-inspector">
+    <div class="ti-head">
+      <div class="ti-label">Inspecteur de types PHP</div>
+      <div class="ti-badge">Simulation gettype() + var_dump()</div>
+    </div>
+    <div class="ti-body">
+      <div class="ti-input-row">
+        <input class="ti-input" id="ti-val" type="text" value="42" placeholder='Entrez une valeur : 42, "bonjour", 3.14, true, null, 0...'>
+        <button class="ti-btn" onclick="inspectType()">Inspecter</button>
+      </div>
+      <div class="ti-result" id="ti-result"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- QUIZ -->
+<section class="etape" id="quiz">
+  <div class="etape-header">
+    <div class="etape-num">07</div>
+    <div class="etape-info">
+      <div class="etape-tag">Évaluation</div>
+      <h2>Quiz — variables et types</h2>
+    </div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Que retourne <code>var_dump(0 == "bonjour")</code> en PHP ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">bool(false) — 0 et "bonjour" sont différents</button>
+      <button class="opt" onclick="ans(this,'q1',true)">bool(true) — PHP convertit "bonjour" en 0 avec l'opérateur ==</button>
+      <button class="opt" onclick="ans(this,'q1',false)">Une erreur de type</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Qu'affiche <code>echo (int) "42px"</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',false)">0 — "42px" n'est pas un entier valide</button>
+      <button class="opt" onclick="ans(this,'q2',true)">42 — PHP extrait les chiffres en début de chaîne</button>
+      <button class="opt" onclick="ans(this,'q2',false)">Une erreur de conversion</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Laquelle de ces valeurs est évaluée à <code>false</code> en PHP ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',false)">"false" (la chaîne)</button>
+      <button class="opt" onclick="ans(this,'q3',false)">-1 (entier négatif)</button>
+      <button class="opt" onclick="ans(this,'q3',true)">"0" (la chaîne contenant zéro)</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Quelle est la différence entre <code>$a = $b</code> et <code>$a = &$b</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',true)">= copie la valeur (indépendant), =& crée une référence (les deux variables pointent vers la même valeur)</button>
+      <button class="opt" onclick="ans(this,'q4',false)">= et =& sont identiques en PHP</button>
+      <button class="opt" onclick="ans(this,'q4',false)">=& est réservé aux tableaux</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> Quel opérateur utiliseriez-vous pour obtenir le reste de la division de 17 par 5 ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q5',false)">17 / 5</button>
+      <button class="opt" onclick="ans(this,'q5',true)">17 % 5  (résultat : 2)</button>
+      <button class="opt" onclick="ans(this,'q5',false)">17 // 5</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;box-shadow:var(--sh);">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector(`.nav-link[href="#${x.target.id}"]`);if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copié';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+
+// Type Inspector
+function inspectType(){
+  const raw=document.getElementById('ti-val').value.trim();
+  const res=document.getElementById('ti-result');
+  let phpType,phpBool,phpInt,phpFloat,phpString;
+  // Détecter le type PHP simulé
+  if(raw===''||raw.toLowerCase()==='null'){phpType='null';phpBool=false;phpInt=0;phpFloat=0.0;phpString='';}
+  else if(raw.toLowerCase()==='true'){phpType='boolean';phpBool=true;phpInt=1;phpFloat=1.0;phpString='1';}
+  else if(raw.toLowerCase()==='false'){phpType='boolean';phpBool=false;phpInt=0;phpFloat=0.0;phpString='';}
+  else if(/^-?\d+$/.test(raw)){const n=parseInt(raw);phpType='integer';phpBool=n!==0;phpInt=n;phpFloat=parseFloat(raw);phpString=raw;}
+  else if(/^-?\d+\.\d+$/.test(raw)||/^-?\d+e\d+$/i.test(raw)){const n=parseFloat(raw);phpType='double';phpBool=n!==0;phpInt=parseInt(n);phpFloat=n;phpString=String(n);}
+  else{phpType='string';phpBool=raw!==''&&raw!=='0';phpInt=parseInt(raw)||0;phpFloat=parseFloat(raw)||0;phpString=raw;}
+
+  const cards=[
+    {label:'gettype()',val:phpType,color:'#89b4fa'},
+    {label:'(bool)',val:phpBool?'true':'false',color:phpBool?'#a6e3a1':'#f38ba8'},
+    {label:'(int)',val:phpInt,color:'#fab387'},
+    {label:'(float)',val:phpFloat,color:'#cba6f7'},
+    {label:'(string)',val:'"'+phpString+'"',color:'#a6e3a1'},
+    {label:'isset()',val:raw.toLowerCase()!=='null'&&raw!==''?'true':'false',color:'#89dceb'},
+  ];
+  res.innerHTML=cards.map(c=>`<div class="ti-card"><div class="ti-card-label">${c.label}</div><div class="ti-card-val" style="color:${c.color}">${c.val}</div></div>`).join('');
+}
+inspectType();
+
+// Quiz
+const fbs={
+  q1:{ok:'Exact. C\'est le piège classique de l\'opérateur ==. PHP essaie de convertir les deux valeurs vers un type commun : "bonjour" converti en int donne 0, et 0 == 0 est true. Solution : toujours utiliser === qui compare valeur ET type sans conversion.',ko:'Non. C\'est le comportement réel de PHP avec ==. PHP convertit "bonjour" en entier (0) puis compare 0 == 0 qui est true. C\'est pourquoi === est recommandé : 0 === "bonjour" retourne false car les types sont différents.'},
+  q2:{ok:'Exact. PHP lit les chiffres en début de chaîne jusqu\'au premier caractère non numérique. "42px" commence par "42" donc (int)"42px" donne 42. "px42" donnerait 0 car il n\'y a pas de chiffre en début.',ko:'Non. PHP extrait les chiffres en tête de chaîne lors du cast en int. "42px" donne 42. Si la chaîne commençait par des lettres ("px42"), le résultat serait 0.'},
+  q3:{ok:'Exact. La chaîne "0" (contenant le caractère zéro) est évaluée à false en PHP. C\'est l\'une des valeurs falsy. En revanche, la chaîne "false" est évaluée à true car elle est non-vide et différente de "0". Et -1 est true car tout entier non nul est true.',ko:'Non. La réponse est "0" (la chaîne). En PHP, les valeurs falsy sont : false, 0, 0.0, "", "0", [], null. La chaîne "false" est true (non-vide, différente de "0"). L\'entier -1 est true (entier non nul).'},
+  q4:{ok:'Exact. L\'assignation = copie la valeur : les deux variables sont indépendantes, modifier l\'une ne change pas l\'autre. L\'assignation par référence =& crée un alias : les deux variables pointent vers le même espace mémoire, modifier l\'une modifie l\'autre.',ko:'Non. Il y a une différence fondamentale : $a = $b copie la valeur (chacun a sa propre copie, indépendant). $a = &$b crée une référence : $a et $b pointent vers le même espace mémoire. Modifier $b modifie aussi $a.'},
+  q5:{ok:'Exact. % est l\'opérateur modulo — il retourne le reste de la division entière. 17 / 5 = 3 reste 2, donc 17 % 5 = 2. Utile pour tester si un nombre est pair (n % 2 === 0), pour des rotations cycliques, ou pour regrouper par lots.',ko:'Non. / effectue la division (3.4). // n\'existe pas en PHP. L\'opérateur modulo est %. Il retourne le reste de la division entière : 17 % 5 = 2 (car 5 × 3 = 15, reste 2). Très utile pour tester la parité ou créer des cycles.'},
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick?.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);
+  fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){
+    const g=Object.values(rep).filter(Boolean).length;
+    const box=document.getElementById('score-box');box.style.display='block';
+    document.getElementById('s-score').textContent=g+'/5';
+    document.getElementById('s-text').innerHTML=g===5?'Parfait — types et opérateurs maîtrisés.':g>=4?'Très bien — un point à revoir.':g>=3?'Correct — consolidez les opérateurs de comparaison.':'Reprenez les sections sur les types et ===.';
+    box.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+</script>
+</body>
+</html>

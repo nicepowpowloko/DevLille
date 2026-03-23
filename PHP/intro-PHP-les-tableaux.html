@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 05 — Tableaux</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#166534;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--purple:#7c3aed;--orange:#c2410c;--teal:#0f766e;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:'SF Mono','Fira Code','Consolas',monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(22,101,52,.07);color:var(--text);}
+.nav-link.active{background:rgba(22,101,52,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(22,101,52,.08);border:1px solid rgba(22,101,52,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.g{background:rgba(22,101,52,.07);border-color:rgba(22,101,52,.25);color:var(--accent);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--teal);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(22,101,52,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(22,101,52,.07);border:1px solid rgba(22,101,52,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}
+.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}
+.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}
+.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(22,101,52,.15);border:1px solid rgba(22,101,52,.3);color:#86efac;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(22,101,52,.2);color:#86efac;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.php-tag{color:#f38ba8;font-weight:700;}
+.op{color:#89dceb;}.bool{color:#fab387;font-weight:600;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+/* VISUALIZER */
+.arr-vis{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.av-head{background:var(--title);padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.av-label{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--muted);}
+.av-badge{font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:3px;background:rgba(22,101,52,.1);border:1px solid rgba(22,101,52,.2);color:var(--accent);}
+.av-body{padding:20px;}
+.av-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.av-tab{padding:6px 14px;border-radius:6px;font-family:var(--mono);font-size:.75rem;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;}
+.av-tab.active{border-color:rgba(22,101,52,.4);background:rgba(22,101,52,.08);color:var(--accent);font-weight:700;}
+.av-panel{display:none;}.av-panel.show{display:block;}
+.av-arr{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px;}
+.av-cell{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:6px;padding:8px 12px;text-align:center;font-family:var(--mono);}
+.av-cell-idx{font-size:.6rem;color:#6c7086;margin-bottom:4px;}
+.av-cell-val{font-size:.83rem;color:#a6e3a1;}
+.av-cell.assoc .av-cell-idx{color:#89b4fa;}
+.av-op-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center;}
+.av-input{padding:6px 10px;border-radius:5px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.8rem;width:130px;outline:none;}
+.av-input:focus{border-color:rgba(22,101,52,.4);}
+.av-btn{padding:6px 14px;border-radius:5px;cursor:pointer;font-family:var(--mono);font-size:.75rem;font-weight:700;border:1px solid rgba(22,101,52,.3);background:rgba(22,101,52,.07);color:var(--accent);transition:all .15s;}
+.av-btn:hover{background:rgba(22,101,52,.14);}
+.av-btn.danger{border-color:rgba(220,38,38,.3);background:rgba(220,38,38,.05);color:var(--red);}
+.av-result{font-family:var(--mono);font-size:.8rem;color:var(--muted);padding:8px 12px;background:var(--surface);border-radius:6px;min-height:30px;line-height:1.7;}
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(22,101,52,.3);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>[ ] PHP — Bloc 1</span><p>Les bases du langage</p></div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan"   class="nav-link active"><span class="nav-num">00</span>Les 3 types</a>
+    <a href="#e1"     class="nav-link"><span class="nav-num">01</span>Tableau indexé</a>
+    <a href="#e2"     class="nav-link"><span class="nav-num">02</span>Tableau associatif</a>
+    <a href="#e3"     class="nav-link"><span class="nav-num">03</span>Multidimensionnel</a>
+    <a href="#e4"     class="nav-link"><span class="nav-num">04</span>Ajouter / supprimer</a>
+    <a href="#e5"     class="nav-link"><span class="nav-num">05</span>Trier</a>
+    <a href="#e6"     class="nav-link"><span class="nav-num">06</span>Chercher / filtrer</a>
+    <a href="#e7"     class="nav-link"><span class="nav-num">07</span>map / reduce</a>
+    <a href="#e8"     class="nav-link"><span class="nav-num">08</span>Visualiseur</a>
+    <a href="#quiz"   class="nav-link"><span class="nav-num">09</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 1 — Bases</div>
+    <a href="php-01-intro.html"      class="nav-serie-link">01 — Introduction PHP</a>
+    <a href="php-02-variables.html"  class="nav-serie-link">02 — Variables et types</a>
+    <a href="php-03-structures.html" class="nav-serie-link">03 — Structures de contrôle</a>
+    <a href="php-04-fonctions.html"  class="nav-serie-link">04 — Fonctions</a>
+    <a href="php-05-tableaux.html"   class="nav-serie-link current">05 — Tableaux</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 1 · Support 5/5</div>
+  <h1>Les tableaux<br><span class="hl">PHP</span></h1>
+  <p>Un tableau est une structure de données qui stocke plusieurs valeurs dans une seule variable. PHP les rend extrêmement flexibles : types mixtes, imbrication, et des dizaines de fonctions natives pour les manipuler.</p>
+  <div class="objectifs">
+    <span class="obj g">Indexés</span>
+    <span class="obj b">Associatifs</span>
+    <span class="obj y">Multidimensionnels</span>
+    <span class="obj p">Tri / recherche</span>
+    <span class="obj t">map / filter / reduce</span>
+  </div>
+</div>
+
+<section class="etape" id="plan">
+  <div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Vue d'ensemble</div><h2>Les 3 types de tableaux PHP</h2></div></div>
+  <p class="prose">PHP ne distingue pas syntaxiquement les trois types — ce sont tous des <code>array</code>. La différence est dans la nature des clés utilisées.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Type</th><th>Clés</th><th>Usage typique</th></tr></thead>
+    <tbody>
+      <tr><td>Indexé</td><td>Entiers auto (0, 1, 2…)</td><td>Liste de produits, de noms, résultats</td></tr>
+      <tr><td>Associatif</td><td>Chaînes nommées</td><td>Un utilisateur (nom, email, age), une ligne BDD</td></tr>
+      <tr><td>Multidimensionnel</td><td>Tableaux imbriqués</td><td>Plusieurs lignes SQL, catalogue de produits</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e1">
+  <div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Étape 1</div><h2>Tableau indexé — accès par position</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Tableau indexé</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">// Création — syntaxe courte (recommandée)</span>
+<span class="vr">$fruits</span> = [<span class="str">"pomme"</span>, <span class="str">"banane"</span>, <span class="str">"cerise"</span>];
+<span class="cmt">//          index 0   index 1    index 2</span>
+
+<span class="cmt">// Accès par index</span>
+<span class="kw">echo</span> <span class="vr">$fruits</span>[<span class="num">0</span>];   <span class="cmt">// pomme</span>
+<span class="kw">echo</span> <span class="vr">$fruits</span>[<span class="num">2</span>];   <span class="cmt">// cerise</span>
+
+<span class="cmt">// Modifier une valeur</span>
+<span class="vr">$fruits</span>[<span class="num">1</span>] = <span class="str">"mangue"</span>;
+
+<span class="cmt">// Ajouter en fin — [] sans index</span>
+<span class="vr">$fruits</span>[] = <span class="str">"kiwi"</span>;   <span class="cmt">// index 3</span>
+
+<span class="cmt">// Nombre d'éléments</span>
+<span class="kw">echo</span> <span class="fn">count</span>(<span class="vr">$fruits</span>);   <span class="cmt">// 4</span>
+
+<span class="cmt">// Dernier élément (PHP 8+)</span>
+<span class="kw">echo</span> <span class="vr">$fruits</span>[<span class="op">-</span><span class="num">1</span>];   <span class="cmt">// kiwi</span>
+
+<span class="cmt">// Afficher tout (débogage)</span>
+<span class="fn">print_r</span>(<span class="vr">$fruits</span>);
+<span class="fn">var_dump</span>(<span class="vr">$fruits</span>);</code></pre>
+  </div>
+  <div class="callout info"><span class="ci">i</span><div><strong>Les index commencent à 0.</strong> Le premier élément est à l'index 0. L'index du dernier élément est <code>count($tab) - 1</code>. Accéder à un index inexistant génère un Warning.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e2">
+  <div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Étape 2</div><h2>Tableau associatif — accès par clé</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Tableau associatif</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$user</span> = [
+    <span class="str">"nom"</span>    => <span class="str">"Dupont"</span>,
+    <span class="str">"prenom"</span> => <span class="str">"Alice"</span>,
+    <span class="str">"age"</span>    => <span class="num">25</span>,
+    <span class="str">"email"</span>  => <span class="str">"alice@example.com"</span>,
+];
+
+<span class="cmt">// Accès par clé</span>
+<span class="kw">echo</span> <span class="vr">$user</span>[<span class="str">"nom"</span>];    <span class="cmt">// Dupont</span>
+
+<span class="cmt">// Modifier / ajouter</span>
+<span class="vr">$user</span>[<span class="str">"age"</span>]   = <span class="num">26</span>;
+<span class="vr">$user</span>[<span class="str">"ville"</span>] = <span class="str">"Paris"</span>;
+
+<span class="cmt">// Vérifier si une clé existe</span>
+<span class="kw">if</span> (<span class="fn">isset</span>(<span class="vr">$user</span>[<span class="str">"email"</span>])) { <span class="kw">echo</span> <span class="vr">$user</span>[<span class="str">"email"</span>]; }
+
+<span class="cmt">// Supprimer une clé</span>
+<span class="fn">unset</span>(<span class="vr">$user</span>[<span class="str">"email"</span>]);
+
+<span class="cmt">// Toutes les clés / valeurs</span>
+<span class="vr">$cles</span> = <span class="fn">array_keys</span>(<span class="vr">$user</span>);
+<span class="vr">$vals</span> = <span class="fn">array_values</span>(<span class="vr">$user</span>);
+
+<span class="cmt">// Parcourir</span>
+<span class="kw">foreach</span> (<span class="vr">$user</span> <span class="kw">as</span> <span class="vr">$cle</span> => <span class="vr">$valeur</span>) {
+    <span class="kw">echo</span> <span class="str">"&lt;p&gt;&lt;b&gt;"</span> . <span class="vr">$cle</span> . <span class="str">"&lt;/b&gt; : "</span> . <span class="vr">$valeur</span> . <span class="str">"&lt;/p&gt;"</span>;
+}</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e3">
+  <div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Étape 3</div><h2>Tableau multidimensionnel — la structure BDD</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Tableau de tableaux</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">// Comme SELECT * FROM produits</span>
+<span class="vr">$produits</span> = [
+    [<span class="str">"id"</span> => <span class="num">1</span>, <span class="str">"nom"</span> => <span class="str">"T-shirt"</span>, <span class="str">"prix"</span> => <span class="num">19.99</span>, <span class="str">"stock"</span> => <span class="num">50</span>],
+    [<span class="str">"id"</span> => <span class="num">2</span>, <span class="str">"nom"</span> => <span class="str">"Jean"</span>,    <span class="str">"prix"</span> => <span class="num">49.99</span>, <span class="str">"stock"</span> => <span class="num">30</span>],
+    [<span class="str">"id"</span> => <span class="num">3</span>, <span class="str">"nom"</span> => <span class="str">"Veste"</span>,   <span class="str">"prix"</span> => <span class="num">89.99</span>, <span class="str">"stock"</span> => <span class="num">15</span>],
+];
+
+<span class="cmt">// Accès double crochet</span>
+<span class="kw">echo</span> <span class="vr">$produits</span>[<span class="num">0</span>][<span class="str">"nom"</span>];   <span class="cmt">// T-shirt</span>
+<span class="kw">echo</span> <span class="vr">$produits</span>[<span class="num">1</span>][<span class="str">"prix"</span>];  <span class="cmt">// 49.99</span>
+
+<span class="cmt">// Affichage HTML en tableau</span>
+<span class="kw">echo</span> <span class="str">"&lt;table&gt;&lt;tr&gt;&lt;th&gt;Nom&lt;/th&gt;&lt;th&gt;Prix&lt;/th&gt;&lt;/tr&gt;"</span>;
+<span class="kw">foreach</span> (<span class="vr">$produits</span> <span class="kw">as</span> <span class="vr">$p</span>) {
+    <span class="kw">echo</span> <span class="str">"&lt;tr&gt;&lt;td&gt;"</span> . <span class="fn">htmlspecialchars</span>(<span class="vr">$p</span>[<span class="str">"nom"</span>]) . <span class="str">"&lt;/td&gt;"</span>;
+    <span class="kw">echo</span> <span class="str">"&lt;td&gt;"</span> . <span class="vr">$p</span>[<span class="str">"prix"</span>] . <span class="str">" &euro;&lt;/td&gt;&lt;/tr&gt;"</span>;
+}
+<span class="kw">echo</span> <span class="str">"&lt;/table&gt;"</span>;
+
+<span class="cmt">// Modifier un élément imbriqué</span>
+<span class="vr">$produits</span>[<span class="num">0</span>][<span class="str">"prix"</span>] = <span class="num">14.99</span>;
+<span class="vr">$produits</span>[<span class="num">2</span>][<span class="str">"stock"</span>]<span class="op">--</span>;</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e4">
+  <div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Étape 4</div><h2>Ajouter, supprimer, fusionner</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Manipulation de tableaux</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$fruits</span> = [<span class="str">"pomme"</span>, <span class="str">"banane"</span>, <span class="str">"cerise"</span>];
+
+<span class="cmt">// Ajouter en fin / début</span>
+<span class="fn">array_push</span>(<span class="vr">$fruits</span>, <span class="str">"kiwi"</span>);       <span class="cmt">// ou $fruits[] = "kiwi"</span>
+<span class="fn">array_unshift</span>(<span class="vr">$fruits</span>, <span class="str">"abricot"</span>); <span class="cmt">// ajoute en début</span>
+
+<span class="cmt">// Retirer dernier / premier</span>
+<span class="vr">$dernier</span> = <span class="fn">array_pop</span>(<span class="vr">$fruits</span>);    <span class="cmt">// retire et retourne "kiwi"</span>
+<span class="vr">$premier</span> = <span class="fn">array_shift</span>(<span class="vr">$fruits</span>);  <span class="cmt">// retire et retourne "abricot"</span>
+
+<span class="cmt">// Supprimer par index (laisse un trou)</span>
+<span class="fn">unset</span>(<span class="vr">$fruits</span>[<span class="num">1</span>]);
+<span class="vr">$fruits</span> = <span class="fn">array_values</span>(<span class="vr">$fruits</span>);  <span class="cmt">// réindexer</span>
+
+<span class="cmt">// Extraire une portion</span>
+<span class="vr">$portion</span> = <span class="fn">array_slice</span>(<span class="vr">$fruits</span>, <span class="num">1</span>, <span class="num">2</span>);
+
+<span class="cmt">// Fusionner</span>
+<span class="vr">$legumes</span> = [<span class="str">"carotte"</span>, <span class="str">"courgette"</span>];
+<span class="vr">$tout</span> = <span class="fn">array_merge</span>(<span class="vr">$fruits</span>, <span class="vr">$legumes</span>);
+
+<span class="cmt">// Dédupliquer</span>
+<span class="vr">$doublons</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">3</span>];
+<span class="vr">$unique</span> = <span class="fn">array_unique</span>(<span class="vr">$doublons</span>);  <span class="cmt">// [1, 2, 3]</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e5">
+  <div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Étape 5</div><h2>Trier un tableau</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Fonctions de tri</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$notes</span> = [<span class="num">14</span>, <span class="num">8</span>, <span class="num">17</span>, <span class="num">12</span>, <span class="num">5</span>];
+
+<span class="fn">sort</span>(<span class="vr">$notes</span>);   <span class="cmt">// croissant : [5, 8, 12, 14, 17]</span>
+<span class="fn">rsort</span>(<span class="vr">$notes</span>);  <span class="cmt">// décroissant : [17, 14, 12, 8, 5]</span>
+
+<span class="cmt">// Associatif — conserver les clés</span>
+<span class="vr">$ages</span> = [<span class="str">"Alice"</span> => <span class="num">25</span>, <span class="str">"Bob"</span> => <span class="num">32</span>, <span class="str">"Clara"</span> => <span class="num">19</span>];
+<span class="fn">asort</span>(<span class="vr">$ages</span>);  <span class="cmt">// par valeur, clés conservées</span>
+<span class="fn">ksort</span>(<span class="vr">$ages</span>);  <span class="cmt">// par clé alphabétique</span>
+
+<span class="cmt">// usort — tri personnalisé</span>
+<span class="vr">$produits</span> = [
+    [<span class="str">"nom"</span> => <span class="str">"Veste"</span>,   <span class="str">"prix"</span> => <span class="num">89</span>],
+    [<span class="str">"nom"</span> => <span class="str">"T-shirt"</span>, <span class="str">"prix"</span> => <span class="num">19</span>],
+    [<span class="str">"nom"</span> => <span class="str">"Jean"</span>,    <span class="str">"prix"</span> => <span class="num">49</span>],
+];
+<span class="fn">usort</span>(<span class="vr">$produits</span>, <span class="kw">fn</span>(<span class="vr">$a</span>, <span class="vr">$b</span>) => <span class="vr">$a</span>[<span class="str">"prix"</span>] <span class="op">-</span> <span class="vr">$b</span>[<span class="str">"prix"</span>]);
+<span class="cmt">// Résultat trié par prix croissant</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e6">
+  <div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Étape 6</div><h2>Chercher et filtrer</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Recherche et filtre</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$roles</span> = [<span class="str">"admin"</span>, <span class="str">"editor"</span>, <span class="str">"viewer"</span>];
+
+<span class="fn">in_array</span>(<span class="str">"admin"</span>, <span class="vr">$roles</span>)         <span class="cmt">// true</span>
+<span class="fn">in_array</span>(<span class="str">"admin"</span>, <span class="vr">$roles</span>, <span class="bool">true</span>)   <span class="cmt">// strict (===)</span>
+<span class="fn">array_search</span>(<span class="str">"editor"</span>, <span class="vr">$roles</span>)    <span class="cmt">// 1 ou false</span>
+
+<span class="cmt">// array_filter — garder selon condition</span>
+<span class="vr">$notes</span> = [<span class="num">14</span>, <span class="num">8</span>, <span class="num">17</span>, <span class="num">5</span>, <span class="num">12</span>];
+<span class="vr">$admis</span> = <span class="fn">array_filter</span>(<span class="vr">$notes</span>, <span class="kw">fn</span>(<span class="vr">$n</span>) => <span class="vr">$n</span> <span class="op">>=</span> <span class="num">10</span>);
+<span class="cmt">// [14, 17, 12] — clés originales conservées</span>
+<span class="vr">$admis</span> = <span class="fn">array_values</span>(<span class="vr">$admis</span>);   <span class="cmt">// réindexer</span>
+
+<span class="cmt">// Filtrer tableau de tableaux</span>
+<span class="vr">$produits</span> = [
+    [<span class="str">"nom"</span> => <span class="str">"T-shirt"</span>, <span class="str">"stock"</span> => <span class="num">0</span>],
+    [<span class="str">"nom"</span> => <span class="str">"Jean"</span>,    <span class="str">"stock"</span> => <span class="num">30</span>],
+];
+<span class="vr">$dispos</span> = <span class="fn">array_filter</span>(<span class="vr">$produits</span>, <span class="kw">fn</span>(<span class="vr">$p</span>) => <span class="vr">$p</span>[<span class="str">"stock"</span>] <span class="op">></span> <span class="num">0</span>);</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e7">
+  <div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Étape 7</div><h2>array_map et array_reduce — transformer</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">map, reduce, column</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// array_map — transformer chaque élément</span>
+<span class="vr">$prix_ht</span>  = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">50</span>];
+<span class="vr">$prix_ttc</span> = <span class="fn">array_map</span>(<span class="kw">fn</span>(<span class="vr">$p</span>) => <span class="fn">round</span>(<span class="vr">$p</span> * <span class="num">1.20</span>, <span class="num">2</span>), <span class="vr">$prix_ht</span>);
+<span class="cmt">// [12.0, 24.0, 36.0, 60.0]</span>
+
+<span class="cmt">// array_reduce — réduire à une valeur</span>
+<span class="vr">$notes</span>  = [<span class="num">12</span>, <span class="num">15</span>, <span class="num">8</span>, <span class="num">17</span>];
+<span class="vr">$somme</span>  = <span class="fn">array_reduce</span>(<span class="vr">$notes</span>, <span class="kw">fn</span>(<span class="vr">$carry</span>, <span class="vr">$n</span>) => <span class="vr">$carry</span> + <span class="vr">$n</span>, <span class="num">0</span>);
+<span class="vr">$moyenne</span> = <span class="vr">$somme</span> / <span class="fn">count</span>(<span class="vr">$notes</span>);  <span class="cmt">// 13</span>
+
+<span class="cmt">// array_column — extraire une colonne d'un tableau 2D</span>
+<span class="vr">$produits</span> = [
+    [<span class="str">"id"</span> => <span class="num">1</span>, <span class="str">"nom"</span> => <span class="str">"T-shirt"</span>, <span class="str">"prix"</span> => <span class="num">19</span>],
+    [<span class="str">"id"</span> => <span class="num">2</span>, <span class="str">"nom"</span> => <span class="str">"Jean"</span>,    <span class="str">"prix"</span> => <span class="num">49</span>],
+];
+<span class="vr">$noms</span>  = <span class="fn">array_column</span>(<span class="vr">$produits</span>, <span class="str">"nom"</span>);      <span class="cmt">// ["T-shirt", "Jean"]</span>
+<span class="vr">$parId</span> = <span class="fn">array_column</span>(<span class="vr">$produits</span>, <span class="bool">null</span>, <span class="str">"id"</span>); <span class="cmt">// indexé par id</span></code></pre>
+  </div>
+  <div class="checkpoint">
+    <span class="cp-icon">OK</span>
+    <div class="cp-text"><strong>Le trio fondamental :</strong> <code>array_map</code> transforme, <code>array_filter</code> sélectionne, <code>array_reduce</code> agrège. Ces trois fonctions couvrent 90% des opérations sur des données.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e8">
+  <div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Interactif</div><h2>Visualiseur de tableaux</h2></div></div>
+  <div class="arr-vis">
+    <div class="av-head"><div class="av-label">Manipulateur de tableaux PHP</div><div class="av-badge">Simulation</div></div>
+    <div class="av-body">
+      <div class="av-tabs">
+        <button class="av-tab active" onclick="avTab('indexed')">Indexé</button>
+        <button class="av-tab" onclick="avTab('assoc')">Associatif</button>
+        <button class="av-tab" onclick="avTab('transform')">Map / Filter</button>
+      </div>
+      <div class="av-panel show" id="av-indexed">
+        <div id="av-idx-arr" class="av-arr"></div>
+        <div class="av-op-row">
+          <input class="av-input" id="av-push-val" value="kiwi" placeholder="Valeur">
+          <button class="av-btn" onclick="avPush()">array_push()</button>
+          <button class="av-btn danger" onclick="avPop()">array_pop()</button>
+          <button class="av-btn" onclick="avReset()">Reset</button>
+        </div>
+        <div class="av-result" id="av-idx-result">Cliquez un bouton</div>
+      </div>
+      <div class="av-panel" id="av-assoc">
+        <div id="av-asc-arr" class="av-arr"></div>
+        <div class="av-op-row">
+          <input class="av-input" id="av-asc-key" value="ville" placeholder="Clé">
+          <input class="av-input" id="av-asc-val" value="Paris" placeholder="Valeur">
+          <button class="av-btn" onclick="avAssocSet()">Ajouter / modifier</button>
+          <button class="av-btn danger" onclick="avAssocDel()">Supprimer clé</button>
+        </div>
+        <div class="av-result" id="av-asc-result">Cliquez un bouton</div>
+      </div>
+      <div class="av-panel" id="av-transform">
+        <div style="font-size:.83rem;color:var(--muted);margin-bottom:12px;">Tableau : <code>[10, 25, 5, 40, 18, 30]</code></div>
+        <div class="av-op-row" style="flex-direction:column;align-items:flex-start;">
+          <button class="av-btn" style="margin-bottom:6px;" onclick="avMap()">array_map — ×1.20 (TTC)</button>
+          <button class="av-btn" style="margin-bottom:6px;" onclick="avFilter()">array_filter — garder &gt; 20</button>
+          <button class="av-btn" onclick="avReduce()">array_reduce — somme</button>
+        </div>
+        <div class="av-result" id="av-tr-result">Choisissez une opération</div>
+        <div id="av-tr-arr" class="av-arr" style="margin-top:10px;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="quiz">
+  <div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Évaluation</div><h2>Quiz — tableaux PHP</h2></div></div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Que fait <code>$fruits[] = "kiwi"</code> si <code>$fruits</code> est non vide ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">Remplace le premier élément</button>
+      <button class="opt" onclick="ans(this,'q1',true)">Ajoute "kiwi" à la fin avec le prochain index disponible</button>
+      <button class="opt" onclick="ans(this,'q1',false)">Génère une erreur</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Différence entre <code>array_pop()</code> et <code>array_shift()</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',true)">pop retire le dernier élément, shift retire le premier</button>
+      <button class="opt" onclick="ans(this,'q2',false)">Ce sont des synonymes</button>
+      <button class="opt" onclick="ans(this,'q2',false)">pop retire au hasard, shift retire le premier</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Après <code>unset($tab[1])</code>, que se passe-t-il si on fait <code>$tab[] = "nouveau"</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',false)">L'élément est inséré à l'index 1 qui est libre</button>
+      <button class="opt" onclick="ans(this,'q3',true)">L'élément est ajouté à max(index existant) + 1 — le trou n'est pas réutilisé</button>
+      <button class="opt" onclick="ans(this,'q3',false)">array_values() est appelé automatiquement</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Quelle fonction garde uniquement les éléments satisfaisant une condition ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',false)">array_map</button>
+      <button class="opt" onclick="ans(this,'q4',true)">array_filter</button>
+      <button class="opt" onclick="ans(this,'q4',false)">array_search</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> Comment extraire uniquement la colonne "prix" d'un tableau 2D de produits ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q5',false)">array_map(fn($p) => $p, $produits)</button>
+      <button class="opt" onclick="ans(this,'q5',true)">array_column($produits, "prix")</button>
+      <button class="opt" onclick="ans(this,'q5',false)">array_keys($produits, "prix")</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text"  style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copié';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+
+let idxArr=['pomme','banane','cerise'];
+let ascArr={nom:'Dupont',prenom:'Alice',age:25,email:'alice@example.com'};
+const trArr=[10,25,5,40,18,30];
+
+function avTab(t){
+  document.querySelectorAll('.av-tab').forEach((b,i)=>b.classList.toggle('active',['indexed','assoc','transform'][i]===t));
+  document.querySelectorAll('.av-panel').forEach(p=>p.classList.remove('show'));
+  document.getElementById('av-'+t).classList.add('show');
+  if(t==='indexed')renderIdx();if(t==='assoc')renderAsc();
+}
+function renderIdx(){document.getElementById('av-idx-arr').innerHTML=idxArr.map((v,i)=>'<div class="av-cell"><div class="av-cell-idx">'+i+'</div><div class="av-cell-val">"'+v+'"</div></div>').join('');}
+function avPush(){const v=document.getElementById('av-push-val').value||'new';idxArr.push(v);renderIdx();document.getElementById('av-idx-result').textContent='array_push() → "'+v+'" ajouté à l\'index '+(idxArr.length-1)+'. count() = '+idxArr.length;}
+function avPop(){if(!idxArr.length){document.getElementById('av-idx-result').textContent='Tableau vide !';return;}const v=idxArr.pop();renderIdx();document.getElementById('av-idx-result').textContent='array_pop() → retiré "'+v+'". count() = '+idxArr.length;}
+function avReset(){idxArr=['pomme','banane','cerise'];renderIdx();document.getElementById('av-idx-result').textContent='Tableau réinitialisé.';}
+function renderAsc(){document.getElementById('av-asc-arr').innerHTML=Object.entries(ascArr).map(([k,v])=>'<div class="av-cell assoc"><div class="av-cell-idx">"'+k+'"</div><div class="av-cell-val">'+(typeof v==='string'?'"'+v+'"':v)+'</div></div>').join('');}
+function avAssocSet(){const k=document.getElementById('av-asc-key').value||'key',v=document.getElementById('av-asc-val').value||'val';const ex=k in ascArr;ascArr[k]=isNaN(v)?v:Number(v);renderAsc();document.getElementById('av-asc-result').textContent=(ex?'Modifié':'Ajouté')+' "'+k+'" = '+ascArr[k];}
+function avAssocDel(){const k=document.getElementById('av-asc-key').value;if(k in ascArr){delete ascArr[k];renderAsc();document.getElementById('av-asc-result').textContent='Clé "'+k+'" supprimée.';}else document.getElementById('av-asc-result').textContent='Clé "'+k+'" introuvable.';}
+function avMap(){const r=trArr.map(p=>Math.round(p*1.20*100)/100);document.getElementById('av-tr-arr').innerHTML=r.map((v,i)=>'<div class="av-cell"><div class="av-cell-idx">'+i+'</div><div class="av-cell-val" style="color:#cba6f7">'+v+'</div></div>').join('');document.getElementById('av-tr-result').textContent='array_map(fn($p)=>$p*1.20) → ['+r.join(', ')+']';}
+function avFilter(){const r=trArr.filter(p=>p>20);document.getElementById('av-tr-arr').innerHTML=r.map((v,i)=>'<div class="av-cell"><div class="av-cell-idx">'+i+'</div><div class="av-cell-val" style="color:#89dceb">'+v+'</div></div>').join('');document.getElementById('av-tr-result').textContent='array_filter(fn($p)=>$p>20) → ['+r.join(', ')+'] ('+r.length+' éléments)';}
+function avReduce(){const r=trArr.reduce((c,p)=>c+p,0);document.getElementById('av-tr-arr').innerHTML='<div class="av-cell"><div class="av-cell-idx">total</div><div class="av-cell-val" style="color:#fab387;font-size:1.1rem">'+r+'</div></div>';document.getElementById('av-tr-result').textContent='array_reduce(fn($c,$p)=>$c+$p, 0) → '+r;}
+
+renderIdx();renderAsc();
+
+const fbs={
+  q1:{ok:'Exact. $tableau[] = "valeur" ajoute toujours en fin en attribuant le prochain index disponible. Équivalent à array_push().',ko:'Non. $tab[] = "kiwi" ajoute en fin du tableau avec le prochain index disponible. Pas d\'erreur, pas de remplacement.'},
+  q2:{ok:'Exact. array_pop() retire et retourne le DERNIER élément. array_shift() retire et retourne le PREMIER et réindexe les clés numériques.',ko:'Non. array_pop() = dernier élément. array_shift() = premier élément (et réindexe les clés numériques).'},
+  q3:{ok:'Exact. PHP ne réutilise pas les index supprimés. Après unset($tab[1]), si le max index est 2, le prochain [] donnera l\'index 3. Pour forcer la réindexation : array_values().',ko:'Non. PHP ne réutilise pas le trou laissé par unset. Le prochain [] va au max(index existant)+1. Il faut array_values() pour réindexer.'},
+  q4:{ok:'Exact. array_filter($tab, $callback) retourne les éléments pour lesquels le callback retourne true. array_map transforme, array_filter sélectionne.',ko:'Non. array_filter est la fonction pour filtrer selon une condition. array_map transforme mais garde tous les éléments. array_search cherche une valeur précise.'},
+  q5:{ok:'Exact. array_column($tableau2D, "colonne") extrait une colonne de chaque sous-tableau — équivalent d\'un SELECT prix FROM produits.',ko:'Non. array_column($produits, "prix") est fait exactement pour ça. array_map retournerait les lignes entières, array_keys retourne les clés du tableau de premier niveau.'},
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){
+    const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';
+    document.getElementById('s-score').textContent=g+'/5';
+    document.getElementById('s-text').innerHTML=g===5?'Parfait — tableaux PHP maîtrisés !':g>=4?'Très bien.':g>=3?'Revoir array_filter vs array_map.':'Reprendre les fonctions array_*.';
+    box.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+</script>
+</body>
+</html>
