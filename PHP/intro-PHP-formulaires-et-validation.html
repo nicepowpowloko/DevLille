@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 06 — Formulaires et validation</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#be185d;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--purple:#7c3aed;--teal:#0f766e;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:'SF Mono','Fira Code','Consolas',monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(190,24,93,.07);}
+.nav-link.active{background:rgba(190,24,93,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;transition:color .15s;}
+.nav-serie-link:hover,.nav-serie-link.current{color:var(--accent);}
+.nav-serie-link.current{font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(190,24,93,.08);border:1px solid rgba(190,24,93,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.r{background:rgba(190,24,93,.07);border-color:rgba(190,24,93,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(190,24,93,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(190,24,93,.07);border:1px solid rgba(190,24,93,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}
+.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}
+.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}
+.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(190,24,93,.15);border:1px solid rgba(190,24,93,.3);color:#fda4af;}
+.cb-badge.warn{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#f87171;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(190,24,93,.2);color:#fda4af;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.php-tag{color:#f38ba8;font-weight:700;}
+.bool{color:#fab387;font-weight:600;}.op{color:#89dceb;}.ht{color:#89b4fa;}.ha{color:#fab387;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.form-sim{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.fs-head{background:var(--title);padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.fs-label{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--muted);}
+.fs-badge{font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:3px;background:rgba(190,24,93,.1);border:1px solid rgba(190,24,93,.2);color:var(--accent);}
+.fs-body{padding:20px;}
+.fs-row{margin-bottom:14px;}
+.fs-fl{font-family:var(--mono);font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:5px;display:flex;justify-content:space-between;}
+.fs-i,.fs-ta{width:100%;padding:9px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.83rem;outline:none;transition:border-color .15s;}
+.fs-i:focus,.fs-ta:focus{border-color:rgba(190,24,93,.4);}
+.fs-i.err{border-color:rgba(220,38,38,.5);background:rgba(220,38,38,.03);}
+.fs-i.ok{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.03);}
+.fs-e{font-size:.75rem;color:var(--red);margin-top:4px;font-family:var(--mono);min-height:16px;}
+.fs-btn{padding:9px 22px;border-radius:7px;cursor:pointer;font-family:var(--mono);font-size:.8rem;font-weight:700;border:1px solid rgba(190,24,93,.3);background:rgba(190,24,93,.08);color:var(--accent);transition:all .15s;}
+.fs-btn:hover{background:rgba(190,24,93,.16);}
+.fs-res{margin-top:16px;padding:14px 16px;border-radius:8px;font-family:var(--mono);font-size:.82rem;line-height:1.8;display:none;}
+.fs-res.show{display:block;}
+.fs-res.ok{background:rgba(22,163,74,.06);border:1px solid rgba(22,163,74,.2);color:#14532d;}
+.fs-res.ko{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(190,24,93,.3);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>[ ] PHP — Bloc 2</span><p>PHP et le web</p></div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>GET vs POST</a>
+    <a href="#e1" class="nav-link"><span class="nav-num">01</span>Créer un formulaire</a>
+    <a href="#e2" class="nav-link"><span class="nav-num">02</span>Récupérer les données</a>
+    <a href="#e3" class="nav-link"><span class="nav-num">03</span>Valider les données</a>
+    <a href="#e4" class="nav-link"><span class="nav-num">04</span>Assainir — XSS</a>
+    <a href="#e5" class="nav-link"><span class="nav-num">05</span>Formulaire complet</a>
+    <a href="#e6" class="nav-link"><span class="nav-num">06</span>Simulateur</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">07</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 2 — PHP et le web</div>
+    <a href="php-06-formulaires.html" class="nav-serie-link current">06 — Formulaires</a>
+    <a href="php-07-sessions.html" class="nav-serie-link">07 — Sessions</a>
+    <a href="php-08-upload.html" class="nav-serie-link">08 — Upload fichiers</a>
+    <a href="php-09-crud.html" class="nav-serie-link">09 — Mini-CRUD</a>
+  </div>
+</aside>
+<main class="content">
+<div class="page-header">
+  <div class="serie-badge">Bloc 2 · Support 1/4</div>
+  <h1>Formulaires<br><span class="hl">et validation</span></h1>
+  <p>Les formulaires sont le principal point d'entrée des données utilisateur. Ce support couvre la récupération via $_GET et $_POST, la validation, et la protection contre les failles XSS.</p>
+  <div class="objectifs">
+    <span class="obj r">$_GET / $_POST</span>
+    <span class="obj g">Validation</span>
+    <span class="obj b">htmlspecialchars</span>
+    <span class="obj y">filter_input</span>
+    <span class="obj p">Sécurité XSS</span>
+  </div>
+</div>
+
+<section class="etape" id="plan">
+  <div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Fondamentaux</div><h2>GET vs POST — deux façons d'envoyer des données</h2></div></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Critère</th><th>GET</th><th>POST</th></tr></thead>
+    <tbody>
+      <tr><td>Données dans</td><td>L'URL (?nom=Alice)</td><td>Le corps de la requête (invisible)</td></tr>
+      <tr><td>Taille max</td><td>~2000 caractères</td><td>Configurable (post_max_size)</td></tr>
+      <tr><td>Mémorisable</td><td>Oui — URL bookmarkable</td><td>Non</td></tr>
+      <tr><td>Sécurité</td><td>Données visibles dans logs/historique</td><td>Données cachées (mais pas cryptées sans HTTPS)</td></tr>
+      <tr><td>Usage</td><td>Recherche, filtres, pagination</td><td>Connexion, inscription, modification de données</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout warn"><span class="ci">!</span><div><strong>Ne jamais faire confiance aux données reçues.</strong> Toute donnée venant de $_GET, $_POST ou $_REQUEST est potentiellement malveillante. Toujours valider et assainir avant utilisation.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e1">
+  <div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Étape 1</div><h2>Créer un formulaire HTML</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Formulaire HTML — champs courants</span><span class="cb-badge">HTML</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ht">&lt;form</span> <span class="ha">action</span>=<span class="str">"traitement.php"</span> <span class="ha">method</span>=<span class="str">"post"</span><span class="ht">&gt;</span>
+
+  <span class="cmt">&lt;!-- Texte, email, password, number --&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"text"</span>     <span class="ha">name</span>=<span class="str">"nom"</span>     <span class="ha">required</span> <span class="ha">maxlength</span>=<span class="str">"50"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"email"</span>    <span class="ha">name</span>=<span class="str">"email"</span>   <span class="ha">required</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"password"</span> <span class="ha">name</span>=<span class="str">"mdp"</span>     <span class="ha">minlength</span>=<span class="str">"8"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"number"</span>   <span class="ha">name</span>=<span class="str">"age"</span>     <span class="ha">min</span>=<span class="str">"0"</span> <span class="ha">max</span>=<span class="str">"120"</span><span class="ht">&gt;</span>
+
+  <span class="cmt">&lt;!-- Liste deroulante --&gt;</span>
+  <span class="ht">&lt;select</span> <span class="ha">name</span>=<span class="str">"role"</span><span class="ht">&gt;</span>
+    <span class="ht">&lt;option</span> <span class="ha">value</span>=<span class="str">"user"</span><span class="ht">&gt;</span>Utilisateur<span class="ht">&lt;/option&gt;</span>
+    <span class="ht">&lt;option</span> <span class="ha">value</span>=<span class="str">"admin"</span><span class="ht">&gt;</span>Administrateur<span class="ht">&lt;/option&gt;</span>
+  <span class="ht">&lt;/select&gt;</span>
+
+  <span class="cmt">&lt;!-- Checkbox — absent de $_POST si non cochee --&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"checkbox"</span> <span class="ha">name</span>=<span class="str">"cgu"</span> <span class="ha">value</span>=<span class="str">"1"</span><span class="ht">&gt;</span>
+
+  <span class="cmt">&lt;!-- Boutons radio — meme name, values differentes --&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"radio"</span> <span class="ha">name</span>=<span class="str">"genre"</span> <span class="ha">value</span>=<span class="str">"h"</span><span class="ht">&gt;</span> Homme
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"radio"</span> <span class="ha">name</span>=<span class="str">"genre"</span> <span class="ha">value</span>=<span class="str">"f"</span><span class="ht">&gt;</span> Femme
+
+  <span class="cmt">&lt;!-- Zone de texte --&gt;</span>
+  <span class="ht">&lt;textarea</span> <span class="ha">name</span>=<span class="str">"message"</span> <span class="ha">rows</span>=<span class="str">"5"</span><span class="ht">&gt;&lt;/textarea&gt;</span>
+
+  <span class="ht">&lt;button</span> <span class="ha">type</span>=<span class="str">"submit"</span><span class="ht">&gt;</span>Envoyer<span class="ht">&lt;/button&gt;</span>
+<span class="ht">&lt;/form&gt;</span></code></pre>
+  </div>
+  <div class="callout info"><span class="ci">i</span><div><strong>L'attribut name est la clé PHP.</strong> C'est la valeur de name dans le HTML qui détermine la clé dans $_POST. Un champ sans name n'est pas envoyé au serveur.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e2">
+  <div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Étape 2</div><h2>$_POST et $_GET — lire les données</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">traitement.php — récupérer les données</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+
+<span class="cmt">// Vérifier si le formulaire a été soumis</span>
+<span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+
+    <span class="cmt">// Récupérer une valeur — ?? pour éviter les warnings</span>
+    <span class="vr">$nom</span>     = <span class="vr">$_POST</span>[<span class="str">'nom'</span>]     ?? <span class="str">''</span>;
+    <span class="vr">$email</span>   = <span class="vr">$_POST</span>[<span class="str">'email'</span>]   ?? <span class="str">''</span>;
+    <span class="vr">$age</span>     = <span class="vr">$_POST</span>[<span class="str">'age'</span>]     ?? <span class="bool">null</span>;
+    <span class="vr">$message</span> = <span class="vr">$_POST</span>[<span class="str">'message'</span>] ?? <span class="str">''</span>;
+
+    <span class="cmt">// Checkbox : n'existe pas si non cochée</span>
+    <span class="vr">$cgu</span> = <span class="fn">isset</span>(<span class="vr">$_POST</span>[<span class="str">'cgu'</span>]);   <span class="cmt">// true ou false</span>
+
+    <span class="cmt">// Radio : valeur de l'option choisie</span>
+    <span class="vr">$genre</span> = <span class="vr">$_POST</span>[<span class="str">'genre'</span>] ?? <span class="str">''</span>;
+}
+
+<span class="cmt">// Données dans l'URL (?page=2&tri=nom)</span>
+<span class="vr">$page</span> = <span class="vr">$_GET</span>[<span class="str">'page'</span>] ?? <span class="num">1</span>;
+<span class="vr">$tri</span>  = <span class="vr">$_GET</span>[<span class="str">'tri'</span>]  ?? <span class="str">'date'</span>;
+
+<span class="cmt">// filter_input — récupérer ET valider en une ligne</span>
+<span class="vr">$age_ok</span>   = <span class="fn">filter_input</span>(<span class="fn">INPUT_POST</span>, <span class="str">'age'</span>,   <span class="fn">FILTER_VALIDATE_INT</span>);
+<span class="vr">$email_ok</span> = <span class="fn">filter_input</span>(<span class="fn">INPUT_POST</span>, <span class="str">'email'</span>, <span class="fn">FILTER_VALIDATE_EMAIL</span>);
+<span class="cmt">// Retourne la valeur si valide, false si invalide, null si absent</span></code></pre>
+  </div>
+  <div class="callout tip"><span class="ci">!</span><div><strong>Toujours utiliser ?? pour les valeurs optionnelles.</strong> Accéder à $_POST['champ'] directement génère un Warning si le champ est absent. L'opérateur ?? retourne la valeur par défaut si la clé est absente ou null.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e3">
+  <div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Étape 3</div><h2>Valider les données — règles et messages d'erreur</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Validation complète d'un formulaire d'inscription</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="vr">$erreurs</span> = [];
+
+<span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+
+    <span class="vr">$nom</span>     = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>]     ?? <span class="str">''</span>);
+    <span class="vr">$email</span>   = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'email'</span>]   ?? <span class="str">''</span>);
+    <span class="vr">$age</span>     = (int)(<span class="vr">$_POST</span>[<span class="str">'age'</span>]     ?? <span class="num">0</span>);
+
+    <span class="cmt">// Nom : obligatoire, 2-50 caractères</span>
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$nom</span>)) {
+        <span class="vr">$erreurs</span>[<span class="str">'nom'</span>] = <span class="str">"Nom obligatoire."</span>;
+    } <span class="kw">elseif</span> (<span class="fn">strlen</span>(<span class="vr">$nom</span>) <span class="op">&lt;</span> <span class="num">2</span> || <span class="fn">strlen</span>(<span class="vr">$nom</span>) <span class="op">></span> <span class="num">50</span>) {
+        <span class="vr">$erreurs</span>[<span class="str">'nom'</span>] = <span class="str">"Nom : entre 2 et 50 caractères."</span>;
+    }
+
+    <span class="cmt">// Email : obligatoire, format valide</span>
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$email</span>)) {
+        <span class="vr">$erreurs</span>[<span class="str">'email'</span>] = <span class="str">"Email obligatoire."</span>;
+    } <span class="kw">elseif</span> (!<span class="fn">filter_var</span>(<span class="vr">$email</span>, <span class="fn">FILTER_VALIDATE_EMAIL</span>)) {
+        <span class="vr">$erreurs</span>[<span class="str">'email'</span>] = <span class="str">"Format d'email invalide."</span>;
+    }
+
+    <span class="cmt">// Age : entre 18 et 120</span>
+    <span class="kw">if</span> (<span class="vr">$age</span> <span class="op">&lt;</span> <span class="num">18</span> || <span class="vr">$age</span> <span class="op">></span> <span class="num">120</span>) {
+        <span class="vr">$erreurs</span>[<span class="str">'age'</span>] = <span class="str">"Age doit etre entre 18 et 120."</span>;
+    }
+
+    <span class="cmt">// Si aucune erreur → traitement</span>
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$erreurs</span>)) {
+        <span class="cmt">// insertion BDD, email, etc.</span>
+        <span class="fn">header</span>(<span class="str">'Location: confirmation.php'</span>);
+        <span class="kw">exit</span>;
+    }
+}</code></pre>
+  </div>
+  <div class="callout success"><span class="ci">+</span><div><strong>Conserver les valeurs saisies après une erreur.</strong> Toujours repeupler les champs avec les valeurs postées : value="&lt;?= htmlspecialchars($nom ?? '') ?&gt;". L'utilisateur ne doit pas tout ressaisir pour une seule erreur.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e4">
+  <div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Étape 4 — Sécurité</div><h2>Assainir — se protéger des failles XSS</h2></div></div>
+  <p class="prose">Une faille <strong>XSS (Cross-Site Scripting)</strong> survient quand des données utilisateur sont affichées telles quelles dans du HTML. Un attaquant injecte du JavaScript qui s'exécute dans le navigateur des visiteurs.</p>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">XSS — problème et solution</span><span class="cb-badge warn">Sécurité</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">// DANGEREUX — affichage direct</span>
+<span class="kw">echo</span> <span class="str">"Bonjour "</span> . <span class="vr">$_POST</span>[<span class="str">'nom'</span>];
+<span class="cmt">// Si nom = "&lt;script&gt;alert('XSS')&lt;/script&gt;"</span>
+<span class="cmt">// → le script s'execute !</span>
+
+<span class="cmt">// CORRECT — htmlspecialchars() encode les caracteres dangereux</span>
+<span class="kw">echo</span> <span class="str">"Bonjour "</span> . <span class="fn">htmlspecialchars</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>], <span class="fn">ENT_QUOTES</span>, <span class="str">'UTF-8'</span>);
+<span class="cmt">// &lt; devient &amp;lt;   > devient &amp;gt;   ' et " aussi</span>
+
+<span class="cmt">// Raccourci recommande — creer une fonction e()</span>
+<span class="kw">function</span> <span class="fn">e</span>(<span class="vr">$val</span>): string {
+    <span class="kw">return</span> <span class="fn">htmlspecialchars</span>((string)<span class="vr">$val</span>, <span class="fn">ENT_QUOTES</span>, <span class="str">'UTF-8'</span>);
+}
+<span class="php-tag">?&gt;</span>
+
+<span class="cmt">&lt;!-- Utilisation dans les templates --&gt;</span>
+<span class="ht">&lt;h1&gt;</span><span class="php-tag">&lt;?=</span> <span class="fn">e</span>(<span class="vr">$titre</span>) <span class="php-tag">?&gt;</span><span class="ht">&lt;/h1&gt;</span>
+<span class="ht">&lt;input</span> <span class="ha">value</span>=<span class="str">"</span><span class="php-tag">&lt;?=</span> <span class="fn">e</span>(<span class="vr">$nom</span>) <span class="php-tag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e5">
+  <div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Étape 5 — Complet</div><h2>Formulaire complet — page PHP autonome</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">contact.php — page complète avec gestion erreurs</span><span class="cb-badge good">Complet</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="kw">function</span> <span class="fn">e</span>(<span class="vr">$v</span>): string { <span class="kw">return</span> <span class="fn">htmlspecialchars</span>((string)<span class="vr">$v</span>, <span class="fn">ENT_QUOTES</span>, <span class="str">'UTF-8'</span>); }
+
+<span class="vr">$erreurs</span> = []; <span class="vr">$succes</span> = <span class="bool">false</span>;
+<span class="vr">$nom</span> = <span class="vr">$email</span> = <span class="vr">$message</span> = <span class="str">''</span>;
+
+<span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+    <span class="vr">$nom</span>     = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>]     ?? <span class="str">''</span>);
+    <span class="vr">$email</span>   = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'email'</span>]   ?? <span class="str">''</span>);
+    <span class="vr">$message</span> = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'message'</span>] ?? <span class="str">''</span>);
+
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$nom</span>))
+        <span class="vr">$erreurs</span>[<span class="str">'nom'</span>] = <span class="str">"Nom obligatoire."</span>;
+    <span class="kw">if</span> (!<span class="fn">filter_var</span>(<span class="vr">$email</span>, <span class="fn">FILTER_VALIDATE_EMAIL</span>))
+        <span class="vr">$erreurs</span>[<span class="str">'email'</span>] = <span class="str">"Email invalide."</span>;
+    <span class="kw">if</span> (<span class="fn">strlen</span>(<span class="vr">$message</span>) <span class="op">&lt;</span> <span class="num">10</span>)
+        <span class="vr">$erreurs</span>[<span class="str">'message'</span>] = <span class="str">"Message trop court (10 min)."</span>;
+
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$erreurs</span>)) {
+        <span class="vr">$succes</span> = <span class="bool">true</span>;
+        <span class="vr">$nom</span> = <span class="vr">$email</span> = <span class="vr">$message</span> = <span class="str">''</span>;
+    }
+}
+<span class="php-tag">?&gt;</span>
+<span class="ht">&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;</span>
+<span class="php-tag">&lt;?php</span> <span class="kw">if</span> (<span class="vr">$succes</span>): <span class="php-tag">?&gt;</span>
+  <span class="ht">&lt;p&gt;</span>Message envoyé avec succès !<span class="ht">&lt;/p&gt;</span>
+<span class="php-tag">&lt;?php</span> <span class="kw">endif</span>; <span class="php-tag">?&gt;</span>
+
+<span class="ht">&lt;form</span> <span class="ha">method</span>=<span class="str">"post"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">name</span>=<span class="str">"nom"</span> <span class="ha">value</span>=<span class="str">"</span><span class="php-tag">&lt;?=</span> <span class="fn">e</span>(<span class="vr">$nom</span>) <span class="php-tag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span>
+  <span class="php-tag">&lt;?php</span> <span class="kw">if</span> (<span class="fn">isset</span>(<span class="vr">$erreurs</span>[<span class="str">'nom'</span>])): <span class="php-tag">?&gt;</span>
+    <span class="ht">&lt;span</span> <span class="ha">class</span>=<span class="str">"err"</span><span class="ht">&gt;</span><span class="php-tag">&lt;?=</span> <span class="fn">e</span>(<span class="vr">$erreurs</span>[<span class="str">'nom'</span>]) <span class="php-tag">?&gt;</span><span class="ht">&lt;/span&gt;</span>
+  <span class="php-tag">&lt;?php</span> <span class="kw">endif</span>; <span class="php-tag">?&gt;</span>
+
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"email"</span> <span class="ha">name</span>=<span class="str">"email"</span> <span class="ha">value</span>=<span class="str">"</span><span class="php-tag">&lt;?=</span> <span class="fn">e</span>(<span class="vr">$email</span>) <span class="php-tag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span>
+  <span class="php-tag">&lt;?php</span> <span class="kw">if</span> (<span class="fn">isset</span>(<span class="vr">$erreurs</span>[<span class="str">'email'</span>])): <span class="php-tag">?&gt;</span>
+    <span class="ht">&lt;span</span> <span class="ha">class</span>=<span class="str">"err"</span><span class="ht">&gt;</span><span class="php-tag">&lt;?=</span> <span class="fn">e</span>(<span class="vr">$erreurs</span>[<span class="str">'email'</span>]) <span class="php-tag">?&gt;</span><span class="ht">&lt;/span&gt;</span>
+  <span class="php-tag">&lt;?php</span> <span class="kw">endif</span>; <span class="php-tag">?&gt;</span>
+
+  <span class="ht">&lt;textarea</span> <span class="ha">name</span>=<span class="str">"message"</span><span class="ht">&gt;</span><span class="php-tag">&lt;?=</span> <span class="fn">e</span>(<span class="vr">$message</span>) <span class="php-tag">?&gt;</span><span class="ht">&lt;/textarea&gt;</span>
+  <span class="php-tag">&lt;?php</span> <span class="kw">if</span> (<span class="fn">isset</span>(<span class="vr">$erreurs</span>[<span class="str">'message'</span>])): <span class="php-tag">?&gt;</span>
+    <span class="ht">&lt;span</span> <span class="ha">class</span>=<span class="str">"err"</span><span class="ht">&gt;</span><span class="php-tag">&lt;?=</span> <span class="fn">e</span>(<span class="vr">$erreurs</span>[<span class="str">'message'</span>]) <span class="php-tag">?&gt;</span><span class="ht">&lt;/span&gt;</span>
+  <span class="php-tag">&lt;?php</span> <span class="kw">endif</span>; <span class="php-tag">?&gt;</span>
+
+  <span class="ht">&lt;button</span> <span class="ha">type</span>=<span class="str">"submit"</span><span class="ht">&gt;</span>Envoyer<span class="ht">&lt;/button&gt;</span>
+<span class="ht">&lt;/form&gt;</span>
+<span class="ht">&lt;/body&gt;&lt;/html&gt;</span></code></pre>
+  </div>
+  <div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Pattern PRG (Post/Redirect/Get).</strong> Après un traitement POST réussi, faire une redirection header('Location: confirmation.php') pour éviter le double envoi au rechargement de page.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e6">
+  <div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Interactif</div><h2>Simulateur de validation</h2></div></div>
+  <div class="form-sim">
+    <div class="fs-head"><div class="fs-label">Formulaire simulé</div><div class="fs-badge">Simulation validation PHP</div></div>
+    <div class="fs-body">
+      <div class="fs-row"><div class="fs-fl"><span>Nom</span><span id="cnt-nom" style="color:var(--dim)"></span></div><input class="fs-i" id="fi-nom" placeholder="Votre nom (2-50 car.)" oninput="fvc()"><div class="fs-e" id="fe-nom"></div></div>
+      <div class="fs-row"><div class="fs-fl">Email</div><input class="fs-i" id="fi-email" placeholder="votre@email.fr" oninput="fvc()"><div class="fs-e" id="fe-email"></div></div>
+      <div class="fs-row"><div class="fs-fl">Age</div><input class="fs-i" id="fi-age" type="number" placeholder="18-120" oninput="fvc()"><div class="fs-e" id="fe-age"></div></div>
+      <div class="fs-row"><div class="fs-fl">Message</div><textarea class="fs-ta" id="fi-msg" rows="3" placeholder="Minimum 10 caractères" oninput="fvc()"></textarea><div class="fs-e" id="fe-msg"></div></div>
+      <div class="fs-row" style="display:flex;align-items:center;gap:10px;"><input type="checkbox" id="fi-cgu" onchange="fvc()"><label for="fi-cgu" style="font-size:.85rem;color:var(--muted)">J'accepte les CGU</label><div class="fs-e" id="fe-cgu" style="margin:0 0 0 8px"></div></div>
+      <button class="fs-btn" onclick="fvs()">Valider</button>
+      <div class="fs-res" id="fs-res"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="quiz">
+  <div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Évaluation</div><h2>Quiz — formulaires et validation</h2></div></div>
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Quelle superglobale récupère les données d'un formulaire soumis en POST ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">$_REQUEST['champ']</button>
+      <button class="opt" onclick="ans(this,'q1',true)">$_POST['champ']</button>
+      <button class="opt" onclick="ans(this,'q1',false)">$_FORM['champ']</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Une case à cocher non cochée est-elle présente dans $_POST ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',false)">Oui, avec la valeur false</button>
+      <button class="opt" onclick="ans(this,'q2',true)">Non — la clé n'existe pas dans $_POST</button>
+      <button class="opt" onclick="ans(this,'q2',false)">Oui, avec la valeur "off"</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Pourquoi utiliser htmlspecialchars() avant d'afficher une donnée utilisateur ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',false)">Pour améliorer les performances</button>
+      <button class="opt" onclick="ans(this,'q3',true)">Pour convertir les caractères HTML spéciaux et empêcher l'injection de scripts JavaScript (XSS)</button>
+      <button class="opt" onclick="ans(this,'q3',false)">Pour valider le format de la donnée</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Quelle est la différence entre valider et assainir ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',true)">Valider = vérifier que la donnée respecte des règles. Assainir = nettoyer/encoder pour la rendre sûre à afficher ou stocker.</button>
+      <button class="opt" onclick="ans(this,'q4',false)">Ce sont des synonymes</button>
+      <button class="opt" onclick="ans(this,'q4',false)">Valider = nettoyer, assainir = vérifier</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> Pourquoi repeupler les champs après une erreur de validation ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q5',false)">PHP l'exige pour revalider</button>
+      <button class="opt" onclick="ans(this,'q5',true)">Pour éviter que l'utilisateur ressaisisse tout le formulaire pour une seule erreur — UX fondamentale</button>
+      <button class="opt" onclick="ans(this,'q5',false)">Pour respecter les standards W3C</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text"  style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copié';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+function sv(id,err){const i=document.getElementById('fi-'+id)||document.getElementById('fi-'+id.replace('-',''));const e=document.getElementById('fe-'+id);if(!i||!e)return;const v=i.value||'';e.textContent=err;if(i.tagName!=='TEXTAREA'){i.className='fs-i'+(err?' err':(v&&!err?' ok':''));}}
+function fvc(){
+  const n=document.getElementById('fi-nom').value.trim();
+  document.getElementById('cnt-nom').textContent=n.length+'/50';
+  sv('nom',n.length===0?'':(n.length<2?'Minimum 2 car.':(n.length>50?'Maximum 50 car.':'')));
+  const em=document.getElementById('fi-email').value.trim();
+  sv('email',em&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)?'Email invalide.':'');
+  const ag=parseInt(document.getElementById('fi-age').value)||0;
+  sv('age',ag&&(ag<18||ag>120)?'Age hors plage (18-120).':'');
+  const mg=document.getElementById('fi-msg').value.trim();
+  document.getElementById('fe-msg').textContent=mg&&mg.length<10?'Minimum 10 caractères.':'';
+}
+function fvs(){
+  const n=document.getElementById('fi-nom').value.trim();
+  const em=document.getElementById('fi-email').value.trim();
+  const ag=parseInt(document.getElementById('fi-age').value)||0;
+  const mg=document.getElementById('fi-msg').value.trim();
+  const cgu=document.getElementById('fi-cgu').checked;
+  const er=[];
+  if(!n||n.length<2)er.push('Nom invalide.');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em))er.push('Email invalide.');
+  if(ag<18||ag>120)er.push('Age hors plage.');
+  if(mg.length<10)er.push('Message trop court.');
+  if(!cgu)er.push('CGU obligatoires.');
+  document.getElementById('fe-cgu').textContent=cgu?'':'CGU obligatoires.';
+  const res=document.getElementById('fs-res');
+  if(er.length){res.className='fs-res show ko';res.innerHTML='<strong>Erreurs :</strong><br>'+er.map(x=>'— '+x).join('<br>');}
+  else{res.className='fs-res show ok';res.innerHTML='<strong>Validation OK</strong> — pret pour le traitement PHP :<br>nom="'+n+'" | email="'+em+'" | age='+ag;}
+}
+const fbs={
+  q1:{ok:'Exact. $_POST recupere les donnees d\'un formulaire method="post". $_GET recupere les parametres d\'URL. $_REQUEST combine les deux mais masque l\'origine.',ko:'Non. Pour method="post", les donnees sont dans $_POST. $_REQUEST fonctionne mais est deconseille. $_FORM n\'existe pas.'},
+  q2:{ok:'Exact. Une checkbox non cochee n\'envoie rien — la cle est absente de $_POST. Utiliser isset($_POST[\'cgu\']) pour tester son etat.',ko:'Non. Une checkbox non cochee n\'apparait PAS dans $_POST. La cle n\'existe pas. D\'ou l\'utilisation de isset().'},
+  q3:{ok:'Exact. htmlspecialchars() protege contre les failles XSS en convertissant < en &lt; etc. Sans elle, un utilisateur peut injecter du JavaScript qui s\'execute chez les autres visiteurs.',ko:'Non. htmlspecialchars() protege contre le XSS (injection de code). Elle encode les caracteres speciaux HTML pour qu\'ils s\'affichent comme texte et ne s\'executent pas.'},
+  q4:{ok:'Exact. Valider = verifier (email valide ? longueur ok ?). Assainir = transformer pour securiser (htmlspecialchars avant affichage, trim pour nettoyer). Deux etapes complementaires.',ko:'Non. Valider = verifier les regles. Assainir = nettoyer/encoder. Ce sont deux etapes differentes et complementaires.'},
+  q5:{ok:'Exact. Reafficher les valeurs valides apres une erreur est une regle UX fondamentale. L\'utilisateur ne doit pas ressaisir 10 champs a cause d\'un seul email invalide.',ko:'Non. La raison est l\'UX : conserver les valeurs saisies evite a l\'utilisateur de tout recommencer pour une seule erreur.'},
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').innerHTML=g===5?'Parfait !':g>=4?'Tres bien.':'Revoir XSS et checkboxes.';box.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 07 — Sessions</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#4338ca;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:'SF Mono','Fira Code','Consolas',monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(67,56,202,.07);}
+.nav-link.active{background:rgba(67,56,202,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(67,56,202,.08);border:1px solid rgba(67,56,202,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.i{background:rgba(67,56,202,.07);border-color:rgba(67,56,202,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.r{background:rgba(220,38,38,.07);border-color:rgba(220,38,38,.25);color:var(--red);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(67,56,202,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(67,56,202,.07);border:1px solid rgba(67,56,202,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(67,56,202,.15);border:1px solid rgba(67,56,202,.3);color:#a5b4fc;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(67,56,202,.2);color:#a5b4fc;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.php-tag{color:#f38ba8;font-weight:700;}
+.bool{color:#fab387;font-weight:600;}.ht{color:#89b4fa;}.ha{color:#fab387;}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:2.2;box-shadow:var(--sh);}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.sess-sim{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.ss-head{background:var(--title);padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.ss-label{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--muted);}
+.ss-badge{font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:3px;background:rgba(67,56,202,.1);border:1px solid rgba(67,56,202,.2);color:var(--accent);}
+.ss-body{padding:20px;}
+.ss-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.ss-panel{background:#1e1e2e;border-radius:8px;padding:14px;min-height:110px;}
+.ss-panel-title{font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:#6c7086;margin-bottom:10px;}
+.ss-kv{font-family:var(--mono);font-size:.79rem;line-height:2;}
+.ss-empty{color:#6c7086;font-style:italic;font-size:.75rem;}
+.ss-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.ss-btn{padding:7px 14px;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:.75rem;font-weight:700;border:1px solid rgba(67,56,202,.3);background:rgba(67,56,202,.07);color:var(--accent);transition:all .15s;}
+.ss-btn:hover{background:rgba(67,56,202,.15);}
+.ss-btn.danger{border-color:rgba(220,38,38,.3);background:rgba(220,38,38,.05);color:var(--red);}
+.ss-log{font-family:var(--mono);font-size:.77rem;color:var(--muted);background:var(--surface);border-radius:6px;padding:10px 12px;min-height:36px;line-height:2;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(67,56,202,.3);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}.ss-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>[ ] PHP &mdash; Bloc 2</span><p>PHP et le web</p></div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>Comment ca fonctionne</a>
+    <a href="#e1" class="nav-link"><span class="nav-num">01</span>session_start()</a>
+    <a href="#e2" class="nav-link"><span class="nav-num">02</span>Lire et ecrire</a>
+    <a href="#e3" class="nav-link"><span class="nav-num">03</span>Connexion utilisateur</a>
+    <a href="#e4" class="nav-link"><span class="nav-num">04</span>Deconnexion propre</a>
+    <a href="#e5" class="nav-link"><span class="nav-num">05</span>Panier de commande</a>
+    <a href="#e6" class="nav-link"><span class="nav-num">06</span>Securite</a>
+    <a href="#e7" class="nav-link"><span class="nav-num">07</span>Simulateur</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">08</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 2 &mdash; PHP et le web</div>
+    <a href="php-06-formulaires.html" class="nav-serie-link">06 &mdash; Formulaires</a>
+    <a href="php-07-sessions.html" class="nav-serie-link current">07 &mdash; Sessions</a>
+    <a href="php-08-upload.html" class="nav-serie-link">08 &mdash; Upload fichiers</a>
+    <a href="php-09-crud.html" class="nav-serie-link">09 &mdash; Mini-CRUD</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 2 &middot; Support 2/4</div>
+  <h1>Sessions<br><span class="hl">PHP</span></h1>
+  <p>HTTP est sans etat : chaque requete est independante. Les sessions permettent de persister des donnees entre les pages pour un meme visiteur &mdash; connexion, panier, preferences.</p>
+  <div class="objectifs">
+    <span class="obj i">session_start()</span>
+    <span class="obj g">$_SESSION</span>
+    <span class="obj y">Connexion / deconnexion</span>
+    <span class="obj r">Securite</span>
+  </div>
+</div>
+
+<section class="etape" id="plan">
+  <div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Fondamentaux</div><h2>Comment fonctionnent les sessions PHP</h2></div></div>
+  <p class="prose">PHP stocke les donnees de session cote <strong>serveur</strong> dans des fichiers temporaires. Un identifiant unique (PHPSESSID) est transmis via un cookie pour reconnaitre le visiteur a chaque requete.</p>
+  <div class="schema">
+<span style="color:var(--blue);font-weight:700">1. Visiteur</span>  arrive sur la page, PHP appelle <span style="color:#89dceb">session_start()</span>
+<span style="color:var(--accent);font-weight:700">2. PHP</span>      cree un fichier : <span style="color:#a6e3a1">/tmp/sess_abc123xyz</span>
+           envoie au navigateur : <span style="color:#a6e3a1">Set-Cookie: PHPSESSID=abc123xyz</span>
+<span style="color:var(--blue);font-weight:700">3. Page suivante</span>  navigateur envoie : <span style="color:#a6e3a1">Cookie: PHPSESSID=abc123xyz</span>
+<span style="color:var(--accent);font-weight:700">4. PHP</span>      charge <span style="color:#a6e3a1">/tmp/sess_abc123xyz</span> &rarr; $_SESSION disponible
+  </div>
+  <div class="callout info"><span class="ci">i</span><div><strong>Les donnees vivent cote serveur.</strong> Le navigateur ne recoit que l&apos;identifiant (PHPSESSID). Le contenu de $_SESSION n&apos;est jamais envoye au navigateur &mdash; l&apos;utilisateur ne peut pas le modifier.</div></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Critere</th><th>Session</th><th>Cookie</th></tr></thead>
+    <tbody>
+      <tr><td>Donnees stockees</td><td>Cote serveur</td><td>Cote navigateur</td></tr>
+      <tr><td>Modifiable par l&apos;user</td><td>Non</td><td>Oui</td></tr>
+      <tr><td>Duree de vie</td><td>Fermeture navigateur (defaut)</td><td>Configurable (expires)</td></tr>
+      <tr><td>Taille max</td><td>Illimitee (disque serveur)</td><td>4 Ko par cookie</td></tr>
+      <tr><td>Usage</td><td>Connexion, panier, etat</td><td>Preferences, tracking, "se souvenir"</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e1">
+  <div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1</div><h2>Demarrer une session &mdash; session_start()</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">session_start() &mdash; regles et verification</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">// REGLE ABSOLUE : session_start() en PREMIER</span>
+<span class="cmt">// Avant tout echo, tout espace, tout HTML</span>
+<span class="fn">session_start</span>();
+
+<span class="cmt">// $_SESSION est maintenant disponible</span>
+<span class="vr">$_SESSION</span>[<span class="str">&#39;nom&#39;</span>] = <span class="str">&#39;Alice&#39;</span>;
+
+<span class="cmt">// Verifier l&apos;etat de la session</span>
+<span class="kw">if</span> (<span class="fn">session_status</span>() === <span class="fn">PHP_SESSION_NONE</span>) {
+    <span class="fn">session_start</span>();
+}
+<span class="cmt">// PHP_SESSION_NONE     = pas de session active</span>
+<span class="cmt">// PHP_SESSION_ACTIVE   = session deja demarree</span>
+<span class="cmt">// PHP_SESSION_DISABLED = sessions desactivees</span></code></pre>
+  </div>
+  <div class="callout warn"><span class="ci">!</span><div><strong>"Headers already sent"</strong> &mdash; l&apos;erreur la plus frequente. Elle survient quand du HTML ou un echo est envoye avant session_start(). Verifier : pas d&apos;espace avant &lt;?php, pas de BOM UTF-8, pas de contenu dans les fichiers inclus avant session_start().</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e2">
+  <div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2</div><h2>Lire et ecrire dans $_SESSION</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">$_SESSION &mdash; toutes les operations</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="fn">session_start</span>();
+
+<span class="cmt">// Ecrire</span>
+<span class="vr">$_SESSION</span>[<span class="str">&#39;user_id&#39;</span>]   = <span class="num">42</span>;
+<span class="vr">$_SESSION</span>[<span class="str">&#39;user_nom&#39;</span>]  = <span class="str">&#39;Alice&#39;</span>;
+<span class="vr">$_SESSION</span>[<span class="str">&#39;user_role&#39;</span>] = <span class="str">&#39;admin&#39;</span>;
+<span class="vr">$_SESSION</span>[<span class="str">&#39;connecte&#39;</span>]  = <span class="bool">true</span>;
+<span class="vr">$_SESSION</span>[<span class="str">&#39;panier&#39;</span>]    = [];   <span class="cmt">// les tableaux fonctionnent</span>
+
+<span class="cmt">// Lire</span>
+<span class="kw">echo</span> <span class="vr">$_SESSION</span>[<span class="str">&#39;user_nom&#39;</span>];
+<span class="vr">$id</span> = <span class="vr">$_SESSION</span>[<span class="str">&#39;user_id&#39;</span>] ?? <span class="bool">null</span>;
+
+<span class="cmt">// Verifier existence</span>
+<span class="kw">if</span> (<span class="fn">isset</span>(<span class="vr">$_SESSION</span>[<span class="str">&#39;connecte&#39;</span>])) {
+    <span class="kw">echo</span> <span class="str">&#39;Connecte : &#39;</span> . <span class="vr">$_SESSION</span>[<span class="str">&#39;user_nom&#39;</span>];
+}
+
+<span class="cmt">// Modifier</span>
+<span class="vr">$_SESSION</span>[<span class="str">&#39;user_role&#39;</span>] = <span class="str">&#39;moderateur&#39;</span>;
+
+<span class="cmt">// Supprimer une cle</span>
+<span class="fn">unset</span>(<span class="vr">$_SESSION</span>[<span class="str">&#39;cle_temp&#39;</span>]);
+
+<span class="cmt">// Debug</span>
+<span class="fn">var_dump</span>(<span class="vr">$_SESSION</span>);
+
+<span class="cmt">// ID de session courant</span>
+<span class="kw">echo</span> <span class="fn">session_id</span>();   <span class="cmt">// "a1b2c3..." (32 chars hex)</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e3">
+  <div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3 &mdash; Cas principal</div><h2>Systeme de connexion utilisateur</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">login.php &mdash; connexion complete avec session</span><span class="cb-badge good">Complet</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="fn">session_start</span>();
+
+<span class="cmt">// Si deja connecte, rediriger</span>
+<span class="kw">if</span> (<span class="fn">isset</span>(<span class="vr">$_SESSION</span>[<span class="str">&#39;user_id&#39;</span>])) {
+    <span class="fn">header</span>(<span class="str">&#39;Location: dashboard.php&#39;</span>); <span class="kw">exit</span>;
+}
+
+<span class="vr">$erreur</span> = <span class="str">&#39;&#39;</span>;
+
+<span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">&#39;REQUEST_METHOD&#39;</span>] === <span class="str">&#39;POST&#39;</span>) {
+    <span class="vr">$email</span> = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">&#39;email&#39;</span>]    ?? <span class="str">&#39;&#39;</span>);
+    <span class="vr">$mdp</span>   = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">&#39;password&#39;</span>] ?? <span class="str">&#39;&#39;</span>);
+
+    <span class="cmt">// Chercher l&apos;utilisateur en BDD (PDO)</span>
+    <span class="vr">$user</span> = <span class="fn">trouverUserParEmail</span>(<span class="vr">$email</span>);
+
+    <span class="kw">if</span> (<span class="vr">$user</span> &amp;&amp; <span class="fn">password_verify</span>(<span class="vr">$mdp</span>, <span class="vr">$user</span>[<span class="str">&#39;mot_de_passe&#39;</span>])) {
+        <span class="cmt">// Securite : nouvel ID pour eviter la fixation</span>
+        <span class="fn">session_regenerate_id</span>(<span class="bool">true</span>);
+
+        <span class="vr">$_SESSION</span>[<span class="str">&#39;user_id&#39;</span>]    = <span class="vr">$user</span>[<span class="str">&#39;id&#39;</span>];
+        <span class="vr">$_SESSION</span>[<span class="str">&#39;user_nom&#39;</span>]   = <span class="vr">$user</span>[<span class="str">&#39;nom&#39;</span>];
+        <span class="vr">$_SESSION</span>[<span class="str">&#39;user_role&#39;</span>]  = <span class="vr">$user</span>[<span class="str">&#39;role&#39;</span>];
+        <span class="vr">$_SESSION</span>[<span class="str">&#39;connecte_le&#39;</span>] = <span class="fn">time</span>();
+
+        <span class="fn">header</span>(<span class="str">&#39;Location: dashboard.php&#39;</span>); <span class="kw">exit</span>;
+    } <span class="kw">else</span> {
+        <span class="vr">$erreur</span> = <span class="str">&#39;Email ou mot de passe incorrect.&#39;</span>;
+    }
+}
+<span class="php-tag">?&gt;</span>
+<span class="ht">&lt;form</span> <span class="ha">method</span>=<span class="str">&quot;post&quot;</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">&quot;email&quot;</span>    <span class="ha">name</span>=<span class="str">&quot;email&quot;</span>    <span class="ha">required</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">&quot;password&quot;</span> <span class="ha">name</span>=<span class="str">&quot;password&quot;</span> <span class="ha">required</span><span class="ht">&gt;</span>
+  <span class="php-tag">&lt;?php</span> <span class="kw">if</span> (<span class="vr">$erreur</span>): <span class="php-tag">?&gt;</span>
+    <span class="ht">&lt;p</span> <span class="ha">class</span>=<span class="str">&quot;err&quot;</span><span class="ht">&gt;</span><span class="php-tag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$erreur</span>) <span class="php-tag">?&gt;</span><span class="ht">&lt;/p&gt;</span>
+  <span class="php-tag">&lt;?php</span> <span class="kw">endif</span>; <span class="php-tag">?&gt;</span>
+  <span class="ht">&lt;button</span> <span class="ha">type</span>=<span class="str">&quot;submit&quot;</span><span class="ht">&gt;</span>Se connecter<span class="ht">&lt;/button&gt;</span>
+<span class="ht">&lt;/form&gt;</span></code></pre>
+  </div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">auth.php &mdash; proteger une page</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">// Inclure en haut de chaque page protegeee</span>
+<span class="fn">session_start</span>();
+
+<span class="kw">if</span> (!<span class="fn">isset</span>(<span class="vr">$_SESSION</span>[<span class="str">&#39;user_id&#39;</span>])) {
+    <span class="fn">header</span>(<span class="str">&#39;Location: login.php&#39;</span>); <span class="kw">exit</span>;
+}
+
+<span class="cmt">// Verifier un role</span>
+<span class="kw">function</span> <span class="fn">requireRole</span>(string <span class="vr">$role</span>): void {
+    <span class="kw">if</span> ((<span class="vr">$_SESSION</span>[<span class="str">&#39;user_role&#39;</span>] ?? <span class="str">&#39;&#39;</span>) !== <span class="vr">$role</span>) {
+        <span class="fn">header</span>(<span class="str">&#39;Location: acces-refuse.php&#39;</span>); <span class="kw">exit</span>;
+    }
+}
+
+<span class="cmt">// Utilisation dans dashboard.php :</span>
+<span class="cmt">// require_once &#39;auth.php&#39;;     verifie la connexion</span>
+<span class="cmt">// requireRole(&#39;admin&#39;);        verifie le role</span>
+<span class="cmt">// echo $_SESSION[&#39;user_nom&#39;]; affiche le nom</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e4">
+  <div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4</div><h2>Deconnexion propre &mdash; les 3 etapes</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">logout.php &mdash; deconnexion complete</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="fn">session_start</span>();
+
+<span class="cmt">// Etape 1 : vider le tableau $_SESSION</span>
+<span class="vr">$_SESSION</span> = [];
+
+<span class="cmt">// Etape 2 : supprimer le cookie PHPSESSID</span>
+<span class="kw">if</span> (<span class="fn">ini_get</span>(<span class="str">&#39;session.use_cookies&#39;</span>)) {
+    <span class="vr">$p</span> = <span class="fn">session_get_cookie_params</span>();
+    <span class="fn">setcookie</span>(
+        <span class="fn">session_name</span>(), <span class="str">&#39;&#39;</span>, <span class="fn">time</span>() - <span class="num">42000</span>,
+        <span class="vr">$p</span>[<span class="str">&#39;path&#39;</span>], <span class="vr">$p</span>[<span class="str">&#39;domain&#39;</span>], <span class="vr">$p</span>[<span class="str">&#39;secure&#39;</span>], <span class="vr">$p</span>[<span class="str">&#39;httponly&#39;</span>]
+    );
+}
+
+<span class="cmt">// Etape 3 : detruire le fichier session cote serveur</span>
+<span class="fn">session_destroy</span>();
+
+<span class="fn">header</span>(<span class="str">&#39;Location: login.php&#39;</span>);
+<span class="kw">exit</span>;</code></pre>
+  </div>
+  <div class="callout tip"><span class="ci">!</span><div><strong>Les 3 etapes sont toutes necessaires.</strong> Vider $_SESSION seul laisse le cookie valide. Supprimer le cookie seul laisse le fichier serveur accessible. session_destroy() seul laisse le cookie actif. Il faut les 3.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e5">
+  <div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5 &mdash; Cas d&apos;usage</div><h2>Panier de commande en session</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">panier.php &mdash; gestion complete</span><span class="cb-badge good">Complet</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="fn">session_start</span>();
+
+<span class="cmt">// Initialiser si absent</span>
+<span class="kw">if</span> (!<span class="fn">isset</span>(<span class="vr">$_SESSION</span>[<span class="str">&#39;panier&#39;</span>])) {
+    <span class="vr">$_SESSION</span>[<span class="str">&#39;panier&#39;</span>] = [];
+}
+
+<span class="kw">function</span> <span class="fn">ajouterAuPanier</span>(int <span class="vr">$id</span>, int <span class="vr">$qte</span> = <span class="num">1</span>): void {
+    <span class="kw">if</span> (<span class="fn">isset</span>(<span class="vr">$_SESSION</span>[<span class="str">&#39;panier&#39;</span>][<span class="vr">$id</span>])) {
+        <span class="vr">$_SESSION</span>[<span class="str">&#39;panier&#39;</span>][<span class="vr">$id</span>] += <span class="vr">$qte</span>;
+    } <span class="kw">else</span> {
+        <span class="vr">$_SESSION</span>[<span class="str">&#39;panier&#39;</span>][<span class="vr">$id</span>] = <span class="vr">$qte</span>;
+    }
+}
+
+<span class="kw">function</span> <span class="fn">supprimerDuPanier</span>(int <span class="vr">$id</span>): void {
+    <span class="fn">unset</span>(<span class="vr">$_SESSION</span>[<span class="str">&#39;panier&#39;</span>][<span class="vr">$id</span>]);
+}
+
+<span class="kw">function</span> <span class="fn">nbArticles</span>(): int {
+    <span class="kw">return</span> <span class="fn">array_sum</span>(<span class="vr">$_SESSION</span>[<span class="str">&#39;panier&#39;</span>] ?? []);
+}
+
+<span class="kw">function</span> <span class="fn">viderPanier</span>(): void {
+    <span class="vr">$_SESSION</span>[<span class="str">&#39;panier&#39;</span>] = [];
+}
+
+<span class="cmt">// Utilisation</span>
+<span class="fn">ajouterAuPanier</span>(<span class="num">5</span>, <span class="num">2</span>);   <span class="cmt">// produit 5, qte 2</span>
+<span class="fn">ajouterAuPanier</span>(<span class="num">12</span>);     <span class="cmt">// produit 12, qte 1</span>
+<span class="kw">echo</span> <span class="fn">nbArticles</span>();        <span class="cmt">// 3</span>
+<span class="cmt">// $_SESSION[&#39;panier&#39;] = [5 =&gt; 2, 12 =&gt; 1]</span></code></pre>
+  </div>
+  <div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Le panier persiste entre toutes les pages</strong> tant que la session est active. Chaque page qui utilise le panier doit appeler session_start() en premier. Les donnees sont automatiquement sauvegardees entre les requetes.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e6">
+  <div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6 &mdash; Securite</div><h2>Securiser les sessions</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Configuration securisee + timeout d&apos;inactivite</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="php-tag">&lt;?php</span>
+<span class="cmt">// Configurer AVANT session_start()</span>
+<span class="fn">ini_set</span>(<span class="str">&#39;session.cookie_httponly&#39;</span>, <span class="num">1</span>);    <span class="cmt">// inaccessible en JS</span>
+<span class="fn">ini_set</span>(<span class="str">&#39;session.cookie_secure&#39;</span>,   <span class="num">1</span>);    <span class="cmt">// HTTPS seulement</span>
+<span class="fn">ini_set</span>(<span class="str">&#39;session.cookie_samesite&#39;</span>, <span class="str">&#39;Strict&#39;</span>); <span class="cmt">// anti-CSRF</span>
+<span class="fn">ini_set</span>(<span class="str">&#39;session.gc_maxlifetime&#39;</span>,  <span class="num">3600</span>);  <span class="cmt">// expire apres 1h</span>
+
+<span class="fn">session_start</span>();
+
+<span class="cmt">// Regenerer l&apos;ID apres connexion (anti-fixation)</span>
+<span class="fn">session_regenerate_id</span>(<span class="bool">true</span>);
+
+<span class="cmt">// Timeout d&apos;inactivite</span>
+<span class="vr">$timeout</span> = <span class="num">1800</span>;   <span class="cmt">// 30 minutes</span>
+<span class="kw">if</span> (<span class="fn">isset</span>(<span class="vr">$_SESSION</span>[<span class="str">&#39;last_activity&#39;</span>]) &&
+    (<span class="fn">time</span>() - <span class="vr">$_SESSION</span>[<span class="str">&#39;last_activity&#39;</span>]) > <span class="vr">$timeout</span>) {
+    <span class="fn">session_destroy</span>();
+    <span class="fn">header</span>(<span class="str">&#39;Location: login.php?timeout=1&#39;</span>); <span class="kw">exit</span>;
+}
+<span class="vr">$_SESSION</span>[<span class="str">&#39;last_activity&#39;</span>] = <span class="fn">time</span>();</code></pre>
+  </div>
+  <div class="callout warn"><span class="ci">!</span><div><strong>Ne jamais stocker de mot de passe en session.</strong> La session doit contenir l&apos;ID, le nom, le role &mdash; jamais le mot de passe ni les donnees bancaires.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e7">
+  <div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Interactif</div><h2>Simulateur de session</h2></div></div>
+  <p class="prose">Simulez une session PHP en memoire. Chaque bouton reproduit une operation PHP et montre l&apos;etat de $_SESSION en temps reel.</p>
+  <div class="sess-sim">
+    <div class="ss-head"><div class="ss-label">Simulateur $_SESSION</div><div class="ss-badge">Simulation</div></div>
+    <div class="ss-body">
+      <div class="ss-grid">
+        <div class="ss-panel">
+          <div class="ss-panel-title">$_SESSION (contenu)</div>
+          <div id="ss-data" class="ss-kv"><span class="ss-empty">session non demarree</span></div>
+        </div>
+        <div class="ss-panel">
+          <div class="ss-panel-title">Cookie navigateur</div>
+          <div id="ss-cookie" class="ss-kv"><span class="ss-empty">pas de cookie PHPSESSID</span></div>
+        </div>
+      </div>
+      <div class="ss-actions">
+        <button class="ss-btn" onclick="ssStart()">session_start()</button>
+        <button class="ss-btn" onclick="ssLogin()">Simuler connexion</button>
+        <button class="ss-btn" onclick="ssCart()">Ajouter au panier</button>
+        <button class="ss-btn" onclick="ssRegen()">session_regenerate_id()</button>
+        <button class="ss-btn danger" onclick="ssLogout()">Deconnexion (3 etapes)</button>
+      </div>
+      <div class="ss-log" id="ss-log">En attente...</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="quiz">
+  <div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; sessions PHP</h2></div></div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Ou sont stockees les donnees de session par defaut ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,&#39;q1&#39;,false)">Dans un cookie du navigateur</button>
+      <button class="opt" onclick="ans(this,&#39;q1&#39;,true)">Dans des fichiers temporaires cote serveur (/tmp/sess_...)</button>
+      <button class="opt" onclick="ans(this,&#39;q1&#39;,false)">Dans la base de donnees automatiquement</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Pourquoi appeler session_regenerate_id(true) apres une connexion reussie ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,&#39;q2&#39;,false)">Pour ameliorer les performances</button>
+      <button class="opt" onclick="ans(this,&#39;q2&#39;,true)">Pour prevenir la fixation de session : un attaquant qui avait l&apos;ancien ID ne peut plus l&apos;utiliser</button>
+      <button class="opt" onclick="ans(this,&#39;q2&#39;,false)">Pour effacer les donnees de l&apos;ancienne session</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Quelles sont les 3 etapes d&apos;une deconnexion propre ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,&#39;q3&#39;,false)">session_destroy() uniquement</button>
+      <button class="opt" onclick="ans(this,&#39;q3&#39;,true)">1. Vider $_SESSION = [] &middot; 2. Supprimer le cookie PHPSESSID &middot; 3. session_destroy()</button>
+      <button class="opt" onclick="ans(this,&#39;q3&#39;,false)">unset($_SESSION) puis header(Location: login.php)</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Quelle erreur provoque du HTML envoye avant session_start() ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,&#39;q4&#39;,false)">Fatal error: session_start failed</button>
+      <button class="opt" onclick="ans(this,&#39;q4&#39;,true)">Warning: Cannot modify header information &mdash; headers already sent</button>
+      <button class="opt" onclick="ans(this,&#39;q4&#39;,false)">La session demarre quand meme sans erreur</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> Difference principale entre session et cookie ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,&#39;q5&#39;,false)">Les sessions durent plus longtemps</button>
+      <button class="opt" onclick="ans(this,&#39;q5&#39;,true)">Session : donnees sur le serveur, non modifiables par l&apos;utilisateur. Cookie : donnees dans le navigateur, lisibles et modifiables.</button>
+      <button class="opt" onclick="ans(this,&#39;q5&#39;,false)">Les cookies sont plus securises car chiffres</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copie';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+
+// Simulateur session
+let sess={on:false,data:{},sid:null,cart:0};
+function ssLog(m){const el=document.getElementById('ss-log');el.innerHTML='<span style="color:var(--accent)">&#8594; '+m+'</span><br>'+el.innerHTML;}
+function ssRender(){
+  const d=document.getElementById('ss-data'),c=document.getElementById('ss-cookie');
+  if(!sess.on){d.innerHTML='<span class="ss-empty">session non demarree</span>';c.innerHTML='<span class="ss-empty">pas de cookie PHPSESSID</span>';return;}
+  const keys=Object.keys(sess.data);
+  d.innerHTML=keys.length===0?'<span class="ss-empty">[] vide</span>':keys.map(k=>'<span style="color:#89b4fa">$_SESSION["'+k+'"]</span> = <span style="color:#a6e3a1">'+JSON.stringify(sess.data[k])+'</span>').join('<br>');
+  c.innerHTML='<span style="color:#89b4fa">PHPSESSID</span> = <span style="color:#a6e3a1">"'+sess.sid.substr(0,16)+'..."</span><br><span style="color:#6c7086;font-size:.7rem">httponly; samesite=Strict</span>';
+}
+function mkId(){return Math.random().toString(36).substr(2,32);}
+function ssStart(){if(sess.on){ssLog('session_start() ignore, session deja active.');return;}sess.on=true;sess.sid=mkId();ssLog('session_start() OK &mdash; fichier cree : /tmp/sess_'+sess.sid.substr(0,8)+'...');ssRender();}
+function ssLogin(){if(!sess.on){ssLog('ERREUR : appeler session_start() d&apos;abord !');return;}sess.data['user_id']=42;sess.data['user_nom']='Alice';sess.data['user_role']='admin';sess.data['connecte_le']=Math.floor(Date.now()/1000);ssLog('Connexion OK &mdash; $_SESSION remplie avec les donnees utilisateur.');ssRender();}
+function ssCart(){if(!sess.on){ssLog('ERREUR : session non demarree.');return;}if(!sess.data['panier'])sess.data['panier']={};sess.cart++;sess.data['panier']['produit_'+sess.cart]=1;ssLog('ajouterAuPanier() &mdash; $_SESSION["panier"]["produit_'+sess.cart+'"] = 1');ssRender();}
+function ssRegen(){if(!sess.on){ssLog('ERREUR : session non demarree.');return;}const old=sess.sid.substr(0,8);sess.sid=mkId();ssLog('session_regenerate_id(true) &mdash; '+old+'... remplace par '+sess.sid.substr(0,8)+'... (anti-fixation)');ssRender();}
+function ssLogout(){
+  if(!sess.on){ssLog('Session non demarree.');return;}
+  sess.data={};ssLog('Etape 1 : $_SESSION = [] &mdash; donnees effacees.');ssRender();
+  setTimeout(()=>{ssLog('Etape 2 : setcookie(PHPSESSID,"",time()-42000) &mdash; cookie supprime.');},350);
+  setTimeout(()=>{sess.on=false;sess.sid=null;sess.cart=0;ssLog('Etape 3 : session_destroy() &mdash; fichier serveur supprime. Deconnecte.');ssRender();},700);
+}
+
+const fbs={
+  q1:{
+    ok:"Exact. Par defaut, PHP stocke les sessions dans des fichiers /tmp/sess_{id} cote serveur. Seul l'identifiant PHPSESSID est envoye au navigateur via cookie. Les donnees restent sur le serveur, non accessibles par le visiteur.",
+    ko:"Non. Les donnees de session sont dans des fichiers cote serveur (/tmp/sess_...). Seul l'ID circule dans le cookie. C'est ce qui rend les sessions plus sures que les cookies purs."
+  },
+  q2:{
+    ok:"Exact. La fixation de session est une attaque ou un pirate force un ID de session connu avant connexion. Apres connexion, regenerate_id(true) change l'ID : l'ancien devient inutilisable.",
+    ko:"Non. session_regenerate_id(true) protege contre la fixation de session. Un attaquant ayant l'ancien ID le voit devenir invalide apres le changement d'ID a la connexion."
+  },
+  q3:{
+    ok:"Exact. Les 3 etapes sont toutes necessaires : (1) vider les donnees en memoire, (2) supprimer le cookie dans le navigateur, (3) detruire le fichier serveur.",
+    ko:"Non. Une deconnexion complete necessite 3 etapes : (1) $_SESSION = [] pour vider la memoire, (2) supprimer le cookie PHPSESSID, (3) session_destroy() pour supprimer le fichier serveur."
+  },
+  q4:{
+    ok:"Exact. Les sessions utilisent les en-tetes HTTP pour envoyer le cookie PHPSESSID. Si du HTML est deja envoye, les en-tetes sont geles et PHP ne peut plus les modifier.",
+    ko:"Non. L'erreur est 'Cannot modify header information'. Les sessions necessitent d'envoyer un en-tete HTTP (Set-Cookie). Impossible si du contenu HTML a deja ete envoye au navigateur."
+  },
+  q5:{
+    ok:"Exact. Session = donnees sur le serveur, l'utilisateur ne peut pas les modifier, seul l'ID circule. Cookie = donnees dans le navigateur, lisibles et potentiellement modifiables par l'utilisateur.",
+    ko:"Non. La difference principale est l'emplacement des donnees : sessions sur le serveur (securise), cookies dans le navigateur (modifiables par l'utilisateur)."
+  },
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').innerHTML=g===5?'Parfait &mdash; sessions PHP maitrisees.':g>=4?'Tres bien.':'Revoir la deconnexion et session_regenerate_id.';box.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+</script>
+</body>
+</html>

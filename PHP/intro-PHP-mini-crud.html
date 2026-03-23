@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 09 &mdash; Mini-CRUD JSON</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#0f766e;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(15,118,110,.07);}
+.nav-link.active{background:rgba(15,118,110,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(15,118,110,.08);border:1px solid rgba(15,118,110,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.r{background:rgba(220,38,38,.07);border-color:rgba(220,38,38,.25);color:var(--red);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(15,118,110,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(15,118,110,.07);border:1px solid rgba(15,118,110,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(15,118,110,.15);border:1px solid rgba(15,118,110,.3);color:#5eead4;}
+.cb-badge.new{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.warn{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#f87171;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(15,118,110,.2);color:#5eead4;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.ptag{color:#f38ba8;font-weight:700;}
+.bool{color:#fab387;font-weight:600;}.ht{color:#89b4fa;}.ha{color:#fab387;}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:2.1;box-shadow:var(--sh);}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+/* CRUD DEMO */
+.crud-demo{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cd-head{background:var(--title);padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.cd-label{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--muted);}
+.cd-badge{font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:3px;background:rgba(15,118,110,.1);border:1px solid rgba(15,118,110,.2);color:var(--accent);}
+.cd-body{padding:20px;}
+.cd-form{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.cd-input{padding:8px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.83rem;flex:1;min-width:140px;outline:none;transition:border-color .15s;}
+.cd-input:focus{border-color:rgba(15,118,110,.4);}
+.cd-btn{padding:8px 18px;border-radius:7px;cursor:pointer;font-family:var(--mono);font-size:.78rem;font-weight:700;border:1px solid rgba(15,118,110,.3);background:rgba(15,118,110,.08);color:var(--accent);transition:all .15s;white-space:nowrap;}
+.cd-btn:hover{background:rgba(15,118,110,.16);}
+.cd-btn.edit{border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.06);color:var(--blue);}
+.cd-btn.del{border-color:rgba(220,38,38,.3);background:rgba(220,38,38,.05);color:var(--red);}
+.cd-list{display:flex;flex-direction:column;gap:8px;}
+.cd-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;}
+.cd-item-id{font-family:var(--mono);font-size:.68rem;color:var(--dim);width:28px;flex-shrink:0;}
+.cd-item-nom{font-family:var(--mono);font-size:.83rem;flex:1;}
+.cd-item-email{font-size:.78rem;color:var(--muted);flex:1;}
+.cd-empty{font-family:var(--mono);font-size:.8rem;color:var(--dim);text-align:center;padding:20px;}
+.cd-json{background:#1e1e2e;border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:.75rem;color:#a6e3a1;margin-top:12px;line-height:1.7;max-height:120px;overflow-y:auto;}
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(15,118,110,.3);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>[ ] PHP &mdash; Bloc 2</span><p>PHP et le web</p></div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>C-R-U-D et JSON</a>
+    <a href="#e1"   class="nav-link"><span class="nav-num">01</span>Lire et ecrire JSON</a>
+    <a href="#e2"   class="nav-link"><span class="nav-num">02</span>Create &mdash; ajouter</a>
+    <a href="#e3"   class="nav-link"><span class="nav-num">03</span>Read &mdash; lister</a>
+    <a href="#e4"   class="nav-link"><span class="nav-num">04</span>Update &mdash; modifier</a>
+    <a href="#e5"   class="nav-link"><span class="nav-num">05</span>Delete &mdash; supprimer</a>
+    <a href="#e6"   class="nav-link"><span class="nav-num">06</span>Routeur de l'action</a>
+    <a href="#e7"   class="nav-link"><span class="nav-num">07</span>Application complete</a>
+    <a href="#e8"   class="nav-link"><span class="nav-num">08</span>Simulateur CRUD</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">09</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 2 &mdash; PHP et le web</div>
+    <a href="php-06-formulaires.html" class="nav-serie-link">06 &mdash; Formulaires</a>
+    <a href="php-07-sessions.html"    class="nav-serie-link">07 &mdash; Sessions</a>
+    <a href="php-08-upload.html"      class="nav-serie-link">08 &mdash; Upload fichiers</a>
+    <a href="php-09-crud.html"        class="nav-serie-link current">09 &mdash; Mini-CRUD</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 2 &middot; Support 4/4</div>
+  <h1>Mini-CRUD<br><span class="hl">sans base de donnees</span></h1>
+  <p>Avant d'attaquer PDO, ce projet de synthese consolide tous les acquis du Bloc 2 : formulaires, sessions, validation, et gestion de fichiers. Les donnees sont stockees dans un fichier JSON &mdash; simple, portable, sans configuration.</p>
+  <div class="objectifs">
+    <span class="obj t">json_encode / decode</span>
+    <span class="obj g">Create / Read</span>
+    <span class="obj b">Update / Delete</span>
+    <span class="obj y">Sessions flash</span>
+    <span class="obj r">Validation</span>
+  </div>
+</div>
+
+<section class="etape" id="plan">
+  <div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Architecture</div><h2>CRUD et JSON &mdash; le projet</h2></div></div>
+  <p class="prose"><strong>CRUD</strong> est l'acronyme des 4 operations fondamentales sur des donnees : Create, Read, Update, Delete. Ce projet gere une liste de contacts stockes dans un fichier <code>data/contacts.json</code>. Aucune BDD, aucune installation &mdash; ideal pour apprendre la logique avant PDO.</p>
+  <div class="schema">
+<span style="color:var(--blue);font-weight:700">C &mdash; Create</span>   Ajouter un contact        <span style="color:#89dceb">POST /index.php?action=ajouter</span>
+<span style="color:var(--green);font-weight:700">R &mdash; Read</span>     Afficher la liste         <span style="color:#89dceb">GET  /index.php</span>
+<span style="color:var(--yellow);font-weight:700">U &mdash; Update</span>   Modifier un contact       <span style="color:#89dceb">POST /index.php?action=modifier&id=3</span>
+<span style="color:var(--red);font-weight:700">D &mdash; Delete</span>   Supprimer un contact      <span style="color:#89dceb">GET  /index.php?action=supprimer&id=3</span>
+
+<span style="color:var(--dim)">Structure des fichiers :</span>
+projet/
+  index.php          <span style="color:var(--dim)">routeur + affichage liste</span>
+  ajouter.php        <span style="color:var(--dim)">formulaire + traitement ajout</span>
+  modifier.php       <span style="color:var(--dim)">formulaire + traitement modif</span>
+  data/
+    contacts.json    <span style="color:var(--dim)">base de donnees JSON</span>
+  includes/
+    fonctions.php    <span style="color:var(--dim)">lire/ecrire le JSON</span>
+  </div>
+  <div class="callout info"><span class="ci">i</span><div><strong>JSON comme base de donnees temporaire.</strong> Ce pattern fonctionne bien pour des petits projets (moins de quelques centaines d'entrees). Pour de vraies applications, on utilise MariaDB + PDO. L'objectif ici est de pratiquer la logique CRUD avant d'aborder SQL.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e1">
+  <div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1 &mdash; Persistance</div><h2>Lire et ecrire le fichier JSON</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">includes/fonctions.php &mdash; lecture et ecriture</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">define</span>(<span class="str">'FICHIER_JSON'</span>, <span class="fn">__DIR__</span> . <span class="str">'/../data/contacts.json'</span>);
+
+<span class="cmt">// Lire tous les contacts depuis le JSON</span>
+<span class="kw">function</span> <span class="fn">lireContacts</span>(): array {
+    <span class="kw">if</span> (!<span class="fn">file_exists</span>(<span class="fn">FICHIER_JSON</span>)) {
+        <span class="kw">return</span> [];  <span class="cmt">// fichier absent = liste vide</span>
+    }
+    <span class="vr">$contenu</span> = <span class="fn">file_get_contents</span>(<span class="fn">FICHIER_JSON</span>);
+    <span class="vr">$data</span>    = <span class="fn">json_decode</span>(<span class="vr">$contenu</span>, <span class="bool">true</span>);
+    <span class="cmt">// true = tableau associatif (pas objet stdClass)</span>
+    <span class="kw">return</span> <span class="fn">is_array</span>(<span class="vr">$data</span>) ? <span class="vr">$data</span> : [];
+}
+
+<span class="cmt">// Ecrire tous les contacts dans le JSON</span>
+<span class="kw">function</span> <span class="fn">ecrireContacts</span>(array <span class="vr">$contacts</span>): void {
+    <span class="vr">$dossier</span> = <span class="fn">dirname</span>(<span class="fn">FICHIER_JSON</span>);
+    <span class="kw">if</span> (!<span class="fn">is_dir</span>(<span class="vr">$dossier</span>)) {
+        <span class="fn">mkdir</span>(<span class="vr">$dossier</span>, <span class="num">0755</span>, <span class="bool">true</span>);
+    }
+    <span class="vr">$json</span> = <span class="fn">json_encode</span>(<span class="vr">$contacts</span>, <span class="fn">JSON_PRETTY_PRINT</span> | <span class="fn">JSON_UNESCAPED_UNICODE</span>);
+    <span class="fn">file_put_contents</span>(<span class="fn">FICHIER_JSON</span>, <span class="vr">$json</span>);
+}
+
+<span class="cmt">// Trouver un contact par ID</span>
+<span class="kw">function</span> <span class="fn">trouverContact</span>(int <span class="vr">$id</span>): ?array {
+    <span class="kw">foreach</span> (<span class="fn">lireContacts</span>() <span class="kw">as</span> <span class="vr">$contact</span>) {
+        <span class="kw">if</span> (<span class="vr">$contact</span>[<span class="str">'id'</span>] === <span class="vr">$id</span>) <span class="kw">return</span> <span class="vr">$contact</span>;
+    }
+    <span class="kw">return</span> <span class="bool">null</span>;
+}
+
+<span class="cmt">// Generer le prochain ID (max existant + 1)</span>
+<span class="kw">function</span> <span class="fn">prochainId</span>(): int {
+    <span class="vr">$contacts</span> = <span class="fn">lireContacts</span>();
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$contacts</span>)) <span class="kw">return</span> <span class="num">1</span>;
+    <span class="kw">return</span> <span class="fn">max</span>(<span class="fn">array_column</span>(<span class="vr">$contacts</span>, <span class="str">'id'</span>)) + <span class="num">1</span>;
+}</code></pre>
+  </div>
+  <div class="callout info"><span class="ci">i</span><div><strong>json_decode($str, true)</strong> &mdash; le deuxieme argument <code>true</code> est essentiel. Sans lui, PHP retourne des objets <code>stdClass</code> qu'on accede avec <code>-&gt;</code>. Avec <code>true</code>, on obtient des tableaux associatifs accessibles avec <code>[]</code> &mdash; plus simple et coherent avec le reste du code PHP.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e2">
+  <div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2 &mdash; Create</div><h2>Ajouter un contact</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">ajouter.php &mdash; formulaire et traitement</span><span class="cb-badge new">CREATE</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="fn">session_start</span>();
+<span class="kw">require_once</span> <span class="str">'includes/fonctions.php'</span>;
+
+<span class="vr">$erreurs</span> = [];
+<span class="vr">$nom</span> = <span class="vr">$email</span> = <span class="vr">$tel</span> = <span class="str">''</span>;
+
+<span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+    <span class="vr">$nom</span>   = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>]   ?? <span class="str">''</span>);
+    <span class="vr">$email</span> = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'email'</span>] ?? <span class="str">''</span>);
+    <span class="vr">$tel</span>   = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'tel'</span>]   ?? <span class="str">''</span>);
+
+    <span class="cmt">// Validation</span>
+    <span class="kw">if</span> (<span class="fn">strlen</span>(<span class="vr">$nom</span>) < <span class="num">2</span>)
+        <span class="vr">$erreurs</span>[<span class="str">'nom'</span>] = <span class="str">'Nom obligatoire (2 car. min).'</span>;
+    <span class="kw">if</span> (!<span class="fn">filter_var</span>(<span class="vr">$email</span>, <span class="fn">FILTER_VALIDATE_EMAIL</span>))
+        <span class="vr">$erreurs</span>[<span class="str">'email'</span>] = <span class="str">'Email invalide.'</span>;
+
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$erreurs</span>)) {
+        <span class="vr">$contacts</span> = <span class="fn">lireContacts</span>();
+
+        <span class="cmt">// Creer le nouveau contact</span>
+        <span class="vr">$contacts</span>[] = [
+            <span class="str">'id'</span>    => <span class="fn">prochainId</span>(),
+            <span class="str">'nom'</span>   => <span class="vr">$nom</span>,
+            <span class="str">'email'</span> => <span class="vr">$email</span>,
+            <span class="str">'tel'</span>   => <span class="vr">$tel</span>,
+        ];
+
+        <span class="fn">ecrireContacts</span>(<span class="vr">$contacts</span>);
+
+        <span class="cmt">// Message flash en session</span>
+        <span class="vr">$_SESSION</span>[<span class="str">'flash'</span>] = <span class="str">'Contact ajoute avec succes.'</span>;
+        <span class="fn">header</span>(<span class="str">'Location: index.php'</span>); <span class="kw">exit</span>;
+    }
+}
+<span class="ptag">?&gt;</span>
+<span class="ht">&lt;form</span> <span class="ha">method</span>=<span class="str">"post"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">name</span>=<span class="str">"nom"</span>   <span class="ha">value</span>=<span class="str">"</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$nom</span>) <span class="ptag">?&gt;</span><span class="str">"</span> <span class="ha">placeholder</span>=<span class="str">"Nom"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">name</span>=<span class="str">"email"</span> <span class="ha">value</span>=<span class="str">"</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$email</span>) <span class="ptag">?&gt;</span><span class="str">"</span> <span class="ha">placeholder</span>=<span class="str">"Email"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">name</span>=<span class="str">"tel"</span>   <span class="ha">value</span>=<span class="str">"</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$tel</span>) <span class="ptag">?&gt;</span><span class="str">"</span> <span class="ha">placeholder</span>=<span class="str">"Telephone"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;button</span> <span class="ha">type</span>=<span class="str">"submit"</span><span class="ht">&gt;</span>Ajouter<span class="ht">&lt;/button&gt;</span>
+<span class="ht">&lt;/form&gt;</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e3">
+  <div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3 &mdash; Read</div><h2>Afficher la liste des contacts</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">index.php &mdash; liste avec messages flash</span><span class="cb-badge">READ</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="fn">session_start</span>();
+<span class="kw">require_once</span> <span class="str">'includes/fonctions.php'</span>;
+
+<span class="cmt">// Message flash : afficher une fois puis supprimer</span>
+<span class="vr">$flash</span> = <span class="vr">$_SESSION</span>[<span class="str">'flash'</span>] ?? <span class="str">''</span>;
+<span class="fn">unset</span>(<span class="vr">$_SESSION</span>[<span class="str">'flash'</span>]);
+
+<span class="cmt">// Lire tous les contacts</span>
+<span class="vr">$contacts</span> = <span class="fn">lireContacts</span>();
+
+<span class="cmt">// Recherche optionnelle</span>
+<span class="vr">$recherche</span> = <span class="fn">trim</span>(<span class="vr">$_GET</span>[<span class="str">'q'</span>] ?? <span class="str">''</span>);
+<span class="kw">if</span> (<span class="vr">$recherche</span>) {
+    <span class="vr">$contacts</span> = <span class="fn">array_filter</span>(<span class="vr">$contacts</span>, <span class="kw">fn</span>(<span class="vr">$c</span>) =>
+        <span class="fn">stripos</span>(<span class="vr">$c</span>[<span class="str">'nom'</span>],   <span class="vr">$recherche</span>) !== <span class="bool">false</span> ||
+        <span class="fn">stripos</span>(<span class="vr">$c</span>[<span class="str">'email'</span>], <span class="vr">$recherche</span>) !== <span class="bool">false</span>
+    );
+}
+<span class="ptag">?&gt;</span>
+<span class="ptag">&lt;?php</span> <span class="kw">if</span> (<span class="vr">$flash</span>): <span class="ptag">?&gt;</span>
+  <span class="ht">&lt;p</span> <span class="ha">class</span>=<span class="str">"flash"</span><span class="ht">&gt;</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$flash</span>) <span class="ptag">?&gt;</span><span class="ht">&lt;/p&gt;</span>
+<span class="ptag">&lt;?php</span> <span class="kw">endif</span>; <span class="ptag">?&gt;</span>
+
+<span class="ht">&lt;form</span> <span class="ha">method</span>=<span class="str">"get"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">name</span>=<span class="str">"q"</span> <span class="ha">value</span>=<span class="str">"</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$recherche</span>) <span class="ptag">?&gt;</span><span class="str">"</span> <span class="ha">placeholder</span>=<span class="str">"Rechercher..."</span><span class="ht">&gt;</span>
+<span class="ht">&lt;/form&gt;</span>
+
+<span class="ptag">&lt;?php</span> <span class="kw">foreach</span> (<span class="vr">$contacts</span> <span class="kw">as</span> <span class="vr">$c</span>): <span class="ptag">?&gt;</span>
+<span class="ht">&lt;div</span> <span class="ha">class</span>=<span class="str">"contact-card"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;strong&gt;</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$c</span>[<span class="str">'nom'</span>]) <span class="ptag">?&gt;</span><span class="ht">&lt;/strong&gt;</span>
+  <span class="ht">&lt;span&gt;</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$c</span>[<span class="str">'email'</span>]) <span class="ptag">?&gt;</span><span class="ht">&lt;/span&gt;</span>
+  <span class="ht">&lt;a</span> <span class="ha">href</span>=<span class="str">"modifier.php?id=</span><span class="ptag">&lt;?=</span> <span class="vr">$c</span>[<span class="str">'id'</span>] <span class="ptag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span>Modifier<span class="ht">&lt;/a&gt;</span>
+  <span class="ht">&lt;a</span> <span class="ha">href</span>=<span class="str">"index.php?action=supprimer&amp;id=</span><span class="ptag">&lt;?=</span> <span class="vr">$c</span>[<span class="str">'id'</span>] <span class="ptag">?&gt;</span><span class="str">"</span>
+     <span class="ha">onclick</span>=<span class="str">"return confirm('Supprimer ?')"</span><span class="ht">&gt;</span>Supprimer<span class="ht">&lt;/a&gt;</span>
+<span class="ht">&lt;/div&gt;</span>
+<span class="ptag">&lt;?php</span> <span class="kw">endforeach</span>; <span class="ptag">?&gt;</span></code></pre>
+  </div>
+  <div class="callout success"><span class="ci">+</span><div><strong>Le message flash.</strong> Stocker un message en session puis le supprimer immediatement apres affichage est le pattern "flash message". Il affiche une notification apres une redirection POST sans que le message reapparaisse au rechargement.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e4">
+  <div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4 &mdash; Update</div><h2>Modifier un contact</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">modifier.php &mdash; pre-remplissage et mise a jour</span><span class="cb-badge">UPDATE</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="fn">session_start</span>();
+<span class="kw">require_once</span> <span class="str">'includes/fonctions.php'</span>;
+
+<span class="vr">$id</span> = (int)(<span class="vr">$_GET</span>[<span class="str">'id'</span>] ?? <span class="num">0</span>);
+<span class="vr">$contact</span> = <span class="fn">trouverContact</span>(<span class="vr">$id</span>);
+
+<span class="kw">if</span> (!<span class="vr">$contact</span>) {
+    <span class="fn">header</span>(<span class="str">'Location: index.php'</span>); <span class="kw">exit</span>;
+}
+
+<span class="vr">$erreurs</span> = [];
+
+<span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+    <span class="vr">$nom</span>   = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>]   ?? <span class="str">''</span>);
+    <span class="vr">$email</span> = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'email'</span>] ?? <span class="str">''</span>);
+    <span class="vr">$tel</span>   = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'tel'</span>]   ?? <span class="str">''</span>);
+
+    <span class="kw">if</span> (<span class="fn">strlen</span>(<span class="vr">$nom</span>) < <span class="num">2</span>)
+        <span class="vr">$erreurs</span>[<span class="str">'nom'</span>] = <span class="str">'Nom obligatoire.'</span>;
+    <span class="kw">if</span> (!<span class="fn">filter_var</span>(<span class="vr">$email</span>, <span class="fn">FILTER_VALIDATE_EMAIL</span>))
+        <span class="vr">$erreurs</span>[<span class="str">'email'</span>] = <span class="str">'Email invalide.'</span>;
+
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$erreurs</span>)) {
+        <span class="vr">$contacts</span> = <span class="fn">lireContacts</span>();
+
+        <span class="cmt">// Trouver et modifier le bon contact</span>
+        <span class="kw">foreach</span> (<span class="vr">$contacts</span> <span class="kw">as</span> &<span class="vr">$c</span>) {  <span class="cmt">// & = reference</span>
+            <span class="kw">if</span> (<span class="vr">$c</span>[<span class="str">'id'</span>] === <span class="vr">$id</span>) {
+                <span class="vr">$c</span>[<span class="str">'nom'</span>]   = <span class="vr">$nom</span>;
+                <span class="vr">$c</span>[<span class="str">'email'</span>] = <span class="vr">$email</span>;
+                <span class="vr">$c</span>[<span class="str">'tel'</span>]   = <span class="vr">$tel</span>;
+                <span class="kw">break</span>;
+            }
+        }
+        <span class="fn">unset</span>(<span class="vr">$c</span>);  <span class="cmt">// liberer la reference</span>
+
+        <span class="fn">ecrireContacts</span>(<span class="vr">$contacts</span>);
+        <span class="vr">$_SESSION</span>[<span class="str">'flash'</span>] = <span class="str">'Contact modifie.'</span>;
+        <span class="fn">header</span>(<span class="str">'Location: index.php'</span>); <span class="kw">exit</span>;
+    }
+} <span class="kw">else</span> {
+    <span class="cmt">// Pre-remplir le formulaire avec les valeurs actuelles</span>
+    <span class="vr">$nom</span>   = <span class="vr">$contact</span>[<span class="str">'nom'</span>];
+    <span class="vr">$email</span> = <span class="vr">$contact</span>[<span class="str">'email'</span>];
+    <span class="vr">$tel</span>   = <span class="vr">$contact</span>[<span class="str">'tel'</span>] ?? <span class="str">''</span>;
+}</code></pre>
+  </div>
+  <div class="callout tip"><span class="ci">!</span><div><strong>Le & dans foreach est crucial pour la modification.</strong> Sans la reference <code>&$c</code>, foreach travaille sur des copies et les modifications ne sont pas repercutees dans le tableau original. Toujours appeler <code>unset($c)</code> apres la boucle pour eviter les effets de bord.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e5">
+  <div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5 &mdash; Delete</div><h2>Supprimer un contact</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Suppression dans index.php &mdash; action=supprimer</span><span class="cb-badge warn">DELETE</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="fn">session_start</span>();
+<span class="kw">require_once</span> <span class="str">'includes/fonctions.php'</span>;
+
+<span class="vr">$action</span> = <span class="vr">$_GET</span>[<span class="str">'action'</span>] ?? <span class="str">''</span>;
+
+<span class="kw">if</span> (<span class="vr">$action</span> === <span class="str">'supprimer'</span>) {
+    <span class="vr">$id</span> = (int)(<span class="vr">$_GET</span>[<span class="str">'id'</span>] ?? <span class="num">0</span>);
+
+    <span class="kw">if</span> (<span class="vr">$id</span> > <span class="num">0</span>) {
+        <span class="vr">$contacts</span> = <span class="fn">lireContacts</span>();
+
+        <span class="cmt">// Filtrer : garder tous sauf celui a supprimer</span>
+        <span class="vr">$contacts</span> = <span class="fn">array_values</span>(
+            <span class="fn">array_filter</span>(<span class="vr">$contacts</span>, <span class="kw">fn</span>(<span class="vr">$c</span>) => <span class="vr">$c</span>[<span class="str">'id'</span>] !== <span class="vr">$id</span>)
+        );
+
+        <span class="fn">ecrireContacts</span>(<span class="vr">$contacts</span>);
+        <span class="vr">$_SESSION</span>[<span class="str">'flash'</span>] = <span class="str">'Contact supprime.'</span>;
+    }
+
+    <span class="fn">header</span>(<span class="str">'Location: index.php'</span>); <span class="kw">exit</span>;
+}
+
+<span class="cmt">// ... suite : affichage de la liste</span></code></pre>
+  </div>
+  <div class="callout warn"><span class="ci">!</span><div><strong>Ne jamais supprimer via un lien GET en production.</strong> Un lien <code>?action=supprimer&id=3</code> peut etre declenche accidentellement (prefetch du navigateur, bot de crawl). En production, la suppression doit passer par un formulaire POST avec un token CSRF. Pour ce projet pedagogique, on garde GET pour la simplicite.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e6">
+  <div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6 &mdash; Architecture</div><h2>Routeur d'actions dans index.php</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">index.php &mdash; routeur complet</span><span class="cb-badge new">Complet</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="fn">session_start</span>();
+<span class="kw">require_once</span> <span class="str">'includes/fonctions.php'</span>;
+
+<span class="vr">$action</span> = <span class="vr">$_GET</span>[<span class="str">'action'</span>] ?? <span class="str">'liste'</span>;
+
+<span class="cmt">// Routeur : dispatcher selon l'action</span>
+<span class="kw">switch</span> (<span class="vr">$action</span>) {
+
+    <span class="kw">case</span> <span class="str">'supprimer'</span>:
+        <span class="vr">$id</span> = (int)(<span class="vr">$_GET</span>[<span class="str">'id'</span>] ?? <span class="num">0</span>);
+        <span class="kw">if</span> (<span class="vr">$id</span> > <span class="num">0</span>) {
+            <span class="vr">$contacts</span> = <span class="fn">array_values</span>(<span class="fn">array_filter</span>(
+                <span class="fn">lireContacts</span>(), <span class="kw">fn</span>(<span class="vr">$c</span>) => <span class="vr">$c</span>[<span class="str">'id'</span>] !== <span class="vr">$id</span>
+            ));
+            <span class="fn">ecrireContacts</span>(<span class="vr">$contacts</span>);
+            <span class="vr">$_SESSION</span>[<span class="str">'flash'</span>] = <span class="str">'Contact supprime.'</span>;
+        }
+        <span class="fn">header</span>(<span class="str">'Location: index.php'</span>); <span class="kw">exit</span>;
+
+    <span class="kw">case</span> <span class="str">'liste'</span>:
+    <span class="kw">default</span>:
+        <span class="vr">$flash</span> = <span class="vr">$_SESSION</span>[<span class="str">'flash'</span>] ?? <span class="str">''</span>;
+        <span class="fn">unset</span>(<span class="vr">$_SESSION</span>[<span class="str">'flash'</span>]);
+        <span class="vr">$contacts</span> = <span class="fn">lireContacts</span>();
+
+        <span class="vr">$q</span> = <span class="fn">trim</span>(<span class="vr">$_GET</span>[<span class="str">'q'</span>] ?? <span class="str">''</span>);
+        <span class="kw">if</span> (<span class="vr">$q</span>) {
+            <span class="vr">$contacts</span> = <span class="fn">array_filter</span>(<span class="vr">$contacts</span>, <span class="kw">fn</span>(<span class="vr">$c</span>) =>
+                <span class="fn">stripos</span>(<span class="vr">$c</span>[<span class="str">'nom'</span>], <span class="vr">$q</span>) !== <span class="bool">false</span> ||
+                <span class="fn">stripos</span>(<span class="vr">$c</span>[<span class="str">'email'</span>], <span class="vr">$q</span>) !== <span class="bool">false</span>
+            );
+        }
+        <span class="kw">break</span>;
+}
+<span class="cmt">// Affichage HTML en dessous...</span></code></pre>
+  </div>
+  <div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Pattern PRG systematique.</strong> Toutes les actions qui modifient des donnees (ajout, modification, suppression) terminent par un header('Location:') + exit. Cela evite le double envoi au rechargement et suit le pattern Post/Redirect/Get.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e7">
+  <div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Etape 7 &mdash; Recapitulatif</div><h2>Contenu complet du fichier JSON</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">data/contacts.json &mdash; exemple de donnees</span><span class="cb-badge">JSON</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code>[
+    {
+        <span class="str">"id"</span>: <span class="num">1</span>,
+        <span class="str">"nom"</span>: <span class="str">"Alice Dupont"</span>,
+        <span class="str">"email"</span>: <span class="str">"alice@example.com"</span>,
+        <span class="str">"tel"</span>: <span class="str">"06 12 34 56 78"</span>
+    },
+    {
+        <span class="str">"id"</span>: <span class="num">2</span>,
+        <span class="str">"nom"</span>: <span class="str">"Bob Martin"</span>,
+        <span class="str">"email"</span>: <span class="str">"bob@example.com"</span>,
+        <span class="str">"tel"</span>: <span class="str">""</span>
+    }
+]
+<span class="cmt">// json_encode avec JSON_PRETTY_PRINT = lisible</span>
+<span class="cmt">// json_encode sans option = compact (production)</span></code></pre>
+  </div>
+  <div class="callout info"><span class="ci">i</span><div><strong>Transition vers PDO.</strong> Ce projet JSON est structurellement identique a un CRUD avec PDO. Les fonctions <code>lireContacts()</code> et <code>ecrireContacts()</code> seront remplacees par des requetes SQL. La logique des pages (ajouter.php, modifier.php, index.php) reste exactement la meme.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e8">
+  <div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Interactif</div><h2>Simulateur CRUD en direct</h2></div></div>
+  <p class="prose">Testez les 4 operations CRUD directement dans cette page. Les donnees sont stockees en memoire (pas de fichier JSON reel ici, mais la logique est identique).</p>
+  <div class="crud-demo">
+    <div class="cd-head"><div class="cd-label">Mini-CRUD simulateur</div><div class="cd-badge">Simulation PHP/JSON</div></div>
+    <div class="cd-body">
+      <div class="cd-form">
+        <input class="cd-input" id="cd-nom"   placeholder="Nom complet" oninput="cdValidate()">
+        <input class="cd-input" id="cd-email" placeholder="Email" type="email" oninput="cdValidate()">
+        <input class="cd-input" id="cd-tel"   placeholder="Tel (optionnel)">
+        <button class="cd-btn" id="cd-submit" onclick="cdSubmit()">+ Ajouter</button>
+      </div>
+      <div id="cd-form-err" style="font-family:var(--mono);font-size:.75rem;color:var(--red);margin-bottom:8px;min-height:18px;"></div>
+      <div class="cd-list" id="cd-list"></div>
+      <div class="cd-json" id="cd-json">[]</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="quiz">
+  <div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; CRUD et JSON</h2></div></div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Que signifie l'acronyme CRUD ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">Connect, Read, Update, Delete</button>
+      <button class="opt" onclick="ans(this,'q1',true)">Create, Read, Update, Delete &mdash; les 4 operations fondamentales sur les donnees</button>
+      <button class="opt" onclick="ans(this,'q1',false)">Create, Render, Upload, Deploy</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Pourquoi passer <code>true</code> en second argument de <code>json_decode($str, true)</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',false)">Pour activer la validation du JSON</button>
+      <button class="opt" onclick="ans(this,'q2',true)">Pour obtenir un tableau associatif PHP au lieu d'objets stdClass, ce qui permet d'acceder aux donnees avec [] au lieu de -></button>
+      <button class="opt" onclick="ans(this,'q2',false)">Pour decoder les caracteres Unicode</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Dans le pattern PRG (Post/Redirect/Get), pourquoi terminer toute action POST par une redirection ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',false)">Pour ameliorer les performances</button>
+      <button class="opt" onclick="ans(this,'q3',true)">Pour eviter le double envoi du formulaire si l'utilisateur recharge la page apres une action</button>
+      <button class="opt" onclick="ans(this,'q3',false)">Parce que PHP l'exige apres header()</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Quel est le role du <code>&</code> dans <code>foreach ($contacts as &$c)</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',false)">Concatener les elements du tableau</button>
+      <button class="opt" onclick="ans(this,'q4',true)">Creer une reference : les modifications de $c sont repercutees dans le tableau original $contacts</button>
+      <button class="opt" onclick="ans(this,'q4',false)">Convertir $c en tableau associatif</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> Qu'est-ce qu'un message "flash" en PHP ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q5',false)">Un message d'erreur critique qui arrete le script</button>
+      <button class="opt" onclick="ans(this,'q5',true)">Un message stocke en session, affiche une seule fois (puis supprime), utilise pour confirmer une action apres une redirection</button>
+      <button class="opt" onclick="ans(this,'q5',false)">Un message anime en CSS avec une animation flash</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text"  style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll(".etape[id]"),nl=document.querySelectorAll(".nav-link");
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove("active"));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add("active");}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest(".code-block").querySelector("pre");navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent="Copie";btn.classList.add("ok");setTimeout(()=>{btn.textContent="copier";btn.classList.remove("ok");},1800);});}
+
+// CRUD Simulator
+let contacts=[], nextId=1;
+function cdValidate(){
+  const nom=document.getElementById("cd-nom").value.trim();
+  const email=document.getElementById("cd-email").value.trim();
+  const emailRe=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const err=[];
+  if(nom.length<2)err.push("Nom requis (2 car. min)");
+  if(!emailRe.test(email))err.push("Email invalide");
+  document.getElementById("cd-form-err").textContent=err.join(" | ");
+  return err.length===0;
+}
+function cdSubmit(){
+  if(!cdValidate())return;
+  const btn=document.getElementById("cd-submit");
+  const nom=document.getElementById("cd-nom").value.trim();
+  const email=document.getElementById("cd-email").value.trim();
+  const tel=document.getElementById("cd-tel").value.trim();
+  if(btn.dataset.editId){
+    // UPDATE
+    const id=parseInt(btn.dataset.editId);
+    contacts=contacts.map(c=>c.id===id?{...c,nom,email,tel}:c);
+    btn.textContent="+ Ajouter";
+    delete btn.dataset.editId;
+  } else {
+    // CREATE
+    contacts.push({id:nextId++,nom,email,tel});
+  }
+  document.getElementById("cd-nom").value="";
+  document.getElementById("cd-email").value="";
+  document.getElementById("cd-tel").value="";
+  document.getElementById("cd-form-err").textContent="";
+  cdRender();
+}
+function cdEdit(id){
+  const c=contacts.find(x=>x.id===id);
+  if(!c)return;
+  document.getElementById("cd-nom").value=c.nom;
+  document.getElementById("cd-email").value=c.email;
+  document.getElementById("cd-tel").value=c.tel||"";
+  const btn=document.getElementById("cd-submit");
+  btn.textContent="Sauvegarder";
+  btn.dataset.editId=id;
+  document.getElementById("cd-nom").focus();
+}
+function cdDelete(id){
+  if(!confirm("Supprimer ce contact ?"))return;
+  contacts=contacts.filter(c=>c.id!==id);
+  cdRender();
+}
+function cdRender(){
+  const list=document.getElementById("cd-list");
+  const json=document.getElementById("cd-json");
+  if(contacts.length===0){
+    list.innerHTML="<div class=\"cd-empty\">Aucun contact &mdash; ajoutez-en un ci-dessus</div>";
+  } else {
+    list.innerHTML=contacts.map(c=>`<div class="cd-item">
+      <span class="cd-item-id">#${c.id}</span>
+      <span class="cd-item-nom">${c.nom}</span>
+      <span class="cd-item-email">${c.email}</span>
+      <button class="cd-btn edit" onclick="cdEdit(${c.id})">Modifier</button>
+      <button class="cd-btn del"  onclick="cdDelete(${c.id})">Supprimer</button>
+    </div>`).join("");
+  }
+  json.textContent=JSON.stringify(contacts,null,2);
+}
+cdRender();
+
+const fbs={
+  q1:{
+    ok:"Exact. CRUD = Create, Read, Update, Delete. Ce sont les 4 operations de base de toute application qui gere des donnees. On les retrouve dans tous les contextes : fichiers JSON, bases de donnees SQL, API REST (POST/GET/PUT/DELETE).",
+    ko:"Non. CRUD = Create, Read, Update, Delete. Les 4 operations fondamentales sur les donnees. En SQL : INSERT (Create), SELECT (Read), UPDATE (Update), DELETE (Delete). En REST : POST, GET, PUT/PATCH, DELETE."
+  },
+  q2:{
+    ok:"Exact. Sans le deuxieme argument true, json_decode retourne des objets stdClass : on accede aux proprietes avec $obj->nom. Avec true, on obtient des tableaux associatifs : on accede avec $arr['nom']. Les tableaux sont plus naturels en PHP.",
+    ko:"Non. Le deuxieme argument true force json_decode a retourner des tableaux associatifs au lieu d'objets stdClass. Sans lui : $data->nom. Avec lui : $data['nom']. Plus coherent avec le reste du code PHP qui utilise des tableaux."
+  },
+  q3:{
+    ok:"Exact. Sans redirection apres un POST, si l'utilisateur appuie sur F5 (recharger), le navigateur resomet le formulaire. Avec PRG (Post/Redirect/Get), la redirection amene sur un GET : F5 recharge juste la page de liste sans resoumettre.",
+    ko:"Non. Le pattern PRG evite le double envoi. Sans redirection : F5 apres un POST resoumet le formulaire (le contact serait ajoute deux fois). Avec header('Location:') + exit, la page suivante est un GET : F5 ne resoumet rien."
+  },
+  q4:{
+    ok:"Exact. Sans le &, foreach copie chaque element dans $c. Les modifications de $c n'affectent pas le tableau original. Avec & (reference), $c pointe vers l'element reel du tableau : toute modification est directement repercutee. Ne pas oublier unset($c) apres.",
+    ko:"Non. Le & cree une reference. Sans lui, foreach copie les elements : modifier $c ne change pas $contacts. Avec &$c, $c est un alias de l'element original : modifier $c modifie directement $contacts. unset($c) est necessaire apres pour liberer la reference."
+  },
+  q5:{
+    ok:"Exact. Le message flash est un pattern classique : stocker un message en session, le lire et le supprimer immediatement a l'affichage. Cela permet d'afficher 'Contact ajoute !' apres une redirection POST sans que le message reapparaisse au rechargement de page.",
+    ko:"Non. Un message flash est un message stocke en session et affiche une seule fois. On le stocke avant la redirection (header Location), puis on le lit et supprime (unset) a l'affichage suivant. Utile pour confirmer une action sans risque de double affichage."
+  }
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>o.disabled=true);
+  btn.classList.add(ok?"correct":"wrong");
+  if(!ok)btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>{if(o.onclick&&o.onclick.toString().includes(",true)"))o.classList.add("correct");});
+  const fb=document.getElementById("fb-"+qid);fb.innerHTML=fbs[qid][ok?"ok":"ko"];fb.className="fb show "+(ok?"ok":"ko");
+  if(Object.keys(rep).length===5){
+    const g=Object.values(rep).filter(Boolean).length,box=document.getElementById("score-box");
+    box.style.display="block";
+    document.getElementById("s-score").textContent=g+"/5";
+    document.getElementById("s-text").innerHTML=g===5?"Parfait &mdash; CRUD maitrise, pret pour PDO !":g>=4?"Tres bien.":g>=3?"Revoir le pattern PRG et les messages flash.":"Reprendre depuis les bases CRUD.";
+    box.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+}
+</script>
+</body>
+</html>

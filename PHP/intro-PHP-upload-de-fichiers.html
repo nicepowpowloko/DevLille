@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 08 &mdash; Upload de fichiers</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#0369a1;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(3,105,161,.07);}
+.nav-link.active{background:rgba(3,105,161,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.b{background:rgba(3,105,161,.07);border-color:rgba(3,105,161,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.r{background:rgba(220,38,38,.07);border-color:rgba(220,38,38,.25);color:var(--red);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(3,105,161,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(3,105,161,.07);border:1px solid rgba(3,105,161,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(3,105,161,.15);border:1px solid rgba(3,105,161,.3);color:#7dd3fc;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.warn{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#f87171;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(3,105,161,.2);color:#7dd3fc;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.ptag{color:#f38ba8;font-weight:700;}
+.bool{color:#fab387;font-weight:600;}.ht{color:#89b4fa;}.ha{color:#fab387;}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.upload-sim{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.us-head{background:var(--title);padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.us-label{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--muted);}
+.us-badge{font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:3px;background:rgba(3,105,161,.1);border:1px solid rgba(3,105,161,.2);color:var(--accent);}
+.us-body{padding:20px;}
+.us-drop{border:2px dashed var(--border2);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;}
+.us-drop:hover,.us-drop.over{border-color:rgba(3,105,161,.5);background:rgba(3,105,161,.03);}
+.us-drop-label{font-family:var(--mono);font-size:.83rem;color:var(--muted);}
+.us-drop-sub{font-size:.75rem;color:var(--dim);margin-top:4px;}
+.us-result{background:#1e1e2e;border-radius:8px;padding:14px 16px;font-family:var(--mono);font-size:.8rem;line-height:2;min-height:60px;}
+.us-ok{color:#a6e3a1;}.us-err{color:#f38ba8;}.us-dim{color:#6c7086;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(3,105,161,.3);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>[ ] PHP &mdash; Bloc 2</span><p>PHP et le web</p></div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>$_FILES explique</a>
+    <a href="#e1"   class="nav-link"><span class="nav-num">01</span>Formulaire upload</a>
+    <a href="#e2"   class="nav-link"><span class="nav-num">02</span>Lire $_FILES</a>
+    <a href="#e3"   class="nav-link"><span class="nav-num">03</span>Valider le fichier</a>
+    <a href="#e4"   class="nav-link"><span class="nav-num">04</span>Deplacer le fichier</a>
+    <a href="#e5"   class="nav-link"><span class="nav-num">05</span>Upload complet</a>
+    <a href="#e6"   class="nav-link"><span class="nav-num">06</span>Upload multiple</a>
+    <a href="#e7"   class="nav-link"><span class="nav-num">07</span>Simulateur</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">08</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 2 &mdash; PHP et le web</div>
+    <a href="php-06-formulaires.html" class="nav-serie-link">06 &mdash; Formulaires</a>
+    <a href="php-07-sessions.html"    class="nav-serie-link">07 &mdash; Sessions</a>
+    <a href="php-08-upload.html"      class="nav-serie-link current">08 &mdash; Upload fichiers</a>
+    <a href="php-09-crud.html"        class="nav-serie-link">09 &mdash; Mini-CRUD</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 2 &middot; Support 3/4</div>
+  <h1>Upload de<br><span class="hl">fichiers</span></h1>
+  <p>PHP permet de recevoir des fichiers envoyes par un formulaire via la superglobale <code>$_FILES</code>. Ce support couvre la reception, la validation du type et de la taille, le deplacement securise, et les bonnes pratiques de securite.</p>
+  <div class="objectifs">
+    <span class="obj b">$_FILES</span>
+    <span class="obj g">Validation type/taille</span>
+    <span class="obj y">move_uploaded_file()</span>
+    <span class="obj r">Securite</span>
+  </div>
+</div>
+
+<section class="etape" id="plan">
+  <div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Fondamentaux</div><h2>$_FILES &mdash; la superglobale des fichiers</h2></div></div>
+  <p class="prose">Quand un formulaire envoie un fichier, PHP le place dans un repertoire temporaire du serveur et remplit la superglobale <code>$_FILES</code> avec toutes les informations sur ce fichier.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Cle $_FILES</th><th>Contenu</th><th>Exemple</th></tr></thead>
+    <tbody>
+      <tr><td>['name']</td><td>Nom original du fichier (cote client)</td><td>"photo.jpg"</td></tr>
+      <tr><td>['type']</td><td>Type MIME declare par le navigateur</td><td>"image/jpeg"</td></tr>
+      <tr><td>['size']</td><td>Taille en octets</td><td>204800 (200 Ko)</td></tr>
+      <tr><td>['tmp_name']</td><td>Chemin du fichier temporaire sur le serveur</td><td>"/tmp/phpXYZ123"</td></tr>
+      <tr><td>['error']</td><td>Code d'erreur (0 = pas d'erreur)</td><td>0</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout warn"><span class="ci">!</span><div><strong>Ne jamais faire confiance a $_FILES['type'].</strong> Le type MIME dans $_FILES est envoye par le navigateur &mdash; il peut etre falsifie. Toujours verifier le type reel du fichier cote serveur avec <code>finfo_file()</code> ou <code>mime_content_type()</code>.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e1">
+  <div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1</div><h2>Formulaire HTML pour l'upload</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Formulaire upload &mdash; attributs obligatoires</span><span class="cb-badge">HTML</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="cmt">&lt;!-- IMPORTANT : enctype="multipart/form-data" est OBLIGATOIRE --&gt;</span>
+<span class="ht">&lt;form</span> <span class="ha">method</span>=<span class="str">"post"</span> <span class="ha">action</span>=<span class="str">"upload.php"</span>
+      <span class="ha">enctype</span>=<span class="str">"multipart/form-data"</span><span class="ht">&gt;</span>
+
+  <span class="cmt">&lt;!-- Champ fichier simple --&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"file"</span> <span class="ha">name</span>=<span class="str">"photo"</span><span class="ht">&gt;</span>
+
+  <span class="cmt">&lt;!-- Filtrer les types acceptes (cote client seulement) --&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"file"</span> <span class="ha">name</span>=<span class="str">"photo"</span>
+         <span class="ha">accept</span>=<span class="str">"image/jpeg,image/png,image/webp"</span><span class="ht">&gt;</span>
+
+  <span class="cmt">&lt;!-- Plusieurs fichiers en meme temps --&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"file"</span> <span class="ha">name</span>=<span class="str">"documents[]"</span> <span class="ha">multiple</span><span class="ht">&gt;</span>
+
+  <span class="ht">&lt;button</span> <span class="ha">type</span>=<span class="str">"submit"</span><span class="ht">&gt;</span>Envoyer<span class="ht">&lt;/button&gt;</span>
+<span class="ht">&lt;/form&gt;</span></code></pre>
+  </div>
+  <div class="callout warn"><span class="ci">!</span><div><strong><code>enctype="multipart/form-data"</code> est obligatoire.</strong> Sans cet attribut, le fichier n'est pas envoye au serveur &mdash; seul le nom du fichier est transmis comme chaine de texte. C'est l'erreur la plus courante lors d'un premier upload.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e2">
+  <div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2</div><h2>Lire $_FILES &mdash; structure et codes d'erreur</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Lire $_FILES et interpreter les erreurs</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">"REQUEST_METHOD"</span>] === <span class="str">"POST"</span>) {
+
+    <span class="cmt">// Acceder au fichier (name="photo" dans le formulaire)</span>
+    <span class="vr">$fichier</span> = <span class="vr">$_FILES</span>[<span class="str">"photo"</span>];
+
+    <span class="cmt">// Les 5 cles disponibles</span>
+    <span class="kw">echo</span> <span class="vr">$fichier</span>[<span class="str">"name"</span>];      <span class="cmt">// "photo.jpg"</span>
+    <span class="kw">echo</span> <span class="vr">$fichier</span>[<span class="str">"type"</span>];      <span class="cmt">// "image/jpeg" (non fiable !)</span>
+    <span class="kw">echo</span> <span class="vr">$fichier</span>[<span class="str">"size"</span>];      <span class="cmt">// 204800 (octets)</span>
+    <span class="kw">echo</span> <span class="vr">$fichier</span>[<span class="str">"tmp_name"</span>];  <span class="cmt">// "/tmp/phpABC123"</span>
+    <span class="kw">echo</span> <span class="vr">$fichier</span>[<span class="str">"error"</span>];     <span class="cmt">// 0 = OK</span>
+
+    <span class="cmt">// Verifier le code d'erreur en premier</span>
+    <span class="kw">switch</span> (<span class="vr">$fichier</span>[<span class="str">"error"</span>]) {
+        <span class="kw">case</span> <span class="fn">UPLOAD_ERR_OK</span>:
+            <span class="cmt">// 0 : aucune erreur, traiter le fichier</span>
+            <span class="kw">break</span>;
+        <span class="kw">case</span> <span class="fn">UPLOAD_ERR_INI_SIZE</span>:   <span class="cmt">// 1 : depasse upload_max_filesize (php.ini)</span>
+        <span class="kw">case</span> <span class="fn">UPLOAD_ERR_FORM_SIZE</span>:  <span class="cmt">// 2 : depasse MAX_FILE_SIZE du formulaire</span>
+            <span class="kw">echo</span> <span class="str">"Fichier trop volumineux."</span>;
+            <span class="kw">break</span>;
+        <span class="kw">case</span> <span class="fn">UPLOAD_ERR_NO_FILE</span>:    <span class="cmt">// 4 : aucun fichier envoye</span>
+            <span class="kw">echo</span> <span class="str">"Aucun fichier selectionne."</span>;
+            <span class="kw">break</span>;
+        <span class="kw">default</span>:
+            <span class="kw">echo</span> <span class="str">"Erreur upload : code "</span> . <span class="vr">$fichier</span>[<span class="str">"error"</span>];
+    }
+}</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e3">
+  <div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3 &mdash; Securite</div><h2>Valider le fichier &mdash; type, taille, extension</h2></div></div>
+  <p class="prose">La validation d'un upload necessite plusieurs controles independants. Un seul ne suffit pas &mdash; ils se completent mutuellement.</p>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Validation complete d'un fichier uploade</span><span class="cb-badge warn">Securite</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">function</span> <span class="fn">validerFichier</span>(array <span class="vr">$fichier</span>): array {
+    <span class="vr">$erreurs</span> = [];
+
+    <span class="cmt">// 1. Verifier qu'un fichier a bien ete envoye</span>
+    <span class="kw">if</span> (<span class="vr">$fichier</span>[<span class="str">"error"</span>] !== <span class="fn">UPLOAD_ERR_OK</span>) {
+        <span class="vr">$erreurs</span>[] = <span class="str">"Erreur lors de l'envoi (code "</span> . <span class="vr">$fichier</span>[<span class="str">"error"</span>] . <span class="str">")."</span>;
+        <span class="kw">return</span> <span class="vr">$erreurs</span>;  <span class="cmt">// inutile de continuer</span>
+    }
+
+    <span class="cmt">// 2. Verifier la taille (max 2 Mo)</span>
+    <span class="vr">$tailleMax</span> = <span class="num">2</span> * <span class="num">1024</span> * <span class="num">1024</span>;  <span class="cmt">// 2 Mo en octets</span>
+    <span class="kw">if</span> (<span class="vr">$fichier</span>[<span class="str">"size"</span>] > <span class="vr">$tailleMax</span>) {
+        <span class="vr">$erreurs</span>[] = <span class="str">"Fichier trop volumineux (max 2 Mo)."</span>;
+    }
+
+    <span class="cmt">// 3. Verifier le type MIME REEL (pas celui du navigateur)</span>
+    <span class="vr">$finfo</span> = <span class="fn">finfo_open</span>(<span class="fn">FILEINFO_MIME_TYPE</span>);
+    <span class="vr">$typeMime</span> = <span class="fn">finfo_file</span>(<span class="vr">$finfo</span>, <span class="vr">$fichier</span>[<span class="str">"tmp_name"</span>]);
+    <span class="fn">finfo_close</span>(<span class="vr">$finfo</span>);
+
+    <span class="vr">$typesAutorises</span> = [<span class="str">"image/jpeg"</span>, <span class="str">"image/png"</span>, <span class="str">"image/webp"</span>];
+    <span class="kw">if</span> (!<span class="fn">in_array</span>(<span class="vr">$typeMime</span>, <span class="vr">$typesAutorises</span>)) {
+        <span class="vr">$erreurs</span>[] = <span class="str">"Type de fichier non autorise : "</span> . <span class="vr">$typeMime</span>;
+    }
+
+    <span class="cmt">// 4. Verifier l'extension du nom original</span>
+    <span class="vr">$ext</span> = <span class="fn">strtolower</span>(<span class="fn">pathinfo</span>(<span class="vr">$fichier</span>[<span class="str">"name"</span>], <span class="fn">PATHINFO_EXTENSION</span>));
+    <span class="vr">$extsAutorisees</span> = [<span class="str">"jpg"</span>, <span class="str">"jpeg"</span>, <span class="str">"png"</span>, <span class="str">"webp"</span>];
+    <span class="kw">if</span> (!<span class="fn">in_array</span>(<span class="vr">$ext</span>, <span class="vr">$extsAutorisees</span>)) {
+        <span class="vr">$erreurs</span>[] = <span class="str">"Extension non autorisee."</span>;
+    }
+
+    <span class="kw">return</span> <span class="vr">$erreurs</span>;
+}</code></pre>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Verification</th><th>Pourquoi</th><th>Fonction PHP</th></tr></thead>
+    <tbody>
+      <tr><td>Code erreur</td><td>S'assurer que le fichier est arrive correctement</td><td>$_FILES["error"] === UPLOAD_ERR_OK</td></tr>
+      <tr><td>Taille</td><td>Eviter de saturer le serveur</td><td>$_FILES["size"]</td></tr>
+      <tr><td>Type MIME reel</td><td>Un PNG peut etre renomme en .php</td><td>finfo_file()</td></tr>
+      <tr><td>Extension</td><td>Double verification complementaire</td><td>pathinfo(..., PATHINFO_EXTENSION)</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e4">
+  <div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4</div><h2>Deplacer le fichier &mdash; move_uploaded_file()</h2></div></div>
+  <p class="prose">Apres validation, le fichier est dans un repertoire temporaire. Il faut le <strong>deplacer</strong> vers son emplacement definitif avec <code>move_uploaded_file()</code>. Cette fonction verifie que le fichier provient bien d'un upload PHP (securite).</p>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">move_uploaded_file() &mdash; deplacement securise</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="vr">$fichier</span> = <span class="vr">$_FILES</span>[<span class="str">"photo"</span>];
+
+<span class="cmt">// Dossier de destination</span>
+<span class="vr">$dossier</span> = <span class="str">__DIR__</span> . <span class="str">"/uploads/"</span>;
+
+<span class="cmt">// Creer le dossier s'il n'existe pas</span>
+<span class="kw">if</span> (!<span class="fn">is_dir</span>(<span class="vr">$dossier</span>)) {
+    <span class="fn">mkdir</span>(<span class="vr">$dossier</span>, <span class="num">0755</span>, <span class="bool">true</span>);
+}
+
+<span class="cmt">// Generer un nom unique pour eviter les collisions</span>
+<span class="vr">$ext</span>      = <span class="fn">strtolower</span>(<span class="fn">pathinfo</span>(<span class="vr">$fichier</span>[<span class="str">"name"</span>], <span class="fn">PATHINFO_EXTENSION</span>));
+<span class="vr">$nomUnique</span> = <span class="fn">uniqid</span>(<span class="str">"img_"</span>, <span class="bool">true</span>) . <span class="str">"."</span> . <span class="vr">$ext</span>;
+<span class="cmt">// Resultat : "img_65abc123.456789.jpg"</span>
+
+<span class="cmt">// Chemin complet de destination</span>
+<span class="vr">$destination</span> = <span class="vr">$dossier</span> . <span class="vr">$nomUnique</span>;
+
+<span class="cmt">// Deplacer le fichier temporaire vers sa destination</span>
+<span class="kw">if</span> (<span class="fn">move_uploaded_file</span>(<span class="vr">$fichier</span>[<span class="str">"tmp_name"</span>], <span class="vr">$destination</span>)) {
+    <span class="kw">echo</span> <span class="str">"Fichier enregistre : "</span> . <span class="vr">$nomUnique</span>;
+} <span class="kw">else</span> {
+    <span class="kw">echo</span> <span class="str">"Erreur lors du deplacement du fichier."</span>;
+    <span class="cmt">// Causes : permissions insuffisantes, dossier inexistant</span>
+}</code></pre>
+  </div>
+  <div class="callout tip"><span class="ci">!</span><div><strong>Toujours generer un nom de fichier aleatoire.</strong> Ne jamais utiliser le nom original fourni par l'utilisateur (<code>$_FILES["name"]</code>) comme nom de destination. Il peut contenir des caracteres dangereux, des slashes, ou ecraser un fichier existant. <code>uniqid()</code> garantit un nom unique.</div></div>
+  <div class="callout warn"><span class="ci">!</span><div><strong>Mettre le dossier uploads hors de la racine web OU bloquer l'execution PHP.</strong> Si un attaquant uploade un fichier PHP et que le dossier est accessible via URL, il peut l'executer. Solutions : placer uploads/ hors du document root, ou ajouter un .htaccess avec <code>php_flag engine off</code> dans le dossier.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e5">
+  <div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5 &mdash; Complet</div><h2>Script d'upload complet</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">upload.php &mdash; script complet et securise</span><span class="cb-badge good">Complet</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="vr">$erreurs</span> = [];
+<span class="vr">$succes</span>  = <span class="bool">false</span>;
+<span class="vr">$nomFichier</span> = <span class="str">""</span>;
+
+<span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">"REQUEST_METHOD"</span>] === <span class="str">"POST"</span> && <span class="fn">isset</span>(<span class="vr">$_FILES</span>[<span class="str">"photo"</span>])) {
+
+    <span class="vr">$f</span>        = <span class="vr">$_FILES</span>[<span class="str">"photo"</span>];
+    <span class="vr">$dossier</span>  = <span class="str">__DIR__</span> . <span class="str">"/uploads/"</span>;
+    <span class="vr">$tailleMax</span> = <span class="num">2</span> * <span class="num">1024</span> * <span class="num">1024</span>;
+
+    <span class="cmt">// Verification code erreur</span>
+    <span class="kw">if</span> (<span class="vr">$f</span>[<span class="str">"error"</span>] !== <span class="fn">UPLOAD_ERR_OK</span>) {
+        <span class="vr">$erreurs</span>[] = <span class="str">"Erreur upload (code "</span> . <span class="vr">$f</span>[<span class="str">"error"</span>] . <span class="str">")."</span>;
+    } <span class="kw">else</span> {
+
+        <span class="cmt">// Taille</span>
+        <span class="kw">if</span> (<span class="vr">$f</span>[<span class="str">"size"</span>] > <span class="vr">$tailleMax</span>)
+            <span class="vr">$erreurs</span>[] = <span class="str">"Fichier trop volumineux (max 2 Mo)."</span>;
+
+        <span class="cmt">// Type MIME reel</span>
+        <span class="vr">$finfo</span>   = <span class="fn">finfo_open</span>(<span class="fn">FILEINFO_MIME_TYPE</span>);
+        <span class="vr">$mime</span>    = <span class="fn">finfo_file</span>(<span class="vr">$finfo</span>, <span class="vr">$f</span>[<span class="str">"tmp_name"</span>]);
+        <span class="fn">finfo_close</span>(<span class="vr">$finfo</span>);
+        <span class="vr">$mimesOk</span> = [<span class="str">"image/jpeg"</span>, <span class="str">"image/png"</span>, <span class="str">"image/webp"</span>];
+        <span class="kw">if</span> (!<span class="fn">in_array</span>(<span class="vr">$mime</span>, <span class="vr">$mimesOk</span>))
+            <span class="vr">$erreurs</span>[] = <span class="str">"Type non autorise : "</span> . <span class="vr">$mime</span>;
+
+        <span class="cmt">// Extension</span>
+        <span class="vr">$ext</span>    = <span class="fn">strtolower</span>(<span class="fn">pathinfo</span>(<span class="vr">$f</span>[<span class="str">"name"</span>], <span class="fn">PATHINFO_EXTENSION</span>));
+        <span class="vr">$extsOk</span> = [<span class="str">"jpg"</span>, <span class="str">"jpeg"</span>, <span class="str">"png"</span>, <span class="str">"webp"</span>];
+        <span class="kw">if</span> (!<span class="fn">in_array</span>(<span class="vr">$ext</span>, <span class="vr">$extsOk</span>))
+            <span class="vr">$erreurs</span>[] = <span class="str">"Extension non autorisee."</span>;
+
+        <span class="cmt">// Si tout OK, deplacer</span>
+        <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$erreurs</span>)) {
+            <span class="kw">if</span> (!<span class="fn">is_dir</span>(<span class="vr">$dossier</span>)) <span class="fn">mkdir</span>(<span class="vr">$dossier</span>, <span class="num">0755</span>, <span class="bool">true</span>);
+            <span class="vr">$nomFichier</span> = <span class="fn">uniqid</span>(<span class="str">"img_"</span>, <span class="bool">true</span>) . <span class="str">"."</span> . <span class="vr">$ext</span>;
+            <span class="kw">if</span> (<span class="fn">move_uploaded_file</span>(<span class="vr">$f</span>[<span class="str">"tmp_name"</span>], <span class="vr">$dossier</span> . <span class="vr">$nomFichier</span>)) {
+                <span class="vr">$succes</span> = <span class="bool">true</span>;
+            } <span class="kw">else</span> {
+                <span class="vr">$erreurs</span>[] = <span class="str">"Impossible de sauvegarder le fichier."</span>;
+            }
+        }
+    }
+}
+<span class="ptag">?&gt;</span>
+<span class="ht">&lt;form</span> <span class="ha">method</span>=<span class="str">"post"</span> <span class="ha">enctype</span>=<span class="str">"multipart/form-data"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">type</span>=<span class="str">"file"</span> <span class="ha">name</span>=<span class="str">"photo"</span> <span class="ha">accept</span>=<span class="str">"image/*"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;button</span> <span class="ha">type</span>=<span class="str">"submit"</span><span class="ht">&gt;</span>Uploader<span class="ht">&lt;/button&gt;</span>
+<span class="ht">&lt;/form&gt;</span>
+<span class="ptag">&lt;?php</span> <span class="kw">if</span> (<span class="vr">$succes</span>): <span class="ptag">?&gt;</span>
+  <span class="ht">&lt;p&gt;</span>Image enregistree : <span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$nomFichier</span>) <span class="ptag">?&gt;</span><span class="ht">&lt;/p&gt;</span>
+  <span class="ht">&lt;img</span> <span class="ha">src</span>=<span class="str">"uploads/</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$nomFichier</span>) <span class="ptag">?&gt;</span><span class="str">"</span> <span class="ha">style</span>=<span class="str">"max-width:300px"</span><span class="ht">&gt;</span>
+<span class="ptag">&lt;?php</span> <span class="kw">endif</span>; <span class="ptag">?&gt;</span>
+<span class="ptag">&lt;?php</span> <span class="kw">foreach</span> (<span class="vr">$erreurs</span> <span class="kw">as</span> <span class="vr">$e</span>): <span class="ptag">?&gt;</span>
+  <span class="ht">&lt;p</span> <span class="ha">style</span>=<span class="str">"color:red"</span><span class="ht">&gt;</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$e</span>) <span class="ptag">?&gt;</span><span class="ht">&lt;/p&gt;</span>
+<span class="ptag">&lt;?php</span> <span class="kw">endforeach</span>; <span class="ptag">?&gt;</span></code></pre>
+  </div>
+  <div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Checklist upload :</strong> enctype multipart sur le form, verifier error=0, controler la taille, verifier le MIME reel avec finfo, nommer le fichier avec uniqid(), utiliser move_uploaded_file(), stocker hors racine web ou bloquer PHP dans uploads/.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e6">
+  <div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6</div><h2>Upload multiple &mdash; plusieurs fichiers</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Upload de plusieurs fichiers simultanes</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Formulaire : &lt;input type="file" name="documents[]" multiple&gt;</span>
+<span class="cmt">// $_FILES["documents"] est un tableau de tableaux</span>
+
+<span class="vr">$resultats</span> = [];
+<span class="vr">$nbFichiers</span> = <span class="fn">count</span>(<span class="vr">$_FILES</span>[<span class="str">"documents"</span>][<span class="str">"name"</span>]);
+
+<span class="kw">for</span> (<span class="vr">$i</span> = <span class="num">0</span>; <span class="vr">$i</span> < <span class="vr">$nbFichiers</span>; <span class="vr">$i</span>++) {
+
+    <span class="cmt">// Reconstruire un tableau individuel pour chaque fichier</span>
+    <span class="vr">$f</span> = [
+        <span class="str">"name"</span>     => <span class="vr">$_FILES</span>[<span class="str">"documents"</span>][<span class="str">"name"</span>][<span class="vr">$i</span>],
+        <span class="str">"type"</span>     => <span class="vr">$_FILES</span>[<span class="str">"documents"</span>][<span class="str">"type"</span>][<span class="vr">$i</span>],
+        <span class="str">"size"</span>     => <span class="vr">$_FILES</span>[<span class="str">"documents"</span>][<span class="str">"size"</span>][<span class="vr">$i</span>],
+        <span class="str">"tmp_name"</span> => <span class="vr">$_FILES</span>[<span class="str">"documents"</span>][<span class="str">"tmp_name"</span>][<span class="vr">$i</span>],
+        <span class="str">"error"</span>    => <span class="vr">$_FILES</span>[<span class="str">"documents"</span>][<span class="str">"error"</span>][<span class="vr">$i</span>],
+    ];
+
+    <span class="cmt">// Traiter chaque fichier individuellement</span>
+    <span class="kw">if</span> (<span class="vr">$f</span>[<span class="str">"error"</span>] === <span class="fn">UPLOAD_ERR_OK</span>) {
+        <span class="vr">$nom</span> = <span class="fn">uniqid</span>() . <span class="str">"_"</span> . <span class="fn">basename</span>(<span class="vr">$f</span>[<span class="str">"name"</span>]);
+        <span class="fn">move_uploaded_file</span>(<span class="vr">$f</span>[<span class="str">"tmp_name"</span>], <span class="str">"uploads/"</span> . <span class="vr">$nom</span>);
+        <span class="vr">$resultats</span>[] = <span class="str">"OK : "</span> . <span class="vr">$f</span>[<span class="str">"name"</span>];
+    } <span class="kw">else</span> {
+        <span class="vr">$resultats</span>[] = <span class="str">"Erreur : "</span> . <span class="vr">$f</span>[<span class="str">"name"</span>];
+    }
+}
+
+<span class="kw">foreach</span> (<span class="vr">$resultats</span> <span class="kw">as</span> <span class="vr">$r</span>) <span class="kw">echo</span> <span class="vr">$r</span> . <span class="str">"&lt;br&gt;"</span>;</code></pre>
+  </div>
+  <div class="callout info"><span class="ci">i</span><div><strong>Structure de $_FILES avec multiple.</strong> Avec <code>name="fichiers[]"</code>, $_FILES ne regroupe pas les fichiers par fichier mais par propriete. $_FILES["fichiers"]["name"] est un tableau de tous les noms, $_FILES["fichiers"]["size"] un tableau de toutes les tailles, etc.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e7">
+  <div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Interactif</div><h2>Simulateur d'upload</h2></div></div>
+  <p class="prose">Selectionnez un fichier pour simuler les verifications PHP. Le simulateur realise les memes controles que le code PHP ci-dessus.</p>
+  <div class="upload-sim">
+    <div class="us-head"><div class="us-label">Simulateur de validation upload</div><div class="us-badge">Simulation PHP</div></div>
+    <div class="us-body">
+      <div class="us-drop" id="us-drop" onclick="document.getElementById('us-input').click()" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="handleDrop(event)">
+        <div class="us-drop-label">Cliquez ou glissez un fichier ici</div>
+        <div class="us-drop-sub">Images uniquement &bull; max 2 Mo &bull; jpg, png, webp</div>
+      </div>
+      <input type="file" id="us-input" style="display:none" accept="image/*" onchange="handleFile(this.files[0])">
+      <div class="us-result" id="us-result"><span class="us-dim">En attente d'un fichier...</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="quiz">
+  <div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; upload de fichiers</h2></div></div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Quel attribut est obligatoire sur la balise &lt;form&gt; pour un upload de fichier ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">method="file"</button>
+      <button class="opt" onclick="ans(this,'q1',true)">enctype="multipart/form-data"</button>
+      <button class="opt" onclick="ans(this,'q1',false)">accept="*/*"</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Pourquoi ne pas se fier a $_FILES["photo"]["type"] pour valider le type d'un fichier ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',false)">Parce que PHP ne lit pas ce champ</button>
+      <button class="opt" onclick="ans(this,'q2',true)">Parce que ce type est envoye par le navigateur et peut etre falsifie par un attaquant. Il faut verifier le type MIME reel avec finfo_file().</button>
+      <button class="opt" onclick="ans(this,'q2',false)">Parce qu'il n'existe que sur les anciens navigateurs</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Quelle fonction PHP deplace un fichier uploade vers sa destination finale ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',false)">rename() ou copy()</button>
+      <button class="opt" onclick="ans(this,'q3',true)">move_uploaded_file() &mdash; elle verifie aussi que le fichier provient bien d'un upload PHP</button>
+      <button class="opt" onclick="ans(this,'q3',false)">file_put_contents()</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Pourquoi generer un nom aleatoire (uniqid()) plutot que garder le nom original du fichier ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',true)">Pour eviter les collisions, empecher l'ecrasement de fichiers existants, et neutraliser les noms malveillants contenant des slashes ou des caracteres speciaux.</button>
+      <button class="opt" onclick="ans(this,'q4',false)">Pour reduire la taille du fichier</button>
+      <button class="opt" onclick="ans(this,'q4',false)">Le nom original est trop long pour le systeme de fichiers</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> Un attaquant uploade un fichier "shell.php" renomme en "shell.jpg". Quelle verification l'aurait detecte ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q5',false)">Verifier $_FILES["type"] qui affiche "image/jpeg"</button>
+      <button class="opt" onclick="ans(this,'q5',false)">Verifier que l'extension est .jpg</button>
+      <button class="opt" onclick="ans(this,'q5',true)">Verifier le type MIME reel avec finfo_file() qui detecterait "text/x-php" au lieu de "image/jpeg"</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text"  style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll(".etape[id]"),nl=document.querySelectorAll(".nav-link");
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove("active"));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"');if(l)l.classList.add("active");}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest(".code-block").querySelector("pre");navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent="Copie";btn.classList.add("ok");setTimeout(()=>{btn.textContent="copier";btn.classList.remove("ok");},1800);});}
+
+function handleDrop(e){e.preventDefault();document.getElementById("us-drop").classList.remove("over");const f=e.dataTransfer.files[0];if(f)handleFile(f);}
+
+function handleFile(f){
+  if(!f)return;
+  const res=document.getElementById("us-result");
+  const lines=[];
+  lines.push('<span class="us-dim">Fichier recu : '+f.name+'</span>');
+  lines.push('<span class="us-dim">---------------------------------</span>');
+
+  // error code (simule = 0 si fichier recu)
+  lines.push('<span class="us-ok">error    = 0 (UPLOAD_ERR_OK)</span>');
+
+  // size
+  const kb=(f.size/1024).toFixed(1);
+  const mo=(f.size/1024/1024).toFixed(2);
+  const sizeOk = f.size <= 2*1024*1024;
+  lines.push((sizeOk?'<span class="us-ok">':'<span class="us-err">')+"size     = "+f.size+" octets ("+kb+" Ko / "+mo+" Mo) "+(sizeOk?"<= 2 Mo OK":"DEPASSE 2 Mo !")+"</span>");
+
+  // mime (via type du fichier JS)
+  const mime = f.type||"inconnu";
+  const mimesOk=["image/jpeg","image/png","image/webp","image/gif"];
+  const mimeValid=mimesOk.includes(mime);
+  lines.push((mimeValid?'<span class="us-ok">':'<span class="us-err">')+"type     = "+mime+(mimeValid?" (autorise)":" (REFUSE)")+"</span>");
+  lines.push('<span class="us-dim">         (finfo_file verifie le MIME reel)</span>');
+
+  // extension
+  const ext=f.name.split(".").pop().toLowerCase();
+  const extsOk=["jpg","jpeg","png","webp","gif"];
+  const extOk=extsOk.includes(ext);
+  lines.push((extOk?'<span class="us-ok">':'<span class="us-err">')+"extension = ."+ext+(extOk?" (autorisee)":" (REFUSEE)")+"</span>");
+
+  // nom genere
+  const uid="img_"+Math.random().toString(36).substr(2,12)+"."+ext;
+  lines.push('<span class="us-dim">---------------------------------</span>');
+
+  const allOk = sizeOk && mimeValid && extOk;
+  if(allOk){
+    lines.push('<span class="us-ok">VALIDATION OK</span>');
+    lines.push('<span class="us-ok">move_uploaded_file() => uploads/'+uid+'</span>');
+  } else {
+    lines.push('<span class="us-err">VALIDATION ECHOUEE &mdash; fichier rejete</span>');
+  }
+  res.innerHTML=lines.join("<br>");
+}
+
+const fbs={
+  q1:{
+    ok:"Exact. Sans enctype='multipart/form-data', le navigateur envoie seulement le nom du fichier comme texte. Le contenu binaire n'est pas transmis. C'est l'erreur la plus courante chez les debutants.",
+    ko:"Non. L'attribut obligatoire est enctype='multipart/form-data' sur la balise form. Sans lui, PHP recoit une chaine vide dans $_FILES et le fichier n'est pas transmis au serveur."
+  },
+  q2:{
+    ok:"Exact. $_FILES['type'] est la valeur envoyee par le navigateur dans la requete HTTP. Un attaquant peut modifier cette valeur. La seule verification fiable est finfo_file() qui lit les octets reels du fichier.",
+    ko:"Non. $_FILES['type'] peut etre falsifie par un attaquant car c'est le navigateur qui l'envoie. Pour un fichier PHP renomme en .jpg, le navigateur peut envoyer 'image/jpeg'. finfo_file() lit les vrais octets."
+  },
+  q3:{
+    ok:"Exact. move_uploaded_file() fait deux choses : deplacer le fichier ET verifier que le fichier provient bien d'un upload HTTP PHP, ce qui protege contre les attaques sur des fichiers arbitraires du serveur.",
+    ko:"Non. rename() et copy() peuvent deplacer des fichiers mais ne verifient pas l'origine du fichier. move_uploaded_file() est la fonction securisee dediee aux uploads PHP."
+  },
+  q4:{
+    ok:"Exact. Le nom original peut contenir des sequences de traversee de repertoire (../), des caracteres speciaux, ou ecraser intentionnellement un fichier existant. uniqid() resout tous ces problemes.",
+    ko:"Non. La raison principale est la securite : le nom original peut contenir des sequences dangereuses (../../), des caracteres speciaux, ou ecraser un fichier existant. uniqid() garantit un nom unique et sur."
+  },
+  q5:{
+    ok:"Exact. finfo_file() lit les premiers octets du fichier (magic bytes) pour determiner son vrai type. Un fichier PHP contient des octets specifiques detectes comme text/x-php, meme s'il est renomme en .jpg.",
+    ko:"Non. Les deux premieres options sont contournables : le type MIME de $_FILES est falsifiable, et l'extension peut etre changee. Seul finfo_file() lit les octets reels du fichier et detecte le vrai type."
+  }
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>o.disabled=true);
+  btn.classList.add(ok?"correct":"wrong");
+  if(!ok)btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>{if(o.onclick&&o.onclick.toString().includes(",true)"))o.classList.add("correct");});
+  const fb=document.getElementById("fb-"+qid);fb.innerHTML=fbs[qid][ok?"ok":"ko"];fb.className="fb show "+(ok?"ok":"ko");
+  if(Object.keys(rep).length===5){
+    const g=Object.values(rep).filter(Boolean).length,box=document.getElementById("score-box");
+    box.style.display="block";
+    document.getElementById("s-score").textContent=g+"/5";
+    document.getElementById("s-text").innerHTML=g===5?"Parfait &mdash; upload securise maitrise !":g>=4?"Tres bien.":g>=3?"Revoir finfo_file() et move_uploaded_file().":"Reprendre depuis la validation.";
+    box.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+}
+</script>
+</body>
+</html>
