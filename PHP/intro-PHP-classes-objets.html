@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 14 &mdash; Classes et objets</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#be185d;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--teal:#0f766e;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(190,24,93,.07);}
+.nav-link.active{background:rgba(190,24,93,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(190,24,93,.08);border:1px solid rgba(190,24,93,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.r{background:rgba(190,24,93,.07);border-color:rgba(190,24,93,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--teal);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(190,24,93,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(190,24,93,.07);border:1px solid rgba(190,24,93,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(190,24,93,.15);border:1px solid rgba(190,24,93,.3);color:#fda4af;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(190,24,93,.2);color:#fda4af;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}
+.vis{color:#cba6f7;font-weight:600;}.bool{color:#fab387;font-weight:600;}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:2.1;box-shadow:var(--sh);}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(190,24,93,.3);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>[ ] PHP &mdash; Bloc 4</span><p>Programmation Orientee Objet</p></div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>Classe vs objet</a>
+    <a href="#e1"   class="nav-link"><span class="nav-num">01</span>Declarer une classe</a>
+    <a href="#e2"   class="nav-link"><span class="nav-num">02</span>Proprietes</a>
+    <a href="#e3"   class="nav-link"><span class="nav-num">03</span>Methodes</a>
+    <a href="#e4"   class="nav-link"><span class="nav-num">04</span>Constructeur</a>
+    <a href="#e5"   class="nav-link"><span class="nav-num">05</span>Visibilite</a>
+    <a href="#e6"   class="nav-link"><span class="nav-num">06</span>Static</a>
+    <a href="#e7"   class="nav-link"><span class="nav-num">07</span>Classe complete</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">08</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 4 &mdash; POO</div>
+    <a href="php-14-classes.html"    class="nav-serie-link current">14 &mdash; Classes et objets</a>
+    <a href="php-15-heritage.html"   class="nav-serie-link">15 &mdash; Heritage et interfaces</a>
+    <a href="php-16-composer.html"   class="nav-serie-link">16 &mdash; Namespaces et Composer</a>
+    <a href="php-17-exceptions.html" class="nav-serie-link">17 &mdash; Exceptions</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 4 &middot; Support 1/4</div>
+  <h1>Classes<br><span class="hl">et objets</span></h1>
+  <p>La programmation orientee objet regroupe les donnees et les comportements dans des unites appelees objets. Une classe est le plan, l'objet est l'instance construite a partir de ce plan.</p>
+  <div class="objectifs">
+    <span class="obj r">class</span>
+    <span class="obj g">__construct</span>
+    <span class="obj b">Proprietes</span>
+    <span class="obj y">Methodes</span>
+    <span class="obj t">Visibilite</span>
+  </div>
+</div>
+
+<section class="etape" id="plan">
+  <div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Concept</div><h2>Classe vs objet &mdash; le plan et la maison</h2></div></div>
+  <p class="prose">Une <strong>classe</strong> est un modele qui definit la structure et le comportement. Un <strong>objet</strong> est une instance concrete creee a partir de cette classe. On peut creer autant d'objets qu'on veut depuis une seule classe.</p>
+  <div class="schema">
+<span style="color:var(--accent);font-weight:700">Classe Produit</span>  <span style="color:var(--dim)">&larr; plan, modele, definition</span>
+  Proprietes : nom, prix, stock
+  Methodes   : appliquerRemise(), estDisponible()
+
+<span style="color:var(--blue);font-weight:700">$p1</span> = new Produit("T-shirt", 19.99, 50)  <span style="color:var(--dim)">&larr; instance 1</span>
+<span style="color:var(--blue);font-weight:700">$p2</span> = new Produit("Jean", 49.99, 0)      <span style="color:var(--dim)">&larr; instance 2</span>
+<span style="color:var(--blue);font-weight:700">$p3</span> = new Produit("Veste", 89.99, 15)    <span style="color:var(--dim)">&larr; instance 3</span>
+
+<span style="color:var(--dim)">Chaque objet a ses propres valeurs de proprietes
+mais partage les memes methodes de la classe</span>
+  </div>
+  <div class="callout info"><span class="ci">i</span><div><strong>Pourquoi la POO ?</strong> Elle permet de regrouper donnees et comportements dans une meme unite, de reutiliser du code par heritage, et de masquer la complexite derriere une interface simple. Le code devient plus facile a maintenir et a faire evoluer.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e1">
+  <div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1</div><h2>Declarer une classe et creer des objets</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Syntaxe de base &mdash; classe et instanciation</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Declaration d'une classe (dans un fichier Produit.php)</span>
+<span class="kw">class</span> <span class="cls">Produit</span> {
+    <span class="cmt">// Contenu : proprietes + methodes</span>
+}
+
+<span class="cmt">// Instanciation : creer un objet depuis la classe</span>
+<span class="vr">$p</span> = <span class="kw">new</span> <span class="cls">Produit</span>();
+
+<span class="cmt">// Plusieurs objets depuis la meme classe</span>
+<span class="vr">$p1</span> = <span class="kw">new</span> <span class="cls">Produit</span>();
+<span class="vr">$p2</span> = <span class="kw">new</span> <span class="cls">Produit</span>();
+<span class="cmt">// $p1 et $p2 sont des objets independants</span>
+
+<span class="cmt">// Verifier si une variable est un objet</span>
+<span class="fn">var_dump</span>(<span class="vr">$p</span> <span class="kw">instanceof</span> <span class="cls">Produit</span>);  <span class="cmt">// bool(true)</span>
+
+<span class="cmt">// Convention de nommage</span>
+<span class="cmt">// Classe    : PascalCase  ex: ProduitService, UserModel</span>
+<span class="cmt">// Methode   : camelCase   ex: calculerPrix(), getNom()</span>
+<span class="cmt">// Propriete : camelCase   ex: $prixHT, $nomComplet</span>
+<span class="cmt">// Fichier   : Produit.php (meme nom que la classe)</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e2">
+  <div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2</div><h2>Proprietes &mdash; les donnees de l'objet</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Proprietes &mdash; declaration et acces</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">class</span> <span class="cls">Produit</span> {
+
+    <span class="cmt">// Proprietes typees (PHP 7.4+) avec visibilite</span>
+    <span class="vis">public</span>    string <span class="vr">$nom</span>   = <span class="str">''</span>;
+    <span class="vis">public</span>    float  <span class="vr">$prix</span>  = <span class="num">0.0</span>;
+    <span class="vis">public</span>    int    <span class="vr">$stock</span> = <span class="num">0</span>;
+    <span class="vis">protected</span> ?string <span class="vr">$description</span> = <span class="bool">null</span>;
+    <span class="vis">private</span>   float  <span class="vr">$coutRevient</span> = <span class="num">0.0</span>;
+}
+
+<span class="cmt">// Acces aux proprietes publiques avec -></span>
+<span class="vr">$p</span> = <span class="kw">new</span> <span class="cls">Produit</span>();
+<span class="vr">$p</span>-><span class="vr">nom</span>   = <span class="str">'T-shirt'</span>;
+<span class="vr">$p</span>-><span class="vr">prix</span>  = <span class="num">19.99</span>;
+<span class="vr">$p</span>-><span class="vr">stock</span> = <span class="num">50</span>;
+
+<span class="kw">echo</span> <span class="vr">$p</span>-><span class="vr">nom</span>;    <span class="cmt">// T-shirt</span>
+<span class="kw">echo</span> <span class="vr">$p</span>-><span class="vr">prix</span>;   <span class="cmt">// 19.99</span>
+
+<span class="cmt">// Propriete non initialisee : erreur si on la lit sans valeur</span>
+<span class="cmt">// $p->coutRevient  &larr; private : Fatal error depuis l'exterieur</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e3">
+  <div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3</div><h2>Methodes &mdash; les comportements de l'objet</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Methodes &mdash; $this et retours</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">class</span> <span class="cls">Produit</span> {
+
+    <span class="vis">public</span> string <span class="vr">$nom</span>  = <span class="str">''</span>;
+    <span class="vis">public</span> float  <span class="vr">$prix</span> = <span class="num">0.0</span>;
+    <span class="vis">public</span> int    <span class="vr">$stock</span> = <span class="num">0</span>;
+
+    <span class="cmt">// $this designe l'objet courant</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">calculerTTC</span>(float <span class="vr">$taux</span> = <span class="num">0.20</span>): float {
+        <span class="kw">return</span> <span class="fn">round</span>(<span class="vr">$this</span>-><span class="vr">prix</span> * (<span class="num">1</span> + <span class="vr">$taux</span>), <span class="num">2</span>);
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">estDisponible</span>(): bool {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">stock</span> > <span class="num">0</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">appliquerRemise</span>(float <span class="vr">$pct</span>): void {
+        <span class="vr">$this</span>-><span class="vr">prix</span> = <span class="fn">round</span>(<span class="vr">$this</span>-><span class="vr">prix</span> * (<span class="num">1</span> - <span class="vr">$pct</span> / <span class="num">100</span>), <span class="num">2</span>);
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">vendre</span>(int <span class="vr">$qte</span> = <span class="num">1</span>): bool {
+        <span class="kw">if</span> (<span class="vr">$this</span>-><span class="vr">stock</span> < <span class="vr">$qte</span>) <span class="kw">return</span> <span class="bool">false</span>;
+        <span class="vr">$this</span>-><span class="vr">stock</span> -= <span class="vr">$qte</span>;
+        <span class="kw">return</span> <span class="bool">true</span>;
+    }
+
+    <span class="cmt">// __toString : conversion automatique en chaine</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__toString</span>(): string {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">nom</span> . <span class="str">' ('</span> . <span class="vr">$this</span>-><span class="vr">prix</span> . <span class="str">' EUR)'</span>;
+    }
+}
+
+<span class="cmt">// Utilisation</span>
+<span class="vr">$p</span> = <span class="kw">new</span> <span class="cls">Produit</span>();
+<span class="vr">$p</span>-><span class="vr">nom</span>  = <span class="str">'T-shirt'</span>;
+<span class="vr">$p</span>-><span class="vr">prix</span> = <span class="num">19.99</span>;
+<span class="vr">$p</span>-><span class="vr">stock</span> = <span class="num">5</span>;
+
+<span class="kw">echo</span> <span class="vr">$p</span>-><span class="fn">calculerTTC</span>();   <span class="cmt">// 23.99</span>
+<span class="kw">echo</span> <span class="vr">$p</span>-><span class="fn">estDisponible</span>() ? <span class="str">'Dispo'</span> : <span class="str">'Rupture'</span>;
+<span class="vr">$p</span>-><span class="fn">appliquerRemise</span>(<span class="num">10</span>);  <span class="cmt">// -10% : prix = 17.99</span>
+<span class="kw">echo</span> <span class="vr">$p</span>;                   <span class="cmt">// T-shirt (17.99 EUR)</span></code></pre>
+  </div>
+  <div class="callout info"><span class="ci">i</span><div><strong><code>$this</code> represente l'objet courant.</strong> A l'interieur d'une methode, <code>$this</code> pointe vers l'instance sur laquelle la methode est appelee. <code>$p1->calculerTTC()</code> utilise <code>$this->prix</code> qui est le prix de <code>$p1</code>. Chaque instance a ses propres valeurs.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e4">
+  <div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4</div><h2>Constructeur &mdash; __construct()</h2></div></div>
+  <p class="prose">Le constructeur est une methode speciale appelee automatiquement lors de la creation d'un objet avec <code>new</code>. Il sert a initialiser les proprietes.</p>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">__construct() et promotion des proprietes (PHP 8)</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Methode classique</span>
+<span class="kw">class</span> <span class="cls">Produit</span> {
+    <span class="vis">public</span> string <span class="vr">$nom</span>;
+    <span class="vis">public</span> float  <span class="vr">$prix</span>;
+    <span class="vis">public</span> int    <span class="vr">$stock</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(string <span class="vr">$nom</span>, float <span class="vr">$prix</span>, int <span class="vr">$stock</span> = <span class="num">0</span>) {
+        <span class="vr">$this</span>-><span class="vr">nom</span>   = <span class="vr">$nom</span>;
+        <span class="vr">$this</span>-><span class="vr">prix</span>  = <span class="vr">$prix</span>;
+        <span class="vr">$this</span>-><span class="vr">stock</span> = <span class="vr">$stock</span>;
+    }
+}
+
+<span class="cmt">// Promotion des proprietes (PHP 8+) &mdash; version courte</span>
+<span class="kw">class</span> <span class="cls">Produit</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">public</span> string <span class="vr">$nom</span>,
+        <span class="vis">public</span> float  <span class="vr">$prix</span>,
+        <span class="vis">public</span> int    <span class="vr">$stock</span> = <span class="num">0</span>,
+    ) {}
+    <span class="cmt">// PHP cree automatiquement les proprietes et les assigne</span>
+}
+
+<span class="cmt">// Utilisation identique dans les deux cas</span>
+<span class="vr">$p1</span> = <span class="kw">new</span> <span class="cls">Produit</span>(<span class="str">'T-shirt'</span>, <span class="num">19.99</span>, <span class="num">50</span>);
+<span class="vr">$p2</span> = <span class="kw">new</span> <span class="cls">Produit</span>(<span class="str">'Jean'</span>,    <span class="num">49.99</span>);      <span class="cmt">// stock = 0</span>
+
+<span class="kw">echo</span> <span class="vr">$p1</span>-><span class="vr">nom</span>;   <span class="cmt">// T-shirt</span>
+<span class="kw">echo</span> <span class="vr">$p2</span>-><span class="vr">prix</span>;  <span class="cmt">// 49.99</span></code></pre>
+  </div>
+  <div class="callout success"><span class="ci">+</span><div><strong>La promotion des proprietes (PHP 8) est la syntaxe recommandee.</strong> Elle est plus concise et evite la repetition : on ne declare pas les proprietes en haut puis on les assigne dans le constructeur. Tout se fait en une seule ligne dans la signature du constructeur.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e5">
+  <div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5</div><h2>Visibilite &mdash; public, protected, private</h2></div></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Visibilite</th><th>Accessible depuis</th><th>Usage</th></tr></thead>
+    <tbody>
+      <tr><td>public</td><td>Partout (classe, sous-classe, exterieur)</td><td>API de la classe &mdash; ce que les autres peuvent utiliser</td></tr>
+      <tr><td>protected</td><td>La classe ET ses sous-classes</td><td>Methodes utilitaires internes heritables</td></tr>
+      <tr><td>private</td><td>La classe uniquement</td><td>Implementation interne, non accessible de l'exterieur</td></tr>
+    </tbody>
+  </table></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Encapsulation &mdash; getters et setters</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">class</span> <span class="cls">CompteBancaire</span> {
+
+    <span class="vis">private</span> float <span class="vr">$solde</span>;
+    <span class="vis">private</span> array <span class="vr">$historique</span> = [];
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(float <span class="vr">$soldeInitial</span> = <span class="num">0</span>) {
+        <span class="vr">$this</span>-><span class="vr">solde</span> = <span class="vr">$soldeInitial</span>;
+    }
+
+    <span class="cmt">// Getter : lire une propriete privee</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getSolde</span>(): float {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">solde</span>;
+    }
+
+    <span class="cmt">// Methode publique qui modifie le solde de facon controlee</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">crediter</span>(float <span class="vr">$montant</span>): void {
+        <span class="kw">if</span> (<span class="vr">$montant</span> <= <span class="num">0</span>) <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">InvalidArgumentException</span>(<span class="str">'Montant invalide'</span>);
+        <span class="vr">$this</span>-><span class="vr">solde</span> += <span class="vr">$montant</span>;
+        <span class="vr">$this</span>-><span class="fn">logOperation</span>(<span class="str">'credit'</span>, <span class="vr">$montant</span>);
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">debiter</span>(float <span class="vr">$montant</span>): bool {
+        <span class="kw">if</span> (<span class="vr">$montant</span> > <span class="vr">$this</span>-><span class="vr">solde</span>) <span class="kw">return</span> <span class="bool">false</span>;
+        <span class="vr">$this</span>-><span class="vr">solde</span> -= <span class="vr">$montant</span>;
+        <span class="vr">$this</span>-><span class="fn">logOperation</span>(<span class="str">'debit'</span>, <span class="vr">$montant</span>);
+        <span class="kw">return</span> <span class="bool">true</span>;
+    }
+
+    <span class="cmt">// Methode privee : detail d'implementation</span>
+    <span class="vis">private</span> <span class="kw">function</span> <span class="fn">logOperation</span>(string <span class="vr">$type</span>, float <span class="vr">$montant</span>): void {
+        <span class="vr">$this</span>-><span class="vr">historique</span>[] = <span class="fn">date</span>(<span class="str">'H:i'</span>) . <span class="str">' '</span> . <span class="vr">$type</span> . <span class="str">' '</span> . <span class="vr">$montant</span>;
+    }
+}
+
+<span class="vr">$compte</span> = <span class="kw">new</span> <span class="cls">CompteBancaire</span>(<span class="num">1000</span>);
+<span class="vr">$compte</span>-><span class="fn">crediter</span>(<span class="num">500</span>);
+<span class="vr">$compte</span>-><span class="fn">debiter</span>(<span class="num">200</span>);
+<span class="kw">echo</span> <span class="vr">$compte</span>-><span class="fn">getSolde</span>();      <span class="cmt">// 1300</span>
+<span class="cmt">// $compte->solde = 9999;  &larr; ERREUR : private</span></code></pre>
+  </div>
+  <div class="callout tip"><span class="ci">!</span><div><strong>Principe d'encapsulation.</strong> Rendre les proprietes <code>private</code> et exposer uniquement des methodes publiques contr&ocirc;lees permet de garantir la coherence de l'objet. On ne peut pas mettre un solde negatif en ecrivant directement <code>$compte->solde = -500</code>. La classe protege ses invariants.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e6">
+  <div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6</div><h2>Static &mdash; proprietes et methodes de classe</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">static &mdash; sans instanciation</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">class</span> <span class="cls">Produit</span> {
+    <span class="cmt">// Propriete statique : partagee entre toutes les instances</span>
+    <span class="vis">private</span> <span class="kw">static</span> int <span class="vr">$nbCrees</span> = <span class="num">0</span>;
+    <span class="vis">public</span>  <span class="kw">static</span> float <span class="vr">$tauxTVA</span> = <span class="num">0.20</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">public</span> string <span class="vr">$nom</span>,
+        <span class="vis">public</span> float  <span class="vr">$prix</span>
+    ) {
+        <span class="kw">self</span>::<span class="vr">$nbCrees</span>++;   <span class="cmt">// self:: pour acceder aux membres statiques</span>
+    }
+
+    <span class="cmt">// Methode statique : appel sans objet</span>
+    <span class="vis">public</span> <span class="kw">static</span> <span class="kw">function</span> <span class="fn">getNbCrees</span>(): int {
+        <span class="kw">return</span> <span class="kw">self</span>::<span class="vr">$nbCrees</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">static</span> <span class="kw">function</span> <span class="fn">calculerTTC</span>(float <span class="vr">$prix</span>): float {
+        <span class="kw">return</span> <span class="fn">round</span>(<span class="vr">$prix</span> * (<span class="num">1</span> + <span class="kw">self</span>::<span class="vr">$tauxTVA</span>), <span class="num">2</span>);
+    }
+}
+
+<span class="cmt">// Acces statique sans new : ClassName::membre</span>
+<span class="kw">echo</span> <span class="cls">Produit</span>::<span class="fn">calculerTTC</span>(<span class="num">100</span>);  <span class="cmt">// 120</span>
+<span class="kw">echo</span> <span class="cls">Produit</span>::<span class="vr">$tauxTVA</span>;          <span class="cmt">// 0.20</span>
+
+<span class="vr">$p1</span> = <span class="kw">new</span> <span class="cls">Produit</span>(<span class="str">'T-shirt'</span>, <span class="num">19</span>);
+<span class="vr">$p2</span> = <span class="kw">new</span> <span class="cls">Produit</span>(<span class="str">'Jean'</span>, <span class="num">49</span>);
+<span class="kw">echo</span> <span class="cls">Produit</span>::<span class="fn">getNbCrees</span>();      <span class="cmt">// 2</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e7">
+  <div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Synthese</div><h2>Classe Produit complete</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Produit.php &mdash; classe complete et documentee</span><span class="cb-badge good">Complet</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">/**
+ * Represente un produit du catalogue.
+ */</span>
+<span class="kw">class</span> <span class="cls">Produit</span> {
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">private</span> string <span class="vr">$nom</span>,
+        <span class="vis">private</span> float  <span class="vr">$prix</span>,
+        <span class="vis">private</span> int    <span class="vr">$stock</span>        = <span class="num">0</span>,
+        <span class="vis">private</span> ?string <span class="vr">$description</span> = <span class="bool">null</span>,
+    ) {
+        <span class="kw">if</span> (<span class="vr">$prix</span> < <span class="num">0</span>) <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">InvalidArgumentException</span>(<span class="str">'Prix negatif interdit'</span>);
+    }
+
+    <span class="cmt">// Getters</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getNom</span>():    string  { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">nom</span>;   }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getPrix</span>():   float   { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">prix</span>;  }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getStock</span>():  int     { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">stock</span>; }
+
+    <span class="cmt">// Setters avec validation</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">setPrix</span>(float <span class="vr">$prix</span>): void {
+        <span class="kw">if</span> (<span class="vr">$prix</span> < <span class="num">0</span>) <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">InvalidArgumentException</span>(<span class="str">'Prix negatif'</span>);
+        <span class="vr">$this</span>-><span class="vr">prix</span> = <span class="vr">$prix</span>;
+    }
+
+    <span class="cmt">// Logique metier</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">calculerTTC</span>(float <span class="vr">$taux</span> = <span class="num">0.20</span>): float {
+        <span class="kw">return</span> <span class="fn">round</span>(<span class="vr">$this</span>-><span class="vr">prix</span> * (<span class="num">1</span> + <span class="vr">$taux</span>), <span class="num">2</span>);
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">estDisponible</span>(): bool {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">stock</span> > <span class="num">0</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">vendre</span>(int <span class="vr">$qte</span> = <span class="num">1</span>): bool {
+        <span class="kw">if</span> (<span class="vr">$qte</span> > <span class="vr">$this</span>-><span class="vr">stock</span>) <span class="kw">return</span> <span class="bool">false</span>;
+        <span class="vr">$this</span>-><span class="vr">stock</span> -= <span class="vr">$qte</span>;
+        <span class="kw">return</span> <span class="bool">true</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">appliquerRemise</span>(float <span class="vr">$pct</span>): static {
+        <span class="vr">$this</span>-><span class="vr">prix</span> = <span class="fn">round</span>(<span class="vr">$this</span>-><span class="vr">prix</span> * (<span class="num">1</span> - <span class="vr">$pct</span> / <span class="num">100</span>), <span class="num">2</span>);
+        <span class="kw">return</span> <span class="vr">$this</span>;   <span class="cmt">// fluent interface</span>
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__toString</span>(): string {
+        <span class="kw">return</span> <span class="str">'['</span> . <span class="vr">$this</span>-><span class="vr">nom</span> . <span class="str">'] '</span> . <span class="vr">$this</span>-><span class="vr">prix</span> . <span class="str">' EUR | stock: '</span> . <span class="vr">$this</span>-><span class="vr">stock</span>;
+    }
+}
+
+<span class="cmt">// Usage</span>
+<span class="vr">$p</span> = <span class="kw">new</span> <span class="cls">Produit</span>(<span class="str">'T-shirt'</span>, <span class="num">20.00</span>, <span class="num">10</span>);
+<span class="vr">$p</span>-><span class="fn">appliquerRemise</span>(<span class="num">10</span>)-><span class="fn">appliquerRemise</span>(<span class="num">5</span>);  <span class="cmt">// chaining</span>
+<span class="kw">echo</span> <span class="vr">$p</span>;   <span class="cmt">// [T-shirt] 17.1 EUR | stock: 10</span></code></pre>
+  </div>
+  <div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>A retenir :</strong> classe = plan, objet = instance. <code>$this</code> = l'objet courant. <code>__construct()</code> initialise. Proprietes privees + methodes publiques = encapsulation. <code>self::</code> pour les membres statiques.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="quiz">
+  <div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; classes et objets</h2></div></div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Quelle est la difference entre une classe et un objet ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">Ce sont des synonymes en PHP</button>
+      <button class="opt" onclick="ans(this,'q1',true)">La classe est le plan (definition), l'objet est une instance concrete creee avec new. On peut creer plusieurs objets independants depuis une meme classe.</button>
+      <button class="opt" onclick="ans(this,'q1',false)">Un objet contient plusieurs classes</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> A quoi sert <code>$this</code> dans une methode ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',false)">Il designe la classe courante</button>
+      <button class="opt" onclick="ans(this,'q2',true)">Il designe l'instance (objet) sur laquelle la methode est appelee, permettant d'acceder aux proprietes et methodes de cet objet specifique</button>
+      <button class="opt" onclick="ans(this,'q2',false)">Il est equivalent a self::</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Pourquoi rendre une propriete <code>private</code> plutot que <code>public</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',false)">Pour des raisons de performance</button>
+      <button class="opt" onclick="ans(this,'q3',true)">Pour encapsuler l'implementation : l'exterieur ne peut modifier la valeur que via des methodes controlees, garantissant la coherence de l'objet</button>
+      <button class="opt" onclick="ans(this,'q3',false)">private est obligatoire pour utiliser $this</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Quelle est la difference entre <code>$this-></code> et <code>self::</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',true)">$this-> acces aux membres d'une instance (non-static). self:: acces aux membres statiques (partages entre toutes les instances, sans instanciation).</button>
+      <button class="opt" onclick="ans(this,'q4',false)">Ce sont des synonymes</button>
+      <button class="opt" onclick="ans(this,'q4',false)">self:: s'utilise uniquement dans le constructeur</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> Quelle est la syntaxe de la promotion des proprietes en PHP 8 ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q5',false)">On declare les proprietes avec @property dans le constructeur</button>
+      <button class="opt" onclick="ans(this,'q5',true)">On ajoute la visibilite (public/private/protected) directement devant les parametres du constructeur. PHP cree et assigne automatiquement les proprietes.</button>
+      <button class="opt" onclick="ans(this,'q5',false)">On utilise readonly devant chaque propriete</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text"  style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll(".etape[id]"),nl=document.querySelectorAll(".nav-link");
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove("active"));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add("active");}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest(".code-block").querySelector("pre");navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent="Copie";btn.classList.add("ok");setTimeout(()=>{btn.textContent="copier";btn.classList.remove("ok");},1800);});}
+const fbs={
+  q1:{
+    ok:"Exact. La classe est la definition abstraite (plan, moule). L'objet est une instance concrete creee avec new. Depuis une classe Produit, on peut creer $p1, $p2, $p3 qui sont independants mais partagent la meme structure.",
+    ko:"Non. La classe est le plan, l'objet est l'instance. new Produit() cree un objet depuis la classe Produit. Plusieurs objets peuvent coexister depuis la meme classe, chacun avec ses propres valeurs de proprietes."
+  },
+  q2:{
+    ok:"Exact. $this est une reference vers l'objet courant. Quand on appelle $p1->calculerTTC(), $this->prix designe le prix de $p1. Si on appelle $p2->calculerTTC(), le meme $this designe maintenant $p2. Chaque appel a son propre $this.",
+    ko:"Non. $this designe l'instance courante (l'objet), pas la classe. self:: designe la classe. $this->nom accede a la propriete nom de l'objet sur lequel la methode est appelee."
+  },
+  q3:{
+    ok:"Exact. C'est le principe d'encapsulation. Avec une propriete private, on ne peut la modifier qu'au travers de methodes publiques qui valident les donnees. $compte->solde = -500 est impossible, mais $compte->debiter(500) peut verifier qu'il y a assez de fonds.",
+    ko:"Non. L'encapsulation est la raison. private force a passer par des methodes controlees pour modifier la propriete. Ces methodes peuvent valider les donnees et maintenir la coherence de l'objet. Performance n'a rien a voir."
+  },
+  q4:{
+    ok:"Exact. $this-> designe l'instance courante et s'utilise pour acceder aux proprietes et methodes non-statiques. self:: designe la classe elle-meme et s'utilise pour les membres statiques (partagees entre toutes les instances).",
+    ko:"Non. $this-> = l'instance (objet courant), pour les membres non-statiques. self:: = la classe, pour les membres statiques. static::$nbCrees avec self:: est valide, mais $this->$nbCrees ne fonctionnerait pas."
+  },
+  q5:{
+    ok:"Exact. La promotion des proprietes PHP 8 ajoute la visibilite dans la signature du constructeur : public function __construct(public string $nom, private float $prix). PHP cree automatiquement les proprietes correspondantes et les assigne depuis les arguments.",
+    ko:"Non. La promotion des proprietes PHP 8 consiste a ajouter public/private/protected devant les parametres du __construct. PHP cree automatiquement les proprietes et les assigne. C'est plus court que de declarer les proprietes en haut puis les assigner dans le corps du constructeur."
+  }
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>o.disabled=true);
+  btn.classList.add(ok?"correct":"wrong");
+  if(!ok)btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>{if(o.onclick&&o.onclick.toString().includes(",true)"))o.classList.add("correct");});
+  const fb=document.getElementById("fb-"+qid);fb.innerHTML=fbs[qid][ok?"ok":"ko"];fb.className="fb show "+(ok?"ok":"ko");
+  if(Object.keys(rep).length===5){
+    const g=Object.values(rep).filter(Boolean).length,box=document.getElementById("score-box");
+    box.style.display="block";
+    document.getElementById("s-score").textContent=g+"/5";
+    document.getElementById("s-text").innerHTML=g===5?"Parfait &mdash; classes PHP maitrisees !":g>=4?"Tres bien.":g>=3?"Revoir $this, self:: et la visibilite.":"Reprendre depuis la definition classe/objet.";
+    box.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+}
+</script>
+</body>
+</html>

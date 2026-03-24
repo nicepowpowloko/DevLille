@@ -1,0 +1,338 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PHP 16 &mdash; Namespaces et Composer</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--accent:#7c3aed;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--teal:#0f766e;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(124,58,237,.07);}.nav-link.active{background:rgba(124,58,237,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}.nav-serie-label{font-size:.6rem;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;}.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.v{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--teal);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(124,58,237,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}.prose strong{color:var(--text);}.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.sh{background:rgba(15,118,110,.12);border:1px solid rgba(15,118,110,.3);color:#5eead4;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(124,58,237,.2);color:#c4b5fd;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}.vis{color:#cba6f7;font-weight:600;}.ns{color:#94e2d5;}.sh{color:#a6e3a1;}.ptag{color:#f38ba8;font-weight:700;}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:2.2;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(124,58,237,.3);}.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}.fb.show{display:block;}.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style></head><body><div class="layout">
+<aside class="sidebar"><div class="sidebar-logo"><span>[ ] PHP &mdash; Bloc 4</span><p>Programmation Orientee Objet</p></div><div class="nav-section"><div class="nav-label">Ce support</div><a href="#plan" class="nav-link"><span class="nav-num">00</span>Pourquoi les namespaces</a><a href="#e1" class="nav-link"><span class="nav-num">01</span>Declarer un namespace</a><a href="#e2" class="nav-link"><span class="nav-num">02</span>use et alias</a><a href="#e3" class="nav-link"><span class="nav-num">03</span>Autoloading PSR-4</a><a href="#e4" class="nav-link"><span class="nav-num">04</span>Installer Composer</a><a href="#e5" class="nav-link"><span class="nav-num">05</span>composer.json</a><a href="#e6" class="nav-link"><span class="nav-num">06</span>Utiliser un package</a><a href="#e7" class="nav-link"><span class="nav-num">07</span>Commandes Composer</a><a href="#e8" class="nav-link"><span class="nav-num">08</span>Structure de projet</a><a href="#quiz" class="nav-link"><span class="nav-num">09</span>Quiz</a></div><div class="nav-serie"><div class="nav-serie-label">Bloc 4 &mdash; POO</div><a href="php-14-classes.html" class="nav-serie-link">14 &mdash; Classes et objets</a><a href="php-15-heritage.html" class="nav-serie-link">15 &mdash; Heritage et interfaces</a><a href="php-16-composer.html" class="nav-serie-link current">16 &mdash; Namespaces et Composer</a><a href="php-17-exceptions.html" class="nav-serie-link">17 &mdash; Exceptions</a></div></aside><main class="content">
+<div class="page-header"><div class="serie-badge">Bloc 4 &middot; Support 3/4</div><h1>Namespaces<br><span class="hl">et Composer</span></h1><p>Les namespaces organisent les classes pour eviter les conflits de noms. Composer est le gestionnaire de dependances de PHP : il installe les packages tiers et gere l'autoloading automatique de toutes vos classes.</p><div class="objectifs"><span class="obj v">namespace</span><span class="obj g">use / as</span><span class="obj b">PSR-4</span><span class="obj y">composer.json</span><span class="obj t">autoload</span></div></div>
+<section class="etape" id="plan"><div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Concept</div><h2>Pourquoi les namespaces</h2></div></div><p class="prose">Sans namespaces, deux librairies qui definissent une classe <code>User</code> provoquent un Fatal error. Les namespaces agissent comme des dossiers pour les classes : ils permettent de distinguer <code>App\Models\User</code> de <code>Symfony\Security\User</code>.</p><div class="schema"><span style="color:var(--red);font-weight:700">Sans namespace &mdash; collision :</span>
+  class User { ... }  <span style="color:var(--dim)">&lt;-- votre code</span>
+  class User { ... }  <span style="color:var(--dim)">&lt;-- librairie tierce</span>
+  <span style="color:var(--red)">Fatal error: Cannot declare class User, already declared</span>
+
+<span style="color:var(--green);font-weight:700">Avec namespace &mdash; coexistance :</span>
+  <span style="color:var(--accent)">App\Models\User</span>                       votre classe
+  <span style="color:var(--blue)">Symfony\Component\Security\User</span>  classe du framework
+  Aucun conflit, noms entierement distincts</div><div class="callout info"><span class="ci">i</span><div><strong>Norme PSR-4.</strong> PHP-FIG a defini la norme PSR-4 qui mappe les namespaces sur la structure de dossiers. <code>App\Models\User</code> correspond au fichier <code>src/Models/User.php</code>. Composer genere automatiquement un autoloader PSR-4 — plus aucun <code>require_once</code> manuel.</div></div></section><div class="divider"></div>
+<section class="etape" id="e1"><div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1</div><h2>Declarer un namespace</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">src/Models/User.php &mdash; declaration du namespace</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// PREMIERE ligne apres &lt;?php obligatoirement</span>
+<span class="kw">namespace</span> <span class="ns">App\Models</span>;
+
+<span class="kw">class</span> <span class="cls">User</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">public</span> string <span class="vr">$nom</span>,
+        <span class="vis">public</span> string <span class="vr">$email</span>,
+    ) {}
+}
+<span class="cmt">// Nom complet (FQCN) : App\Models\User</span></code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">src/Services/UserService.php &mdash; importer une classe</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Services</span>;
+
+<span class="cmt">// Importer une classe par son FQCN</span>
+<span class="kw">use</span> <span class="ns">App\Models\User</span>;
+
+<span class="kw">class</span> <span class="cls">UserService</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">creer</span>(string <span class="vr">$nom</span>, string <span class="vr">$email</span>): <span class="cls">User</span> {
+        <span class="cmt">// "User" resolu grace au use ci-dessus</span>
+        <span class="kw">return</span> <span class="kw">new</span> <span class="cls">User</span>(<span class="vr">$nom</span>, <span class="vr">$email</span>);
+    }
+}
+
+<span class="cmt">// Sans use, il faudrait ecrire le FQCN complet :</span>
+<span class="cmt">// return new App\Models\User($nom, $email);</span>
+
+<span class="cmt">// Classes PHP globales dans un namespace : prefixer avec \</span>
+<span class="vr">$dt</span> = <span class="kw">new</span> \<span class="cls">DateTime</span>();
+<span class="cmt">// Sans \ : PHP cherche App\Services\DateTime (inexistant)</span></code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Classes globales dans un namespace.</strong> A l'interieur d'un namespace, les classes PHP natives (DateTime, Exception, PDO, InvalidArgumentException) doivent etre prefixees par <code>\</code> ou importees explicitement avec <code>use DateTime;</code>. Sans ca, PHP les cherche dans le namespace courant.</div></div></section><div class="divider"></div>
+<section class="etape" id="e2"><div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2</div><h2>use et alias</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">use &mdash; import, alias et import groupe</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Http\Controllers</span>;
+
+<span class="cmt">// Import simple</span>
+<span class="kw">use</span> <span class="ns">App\Models\User</span>;
+<span class="kw">use</span> <span class="ns">App\Models\Produit</span>;
+<span class="kw">use</span> <span class="ns">App\Services\UserService</span>;
+
+<span class="cmt">// Alias : renommer pour eviter les conflits ou raccourcir</span>
+<span class="kw">use</span> <span class="ns">App\Models\User</span>          <span class="kw">as</span> <span class="cls">AppUser</span>;
+<span class="kw">use</span> <span class="ns">Symfony\Security\User</span>  <span class="kw">as</span> <span class="cls">SymfonyUser</span>;
+
+<span class="cmt">// Import groupe PHP 7+ : meme prefixe de namespace</span>
+<span class="kw">use</span> <span class="ns">App\Models\{User, Produit, Categorie}</span>;
+
+<span class="cmt">// Importer une fonction ou une constante</span>
+<span class="kw">use function</span> <span class="ns">App\Helpers\formatPrix</span>;
+<span class="kw">use const</span>    <span class="ns">App\Config\VERSION</span>;
+
+<span class="cmt">// Utilisation dans la classe</span>
+<span class="kw">class</span> <span class="cls">UserController</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">store</span>(): <span class="cls">User</span> {
+        <span class="cmt">// "User" = App\Models\User grace au use</span>
+        <span class="kw">return</span> (<span class="kw">new</span> <span class="cls">UserService</span>())-><span class="fn">creer</span>(<span class="str">'Alice'</span>, <span class="str">'alice@ex.com'</span>);
+    }
+}</code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Toujours importer en haut du fichier.</strong> Les declarations <code>use</code> vont apres le namespace et avant toute declaration de classe. Elles ne font que creer des raccourcis : elles ne chargent pas les fichiers (c'est le role de l'autoloader).</div></div></section><div class="divider"></div>
+<section class="etape" id="e3"><div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3</div><h2>Autoloading PSR-4</h2></div></div><p class="prose">Sans autoloader, chaque classe necessite un <code>require_once</code>. L'autoloader PSR-4 de Composer charge automatiquement chaque classe au moment ou on l'utilise, en suivant la correspondance namespace &rarr; dossier.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Correspondance namespace vers fichier (PSR-4)</span><span class="cb-badge ">Structure</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">// Regle PSR-4 definie dans composer.json :</span>
+<span class="cmt">// "App\\" =&gt; "src/"</span>
+
+<span class="cmt">// Namespace              Fichier physique</span>
+<span class="ns">App\Models\User</span>        <span class="cmt">-&gt; src/Models/User.php</span>
+<span class="ns">App\Services\Mailer</span>    <span class="cmt">-&gt; src/Services/Mailer.php</span>
+<span class="ns">App\Http\Router</span>         <span class="cmt">-&gt; src/Http/Router.php</span>
+<span class="ns">App\Http\Middleware\Auth</span>  <span class="cmt">-&gt; src/Http/Middleware/Auth.php</span>
+
+projet/
+  src/
+    Models/
+      User.php          <span class="cmt">&lt;-- namespace App\Models;</span>
+      Produit.php       <span class="cmt">&lt;-- namespace App\Models;</span>
+    Services/
+      Mailer.php        <span class="cmt">&lt;-- namespace App\Services;</span>
+    Http/
+      Router.php        <span class="cmt">&lt;-- namespace App\Http;</span>
+      Middleware/
+        Auth.php        <span class="cmt">&lt;-- namespace App\Http\Middleware;</span>
+  vendor/               <span class="cmt">&lt;-- packages Composer</span>
+  composer.json
+  index.php</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Sans vs avec autoloader</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Avant Composer : require_once pour chaque fichier</span>
+<span class="kw">require_once</span> <span class="str">'src/Models/User.php'</span>;
+<span class="kw">require_once</span> <span class="str">'src/Models/Produit.php'</span>;
+<span class="kw">require_once</span> <span class="str">'src/Services/Mailer.php'</span>;
+<span class="cmt">// ... un require par classe : difficile a maintenir</span>
+
+<span class="cmt">// Avec Composer : un seul require</span>
+<span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'vendor/autoload.php'</span>;
+
+<span class="cmt">// Toutes les classes du projet et des packages sont</span>
+<span class="cmt">// disponibles immediatement, chargees a la demande.</span>
+
+<span class="kw">use</span> <span class="ns">App\Models\User</span>;
+<span class="vr">$u</span> = <span class="kw">new</span> <span class="cls">User</span>(<span class="str">'Alice'</span>, <span class="str">'alice@ex.com'</span>);
+<span class="cmt">// Composer charge src/Models/User.php automatiquement</span></code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>Principe "lazy loading".</strong> L'autoloader ne charge les fichiers qu'au moment de la premiere utilisation de la classe. Si <code>Mailer</code> n'est jamais instancie dans une requete, son fichier n'est jamais lu. C'est plus efficace que des dizaines de require_once inconditionnels.</div></div></section><div class="divider"></div>
+<section class="etape" id="e4"><div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4</div><h2>Installer Composer</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Installer Composer</span><span class="cb-badge sh">Terminal</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># macOS / Linux via Homebrew</span>
+<span class="sh">brew install composer</span>
+
+<span class="cmt"># Ou via le script officiel (toutes plateformes)</span>
+<span class="sh">curl -sS https://getcomposer.org/installer | php</span>
+<span class="sh">sudo mv composer.phar /usr/local/bin/composer</span>
+
+<span class="cmt"># Windows : Composer-Setup.exe sur getcomposer.org</span>
+
+<span class="cmt"># Verifier l'installation</span>
+<span class="sh">composer --version</span>
+<span class="cmt"># Composer version 2.x.x ...</span>
+
+<span class="cmt"># Initialiser un projet (wizard interactif)</span>
+<span class="sh">mkdir mon-projet && cd mon-projet</span>
+<span class="sh">composer init</span>
+<span class="cmt"># Repond aux questions : nom, description, auteur...</span>
+<span class="cmt"># Genere le composer.json initial</span></code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>Composer 2.x (recommande).</strong> Composer 2 est significativement plus rapide que Composer 1. Verifier qu'on est en version 2 avec <code>composer --version</code>. Les commandes sont identiques dans les deux versions.</div></div></section><div class="divider"></div>
+<section class="etape" id="e5"><div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5</div><h2>composer.json</h2></div></div><p class="prose">Le fichier <code>composer.json</code> est la configuration centrale du projet. Il liste les dependances, definit l'autoloading PSR-4 et peut contenir des scripts.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">composer.json &mdash; configuration complete</span><span class="cb-badge good">Complet</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code>{
+    <span class="str">"name"</span>: <span class="str">"monentreprise/monprojet"</span>,
+    <span class="str">"description"</span>: <span class="str">"Application de gestion"</span>,
+    <span class="str">"type"</span>: <span class="str">"project"</span>,
+    <span class="str">"require"</span>: {
+        <span class="str">"php"</span>: <span class="str">"&gt;=8.1"</span>,
+        <span class="str">"vlucas/phpdotenv"</span>: <span class="str">"^5.6"</span>,
+        <span class="str">"phpmailer/phpmailer"</span>: <span class="str">"^6.9"</span>
+    },
+    <span class="str">"require-dev"</span>: {
+        <span class="str">"phpunit/phpunit"</span>: <span class="str">"^11.0"</span>
+    },
+    <span class="str">"autoload"</span>: {
+        <span class="str">"psr-4"</span>: {
+            <span class="str">"App\\"</span>: <span class="str">"src/"</span>
+        }
+    },
+    <span class="str">"autoload-dev"</span>: {
+        <span class="str">"psr-4"</span>: {
+            <span class="str">"Tests\\"</span>: <span class="str">"tests/"</span>
+        }
+    },
+    <span class="str">"scripts"</span>: {
+        <span class="str">"test"</span>: <span class="str">"phpunit"</span>
+    }
+}</code></pre></div><div class="table-wrap"><table><thead><tr><th>Cle</th><th>Role</th></tr></thead><tbody><tr><td>"require"</td><td>Dependances de production — installees partout</td></tr><tr><td>"require-dev"</td><td>Dependances de developpement — tests, debug, etc.</td></tr><tr><td>"autoload"</td><td>Mapping PSR-4 pour votre code (namespace =&gt; dossier)</td></tr><tr><td>"autoload-dev"</td><td>Mapping PSR-4 pour les tests</td></tr><tr><td>"scripts"</td><td>Commandes shortcut : composer test, composer serve...</td></tr><tr><td>composer.lock</td><td>Genere auto : versions exactes installees (a versionner)</td></tr></tbody></table></div><div class="callout warn"><span class="ci">!</span><div><strong>Ne jamais versionner vendor/.</strong> Le dossier vendor peut peser plusieurs centaines de Mo. Ajouter <code>vendor/</code> dans le <code>.gitignore</code>. En revanche, <strong>versionner <code>composer.lock</code></strong> — il garantit que tous les devs installent exactement les memes versions.</div></div></section><div class="divider"></div>
+<section class="etape" id="e6"><div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6</div><h2>Utiliser un package &mdash; phpdotenv</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Installer phpdotenv</span><span class="cb-badge sh">Terminal</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># Ajouter phpdotenv dans require</span>
+<span class="sh">composer require vlucas/phpdotenv</span>
+<span class="cmt"># Telecharge dans vendor/ et met a jour composer.json + composer.lock</span>
+
+<span class="cmt"># Ajouter une dependance de dev</span>
+<span class="sh">composer require --dev phpunit/phpunit</span></code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">.env &mdash; variables sensibles hors du code</span><span class="cb-badge ">Config</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># .env (a la racine du projet, ne pas versionner)</span>
+APP_ENV=development
+APP_SECRET=monSecretAleatoire
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=boutique
+DB_USER=appuser
+DB_PASS=motdepasse
+</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">public/index.php &mdash; autoloader + .env + vos classes</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// public/index.php &mdash; point d'entree unique</span>
+<span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'/../vendor/autoload.php'</span>;
+
+<span class="cmt">// 1. Charger les variables .env</span>
+<span class="kw">use</span> <span class="ns">Dotenv\Dotenv</span>;
+<span class="vr">$dotenv</span> = <span class="cls">Dotenv</span>::<span class="fn">createImmutable</span>(<span class="fn">dirname</span>(<span class="fn">__DIR__</span>));
+<span class="vr">$dotenv</span>-><span class="fn">load</span>();
+
+<span class="cmt">// 2. Utiliser les variables d'environnement</span>
+<span class="vr">$host</span>   = <span class="vr">$_ENV</span>[<span class="str">'DB_HOST'</span>];    <span class="cmt">// "localhost"</span>
+<span class="vr">$dbName</span> = <span class="vr">$_ENV</span>[<span class="str">'DB_NAME'</span>];    <span class="cmt">// "boutique"</span>
+
+<span class="cmt">// 3. Utiliser vos propres classes (autoloader PSR-4)</span>
+<span class="kw">use</span> <span class="ns">App\Services\UserService</span>;
+<span class="kw">use</span> <span class="ns">App\Http\Router</span>;
+
+<span class="vr">$service</span> = <span class="kw">new</span> <span class="cls">UserService</span>();
+<span class="cmt">// Composer charge src/Services/UserService.php automatiquement</span>
+<span class="cmt">// Pas de require_once manuel !</span></code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>Ne jamais mettre les secrets dans le code.</strong> Les mots de passe, cles API, et configurations sensibles vont dans <code>.env</code> (non versionne). On versionne <code>.env.example</code> avec des valeurs fictives comme modele pour les autres developpeurs.</div></div></section><div class="divider"></div>
+<section class="etape" id="e7"><div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Reference</div><h2>Commandes Composer essentielles</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Commandes Composer &mdash; reference complete</span><span class="cb-badge sh">Terminal</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># GESTION DES DEPENDANCES</span>
+
+<span class="cmt"># Installer depuis composer.lock (production, reproductible)</span>
+<span class="sh">composer install</span>
+
+<span class="cmt"># Mettre a jour toutes les dependances (dev uniquement)</span>
+<span class="sh">composer update</span>
+
+<span class="cmt"># Ajouter un package</span>
+<span class="sh">composer require phpmailer/phpmailer</span>
+<span class="sh">composer require symfony/var-dumper</span>
+<span class="sh">composer require --dev phpunit/phpunit</span>
+
+<span class="cmt"># Supprimer un package</span>
+<span class="sh">composer remove vlucas/phpdotenv</span>
+
+<span class="cmt"># AUTOLOADER</span>
+
+<span class="cmt"># Regenerer apres modification de la section "autoload"</span>
+<span class="sh">composer dump-autoload</span>
+<span class="sh">composer dump-autoload --optimize</span>   <span class="cmt"># plus rapide en prod</span>
+
+<span class="cmt"># INSPECTION</span>
+
+<span class="cmt"># Lister les packages installes</span>
+<span class="sh">composer show</span>
+<span class="sh">composer show vlucas/phpdotenv</span>  <span class="cmt"># detail d'un package</span>
+
+<span class="cmt"># Mises a jour disponibles</span>
+<span class="sh">composer outdated</span>
+
+<span class="cmt"># Chercher un package sur packagist.org</span>
+<span class="sh">composer search "pdf generator"</span>
+
+<span class="cmt"># Valider le composer.json</span>
+<span class="sh">composer validate</span></code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>install vs update en production.</strong> En production, utiliser uniquement <code>composer install</code> — il lit <code>composer.lock</code> et installe exactement les versions testees. <code>composer update</code> peut installer des versions plus recentes qui cassent l'application : ne l'utiliser qu'en developpement.</div></div></section><div class="divider"></div>
+<section class="etape" id="e8"><div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Synthese</div><h2>Structure de projet complete</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Structure complete d'un projet PHP moderne</span><span class="cb-badge good">Reference</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code>mon-projet/
+  src/                          <span class="cmt">&lt;-- votre code (namespace App\)</span>
+    Models/
+      User.php                  <span class="cmt">namespace App\Models;</span>
+      Produit.php               <span class="cmt">namespace App\Models;</span>
+    Services/
+      UserService.php           <span class="cmt">namespace App\Services;</span>
+      Mailer.php                <span class="cmt">namespace App\Services;</span>
+    Http/
+      Router.php                <span class="cmt">namespace App\Http;</span>
+      Middleware/
+        AuthMiddleware.php      <span class="cmt">namespace App\Http\Middleware;</span>
+    Exceptions/
+      ValidationException.php  <span class="cmt">namespace App\Exceptions;</span>
+  tests/                        <span class="cmt">&lt;-- tests (namespace Tests\)</span>
+  public/                       <span class="cmt">&lt;-- RACINE WEB (seul dossier accessible)</span>
+    index.php                   <span class="cmt">require vendor/autoload.php</span>
+    assets/css/  assets/js/
+  vendor/                       <span class="cmt">&lt;-- Composer (ne pas versionner)</span>
+  .env                          <span class="cmt">&lt;-- secrets (ne pas versionner)</span>
+  .env.example                  <span class="cmt">&lt;-- modele public (versionner)</span>
+  .gitignore
+  composer.json
+  composer.lock                 <span class="cmt">&lt;-- versionner</span></code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">.gitignore</span><span class="cb-badge ">Config</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code>/vendor/
+.env
+*.log
+/public/uploads/</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">public/index.php &mdash; point d'entree</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// public/index.php &mdash; point d'entree unique de l'application</span>
+<span class="kw">require_once</span> <span class="fn">dirname</span>(<span class="fn">__DIR__</span>) . <span class="str">'/vendor/autoload.php'</span>;
+
+<span class="cmt">// Charger l'environnement</span>
+<span class="kw">use</span> <span class="ns">Dotenv\Dotenv</span>;
+<span class="cls">Dotenv</span>::<span class="fn">createImmutable</span>(<span class="fn">dirname</span>(<span class="fn">__DIR__</span>))-><span class="fn">load</span>();
+
+<span class="cmt">// Demarrer l'application</span>
+<span class="kw">use</span> <span class="ns">App\Http\Router</span>;
+<span class="vr">$router</span> = <span class="kw">new</span> <span class="cls">Router</span>();
+<span class="vr">$router</span>-><span class="fn">dispatch</span>(<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_URI'</span>]);</code></pre></div><div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Mise en place en 4 etapes :</strong> (1) <code>composer init</code> + configurer PSR-4 (2) <code>composer install</code> (3) <code>require vendor/autoload.php</code> dans index.php (4) chaque classe PHP = son propre fichier avec le namespace correspondant a son dossier.</div></div></section><div class="divider"></div>
+<section class="etape" id="quiz"><div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; namespaces et Composer</h2></div></div><div class="quiz-card"><div class="q"><span class="qn">Q1.</span> Quel est le role principal des namespaces PHP ?</div><div class="opts"><button class="opt" onclick="ans(this,'q1',false)">Ameliorer les performances en evitant les inclusions de fichiers</button><button class="opt" onclick="ans(this,'q1',true)">Eviter les conflits de noms entre classes : deux classes peuvent s'appeler User dans des namespaces differents et coexister sans collision.</button><button class="opt" onclick="ans(this,'q1',false)">Remplacer les instructions include et require_once</button></div><div class="fb" id="fb-q1"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q2.</span> Avec la regle PSR-4 <code>"App\\" =&gt; "src/"</code>, quel fichier correspond a <code>App\Services\Mailer</code> ?</div><div class="opts"><button class="opt" onclick="ans(this,'q2',false)">app/Services/Mailer.php</button><button class="opt" onclick="ans(this,'q2',true)">src/Services/Mailer.php &mdash; le prefixe App\ est remplace par src/, les \ suivants deviennent des separateurs de dossiers.</button><button class="opt" onclick="ans(this,'q2',false)">src/App/Services/Mailer.php</button></div><div class="fb" id="fb-q2"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q3.</span> Pourquoi ne faut-il jamais versionner le dossier <code>vendor/</code> dans Git ?</div><div class="opts"><button class="opt" onclick="ans(this,'q3',false)">Git ne supporte pas les dossiers de plus de 1000 fichiers</button><button class="opt" onclick="ans(this,'q3',true)">Il peut peser plusieurs centaines de Mo, est entierement regenerable par composer install depuis composer.lock, et ne doit pas etre modifie manuellement.</button><button class="opt" onclick="ans(this,'q3',false)">vendor/ est cree automatiquement par PHP au demarrage</button></div><div class="fb" id="fb-q3"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q4.</span> Quelle est la difference entre <code>composer install</code> et <code>composer update</code> ?</div><div class="opts"><button class="opt" onclick="ans(this,'q4',true)">install lit composer.lock et installe les versions exactes (ideal en production). update cherche de nouvelles versions dans les contraintes et regenere composer.lock (developpement uniquement).</button><button class="opt" onclick="ans(this,'q4',false)">install installe un seul package, update installe tous les packages</button><button class="opt" onclick="ans(this,'q4',false)">Ce sont des synonymes qui font exactement la meme chose</button></div><div class="fb" id="fb-q4"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q5.</span> Pourquoi ecrire <code>new \DateTime()</code> avec le backslash dans un fichier avec namespace ?</div><div class="opts"><button class="opt" onclick="ans(this,'q5',false)">Par convention de style PHP uniquement, cela n'a aucun effet</button><button class="opt" onclick="ans(this,'q5',true)">Sans \, PHP cherche DateTime dans le namespace courant (ex: App\Services\DateTime) qui n'existe pas. Le \ indique explicitement la classe DateTime du namespace global PHP.</button><button class="opt" onclick="ans(this,'q5',false)">Le \ active les optimisations internes du moteur PHP</button></div><div class="fb" id="fb-q5"></div></div><div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;"><div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div><div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div></div></section></main></div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copie';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+const fbs={
+  q1:{ok:'Exact. Les namespaces agissent comme des dossiers pour les classes. App\\Models\\User et Symfony\\Security\\User coexistent. Sans namespaces, redeclarer une classe cause un Fatal error impossible a contourner.',ko:'Non. Le role principal des namespaces est d eviter les conflits de noms. Deux librairies peuvent definir une classe User : dans des namespaces differents elles coexistent sans probleme.'},
+  q2:{ok:'Exact. PSR-4 mappe App\\ sur src/. Le prefixe App\\ est supprime et remplace par src/. Les \\ suivants deviennent des separateurs de dossiers. App\\Services\\Mailer => src/Services/Mailer.php.',ko:'Non. Avec App\\ => src/, le namespace App\\Services\\Mailer mappe sur src/Services/Mailer.php. On retire le prefixe App\\ et on remplace les \\ restants par /. Le dossier app/ n est pas utilise.'},
+  q3:{ok:'Exact. vendor/ peut facilement peser 50 a 500 Mo selon les dependances. Il est entierement regenerable par composer install depuis composer.lock. Le versionner alourdit inutilement le depot et cause des conflits de merge impossibles.',ko:'Non. vendor/ ne doit pas etre versionne car il est tres volumineux (centaines de Mo) et entierement regenerable. Seuls composer.json et composer.lock sont versionnés.'},
+  q4:{ok:'Exact. En production, composer install garantit que les versions exactes de composer.lock sont installees. Ces versions ont ete testees. update peut installer des versions plus recentes potentiellement instables : a n utiliser qu en developpement.',ko:'Non. install lit composer.lock = versions exactes, stable pour la production. update cherche les nouvelles versions dans les contraintes de composer.json = peut introduire des changements cassants, dev uniquement.'},
+  q5:{ok:'Exact. Dans le namespace App\\Services, PHP cherche toutes les classes non prefixees dans ce namespace. new DateTime() chercherait App\\Services\\DateTime qui n existe pas. Le \\ initial specifie le namespace global (racine) de PHP ou se trouve la vraie DateTime.',ko:'Non. Dans un namespace, PHP cherche les classes non prefixees dans le namespace courant. DateTime sans \\ serait App\\Services\\DateTime (inexistant). Le \\ ou use DateTime; est obligatoire pour acceder a la classe native.'}
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').innerHTML=g===5?'Parfait &mdash; Composer et namespaces maitrise !':g>=4?'Tres bien.':g>=3?'Revoir PSR-4 et install vs update.':'Reprendre les namespaces et l autoloader.';box.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+</script></body></html>

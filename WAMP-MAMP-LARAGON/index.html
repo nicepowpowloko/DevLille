@@ -1,0 +1,268 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PHP &mdash; Environnements de developpement</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--accent:#1d4ed8;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--teal:#0f766e;--orange:#c2410c;--purple:#7c3aed;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:248px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(29,78,216,.07);}.nav-link.active{background:rgba(29,78,216,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:22px;}
+.nav-env{display:inline-block;font-size:.6rem;font-family:var(--mono);padding:1px 5px;border-radius:3px;margin-left:auto;flex-shrink:0;}
+.nav-env.w{background:rgba(59,130,246,.1);color:#2563eb;}.nav-env.m{background:rgba(15,118,110,.1);color:#0f766e;}.nav-env.l{background:rgba(180,83,9,.1);color:#b45309;}
+.content{margin-left:248px;padding:48px 52px 80px;max-width:calc(100% - 248px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(29,78,216,.08);border:1px solid rgba(29,78,216,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:600px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.w{background:rgba(59,130,246,.07);border-color:rgba(59,130,246,.25);color:#2563eb;}
+.obj.m{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--teal);}
+.obj.l{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.v{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.env-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.env-badge{font-family:var(--mono);font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:6px;letter-spacing:.05em;text-transform:uppercase;}
+.env-badge.wamp{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd;}
+.env-badge.mamp{background:#ccfbf1;color:#0f766e;border:1px solid #5eead4;}
+.env-badge.laragon{background:#fed7aa;color:#c2410c;border:1px solid #fb923c;}
+.env-badge.sql{background:#ede9fe;color:#7c3aed;border:1px solid #a78bfa;}
+.env-badge.cli{background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(29,78,216,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}.prose strong{color:var(--text);}.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(29,78,216,.07);border:1px solid rgba(29,78,216,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.env-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.env-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;box-shadow:var(--sh);}
+.env-card h3{font-size:.88rem;font-weight:800;margin-bottom:6px;}
+.env-card.wamp h3{color:#1d4ed8;}.env-card.mamp h3{color:#0f766e;}.env-card.laragon h3{color:#c2410c;}
+.env-card p{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:8px;}
+.env-card .tag{font-family:var(--mono);font-size:.62rem;padding:2px 7px;border-radius:3px;display:inline-block;}
+.env-card.wamp .tag{background:#dbeafe;color:#1d4ed8;}.env-card.mamp .tag{background:#ccfbf1;color:#0f766e;}.env-card.laragon .tag{background:#fed7aa;color:#c2410c;}
+.steps{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.step{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.step-n{font-family:var(--mono);font-size:.7rem;font-weight:900;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-n.w{background:#dbeafe;color:#1d4ed8;}.step-n.m{background:#ccfbf1;color:#0f766e;}.step-n.l{background:#fed7aa;color:#c2410c;}.step-n.g{background:rgba(22,163,74,.1);color:var(--green);}
+.step-body{font-size:.84rem;color:var(--muted);line-height:1.65;}
+.step-body strong{color:var(--text);}.step-body code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.05);padding:1px 5px;border-radius:3px;}
+.step-body img-placeholder{display:block;background:var(--title);border-radius:6px;height:30px;margin-top:6px;font-size:.7rem;color:var(--dim);text-align:center;line-height:30px;}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:#2563eb;}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(29,78,216,.15);border:1px solid rgba(29,78,216,.3);color:#93c5fd;}
+.cb-badge.sql{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(29,78,216,.2);color:#93c5fd;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}.sql-kw{color:#cba6f7;font-weight:600;}.sql-type{color:#fab387;}.sql-str{color:#a6e3a1;}.sql-cmt{color:#6c7086;font-style:italic;}.sql-num{color:#fab387;}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(29,78,216,.3);}.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}.fb.show{display:block;}.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+.section-env-title{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--border);}
+.section-env-title h3{font-size:1.05rem;font-weight:800;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}.env-grid{grid-template-columns:1fr;}}
+</style></head><body><div class="layout">
+<aside class="sidebar"><div class="sidebar-logo"><span>[ ] PHP &mdash; Environnements</span><p>WAMP &bull; MAMP &bull; Laragon</p></div><div class="nav-section"><div class="nav-label">Ce support</div><a href="#plan" class="nav-link"><span class="nav-num">00</span>Comparatif</a><a href="#e1" class="nav-link"><span class="nav-num">e1</span>WAMP &mdash; installation<span class="nav-env w">W</span></a><a href="#e2" class="nav-link"><span class="nav-num">e2</span>WAMP &mdash; BDD et tables<span class="nav-env w">W</span></a><a href="#e3" class="nav-link"><span class="nav-num">e3</span>MAMP &mdash; installation<span class="nav-env m">M</span></a><a href="#e4" class="nav-link"><span class="nav-num">e4</span>MAMP &mdash; BDD et tables<span class="nav-env m">M</span></a><a href="#e5" class="nav-link"><span class="nav-num">e5</span>Laragon &mdash; installation<span class="nav-env l">L</span></a><a href="#e6" class="nav-link"><span class="nav-num">e6</span>Laragon &mdash; BDD et tables<span class="nav-env l">L</span></a><a href="#e7" class="nav-link"><span class="nav-num">e7</span>SQL &mdash; script complet</a><a href="#e8" class="nav-link"><span class="nav-num">e8</span>Ligne de commande MySQL</a><a href="#e9" class="nav-link"><span class="nav-num">e9</span>Connexion PDO</a><a href="#quiz" class="nav-link"><span class="nav-num">quiz</span>Quiz</a></div></aside><main class="content">
+<div class="page-header"><div class="serie-badge">Support transversal</div><h1>Environnements<br><span class="hl">de developpement</span></h1><p>Mettre en place son environnement local PHP + MySQL est la premiere etape avant tout TP. Ce support couvre WAMP (Windows), MAMP (Mac/Windows) et Laragon (Windows) : installation, demarrage, creation de base de donnees et de tables.</p><div class="objectifs"><span class="obj w">WAMP</span><span class="obj m">MAMP</span><span class="obj l">Laragon</span><span class="obj g">phpMyAdmin</span><span class="obj v">SQL</span></div></div>
+<section class="etape" id="plan"><div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Comparatif</div><h2>WAMP vs MAMP vs Laragon</h2></div></div><p class="prose">Les trois environnements installent le meme trio : <strong>Apache</strong> (serveur web), <strong>MySQL/MariaDB</strong> (base de donnees) et <strong>PHP</strong>. Ils different par leur interface et leur plateforme.</p><div class="env-grid"><div class="env-card wamp"><h3>WAMP</h3><span class="tag">Windows uniquement</span><p>WampServer installe Apache, MySQL et PHP. Interface en icone dans la barre des taches. Le plus repandu en formation francophone.</p><p><strong>URL :</strong> wampserver.com</p></div><div class="env-card mamp"><h3>MAMP</h3><span class="tag">Mac + Windows</span><p>MAMP est le choix naturel sur Mac. Existe aussi en version Windows. Interface graphique simple. Version gratuite suffisante pour nos TPs.</p><p><strong>URL :</strong> mamp.info</p></div><div class="env-card laragon"><h3>Laragon</h3><span class="tag">Windows (leger)</span><p>Laragon est plus moderne et leger. Portable, pas d'installation systeme. Demarre tres rapidement. Prefere par beaucoup de devs Windows.</p><p><strong>URL :</strong> laragon.org</p></div></div><div class="table-wrap"><table><thead><tr><th>Critere</th><th>WAMP</th><th>MAMP</th><th>Laragon</th></tr></thead><tbody><tr><td>Plateforme</td><td>Windows</td><td>Mac + Windows</td><td>Windows</td></tr><tr><td>Poids installation</td><td>~500 Mo</td><td>~600 Mo</td><td>~150 Mo</td></tr><tr><td>Demarrage</td><td>Icone barre des taches</td><td>Interface graphique</td><td>Icone systray rapide</td></tr><tr><td>phpMyAdmin</td><td>Inclus</td><td>Inclus</td><td>Inclus</td></tr><tr><td>URL locale</td><td>http://localhost</td><td>http://localhost:8888</td><td>http://localhost</td></tr><tr><td>Port MySQL</td><td>3306</td><td>8889 (MAMP) / 3306</td><td>3306</td></tr><tr><td>Version PHP</td><td>Modifiable</td><td>Modifiable (MAMP Pro)</td><td>Modifiable facilement</td></tr></tbody></table></div><div class="callout info"><span class="ci">i</span><div><strong>phpMyAdmin est inclus dans les trois.</strong> C'est l'interface web qui permet de gerer MySQL visuellement : creer des bases, des tables, inserer des donnees, executer des requetes SQL. On y accede depuis le navigateur.</div></div></section><div class="divider"></div>
+<section class="etape" id="e1"><div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">WAMP</div><h2>Installation et demarrage</h2></div></div><div class="section-env-title"><span class="env-badge wamp">WAMP &mdash; Windows</span></div><div class="steps"><div class="step"><div class="step-n w">1</div><div class="step-body">Telecharger <strong>WampServer</strong> sur <code>wampserver.com</code>. Choisir la version 64-bit correspondant a votre Windows.</div></div><div class="step"><div class="step-n w">2</div><div class="step-body">Lancer l'installateur en tant qu'<strong>administrateur</strong> (clic droit &rarr; "Executer en tant qu'administrateur"). Accepter toutes les options par defaut.</div></div><div class="step"><div class="step-n w">3</div><div class="step-body">A la fin de l'installation, WAMP demande le navigateur par defaut et l'editeur de texte. Valider avec les chemins proposes.</div></div><div class="step"><div class="step-n w">4</div><div class="step-body">Lancer WampServer depuis le bureau. L'icone <span style="color:#f59e0b;font-weight:700">W</span> apparait dans la barre des taches en bas a droite.</div></div><div class="step"><div class="step-n w">5</div><div class="step-body">Attendre que l'icone devienne <span style="color:#16a34a;font-weight:700">verte</span>. Rouge = erreur, Orange = en cours, Vert = tout fonctionne.</div></div><div class="step"><div class="step-n w">6</div><div class="step-body">Ouvrir le navigateur et aller sur <code>http://localhost</code>. La page d'accueil de WampServer doit s'afficher.</div></div></div><div class="callout warn"><span class="ci">!</span><div><strong>Icone reste orange ou rouge ?</strong> Souvent un conflit de port 80 avec Skype ou IIS. Clic droit sur l'icone WAMP &rarr; Tools &rarr; Test Port 80. Ou changer le port Apache dans la configuration.</div></div><p class="prose"><strong>Ouvrir phpMyAdmin :</strong> clic gauche sur l'icone verte &rarr; "phpMyAdmin". Ou directement dans le navigateur : <code>http://localhost/phpmyadmin</code>.</p><p class="prose">Connexion par defaut : identifiant <code>root</code>, mot de passe <strong>vide</strong> (ne rien saisir).</p><div class="callout tip"><span class="ci">!</span><div><strong>Dossier des projets WAMP.</strong> Vos fichiers PHP doivent etre places dans <code>C:\wamp64\www\nom-projet\</code>. Ensuite accessible sur <code>http://localhost/nom-projet</code>.</div></div></section><div class="divider"></div>
+<section class="etape" id="e2"><div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">WAMP</div><h2>Creer la base de donnees et les tables</h2></div></div><div class="section-env-title"><span class="env-badge wamp">WAMP &mdash; Creer une base de donnees</span></div><p class="prose">Deux methodes : via <strong>phpMyAdmin</strong> (interface graphique) ou via le <strong>terminal MySQL</strong>. Les deux aboutissent au meme resultat.</p><h3 style="font-size:.95rem;font-weight:700;margin-bottom:12px;color:var(--text);">Methode 1 &mdash; phpMyAdmin</h3><div class="steps"><div class="step"><div class="step-n w">1</div><div class="step-body">Ouvrir <code>http://localhost/phpmyadmin</code>. Se connecter avec <code>root</code> / mot de passe vide.</div></div><div class="step"><div class="step-n w">2</div><div class="step-body">Dans le panneau gauche, cliquer sur <strong>"Nouveau"</strong> (ou "New" en anglais) tout en haut de la liste des bases.</div></div><div class="step"><div class="step-n w">3</div><div class="step-body">Saisir le nom de la base de donnees : <code>boutique</code>. Choisir l'interclassement <strong>utf8mb4_unicode_ci</strong>. Cliquer <strong>"Creer"</strong>.</div></div><div class="step"><div class="step-n w">4</div><div class="step-body">La base <code>boutique</code> apparait dans le panneau gauche. Cliquer dessus pour la selectionner.</div></div><div class="step"><div class="step-n w">5</div><div class="step-body">Cliquer sur l'onglet <strong>"SQL"</strong> en haut. Coller le script de creation de tables (voir section 07). Cliquer <strong>"Executer"</strong>.</div></div><div class="step"><div class="step-n w">6</div><div class="step-body">Les tables apparaissent dans le panneau gauche. Cliquer sur une table pour voir sa structure.</div></div></div><div class="callout success"><span class="ci">+</span><div><strong>Raccourci WAMP phpMyAdmin.</strong> Clic gauche sur l'icone verte dans la barre des taches &rarr; phpMyAdmin. Plus rapide que taper l'URL.</div></div></section><div class="divider"></div>
+<section class="etape" id="e3"><div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">MAMP</div><h2>Installation et demarrage</h2></div></div><div class="section-env-title"><span class="env-badge mamp">MAMP &mdash; Mac &amp; Windows</span></div><div class="steps"><div class="step"><div class="step-n m">1</div><div class="step-body">Telecharger <strong>MAMP</strong> (version gratuite) sur <code>mamp.info</code>. Sur Mac : fichier .pkg. Sur Windows : installateur .exe.</div></div><div class="step"><div class="step-n m">2</div><div class="step-body"><strong>Mac :</strong> ouvrir le .pkg et suivre l'assistant. MAMP s'installe dans <code>/Applications/MAMP/</code>. <strong>Windows :</strong> lancer l'installateur, chemin par defaut <code>C:\MAMP</code>.</div></div><div class="step"><div class="step-n m">3</div><div class="step-body">Lancer l'application <strong>MAMP</strong> (pas MAMP Pro). L'interface avec deux boutons apparait.</div></div><div class="step"><div class="step-n m">4</div><div class="step-body">Cliquer sur <strong>"Start Servers"</strong>. Les deux voyants Apache et MySQL passent au vert.</div></div><div class="step"><div class="step-n m">5</div><div class="step-body">Cliquer sur <strong>"Open WebStart page"</strong> ou ouvrir <code>http://localhost:8888</code> dans le navigateur.</div></div><div class="step"><div class="step-n m">6</div><div class="step-body">La page de demarrage MAMP s'affiche avec les liens vers phpMyAdmin et les infos PHP.</div></div></div><div class="callout warn"><span class="ci">!</span><div><strong>Port specifique de MAMP.</strong> MAMP utilise par defaut le port <strong>8888</strong> pour Apache et <strong>8889</strong> pour MySQL (version gratuite). Votre URL sera <code>http://localhost:8888/nom-projet</code>. Dans votre connexion PDO, le port MySQL sera 8889.</div></div><p class="prose"><strong>Acces phpMyAdmin sur Mac :</strong> <code>http://localhost:8888/phpMyAdmin/</code> ou clic sur le lien dans la page de demarrage. Identifiant : <code>root</code>, mot de passe : <code>root</code>.</p><div class="callout tip"><span class="ci">!</span><div><strong>Dossier des projets MAMP.</strong> Mac : <code>/Applications/MAMP/htdocs/nom-projet/</code>. Windows : <code>C:\MAMP\htdocs\nom-projet\</code>. Accessible sur <code>http://localhost:8888/nom-projet</code>.</div></div></section><div class="divider"></div>
+<section class="etape" id="e4"><div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">MAMP</div><h2>Creer la base de donnees et les tables</h2></div></div><div class="section-env-title"><span class="env-badge mamp">MAMP &mdash; Creer une base de donnees</span></div><div class="steps"><div class="step"><div class="step-n m">1</div><div class="step-body">Ouvrir <code>http://localhost:8888/phpMyAdmin/</code>. Identifiant : <code>root</code>, mot de passe : <code>root</code>.</div></div><div class="step"><div class="step-n m">2</div><div class="step-body">Cliquer sur <strong>"Nouveau"</strong> dans le panneau gauche.</div></div><div class="step"><div class="step-n m">3</div><div class="step-body">Nommer la base <code>boutique</code>, interclassement <strong>utf8mb4_unicode_ci</strong>. Cliquer <strong>"Creer"</strong>.</div></div><div class="step"><div class="step-n m">4</div><div class="step-body">Selectionner la base <code>boutique</code> dans le panneau gauche, puis onglet <strong>"SQL"</strong>.</div></div><div class="step"><div class="step-n m">5</div><div class="step-body">Coller et executer le script SQL (section 07). Les tables apparaissent.</div></div></div><div class="callout info"><span class="ci">i</span><div><strong>Connexion PDO specifique MAMP.</strong> Sur Mac avec MAMP, le port MySQL est <strong>8889</strong> par defaut. La connexion PDO doit donc preciser le port : <code>mysql:host=localhost;port=8889;dbname=boutique</code>.</div></div></section><div class="divider"></div>
+<section class="etape" id="e5"><div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Laragon</div><h2>Installation et demarrage</h2></div></div><div class="section-env-title"><span class="env-badge laragon">Laragon &mdash; Windows</span></div><div class="steps"><div class="step"><div class="step-n l">1</div><div class="step-body">Telecharger <strong>Laragon Full</strong> sur <code>laragon.org</code>. La version "Full" inclut PHP, MySQL, phpMyAdmin, Composer et Node.js.</div></div><div class="step"><div class="step-n l">2</div><div class="step-body">Lancer l'installateur. Laragon propose de s'installer dans <code>C:\laragon</code>. <strong>Ne pas changer le dossier</strong> pour eviter les problemes de chemin.</div></div><div class="step"><div class="step-n l">3</div><div class="step-body">Lancer Laragon. L'interface epuree avec les boutons "Start All" et "Stop All" apparait.</div></div><div class="step"><div class="step-n l">4</div><div class="step-body">Cliquer sur <strong>"Start All"</strong>. Apache et MySQL demarrent. Les indicateurs passent au vert.</div></div><div class="step"><div class="step-n l">5</div><div class="step-body">Cliquer sur <strong>"Web"</strong> pour ouvrir le navigateur sur <code>http://localhost</code>. La page de demarrage Laragon s'affiche.</div></div><div class="step"><div class="step-n l">6</div><div class="step-body">Menu <strong>"Database"</strong> dans Laragon ouvre directement HeidiSQL, ou cliquer sur "phpMyAdmin" dans la page web.</div></div></div><div class="callout success"><span class="ci">+</span><div><strong>Laragon cree des virtual hosts automatiquement.</strong> Chaque dossier cree dans <code>C:\laragon\www\</code> devient accessible sur <code>http://nom-dossier.test</code>. Tres pratique pour avoir plusieurs projets distincts.</div></div><p class="prose"><strong>Acces phpMyAdmin :</strong> dans l'interface Laragon, menu "Database" &rarr; "phpMyAdmin". Ou <code>http://localhost/phpmyadmin</code>. Identifiant : <code>root</code>, mot de passe : <strong>vide</strong>.</p><div class="callout tip"><span class="ci">!</span><div><strong>Dossier des projets Laragon.</strong> <code>C:\laragon\www\nom-projet\</code>. Accessible sur <code>http://localhost/nom-projet</code> ou <code>http://nom-projet.test</code> (virtual host auto).</div></div></section><div class="divider"></div>
+<section class="etape" id="e6"><div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Laragon</div><h2>Creer la base de donnees et les tables</h2></div></div><div class="section-env-title"><span class="env-badge laragon">Laragon &mdash; Creer une base de donnees</span></div><p class="prose">Laragon propose deux outils pour gerer MySQL : <strong>phpMyAdmin</strong> (navigateur) et <strong>HeidiSQL</strong> (client lourd integre, plus complet).</p><h3 style="font-size:.95rem;font-weight:700;margin-bottom:12px;color:var(--text);">Via HeidiSQL (recommande Laragon)</h3><div class="steps"><div class="step"><div class="step-n l">1</div><div class="step-body">Dans l'interface Laragon, clic sur <strong>"Database"</strong> &rarr; <strong>"HeidiSQL"</strong>. HeidiSQL s'ouvre connecte automatiquement.</div></div><div class="step"><div class="step-n l">2</div><div class="step-body">Dans le panneau gauche, clic droit sur la connexion &rarr; <strong>"Creer nouveau"</strong> &rarr; <strong>"Base de donnees"</strong>.</div></div><div class="step"><div class="step-n l">3</div><div class="step-body">Saisir le nom <code>boutique</code>, interclassement <strong>utf8mb4_unicode_ci</strong>. Valider.</div></div><div class="step"><div class="step-n l">4</div><div class="step-body">Double-cliquer sur la base <code>boutique</code> pour la selectionner. Cliquer sur <strong>"Requete"</strong> (onglet en haut).</div></div><div class="step"><div class="step-n l">5</div><div class="step-body">Coller le script SQL de creation de tables (section 07). Cliquer <strong>"Executer (F9)"</strong>.</div></div></div><h3 style="font-size:.95rem;font-weight:700;margin:16px 0 12px;color:var(--text);">Via phpMyAdmin</h3><div class="steps"><div class="step"><div class="step-n l">1</div><div class="step-body">Depuis la page <code>http://localhost/phpmyadmin</code>. Login : <code>root</code> / vide.</div></div><div class="step"><div class="step-n l">2</div><div class="step-body">Meme procedure que WAMP : "Nouveau" &rarr; nom <code>boutique</code> &rarr; utf8mb4_unicode_ci &rarr; "Creer" &rarr; onglet SQL &rarr; coller et executer.</div></div></div></section><div class="divider"></div>
+<section class="etape" id="e7"><div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">SQL</div><h2>Script de creation complet</h2></div></div><p class="prose">Ce script SQL cree trois tables liees : <code>categories</code>, <code>produits</code> (avec cle etrangere) et <code>utilisateurs</code>. Il insere des donnees de test et termine par un SELECT de verification. A coller dans l'onglet SQL de phpMyAdmin ou HeidiSQL.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">boutique.sql &mdash; script complet a executer dans phpMyAdmin</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="sql-cmt">-- Selectionner la base de donnees</span>
+<span class="sql-kw">USE</span> boutique;
+
+<span class="sql-cmt">-- Table categories</span>
+<span class="sql-kw">CREATE TABLE IF NOT EXISTS</span> <span class="fn">categories</span> (
+    <span class="vr">id</span>         <span class="sql-type">INT UNSIGNED</span> <span class="sql-kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">nom</span>        <span class="sql-type">VARCHAR</span>(<span class="sql-num">100</span>) <span class="sql-kw">NOT NULL</span>,
+    <span class="vr">slug</span>       <span class="sql-type">VARCHAR</span>(<span class="sql-num">120</span>) <span class="sql-kw">NOT NULL UNIQUE</span>,
+    <span class="vr">cree_le</span>    <span class="sql-type">TIMESTAMP</span> <span class="sql-kw">DEFAULT CURRENT_TIMESTAMP</span>
+) <span class="sql-kw">ENGINE</span>=InnoDB <span class="sql-kw">DEFAULT CHARSET</span>=utf8mb4 <span class="sql-kw">COLLATE</span>=utf8mb4_unicode_ci;
+
+<span class="sql-cmt">-- Table produits</span>
+<span class="sql-kw">CREATE TABLE IF NOT EXISTS</span> <span class="fn">produits</span> (
+    <span class="vr">id</span>           <span class="sql-type">INT UNSIGNED</span> <span class="sql-kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">categorie_id</span> <span class="sql-type">INT UNSIGNED</span> <span class="sql-kw">NULL</span>,
+    <span class="vr">nom</span>          <span class="sql-type">VARCHAR</span>(<span class="sql-num">200</span>) <span class="sql-kw">NOT NULL</span>,
+    <span class="vr">description</span>  <span class="sql-type">TEXT</span>,
+    <span class="vr">prix</span>         <span class="sql-type">DECIMAL</span>(<span class="sql-num">10</span>,<span class="sql-num">2</span>) <span class="sql-kw">NOT NULL DEFAULT</span> <span class="sql-num">0.00</span>,
+    <span class="vr">stock</span>        <span class="sql-type">INT UNSIGNED</span> <span class="sql-kw">NOT NULL DEFAULT</span> <span class="sql-num">0</span>,
+    <span class="vr">image</span>        <span class="sql-type">VARCHAR</span>(<span class="sql-num">255</span>),
+    <span class="vr">actif</span>        <span class="sql-type">TINYINT</span>(<span class="sql-num">1</span>) <span class="sql-kw">NOT NULL DEFAULT</span> <span class="sql-num">1</span>,
+    <span class="vr">cree_le</span>      <span class="sql-type">TIMESTAMP</span> <span class="sql-kw">DEFAULT CURRENT_TIMESTAMP</span>,
+    <span class="vr">modifie_le</span>   <span class="sql-type">TIMESTAMP</span> <span class="sql-kw">DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</span>,
+    <span class="sql-kw">FOREIGN KEY</span> (<span class="vr">categorie_id</span>) <span class="sql-kw">REFERENCES</span> <span class="fn">categories</span>(<span class="vr">id</span>) <span class="sql-kw">ON DELETE SET NULL</span>
+) <span class="sql-kw">ENGINE</span>=InnoDB <span class="sql-kw">DEFAULT CHARSET</span>=utf8mb4 <span class="sql-kw">COLLATE</span>=utf8mb4_unicode_ci;
+
+<span class="sql-cmt">-- Table utilisateurs</span>
+<span class="sql-kw">CREATE TABLE IF NOT EXISTS</span> <span class="fn">utilisateurs</span> (
+    <span class="vr">id</span>         <span class="sql-type">INT UNSIGNED</span> <span class="sql-kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">nom</span>        <span class="sql-type">VARCHAR</span>(<span class="sql-num">100</span>) <span class="sql-kw">NOT NULL</span>,
+    <span class="vr">email</span>      <span class="sql-type">VARCHAR</span>(<span class="sql-num">180</span>) <span class="sql-kw">NOT NULL UNIQUE</span>,
+    <span class="vr">mot_de_passe</span> <span class="sql-type">VARCHAR</span>(<span class="sql-num">255</span>) <span class="sql-kw">NOT NULL</span>,
+    <span class="vr">role</span>       <span class="sql-type">ENUM</span>(<span class="sql-str">'user'</span>,<span class="sql-str">'admin'</span>) <span class="sql-kw">NOT NULL DEFAULT</span> <span class="sql-str">'user'</span>,
+    <span class="vr">cree_le</span>    <span class="sql-type">TIMESTAMP</span> <span class="sql-kw">DEFAULT CURRENT_TIMESTAMP</span>
+) <span class="sql-kw">ENGINE</span>=InnoDB <span class="sql-kw">DEFAULT CHARSET</span>=utf8mb4 <span class="sql-kw">COLLATE</span>=utf8mb4_unicode_ci;
+
+<span class="sql-cmt">-- Donnees de test</span>
+<span class="sql-kw">INSERT INTO</span> <span class="fn">categories</span> (<span class="vr">nom</span>, <span class="vr">slug</span>) <span class="sql-kw">VALUES</span>
+    (<span class="sql-str">'Vetements'</span>, <span class="sql-str">'vetements'</span>),
+    (<span class="sql-str">'Accessoires'</span>, <span class="sql-str">'accessoires'</span>),
+    (<span class="sql-str">'Chaussures'</span>, <span class="sql-str">'chaussures'</span>);
+
+<span class="sql-kw">INSERT INTO</span> <span class="fn">produits</span> (<span class="vr">categorie_id</span>, <span class="vr">nom</span>, <span class="vr">prix</span>, <span class="vr">stock</span>) <span class="sql-kw">VALUES</span>
+    (<span class="sql-num">1</span>, <span class="sql-str">'T-shirt blanc'</span>,    <span class="sql-num">19.99</span>, <span class="sql-num">50</span>),
+    (<span class="sql-num">1</span>, <span class="sql-str">'Jean slim bleu'</span>,   <span class="sql-num">49.99</span>, <span class="sql-num">30</span>),
+    (<span class="sql-num">2</span>, <span class="sql-str">'Ceinture cuir'</span>,   <span class="sql-num">25.00</span>, <span class="sql-num">20</span>),
+    (<span class="sql-num">3</span>, <span class="sql-str">'Baskets running'</span>, <span class="sql-num">79.90</span>,  <span class="sql-num">0</span>);
+
+<span class="sql-cmt">-- Verification</span>
+<span class="sql-kw">SELECT</span> <span class="vr">p.nom</span>, <span class="vr">p.prix</span>, <span class="vr">c.nom</span> <span class="sql-kw">AS</span> categorie
+<span class="sql-kw">FROM</span> <span class="fn">produits</span> <span class="vr">p</span>
+<span class="sql-kw">JOIN</span> <span class="fn">categories</span> <span class="vr">c</span> <span class="sql-kw">ON</span> <span class="vr">p.categorie_id</span> = <span class="vr">c.id</span>;</code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Toujours commencer par USE.</strong> L'instruction <code>USE boutique;</code> selectionne la base. Sans elle, les CREATE TABLE echoueraient avec "No database selected". Dans phpMyAdmin, si vous avez deja selectionne la base dans le panneau gauche, le USE est optionnel.</div></div></section><div class="divider"></div>
+<section class="etape" id="e8"><div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">CLI</div><h2>Ligne de commande MySQL</h2></div></div><p class="prose">La ligne de commande MySQL permet de travailler sans interface graphique. Utile pour importer des fichiers SQL volumineux, scripter des operations, ou travailler sur un serveur distant.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Ouvrir le terminal MySQL &mdash; selon l'environnement</span><span class="cb-badge ">Terminal</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="sql-cmt"># WAMP : ouvrir le terminal MySQL</span>
+<span class="cmt"># Clic gauche icone WAMP &rarr; MySQL &rarr; MySQL Console</span>
+<span class="cmt"># Ou depuis le terminal Windows :</span>
+C:\wamp64\bin\mysql\mysql8.0.x\bin\mysql.exe -u root
+
+<span class="sql-cmt"># Connexion (pas de mot de passe)</span>
+mysql -u root
+
+<span class="sql-cmt"># MAMP Mac : chemin specifique</span>
+/Applications/MAMP/Library/bin/mysql -u root -p
+<span class="sql-cmt"># Mot de passe MAMP : root</span>
+
+<span class="sql-cmt"># Laragon : MySQL accessible dans le PATH</span>
+mysql -u root
+<span class="sql-cmt"># Ou clic bouton "Terminal" dans l'interface Laragon</span></code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Commandes MySQL essentielles</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="sql-cmt">-- Une fois connecte au prompt mysql&gt;</span>
+
+<span class="sql-cmt">-- Lister les bases de donnees</span>
+<span class="sql-kw">SHOW DATABASES</span>;
+
+<span class="sql-cmt">-- Creer une base</span>
+<span class="sql-kw">CREATE DATABASE</span> boutique <span class="sql-kw">CHARACTER SET</span> utf8mb4 <span class="sql-kw">COLLATE</span> utf8mb4_unicode_ci;
+
+<span class="sql-cmt">-- Selectionner une base</span>
+<span class="sql-kw">USE</span> boutique;
+
+<span class="sql-cmt">-- Lister les tables</span>
+<span class="sql-kw">SHOW TABLES</span>;
+
+<span class="sql-cmt">-- Structure d'une table</span>
+<span class="sql-kw">DESCRIBE</span> produits;
+
+<span class="sql-cmt">-- Importer un fichier SQL</span>
+mysql -u root boutique < boutique.sql
+
+<span class="sql-cmt">-- Quitter</span>
+<span class="sql-kw">EXIT</span>;</code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>Importer un fichier SQL depuis le terminal.</strong> Pour les gros fichiers, phpMyAdmin a une limite de taille. La commande <code>mysql -u root boutique &lt; boutique.sql</code> n'a pas cette limitation et est beaucoup plus rapide.</div></div></section><div class="divider"></div>
+<section class="etape" id="e9"><div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">PDO</div><h2>Connexion PDO selon l'environnement</h2></div></div><p class="prose">Recapitulatif des parametres de connexion PDO selon l'environnement. <strong>Attention au port MySQL</strong> qui differe entre MAMP Mac (8889) et les autres (3306).</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">config/database.php &mdash; connexions selon l'environnement</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">&lt;?php</span>
+<span class="cmt">// config/database.php</span>
+
+<span class="kw">return</span> [
+
+    <span class="cmt">// WAMP (Windows) &mdash; port par defaut 3306</span>
+    <span class="sql-str">'wamp'</span> => [
+        <span class="sql-str">'dsn'</span>      => <span class="str">'mysql:host=localhost;port=3306;dbname=boutique;charset=utf8mb4'</span>,
+        <span class="sql-str">'user'</span>     => <span class="str">'root'</span>,
+        <span class="sql-str">'password'</span> => <span class="str">''</span>,  <span class="cmt">// vide par defaut</span>
+    ],
+
+    <span class="cmt">// MAMP (Mac) &mdash; port 8889 obligatoire</span>
+    <span class="sql-str">'mamp_mac'</span> => [
+        <span class="sql-str">'dsn'</span>      => <span class="str">'mysql:host=localhost;port=8889;dbname=boutique;charset=utf8mb4'</span>,
+        <span class="sql-str">'user'</span>     => <span class="str">'root'</span>,
+        <span class="sql-str">'password'</span> => <span class="str">'root'</span>,
+    ],
+
+    <span class="cmt">// MAMP (Windows) &mdash; port par defaut 3306</span>
+    <span class="sql-str">'mamp_win'</span> => [
+        <span class="sql-str">'dsn'</span>      => <span class="str">'mysql:host=localhost;port=3306;dbname=boutique;charset=utf8mb4'</span>,
+        <span class="sql-str">'user'</span>     => <span class="str">'root'</span>,
+        <span class="sql-str">'password'</span> => <span class="str">'root'</span>,
+    ],
+
+    <span class="cmt">// Laragon (Windows) &mdash; port par defaut 3306</span>
+    <span class="sql-str">'laragon'</span> => [
+        <span class="sql-str">'dsn'</span>      => <span class="str">'mysql:host=localhost;port=3306;dbname=boutique;charset=utf8mb4'</span>,
+        <span class="sql-str">'user'</span>     => <span class="str">'root'</span>,
+        <span class="sql-str">'password'</span> => <span class="str">''</span>,
+    ],
+];</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">.env + connexion PDO universelle</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">&lt;?php</span>
+<span class="cmt">// Recommande : utiliser .env pour ne pas hardcoder les credentials</span>
+
+<span class="cmt">// .env</span>
+DB_HOST=localhost
+DB_PORT=3306
+<span class="cmt"># MAMP Mac : DB_PORT=8889</span>
+DB_NAME=boutique
+DB_USER=root
+DB_PASS=
+
+<span class="cmt">// Connexion PDO universelle depuis les variables .env</span>
+<span class="kw">function</span> <span class="fn">getConnection</span>(): <span class="cls">PDO</span> {
+    <span class="vr">$dsn</span> = <span class="str">'mysql:host='</span> . <span class="fn">getenv</span>(<span class="str">'DB_HOST'</span>)
+         . <span class="str">';port='</span>    . <span class="fn">getenv</span>(<span class="str">'DB_PORT'</span>)
+         . <span class="str">';dbname='</span>  . <span class="fn">getenv</span>(<span class="str">'DB_NAME'</span>)
+         . <span class="str">';charset=utf8mb4'</span>;
+
+    <span class="kw">return</span> <span class="kw">new</span> <span class="cls">PDO</span>(<span class="vr">$dsn</span>, <span class="fn">getenv</span>(<span class="str">'DB_USER'</span>), <span class="fn">getenv</span>(<span class="str">'DB_PASS'</span>), [
+        <span class="cls">PDO</span>::<span class="fn">ATTR_ERRMODE</span>            => <span class="cls">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>,
+        <span class="cls">PDO</span>::<span class="fn">ATTR_DEFAULT_FETCH_MODE</span>  => <span class="cls">PDO</span>::<span class="fn">FETCH_ASSOC</span>,
+        <span class="cls">PDO</span>::<span class="fn">ATTR_EMULATE_PREPARES</span>   => <span class="kw">false</span>,
+    ]);
+}
+
+<span class="cmt">// Test rapide</span>
+<span class="kw">try</span> {
+    <span class="vr">$pdo</span> = <span class="fn">getConnection</span>();
+    <span class="kw">echo</span> <span class="str">'Connexion OK : '</span> . <span class="vr">$pdo</span>-><span class="fn">getAttribute</span>(<span class="cls">PDO</span>::<span class="fn">ATTR_SERVER_VERSION</span>);
+} <span class="kw">catch</span> (<span class="cls">PDOException</span> <span class="vr">$e</span>) {
+    <span class="kw">echo</span> <span class="str">'Erreur : '</span> . <span class="vr">$e</span>-><span class="fn">getMessage</span>();
+}</code></pre></div><div class="table-wrap"><table><thead><tr><th>Environnement</th><th>host</th><th>port MySQL</th><th>user</th><th>password</th></tr></thead><tbody><tr><td>WAMP (Windows)</td><td>localhost</td><td>3306</td><td>root</td><td>(vide)</td></tr><tr><td>MAMP (Mac)</td><td>localhost</td><td>8889</td><td>root</td><td>root</td></tr><tr><td>MAMP (Windows)</td><td>localhost</td><td>3306</td><td>root</td><td>root</td></tr><tr><td>Laragon (Windows)</td><td>localhost</td><td>3306</td><td>root</td><td>(vide)</td></tr></tbody></table></div><div class="callout warn"><span class="ci">!</span><div><strong>MAMP Mac &mdash; le port 8889.</strong> C'est l'erreur la plus courante : les stagiaires sur Mac oublient de preciser <code>port=8889</code> dans le DSN PDO. Sans ce port, la connexion echoue silencieusement ou renvoie "Connection refused".</div></div><div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Checklist mise en place :</strong> (1) environnement demarre (icone verte) (2) phpMyAdmin accessible (3) base <code>boutique</code> creee avec <code>utf8mb4_unicode_ci</code> (4) tables creees via le script SQL (5) connexion PDO testee avec un <code>echo</code>.</div></div></section><div class="divider"></div>
+<section class="etape" id="quiz"><div class="etape-header"><div class="etape-num">10</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; environnements et BDD</h2></div></div><div class="quiz-card"><div class="q"><span class="qn">Q1.</span> Quel est le port MySQL par defaut sur MAMP Mac (version gratuite) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q1',false)">3306 comme tous les autres environnements</button><button class="opt" onclick="ans(this,'q1',true)">8889. MAMP Mac utilise le port 8889 pour MySQL. Il faut donc specifier port=8889 dans le DSN PDO sinon la connexion echoue.</button><button class="opt" onclick="ans(this,'q1',false)">8888 comme Apache</button></div><div class="fb" id="fb-q1"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q2.</span> Ou doit-on placer ses fichiers PHP pour qu'ils soient servis par WAMP ?</div><div class="opts"><button class="opt" onclick="ans(this,'q2',false)">Dans C:\\wamp64\\conf\\</button><button class="opt" onclick="ans(this,'q2',true)">Dans C:\\wamp64\\www\\nom-projet\\ — c'est le dossier racine web de WAMP, equivalent de /var/www/ sur Linux.</button><button class="opt" onclick="ans(this,'q2',false)">N'importe ou sur le disque, WAMP detecte automatiquement</button></div><div class="fb" id="fb-q2"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q3.</span> Quel interclassement (collation) faut-il choisir pour bien gerer les accents francais ?</div><div class="opts"><button class="opt" onclick="ans(this,'q3',false)">latin1_swedish_ci — c'est le defaut MySQL</button><button class="opt" onclick="ans(this,'q3',true)">utf8mb4_unicode_ci — utf8mb4 gere tous les caracteres Unicode (accents, emojis) et unicode_ci est insensible a la casse pour les comparaisons.</button><button class="opt" onclick="ans(this,'q3',false)">utf8_general_ci — c'est suffisant pour le francais</button></div><div class="fb" id="fb-q3"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q4.</span> Quelle commande SQL permet de voir la structure d'une table en ligne de commande ?</div><div class="opts"><button class="opt" onclick="ans(this,'q4',false)">SHOW TABLE produits;</button><button class="opt" onclick="ans(this,'q4',true)">DESCRIBE produits; — affiche les colonnes, types, contraintes NULL/NOT NULL, valeurs par defaut et cles.</button><button class="opt" onclick="ans(this,'q4',false)">SELECT STRUCTURE FROM produits;</button></div><div class="fb" id="fb-q4"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q5.</span> Laragon cree automatiquement des virtual hosts. Qu'est-ce que cela signifie ?</div><div class="opts"><button class="opt" onclick="ans(this,'q5',false)">Laragon heberge les projets sur Internet automatiquement</button><button class="opt" onclick="ans(this,'q5',true)">Chaque dossier dans C:\\laragon\\www\\ devient accessible sur http://nom-dossier.test sans configuration. C'est plus propre que http://localhost/nom-projet.</button><button class="opt" onclick="ans(this,'q5',false)">Laragon cree un serveur virtuel sur une autre machine du reseau</button></div><div class="fb" id="fb-q5"></div></div><div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;"><div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div><div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div></div></section></main></div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copie';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+const fbs={
+  q1:{ok:'Exact. MAMP Mac version gratuite utilise le port 8889 pour MySQL. Oublier ce port dans le DSN PDO est l erreur la plus frequente. Le DSN correct est : mysql:host=localhost;port=8889;dbname=boutique.',ko:'Non. MAMP Mac utilise le port 8889 pour MySQL (pas 3306). Il faut absolument le preciser dans le DSN PDO. WAMP et Laragon utilisent le port standard 3306.'},
+  q2:{ok:'Exact. Le dossier www\ de WAMP est la racine web. Un sous-dossier www\mon-projet\ est accessible sur http://localhost/mon-projet. Tout fichier en dehors de ce dossier n est pas servi par Apache.',ko:'Non. Les fichiers PHP doivent etre dans C:\\wamp64\\www\\nom-projet\\. C est la racine web de WAMP (equivalent de /var/www/html/ sur Linux).'},
+  q3:{ok:'Exact. utf8mb4 est le vrai encodage Unicode complet (le prefixe utf8 de MySQL est en realite incomplet). unicode_ci (case insensitive) permet de comparer chaines sans tenir compte de la casse. C est le standard recommande pour toute application moderne.',ko:'Non. utf8mb4_unicode_ci est le choix recommande. utf8mb4 supporte tous les caracteres Unicode (dont les emojis). latin1 ne gere pas correctement les accents. utf8_general_ci est moins precis que unicode_ci.'},
+  q4:{ok:'Exact. DESCRIBE table; (ou DESC table;) affiche le nom de chaque colonne, son type, si elle accepte NULL, sa valeur par defaut et si elle est cle primaire ou index. Tres utile pour verifier la structure apres un CREATE TABLE.',ko:'Non. La commande est DESCRIBE produits; (ou DESC produits;). Elle affiche la structure complete de la table : colonnes, types, contraintes.'},
+  q5:{ok:'Exact. Laragon surveille le dossier www\ et cree automatiquement un virtual host Apache pour chaque sous-dossier. Mon-projet\ devient accessible sur http://mon-projet.test sans aucune configuration Apache manuelle.',ko:'Non. Les virtual hosts Laragon sont locaux. Chaque dossier dans C:\\laragon\\www\\ devient http://nom-dossier.test uniquement sur votre machine, sans configuration manuelle d Apache.'}
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').innerHTML=g===5?'Parfait &mdash; environnements maitrise !':g>=4?'Tres bien.':g>=3?'Revoir les ports MySQL et utf8mb4.':'Reprendre depuis le comparatif.';box.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+</script></body></html>

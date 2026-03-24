@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 13 &mdash; CRUD avec base de donnees</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#0f766e;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--purple:#7c3aed;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(15,118,110,.07);}
+.nav-link.active{background:rgba(15,118,110,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(15,118,110,.08);border:1px solid rgba(15,118,110,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.r{background:rgba(220,38,38,.07);border-color:rgba(220,38,38,.25);color:var(--red);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(15,118,110,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(15,118,110,.07);border:1px solid rgba(15,118,110,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(15,118,110,.15);border:1px solid rgba(15,118,110,.3);color:#5eead4;}
+.cb-badge.new{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.warn{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#f87171;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(15,118,110,.2);color:#5eead4;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.tbl{color:#f38ba8;}.ptag{color:#f38ba8;font-weight:700;}
+.bool{color:#fab387;font-weight:600;}.ht{color:#89b4fa;}.ha{color:#fab387;}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:2.1;box-shadow:var(--sh);}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(15,118,110,.3);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>[ ] PHP &mdash; Bloc 3</span><p>Base de donnees</p></div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>Architecture du projet</a>
+    <a href="#e1"   class="nav-link"><span class="nav-num">01</span>Schema SQL</a>
+    <a href="#e2"   class="nav-link"><span class="nav-num">02</span>config/database.php</a>
+    <a href="#e3"   class="nav-link"><span class="nav-num">03</span>Model &mdash; ProduitModel</a>
+    <a href="#e4"   class="nav-link"><span class="nav-num">04</span>Create &mdash; ajouter</a>
+    <a href="#e5"   class="nav-link"><span class="nav-num">05</span>Read &mdash; lister</a>
+    <a href="#e6"   class="nav-link"><span class="nav-num">06</span>Update &mdash; modifier</a>
+    <a href="#e7"   class="nav-link"><span class="nav-num">07</span>Delete &mdash; supprimer</a>
+    <a href="#e8"   class="nav-link"><span class="nav-num">08</span>Pagination</a>
+    <a href="#e9"   class="nav-link"><span class="nav-num">09</span>Recherche</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">10</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 3 &mdash; Base de donnees</div>
+    <a href="php-10-sql.html"         class="nav-serie-link">10 &mdash; Introduction SQL</a>
+    <a href="php-11-pdo.html"         class="nav-serie-link">11 &mdash; PDO</a>
+    <a href="php-12-mariadb-admin.html" class="nav-serie-link">12 &mdash; Administration MariaDB</a>
+    <a href="php-13-crud-bdd.html"    class="nav-serie-link current">13 &mdash; CRUD avec BDD</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 3 &middot; Support 4/4</div>
+  <h1>CRUD avec<br><span class="hl">base de donnees</span></h1>
+  <p>Projet de synthese du Bloc 3 : une application de gestion de produits complete avec MariaDB et PDO. Create, Read, Update, Delete &mdash; chaque operation connectee a une vraie base de donnees avec requetes preparees.</p>
+  <div class="objectifs">
+    <span class="obj t">PDO + MariaDB</span>
+    <span class="obj g">Model layer</span>
+    <span class="obj b">CRUD complet</span>
+    <span class="obj y">Pagination</span>
+    <span class="obj r">Recherche SQL</span>
+  </div>
+</div>
+
+<section class="etape" id="plan">
+  <div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Architecture</div><h2>Structure du projet</h2></div></div>
+  <p class="prose">Ce projet suit une architecture simple en 3 couches : la <strong>base de donnees</strong> (MariaDB), le <strong>model</strong> (classe PHP qui encapsule les requetes PDO), et les <strong>pages</strong> (HTML + logique de formulaire). C'est la base du pattern MVC que vous verrez au Bloc 5.</p>
+  <div class="schema">
+projet-produits/
+  config/
+    database.php       <span style="color:var(--dim)">connexion PDO centralisee</span>
+  models/
+    ProduitModel.php   <span style="color:var(--dim)">toutes les requetes SQL</span>
+  pages/
+    liste.php          <span style="color:var(--dim)">READ &mdash; affichage + recherche + pagination</span>
+    ajouter.php        <span style="color:var(--dim)">CREATE &mdash; formulaire + traitement</span>
+    modifier.php       <span style="color:var(--dim)">UPDATE &mdash; formulaire pre-rempli + traitement</span>
+    supprimer.php      <span style="color:var(--dim)">DELETE &mdash; confirmation + suppression</span>
+  index.php            <span style="color:var(--dim)">routeur principal</span>
+  </div>
+  <div class="callout info"><span class="ci">i</span><div><strong>Separation des responsabilites.</strong> Le model ne contient que des requetes SQL &mdash; pas d'HTML. Les pages ne contiennent pas de SQL &mdash; elles appellent le model. Cette separation rend le code testable et maintenable.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e1">
+  <div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">BDD</div><h2>Schema SQL &mdash; creer les tables</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">schema.sql &mdash; structure de la base</span><span class="cb-badge">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="cmt">-- Creer la base si elle n'existe pas</span>
+<span class="kw">CREATE DATABASE IF NOT EXISTS</span> <span class="tbl">boutique</span>
+    <span class="kw">CHARACTER SET</span> utf8mb4 <span class="kw">COLLATE</span> utf8mb4_unicode_ci;
+
+<span class="kw">USE</span> <span class="tbl">boutique</span>;
+
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> <span class="tbl">categories</span> (
+    <span class="vr">id</span>   <span class="fn">INT</span> <span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">nom</span>  <span class="fn">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL UNIQUE</span>
+);
+
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> <span class="tbl">produits</span> (
+    <span class="vr">id</span>           <span class="fn">INT</span> <span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">nom</span>          <span class="fn">VARCHAR</span>(<span class="num">200</span>) <span class="kw">NOT NULL</span>,
+    <span class="vr">description</span>  <span class="fn">TEXT</span>,
+    <span class="vr">prix</span>         <span class="fn">DECIMAL</span>(<span class="num">10</span>,<span class="num">2</span>) <span class="kw">NOT NULL</span>,
+    <span class="vr">stock</span>        <span class="fn">INT</span> <span class="kw">DEFAULT</span> <span class="num">0</span>,
+    <span class="vr">categorie_id</span> <span class="fn">INT</span>,
+    <span class="vr">cree_le</span>      <span class="fn">DATETIME</span> <span class="kw">DEFAULT</span> <span class="fn">CURRENT_TIMESTAMP</span>,
+    <span class="kw">FOREIGN KEY</span> (<span class="vr">categorie_id</span>) <span class="kw">REFERENCES</span> <span class="tbl">categories</span>(<span class="vr">id</span>)
+        <span class="kw">ON DELETE SET NULL</span>
+);
+
+<span class="cmt">-- Donnees de test</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">categories</span> (<span class="vr">nom</span>) <span class="kw">VALUES</span> (<span class="str">'Vetements'</span>), (<span class="str">'Accessoires'</span>);
+
+<span class="kw">INSERT INTO</span> <span class="tbl">produits</span> (<span class="vr">nom</span>, <span class="vr">prix</span>, <span class="vr">stock</span>, <span class="vr">categorie_id</span>) <span class="kw">VALUES</span>
+    (<span class="str">'T-shirt blanc'</span>, <span class="num">19.99</span>, <span class="num">50</span>, <span class="num">1</span>),
+    (<span class="str">'Jean slim'</span>,     <span class="num">49.99</span>, <span class="num">30</span>, <span class="num">1</span>),
+    (<span class="str">'Casquette'</span>,     <span class="num">14.99</span>, <span class="num">80</span>, <span class="num">2</span>);</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e2">
+  <div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Connexion</div><h2>config/database.php</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">config/database.php &mdash; connexion PDO partagee</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// config/database.php</span>
+<span class="cmt">// NE PAS versionner ce fichier (ajouter a .gitignore)</span>
+
+<span class="kw">function</span> <span class="fn">getDB</span>(): <span class="fn">PDO</span> {
+    <span class="kw">static</span> <span class="vr">$pdo</span> = <span class="bool">null</span>;
+
+    <span class="kw">if</span> (<span class="vr">$pdo</span> === <span class="bool">null</span>) {
+        <span class="vr">$pdo</span> = <span class="kw">new</span> <span class="fn">PDO</span>(
+            <span class="str">"mysql:host=localhost;dbname=boutique;charset=utf8mb4"</span>,
+            <span class="str">'appuser'</span>,
+            <span class="str">'MotDePasse!'</span>,
+            [
+                <span class="fn">PDO</span>::<span class="fn">ATTR_ERRMODE</span>           => <span class="fn">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>,
+                <span class="fn">PDO</span>::<span class="fn">ATTR_DEFAULT_FETCH_MODE</span> => <span class="fn">PDO</span>::<span class="fn">FETCH_ASSOC</span>,
+                <span class="fn">PDO</span>::<span class="fn">ATTR_EMULATE_PREPARES</span>   => <span class="bool">false</span>,
+            ]
+        );
+    }
+    <span class="kw">return</span> <span class="vr">$pdo</span>;
+}</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e3">
+  <div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Model</div><h2>ProduitModel.php &mdash; couche d'acces aux donnees</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">models/ProduitModel.php &mdash; classe complete</span><span class="cb-badge new">Complet</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'/../config/database.php'</span>;
+
+<span class="kw">class</span> <span class="fn">ProduitModel</span> {
+
+    <span class="kw">private</span> <span class="fn">PDO</span> <span class="vr">$pdo</span>;
+
+    <span class="kw">public function</span> <span class="fn">__construct</span>() {
+        <span class="vr">$this</span>-><span class="vr">pdo</span> = <span class="fn">getDB</span>();
+    }
+
+    <span class="cmt">// READ &mdash; tous les produits (avec pagination)</span>
+    <span class="kw">public function</span> <span class="fn">findAll</span>(int <span class="vr">$page</span> = <span class="num">1</span>, int <span class="vr">$perPage</span> = <span class="num">10</span>): array {
+        <span class="vr">$offset</span> = (<span class="vr">$page</span> - <span class="num">1</span>) * <span class="vr">$perPage</span>;
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(
+            <span class="str">"SELECT p.*, c.nom AS categorie_nom
+             FROM produits p
+             LEFT JOIN categories c ON p.categorie_id = c.id
+             ORDER BY p.cree_le DESC
+             LIMIT :limit OFFSET :offset"</span>
+        );
+        <span class="vr">$stmt</span>-><span class="fn">bindValue</span>(<span class="str">'limit'</span>,  <span class="vr">$perPage</span>, <span class="fn">PDO</span>::<span class="fn">PARAM_INT</span>);
+        <span class="vr">$stmt</span>-><span class="fn">bindValue</span>(<span class="str">'offset'</span>, <span class="vr">$offset</span>,  <span class="fn">PDO</span>::<span class="fn">PARAM_INT</span>);
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>();
+        <span class="kw">return</span> <span class="vr">$stmt</span>-><span class="fn">fetchAll</span>();
+    }
+
+    <span class="cmt">// READ &mdash; un produit par ID</span>
+    <span class="kw">public function</span> <span class="fn">findById</span>(int <span class="vr">$id</span>): ?array {
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(
+            <span class="str">"SELECT * FROM produits WHERE id = :id"</span>
+        );
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'id'</span> => <span class="vr">$id</span>]);
+        <span class="vr">$row</span> = <span class="vr">$stmt</span>-><span class="fn">fetch</span>();
+        <span class="kw">return</span> <span class="vr">$row</span> ?: <span class="bool">null</span>;
+    }
+
+    <span class="cmt">// READ &mdash; recherche par nom</span>
+    <span class="kw">public function</span> <span class="fn">search</span>(string <span class="vr">$terme</span>): array {
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(
+            <span class="str">"SELECT * FROM produits
+             WHERE nom LIKE :terme OR description LIKE :terme
+             ORDER BY nom ASC"</span>
+        );
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'terme'</span> => <span class="str">'%'</span> . <span class="vr">$terme</span> . <span class="str">'%'</span>]);
+        <span class="kw">return</span> <span class="vr">$stmt</span>-><span class="fn">fetchAll</span>();
+    }
+
+    <span class="cmt">// READ &mdash; nombre total pour pagination</span>
+    <span class="kw">public function</span> <span class="fn">count</span>(): int {
+        <span class="kw">return</span> (int) <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">query</span>(<span class="str">"SELECT COUNT(*) FROM produits"</span>)-><span class="fn">fetchColumn</span>();
+    }
+
+    <span class="cmt">// CREATE &mdash; ajouter un produit</span>
+    <span class="kw">public function</span> <span class="fn">create</span>(array <span class="vr">$data</span>): int {
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(
+            <span class="str">"INSERT INTO produits (nom, description, prix, stock, categorie_id)
+             VALUES (:nom, :description, :prix, :stock, :categorie_id)"</span>
+        );
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>([
+            <span class="str">'nom'</span>          => <span class="vr">$data</span>[<span class="str">'nom'</span>],
+            <span class="str">'description'</span>  => <span class="vr">$data</span>[<span class="str">'description'</span>] ?? <span class="bool">null</span>,
+            <span class="str">'prix'</span>         => <span class="vr">$data</span>[<span class="str">'prix'</span>],
+            <span class="str">'stock'</span>        => <span class="vr">$data</span>[<span class="str">'stock'</span>] ?? <span class="num">0</span>,
+            <span class="str">'categorie_id'</span> => <span class="vr">$data</span>[<span class="str">'categorie_id'</span>] ?: <span class="bool">null</span>,
+        ]);
+        <span class="kw">return</span> (int) <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">lastInsertId</span>();
+    }
+
+    <span class="cmt">// UPDATE &mdash; modifier un produit</span>
+    <span class="kw">public function</span> <span class="fn">update</span>(int <span class="vr">$id</span>, array <span class="vr">$data</span>): bool {
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(
+            <span class="str">"UPDATE produits
+             SET nom = :nom, description = :description,
+                 prix = :prix, stock = :stock, categorie_id = :categorie_id
+             WHERE id = :id"</span>
+        );
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>([
+            <span class="str">'nom'</span>          => <span class="vr">$data</span>[<span class="str">'nom'</span>],
+            <span class="str">'description'</span>  => <span class="vr">$data</span>[<span class="str">'description'</span>] ?? <span class="bool">null</span>,
+            <span class="str">'prix'</span>         => <span class="vr">$data</span>[<span class="str">'prix'</span>],
+            <span class="str">'stock'</span>        => <span class="vr">$data</span>[<span class="str">'stock'</span>] ?? <span class="num">0</span>,
+            <span class="str">'categorie_id'</span> => <span class="vr">$data</span>[<span class="str">'categorie_id'</span>] ?: <span class="bool">null</span>,
+            <span class="str">'id'</span>           => <span class="vr">$id</span>,
+        ]);
+        <span class="kw">return</span> <span class="vr">$stmt</span>-><span class="fn">rowCount</span>() > <span class="num">0</span>;
+    }
+
+    <span class="cmt">// DELETE &mdash; supprimer un produit</span>
+    <span class="kw">public function</span> <span class="fn">delete</span>(int <span class="vr">$id</span>): bool {
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">"DELETE FROM produits WHERE id = :id"</span>);
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'id'</span> => <span class="vr">$id</span>]);
+        <span class="kw">return</span> <span class="vr">$stmt</span>-><span class="fn">rowCount</span>() > <span class="num">0</span>;
+    }
+}</code></pre>
+  </div>
+  <div class="callout success"><span class="ci">+</span><div><strong>bindValue vs execute([]) pour LIMIT/OFFSET.</strong> Avec execute([]), PDO transmet les valeurs comme des chaines. LIMIT et OFFSET attendent des entiers &mdash; certaines versions de MariaDB refusent les chaines. Utiliser bindValue() avec PDO::PARAM_INT pour les valeurs de pagination.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e4">
+  <div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Create</div><h2>ajouter.php &mdash; formulaire et insertion</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">pages/ajouter.php</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="fn">session_start</span>();
+<span class="kw">require_once</span> <span class="str">'../models/ProduitModel.php'</span>;
+
+<span class="vr">$model</span>   = <span class="kw">new</span> <span class="fn">ProduitModel</span>();
+<span class="vr">$erreurs</span> = [];
+<span class="vr">$nom</span> = <span class="vr">$prix</span> = <span class="vr">$stock</span> = <span class="vr">$description</span> = <span class="str">''</span>;
+
+<span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+    <span class="vr">$nom</span>         = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>]         ?? <span class="str">''</span>);
+    <span class="vr">$prix</span>        = <span class="vr">$_POST</span>[<span class="str">'prix'</span>]        ?? <span class="str">''</span>;
+    <span class="vr">$stock</span>       = (int)(<span class="vr">$_POST</span>[<span class="str">'stock'</span>]       ?? <span class="num">0</span>);
+    <span class="vr">$description</span> = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'description'</span>] ?? <span class="str">''</span>);
+    <span class="vr">$cat_id</span>      = (int)(<span class="vr">$_POST</span>[<span class="str">'categorie_id'</span>] ?? <span class="num">0</span>);
+
+    <span class="kw">if</span> (<span class="fn">strlen</span>(<span class="vr">$nom</span>) < <span class="num">2</span>)
+        <span class="vr">$erreurs</span>[<span class="str">'nom'</span>] = <span class="str">'Nom obligatoire (2 car. min).'</span>;
+    <span class="kw">if</span> (!<span class="fn">is_numeric</span>(<span class="vr">$prix</span>) || (float)<span class="vr">$prix</span> <= <span class="num">0</span>)
+        <span class="vr">$erreurs</span>[<span class="str">'prix'</span>] = <span class="str">'Prix invalide.'</span>;
+    <span class="kw">if</span> (<span class="vr">$stock</span> < <span class="num">0</span>)
+        <span class="vr">$erreurs</span>[<span class="str">'stock'</span>] = <span class="str">'Stock ne peut pas etre negatif.'</span>;
+
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$erreurs</span>)) {
+        <span class="kw">try</span> {
+            <span class="vr">$id</span> = <span class="vr">$model</span>-><span class="fn">create</span>([
+                <span class="str">'nom'</span>          => <span class="vr">$nom</span>,
+                <span class="str">'prix'</span>         => (float)<span class="vr">$prix</span>,
+                <span class="str">'stock'</span>        => <span class="vr">$stock</span>,
+                <span class="str">'description'</span>  => <span class="vr">$description</span>,
+                <span class="str">'categorie_id'</span> => <span class="vr">$cat_id</span>,
+            ]);
+            <span class="vr">$_SESSION</span>[<span class="str">'flash'</span>] = <span class="str">'Produit #'</span> . <span class="vr">$id</span> . <span class="str">' cree.'</span>;
+            <span class="fn">header</span>(<span class="str">'Location: liste.php'</span>); <span class="kw">exit</span>;
+        } <span class="kw">catch</span> (<span class="fn">PDOException</span> <span class="vr">$e</span>) {
+            <span class="vr">$erreurs</span>[<span class="str">'bdd'</span>] = <span class="str">'Erreur base de donnees.'</span>;
+        }
+    }
+}
+<span class="ptag">?&gt;</span>
+<span class="ht">&lt;form</span> <span class="ha">method</span>=<span class="str">"post"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">name</span>=<span class="str">"nom"</span>   <span class="ha">value</span>=<span class="str">"</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$nom</span>) <span class="ptag">?&gt;</span><span class="str">"</span> <span class="ha">placeholder</span>=<span class="str">"Nom du produit"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">name</span>=<span class="str">"prix"</span>  <span class="ha">type</span>=<span class="str">"number"</span> <span class="ha">step</span>=<span class="str">"0.01"</span> <span class="ha">value</span>=<span class="str">"</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$prix</span>) <span class="ptag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">name</span>=<span class="str">"stock"</span> <span class="ha">type</span>=<span class="str">"number"</span> <span class="ha">value</span>=<span class="str">"</span><span class="ptag">&lt;?=</span> (int)<span class="vr">$stock</span> <span class="ptag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;button</span> <span class="ha">type</span>=<span class="str">"submit"</span><span class="ht">&gt;</span>Ajouter<span class="ht">&lt;/button&gt;</span>
+<span class="ht">&lt;/form&gt;</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e5">
+  <div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Read</div><h2>liste.php &mdash; afficher les produits</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">pages/liste.php &mdash; liste avec flash et recherche</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="fn">session_start</span>();
+<span class="kw">require_once</span> <span class="str">'../models/ProduitModel.php'</span>;
+
+<span class="vr">$model</span>    = <span class="kw">new</span> <span class="fn">ProduitModel</span>();
+<span class="vr">$flash</span>    = <span class="vr">$_SESSION</span>[<span class="str">'flash'</span>] ?? <span class="str">''</span>;
+<span class="fn">unset</span>(<span class="vr">$_SESSION</span>[<span class="str">'flash'</span>]);
+
+<span class="vr">$recherche</span> = <span class="fn">trim</span>(<span class="vr">$_GET</span>[<span class="str">'q'</span>] ?? <span class="str">''</span>);
+<span class="vr">$page</span>      = <span class="fn">max</span>(<span class="num">1</span>, (int)(<span class="vr">$_GET</span>[<span class="str">'page'</span>] ?? <span class="num">1</span>));
+<span class="vr">$perPage</span>   = <span class="num">10</span>;
+
+<span class="kw">if</span> (<span class="vr">$recherche</span>) {
+    <span class="vr">$produits</span>   = <span class="vr">$model</span>-><span class="fn">search</span>(<span class="vr">$recherche</span>);
+    <span class="vr">$totalPages</span> = <span class="num">1</span>;
+} <span class="kw">else</span> {
+    <span class="vr">$produits</span>   = <span class="vr">$model</span>-><span class="fn">findAll</span>(<span class="vr">$page</span>, <span class="vr">$perPage</span>);
+    <span class="vr">$total</span>      = <span class="vr">$model</span>-><span class="fn">count</span>();
+    <span class="vr">$totalPages</span> = (int) <span class="fn">ceil</span>(<span class="vr">$total</span> / <span class="vr">$perPage</span>);
+}
+<span class="ptag">?&gt;</span>
+
+<span class="ptag">&lt;?php</span> <span class="kw">if</span> (<span class="vr">$flash</span>): <span class="ptag">?&gt;</span>
+  <span class="ht">&lt;div</span> <span class="ha">class</span>=<span class="str">"flash"</span><span class="ht">&gt;</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$flash</span>) <span class="ptag">?&gt;</span><span class="ht">&lt;/div&gt;</span>
+<span class="ptag">&lt;?php</span> <span class="kw">endif</span>; <span class="ptag">?&gt;</span>
+
+<span class="ht">&lt;form</span> <span class="ha">method</span>=<span class="str">"get"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">name</span>=<span class="str">"q"</span> <span class="ha">value</span>=<span class="str">"</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$recherche</span>) <span class="ptag">?&gt;</span><span class="str">"</span> <span class="ha">placeholder</span>=<span class="str">"Rechercher..."</span><span class="ht">&gt;</span>
+<span class="ht">&lt;/form&gt;</span>
+
+<span class="ptag">&lt;?php</span> <span class="kw">foreach</span> (<span class="vr">$produits</span> <span class="kw">as</span> <span class="vr">$p</span>): <span class="ptag">?&gt;</span>
+<span class="ht">&lt;div&gt;</span>
+  <span class="ht">&lt;strong&gt;</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$p</span>[<span class="str">'nom'</span>]) <span class="ptag">?&gt;</span><span class="ht">&lt;/strong&gt;</span>
+  <span class="ht">&lt;span&gt;</span><span class="ptag">&lt;?=</span> <span class="fn">number_format</span>(<span class="vr">$p</span>[<span class="str">'prix'</span>], <span class="num">2</span>) <span class="ptag">?&gt;</span> &#8364;<span class="ht">&lt;/span&gt;</span>
+  <span class="ht">&lt;a</span> <span class="ha">href</span>=<span class="str">"modifier.php?id=</span><span class="ptag">&lt;?=</span> <span class="vr">$p</span>[<span class="str">'id'</span>] <span class="ptag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span>Modifier<span class="ht">&lt;/a&gt;</span>
+  <span class="ht">&lt;a</span> <span class="ha">href</span>=<span class="str">"supprimer.php?id=</span><span class="ptag">&lt;?=</span> <span class="vr">$p</span>[<span class="str">'id'</span>] <span class="ptag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span>Supprimer<span class="ht">&lt;/a&gt;</span>
+<span class="ht">&lt;/div&gt;</span>
+<span class="ptag">&lt;?php</span> <span class="kw">endforeach</span>; <span class="ptag">?&gt;</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e6">
+  <div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Update</div><h2>modifier.php &mdash; formulaire pre-rempli</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">pages/modifier.php</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="fn">session_start</span>();
+<span class="kw">require_once</span> <span class="str">'../models/ProduitModel.php'</span>;
+
+<span class="vr">$model</span>  = <span class="kw">new</span> <span class="fn">ProduitModel</span>();
+<span class="vr">$id</span>     = (int)(<span class="vr">$_GET</span>[<span class="str">'id'</span>] ?? <span class="num">0</span>);
+<span class="vr">$produit</span> = <span class="vr">$model</span>-><span class="fn">findById</span>(<span class="vr">$id</span>);
+
+<span class="kw">if</span> (!<span class="vr">$produit</span>) {
+    <span class="fn">header</span>(<span class="str">'Location: liste.php'</span>); <span class="kw">exit</span>;
+}
+
+<span class="vr">$erreurs</span> = [];
+
+<span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+    <span class="vr">$data</span> = [
+        <span class="str">'nom'</span>         => <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>]  ?? <span class="str">''</span>),
+        <span class="str">'prix'</span>        => (float)(<span class="vr">$_POST</span>[<span class="str">'prix'</span>] ?? <span class="num">0</span>),
+        <span class="str">'stock'</span>       => (int)(<span class="vr">$_POST</span>[<span class="str">'stock'</span>] ?? <span class="num">0</span>),
+        <span class="str">'description'</span> => <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'description'</span>] ?? <span class="str">''</span>),
+        <span class="str">'categorie_id'</span>=> (int)(<span class="vr">$_POST</span>[<span class="str">'categorie_id'</span>] ?? <span class="num">0</span>),
+    ];
+
+    <span class="kw">if</span> (<span class="fn">strlen</span>(<span class="vr">$data</span>[<span class="str">'nom'</span>]) < <span class="num">2</span>)
+        <span class="vr">$erreurs</span>[<span class="str">'nom'</span>] = <span class="str">'Nom obligatoire.'</span>;
+    <span class="kw">if</span> (<span class="vr">$data</span>[<span class="str">'prix'</span>] <= <span class="num">0</span>)
+        <span class="vr">$erreurs</span>[<span class="str">'prix'</span>] = <span class="str">'Prix invalide.'</span>;
+
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$erreurs</span>)) {
+        <span class="vr">$model</span>-><span class="fn">update</span>(<span class="vr">$id</span>, <span class="vr">$data</span>);
+        <span class="vr">$_SESSION</span>[<span class="str">'flash'</span>] = <span class="str">'Produit modifie.'</span>;
+        <span class="fn">header</span>(<span class="str">'Location: liste.php'</span>); <span class="kw">exit</span>;
+    }
+    <span class="vr">$produit</span> = <span class="vr">$data</span>;  <span class="cmt">// repeupler avec valeurs postees</span>
+}
+<span class="ptag">?&gt;</span>
+<span class="ht">&lt;form</span> <span class="ha">method</span>=<span class="str">"post"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">name</span>=<span class="str">"nom"</span>  <span class="ha">value</span>=<span class="str">"</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$produit</span>[<span class="str">'nom'</span>]) <span class="ptag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;input</span> <span class="ha">name</span>=<span class="str">"prix"</span> <span class="ha">type</span>=<span class="str">"number"</span> <span class="ha">step</span>=<span class="str">"0.01"</span>
+         <span class="ha">value</span>=<span class="str">"</span><span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$produit</span>[<span class="str">'prix'</span>]) <span class="ptag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;button</span> <span class="ha">type</span>=<span class="str">"submit"</span><span class="ht">&gt;</span>Sauvegarder<span class="ht">&lt;/button&gt;</span>
+<span class="ht">&lt;/form&gt;</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e7">
+  <div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Delete</div><h2>supprimer.php &mdash; confirmation avant suppression</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">pages/supprimer.php &mdash; avec page de confirmation</span><span class="cb-badge warn">DELETE</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="fn">session_start</span>();
+<span class="kw">require_once</span> <span class="str">'../models/ProduitModel.php'</span>;
+
+<span class="vr">$model</span>   = <span class="kw">new</span> <span class="fn">ProduitModel</span>();
+<span class="vr">$id</span>      = (int)(<span class="vr">$_GET</span>[<span class="str">'id'</span>] ?? <span class="num">0</span>);
+<span class="vr">$produit</span> = <span class="vr">$model</span>-><span class="fn">findById</span>(<span class="vr">$id</span>);
+
+<span class="kw">if</span> (!<span class="vr">$produit</span>) {
+    <span class="fn">header</span>(<span class="str">'Location: liste.php'</span>); <span class="kw">exit</span>;
+}
+
+<span class="cmt">// La suppression ne se fait que via POST (formulaire de confirmation)</span>
+<span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span> && <span class="fn">isset</span>(<span class="vr">$_POST</span>[<span class="str">'confirmer'</span>])) {
+    <span class="vr">$model</span>-><span class="fn">delete</span>(<span class="vr">$id</span>);
+    <span class="vr">$_SESSION</span>[<span class="str">'flash'</span>] = <span class="str">'Produit supprime.'</span>;
+    <span class="fn">header</span>(<span class="str">'Location: liste.php'</span>); <span class="kw">exit</span>;
+}
+<span class="ptag">?&gt;</span>
+
+<span class="ht">&lt;h2&gt;</span>Confirmer la suppression<span class="ht">&lt;/h2&gt;</span>
+<span class="ht">&lt;p&gt;</span>Supprimer "<span class="ptag">&lt;?=</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$produit</span>[<span class="str">'nom'</span>]) <span class="ptag">?&gt;</span>" ?<span class="ht">&lt;/p&gt;</span>
+
+<span class="cmt">&lt;!-- Suppression via POST uniquement (pas de lien GET) --&gt;</span>
+<span class="ht">&lt;form</span> <span class="ha">method</span>=<span class="str">"post"</span><span class="ht">&gt;</span>
+  <span class="ht">&lt;button</span> <span class="ha">type</span>=<span class="str">"submit"</span> <span class="ha">name</span>=<span class="str">"confirmer"</span> <span class="ha">value</span>=<span class="str">"1"</span><span class="ht">&gt;</span>Oui, supprimer<span class="ht">&lt;/button&gt;</span>
+  <span class="ht">&lt;a</span> <span class="ha">href</span>=<span class="str">"liste.php"</span><span class="ht">&gt;</span>Annuler<span class="ht">&lt;/a&gt;</span>
+<span class="ht">&lt;/form&gt;</span></code></pre>
+  </div>
+  <div class="callout success"><span class="ci">+</span><div><strong>Toujours supprimer via POST, jamais via GET.</strong> Un lien GET peut etre declenche par un navigateur, un bot, un prefetch. La page de confirmation avec formulaire POST est le minimum requis. En production, ajouter aussi un token CSRF pour empecher les requetes forgees depuis d'autres sites.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e8">
+  <div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Confort</div><h2>Pagination &mdash; calcul et liens</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Pagination complete &mdash; calcul et affichage HTML</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Dans liste.php</span>
+<span class="vr">$perPage</span>    = <span class="num">10</span>;
+<span class="vr">$page</span>       = <span class="fn">max</span>(<span class="num">1</span>, (int)(<span class="vr">$_GET</span>[<span class="str">'page'</span>] ?? <span class="num">1</span>));
+<span class="vr">$total</span>      = <span class="vr">$model</span>-><span class="fn">count</span>();        <span class="cmt">// SELECT COUNT(*)</span>
+<span class="vr">$totalPages</span> = (int) <span class="fn">ceil</span>(<span class="vr">$total</span> / <span class="vr">$perPage</span>);
+
+<span class="cmt">// Securiser la page courante</span>
+<span class="vr">$page</span> = <span class="fn">min</span>(<span class="vr">$page</span>, <span class="vr">$totalPages</span>);
+
+<span class="vr">$produits</span> = <span class="vr">$model</span>-><span class="fn">findAll</span>(<span class="vr">$page</span>, <span class="vr">$perPage</span>);
+<span class="ptag">?&gt;</span>
+
+<span class="cmt">&lt;!-- Affichage de la pagination --&gt;</span>
+<span class="ptag">&lt;?php</span> <span class="kw">if</span> (<span class="vr">$totalPages</span> > <span class="num">1</span>): <span class="ptag">?&gt;</span>
+<span class="ht">&lt;nav&gt;</span>
+  <span class="ptag">&lt;?php</span> <span class="kw">if</span> (<span class="vr">$page</span> > <span class="num">1</span>): <span class="ptag">?&gt;</span>
+    <span class="ht">&lt;a</span> <span class="ha">href</span>=<span class="str">"?page=</span><span class="ptag">&lt;?=</span> <span class="vr">$page</span> - <span class="num">1</span> <span class="ptag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span>&larr; Precedent<span class="ht">&lt;/a&gt;</span>
+  <span class="ptag">&lt;?php</span> <span class="kw">endif</span>; <span class="ptag">?&gt;</span>
+
+  <span class="ptag">&lt;?php</span> <span class="kw">for</span> (<span class="vr">$i</span> = <span class="num">1</span>; <span class="vr">$i</span> <= <span class="vr">$totalPages</span>; <span class="vr">$i</span>++): <span class="ptag">?&gt;</span>
+    <span class="ht">&lt;a</span> <span class="ha">href</span>=<span class="str">"?page=</span><span class="ptag">&lt;?=</span> <span class="vr">$i</span> <span class="ptag">?&gt;</span><span class="str">"</span>
+       <span class="ptag">&lt;?=</span> <span class="vr">$i</span> === <span class="vr">$page</span> ? <span class="str">'class="active"'</span> : <span class="str">''</span> <span class="ptag">?&gt;</span><span class="ht">&gt;</span>
+      <span class="ptag">&lt;?=</span> <span class="vr">$i</span> <span class="ptag">?&gt;</span>
+    <span class="ht">&lt;/a&gt;</span>
+  <span class="ptag">&lt;?php</span> <span class="kw">endfor</span>; <span class="ptag">?&gt;</span>
+
+  <span class="ptag">&lt;?php</span> <span class="kw">if</span> (<span class="vr">$page</span> < <span class="vr">$totalPages</span>): <span class="ptag">?&gt;</span>
+    <span class="ht">&lt;a</span> <span class="ha">href</span>=<span class="str">"?page=</span><span class="ptag">&lt;?=</span> <span class="vr">$page</span> + <span class="num">1</span> <span class="ptag">?&gt;</span><span class="str">"</span><span class="ht">&gt;</span>Suivant &rarr;<span class="ht">&lt;/a&gt;</span>
+  <span class="ptag">&lt;?php</span> <span class="kw">endif</span>; <span class="ptag">?&gt;</span>
+<span class="ht">&lt;/nav&gt;</span>
+<span class="ptag">&lt;?php</span> <span class="kw">endif</span>; <span class="ptag">?&gt;</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e9">
+  <div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Recherche</div><h2>Recherche SQL &mdash; LIKE avec PDO</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Recherche multi-colonnes dans ProduitModel</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Dans ProduitModel &mdash; recherche avancee</span>
+<span class="kw">public function</span> <span class="fn">search</span>(string <span class="vr">$terme</span>, ?int <span class="vr">$catId</span> = <span class="bool">null</span>): array {
+    <span class="cmt">// Construire la requete dynamiquement</span>
+    <span class="vr">$sql</span> = <span class="str">"SELECT p.*, c.nom AS categorie_nom
+             FROM produits p
+             LEFT JOIN categories c ON p.categorie_id = c.id
+             WHERE (p.nom LIKE :terme OR p.description LIKE :terme)"</span>;
+
+    <span class="vr">$params</span> = [<span class="str">'terme'</span> => <span class="str">'%'</span> . <span class="vr">$terme</span> . <span class="str">'%'</span>];
+
+    <span class="cmt">// Filtre categorie optionnel</span>
+    <span class="kw">if</span> (<span class="vr">$catId</span> !== <span class="bool">null</span>) {
+        <span class="vr">$sql</span> .= <span class="str">" AND p.categorie_id = :cat"</span>;
+        <span class="vr">$params</span>[<span class="str">'cat'</span>] = <span class="vr">$catId</span>;
+    }
+
+    <span class="vr">$sql</span> .= <span class="str">" ORDER BY p.nom ASC LIMIT 50"</span>;
+
+    <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="vr">$sql</span>);
+    <span class="vr">$stmt</span>-><span class="fn">execute</span>(<span class="vr">$params</span>);
+    <span class="kw">return</span> <span class="vr">$stmt</span>-><span class="fn">fetchAll</span>();
+}
+
+<span class="cmt">// Dans liste.php &mdash; combiner recherche + filtre categorie</span>
+<span class="vr">$q</span>   = <span class="fn">trim</span>(<span class="vr">$_GET</span>[<span class="str">'q'</span>]   ?? <span class="str">''</span>);
+<span class="vr">$cat</span> = (int)(<span class="vr">$_GET</span>[<span class="str">'cat'</span>] ?? <span class="num">0</span>);
+
+<span class="kw">if</span> (<span class="vr">$q</span>) {
+    <span class="vr">$produits</span> = <span class="vr">$model</span>-><span class="fn">search</span>(<span class="vr">$q</span>, <span class="vr">$cat</span> > <span class="num">0</span> ? <span class="vr">$cat</span> : <span class="bool">null</span>);
+} <span class="kw">else</span> {
+    <span class="vr">$produits</span> = <span class="vr">$model</span>-><span class="fn">findAll</span>(<span class="vr">$page</span>, <span class="vr">$perPage</span>);
+}</code></pre>
+  </div>
+  <div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Synthese Bloc 3 :</strong> SQL (10) + PDO (11) + Administration MariaDB (12) + ce CRUD complet (13). Vous savez maintenant creer une BDD, la securiser, et connecter une application PHP complete avec lecture, ecriture, modification, suppression, pagination et recherche.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="quiz">
+  <div class="etape-header"><div class="etape-num">10</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; CRUD avec BDD</h2></div></div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Pourquoi creer une classe <code>ProduitModel</code> plutot que mettre le SQL directement dans les pages ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">Pour respecter la norme PSR-4</button>
+      <button class="opt" onclick="ans(this,'q1',true)">Separation des responsabilites : le model encapsule le SQL, les pages contiennent la logique de vue. Si la BDD change, on modifie uniquement le model.</button>
+      <button class="opt" onclick="ans(this,'q1',false)">Parce que PHP exige une classe pour utiliser PDO</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Pourquoi utiliser <code>bindValue()</code> avec <code>PDO::PARAM_INT</code> pour LIMIT et OFFSET ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',false)">Par convention de style</button>
+      <button class="opt" onclick="ans(this,'q2',true)">execute([]) transmet les valeurs comme des chaines. LIMIT et OFFSET attendent des entiers. Certaines versions de MariaDB refusent des chaines pour ces clauses.</button>
+      <button class="opt" onclick="ans(this,'q2',false)">bindValue() est plus rapide que execute()</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Comment calculer le nombre total de pages pour une pagination de 10 elements par page avec 47 produits ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',false)">47 / 10 = 4 pages</button>
+      <button class="opt" onclick="ans(this,'q3',true)">ceil(47 / 10) = 5 pages (la division arrondie au superieur)</button>
+      <button class="opt" onclick="ans(this,'q3',false)">floor(47 / 10) = 4 pages</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Pourquoi la suppression doit passer par un formulaire POST plutot qu'un lien GET ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',false)">GET ne fonctionne pas avec PDO DELETE</button>
+      <button class="opt" onclick="ans(this,'q4',true)">Un lien GET peut etre declenche par un bot, un prefetch ou une navigation accidentelle. Un formulaire POST exige une action deliberee de l'utilisateur.</button>
+      <button class="opt" onclick="ans(this,'q4',false)">POST est plus rapide pour les suppressions</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> Dans la methode <code>search()</code>, comment passer le wildcard % a LIKE avec une requete preparee ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q5',false)">WHERE nom LIKE % :terme %</button>
+      <button class="opt" onclick="ans(this,'q5',true)">Construire la chaine avec % en PHP : $params = ['terme' => '%' . $terme . '%'] et la requete : WHERE nom LIKE :terme</button>
+      <button class="opt" onclick="ans(this,'q5',false)">WHERE nom LIKE CONCAT('%', :terme, '%')</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text"  style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll(".etape[id]"),nl=document.querySelectorAll(".nav-link");
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove("active"));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add("active");}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest(".code-block").querySelector("pre");navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent="Copie";btn.classList.add("ok");setTimeout(()=>{btn.textContent="copier";btn.classList.remove("ok");},1800);});}
+const fbs={
+  q1:{
+    ok:"Exact. La separation model/vue (base du pattern MVC) rend le code maintenable. Si on change de BDD ou de schema, on modifie uniquement ProduitModel. Les pages ne savent pas comment les donnees sont stockees.",
+    ko:"Non. La raison principale est la separation des responsabilites. Le model encapsule tout le SQL. Les pages ne contiennent que la logique de formulaire et d'affichage. Cela facilite la maintenance et les tests."
+  },
+  q2:{
+    ok:"Exact. PDO transmet les valeurs de execute([]) sous forme de chaines par defaut. Pour LIMIT et OFFSET, le serveur MariaDB attend des entiers. Avec bindValue() + PDO::PARAM_INT, on force le type entier et evite les erreurs sur certaines versions.",
+    ko:"Non. La raison technique est que execute([]) envoie des chaines, et LIMIT/OFFSET attendent des entiers. Sur certaines versions de MariaDB/MySQL, passer une chaine pour LIMIT provoque une erreur. bindValue() avec PARAM_INT garantit le bon type."
+  },
+  q3:{
+    ok:"Exact. ceil() arrondit vers le haut : 47/10 = 4.7, ceil(4.7) = 5. La derniere page contiendra 7 elements. floor() ou la division entiere donnerait 4 et oublierait les 7 derniers produits.",
+    ko:"Non. Il faut ceil() (arrondi superieur). 47/10 = 4.7. floor(4.7) = 4 : la derniere page de 7 produits serait perdue. ceil(4.7) = 5 : 4 pages de 10 + 1 page de 7 = tous les produits sont accessibles."
+  },
+  q4:{
+    ok:"Exact. Les liens GET peuvent etre prefetches par les navigateurs, indexes par les bots, ou actives accidentellement. Un formulaire POST avec bouton de confirmation exige une action deliberee. En production, ajouter aussi un token CSRF pour empecher les requetes depuis d'autres sites.",
+    ko:"Non. La raison est la securite : les liens GET peuvent etre declenchés accidentellement (prefetch du navigateur, bot de crawl, clic erreur). Un formulaire POST oblige l'utilisateur a une action deliberee. C'est le minimum de protection pour une action destructive."
+  },
+  q5:{
+    ok:"Exact. Les placeholders PDO representent des valeurs, pas des fragments SQL. On ne peut pas mettre % directement dans la requete autour du placeholder. La bonne approche : construire la chaine complete avec % en PHP avant de la passer comme valeur.",
+    ko:"Non. Les placeholders PDO representent des valeurs completes, pas des fragments SQL. 'LIKE % :terme %' est invalide. Il faut construire la chaine en PHP : $params['terme'] = '%'.$terme.'%' et ecrire 'WHERE nom LIKE :terme' dans le SQL."
+  }
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>o.disabled=true);
+  btn.classList.add(ok?"correct":"wrong");
+  if(!ok)btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>{if(o.onclick&&o.onclick.toString().includes(",true)"))o.classList.add("correct");});
+  const fb=document.getElementById("fb-"+qid);fb.innerHTML=fbs[qid][ok?"ok":"ko"];fb.className="fb show "+(ok?"ok":"ko");
+  if(Object.keys(rep).length===5){
+    const g=Object.values(rep).filter(Boolean).length,box=document.getElementById("score-box");
+    box.style.display="block";
+    document.getElementById("s-score").textContent=g+"/5";
+    document.getElementById("s-text").innerHTML=g===5?"Parfait &mdash; Bloc 3 complet, pret pour la POO !":g>=4?"Tres bien.":g>=3?"Revoir pagination et separation model/vue.":"Reprendre depuis PDO et le model.";
+    box.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+}
+</script>
+</body>
+</html>

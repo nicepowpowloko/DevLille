@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 11 &mdash; PDO</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#7c3aed;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--teal:#0f766e;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(124,58,237,.07);}
+.nav-link.active{background:rgba(124,58,237,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.v{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.r{background:rgba(220,38,38,.07);border-color:rgba(220,38,38,.25);color:var(--red);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(124,58,237,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.warn{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#f87171;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(124,58,237,.2);color:#c4b5fd;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.tbl{color:#f38ba8;}.ptag{color:#f38ba8;font-weight:700;}
+.bool{color:#fab387;font-weight:600;}.ht{color:#89b4fa;}.ha{color:#fab387;}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:2.1;box-shadow:var(--sh);}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(124,58,237,.3);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>[ ] PHP &mdash; Bloc 3</span><p>Base de donnees</p></div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>Pourquoi PDO</a>
+    <a href="#e1"   class="nav-link"><span class="nav-num">01</span>Connexion PDO</a>
+    <a href="#e2"   class="nav-link"><span class="nav-num">02</span>Requetes preparees</a>
+    <a href="#e3"   class="nav-link"><span class="nav-num">03</span>SELECT &mdash; lire</a>
+    <a href="#e4"   class="nav-link"><span class="nav-num">04</span>INSERT &mdash; ajouter</a>
+    <a href="#e5"   class="nav-link"><span class="nav-num">05</span>UPDATE &mdash; modifier</a>
+    <a href="#e6"   class="nav-link"><span class="nav-num">06</span>DELETE &mdash; supprimer</a>
+    <a href="#e7"   class="nav-link"><span class="nav-num">07</span>Gestion des erreurs</a>
+    <a href="#e8"   class="nav-link"><span class="nav-num">08</span>Transactions</a>
+    <a href="#e9"   class="nav-link"><span class="nav-num">09</span>Classe Database</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">10</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 3 &mdash; Base de donnees</div>
+    <a href="php-10-sql.html"      class="nav-serie-link">10 &mdash; Introduction SQL</a>
+    <a href="php-11-pdo.html"      class="nav-serie-link current">11 &mdash; PDO</a>
+    <a href="mariadb-admin.html"   class="nav-serie-link">12 &mdash; Administration MariaDB</a>
+    <a href="php-13-crud-bdd.html" class="nav-serie-link">13 &mdash; CRUD avec BDD</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 3 &middot; Support 2/4</div>
+  <h1>PDO &mdash; PHP<br><span class="hl">Data Objects</span></h1>
+  <p>PDO est la couche d'abstraction officielle de PHP pour communiquer avec les bases de donnees. Elle protege contre les injections SQL, supporte MariaDB, MySQL, PostgreSQL, SQLite avec la meme API.</p>
+  <div class="objectifs">
+    <span class="obj v">Connexion PDO</span>
+    <span class="obj g">Requetes preparees</span>
+    <span class="obj b">fetch / fetchAll</span>
+    <span class="obj y">lastInsertId</span>
+    <span class="obj r">Transactions</span>
+  </div>
+</div>
+
+<section class="etape" id="plan">
+  <div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Pourquoi PDO</div><h2>PDO vs mysqli &mdash; pourquoi choisir PDO</h2></div></div>
+  <p class="prose">Il existe deux extensions PHP pour parler a MariaDB/MySQL : <code>mysqli</code> et <code>PDO</code>. PDO est recommande pour les nouveaux projets.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Critere</th><th>PDO</th><th>mysqli</th></tr></thead>
+    <tbody>
+      <tr><td>BDD supportees</td><td>12+ (MariaDB, PostgreSQL, SQLite...)</td><td>MariaDB/MySQL uniquement</td></tr>
+      <tr><td>Requetes preparees</td><td>Oui, API unifiee</td><td>Oui mais syntaxe differente</td></tr>
+      <tr><td>Style</td><td>Oriente objet (et procedural)</td><td>Les deux</td></tr>
+      <tr><td>Gestion erreurs</td><td>Exceptions PDOException</td><td>Codes d'erreur numeriques</td></tr>
+      <tr><td>Portabilite</td><td>Changer de BDD = changer le DSN</td><td>Recrire le code</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout info"><span class="ci">i</span><div><strong>Les requetes preparees sont la raison principale d'utiliser PDO.</strong> Elles separent le SQL des donnees, rendant les injections SQL impossibles. C'est la protection fondamentale de toute application qui interroge une BDD.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e1">
+  <div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Connexion</div><h2>Se connecter avec PDO</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Connexion PDO a MariaDB</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Parametres de connexion</span>
+<span class="vr">$host</span>    = <span class="str">'localhost'</span>;
+<span class="vr">$dbname</span>  = <span class="str">'boutique'</span>;
+<span class="vr">$user</span>    = <span class="str">'appuser'</span>;
+<span class="vr">$pass</span>    = <span class="str">'MotDePasse!'</span>;
+<span class="vr">$charset</span> = <span class="str">'utf8mb4'</span>;
+
+<span class="cmt">// DSN : Data Source Name</span>
+<span class="vr">$dsn</span> = <span class="str">"mysql:host=</span><span class="vr">$host</span><span class="str">;dbname=</span><span class="vr">$dbname</span><span class="str">;charset=</span><span class="vr">$charset</span><span class="str">"</span>;
+
+<span class="cmt">// Options recommandees</span>
+<span class="vr">$options</span> = [
+    <span class="fn">PDO</span>::<span class="fn">ATTR_ERRMODE</span>            => <span class="fn">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>,
+    <span class="cmt">// Lance une PDOException en cas d'erreur</span>
+    <span class="fn">PDO</span>::<span class="fn">ATTR_DEFAULT_FETCH_MODE</span>  => <span class="fn">PDO</span>::<span class="fn">FETCH_ASSOC</span>,
+    <span class="cmt">// fetch() retourne un tableau associatif par defaut</span>
+    <span class="fn">PDO</span>::<span class="fn">ATTR_EMULATE_PREPARES</span>    => <span class="bool">false</span>,
+    <span class="cmt">// Utiliser les vrais prepared statements du serveur</span>
+];
+
+<span class="kw">try</span> {
+    <span class="vr">$pdo</span> = <span class="kw">new</span> <span class="fn">PDO</span>(<span class="vr">$dsn</span>, <span class="vr">$user</span>, <span class="vr">$pass</span>, <span class="vr">$options</span>);
+    <span class="kw">echo</span> <span class="str">'Connexion reussie !'</span>;
+} <span class="kw">catch</span> (<span class="fn">PDOException</span> <span class="vr">$e</span>) {
+    <span class="cmt">// En production : logger l'erreur, pas l'afficher</span>
+    <span class="kw">die</span>(<span class="str">'Connexion impossible : '</span> . <span class="vr">$e</span>-><span class="fn">getMessage</span>());
+}</code></pre>
+  </div>
+  <div class="callout warn"><span class="ci">!</span><div><strong>Ne jamais afficher les erreurs de connexion en production.</strong> Le message d'exception contient des informations sensibles (nom de BDD, utilisateur). En production, logguer l'erreur dans un fichier et afficher un message generique a l'utilisateur.</div></div>
+  <div class="callout tip"><span class="ci">!</span><div><strong>Stocker la connexion dans un fichier config.</strong> Creer un fichier <code>config/database.php</code> qui instancie PDO une seule fois et le <code>require_once</code> dans chaque page qui en a besoin. Ne jamais versionner ce fichier dans Git (l'ajouter a <code>.gitignore</code>).</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e2">
+  <div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Securite fondamentale</div><h2>Requetes preparees &mdash; protection contre les injections SQL</h2></div></div>
+  <p class="prose">Une injection SQL survient quand une donnee utilisateur est inseree directement dans une requete SQL. Les requetes preparees separent le SQL des donnees : la structure de la requete est envoyee d'abord, les donnees ensuite. Le serveur ne peut pas les confondre.</p>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Injection SQL &mdash; le probleme et la solution</span><span class="cb-badge warn">Securite</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// DANGEREUX &mdash; concatenation directe</span>
+<span class="vr">$email</span> = <span class="vr">$_POST</span>[<span class="str">'email'</span>];
+<span class="cmt">// Si email = "alice@ex.com' OR '1'='1"</span>
+<span class="vr">$sql</span> = <span class="str">"SELECT * FROM utilisateurs WHERE email = '"</span> . <span class="vr">$email</span> . <span class="str">"'"</span>;
+<span class="cmt">// Requete resultante : SELECT * FROM utilisateurs WHERE email = 'alice@ex.com' OR '1'='1'</span>
+<span class="cmt">// Retourne TOUS les utilisateurs ! L'attaquant est connecte.</span>
+
+<span class="cmt">// CORRECT &mdash; requete preparee avec placeholder</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">"SELECT * FROM utilisateurs WHERE email = :email"</span>);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'email'</span> => <span class="vr">$email</span>]);
+<span class="cmt">// PDO traite $email comme une donnee pure, jamais comme du SQL</span>
+<span class="cmt">// Meme avec la valeur malveillante, l'injection est impossible</span></code></pre>
+  </div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Deux styles de placeholders</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Style 1 : placeholders nommes (recommande, lisible)</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+    <span class="str">"SELECT * FROM produits WHERE categorie_id = :cat AND prix &lt; :max"</span>
+);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'cat'</span> => <span class="num">1</span>, <span class="str">'max'</span> => <span class="num">50</span>]);
+
+<span class="cmt">// Style 2 : placeholders positionnels ? (ordre important)</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+    <span class="str">"SELECT * FROM produits WHERE categorie_id = ? AND prix &lt; ?"</span>
+);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="num">1</span>, <span class="num">50</span>]);
+
+<span class="cmt">// bindParam vs execute() &mdash; equivalent</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">"SELECT * FROM utilisateurs WHERE id = :id"</span>);
+<span class="vr">$stmt</span>-><span class="fn">bindParam</span>(<span class="str">'id'</span>, <span class="vr">$id</span>, <span class="fn">PDO</span>::<span class="fn">PARAM_INT</span>);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>();</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e3">
+  <div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Read</div><h2>SELECT &mdash; lire des donnees</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">fetch(), fetchAll() &mdash; recuperer les resultats</span><span class="cb-badge good">Essentiel</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Recuperer UNE seule ligne</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">"SELECT * FROM utilisateurs WHERE id = :id"</span>);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'id'</span> => <span class="num">3</span>]);
+<span class="vr">$user</span> = <span class="vr">$stmt</span>-><span class="fn">fetch</span>();
+<span class="cmt">// $user = ['id' => 3, 'nom' => 'Alice', ...] ou false si absent</span>
+
+<span class="kw">if</span> (<span class="vr">$user</span>) {
+    <span class="kw">echo</span> <span class="vr">$user</span>[<span class="str">'nom'</span>];
+}
+
+<span class="cmt">// Recuperer TOUTES les lignes</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">"SELECT * FROM produits WHERE stock &gt; :min ORDER BY prix ASC"</span>);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'min'</span> => <span class="num">0</span>]);
+<span class="vr">$produits</span> = <span class="vr">$stmt</span>-><span class="fn">fetchAll</span>();
+<span class="cmt">// $produits = tableau de tableaux associatifs</span>
+
+<span class="kw">foreach</span> (<span class="vr">$produits</span> <span class="kw">as</span> <span class="vr">$p</span>) {
+    <span class="kw">echo</span> <span class="vr">$p</span>[<span class="str">'nom'</span>] . <span class="str">' : '</span> . <span class="vr">$p</span>[<span class="str">'prix'</span>] . <span class="str">'&#8364;'</span>;
+}
+
+<span class="cmt">// Requete sans parametre : query() est plus court</span>
+<span class="vr">$produits</span> = <span class="vr">$pdo</span>-><span class="fn">query</span>(<span class="str">"SELECT * FROM produits"</span>)-><span class="fn">fetchAll</span>();
+
+<span class="cmt">// Compter les resultats</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">"SELECT COUNT(*) FROM utilisateurs WHERE role = :role"</span>);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'role'</span> => <span class="str">'admin'</span>]);
+<span class="vr">$nb</span> = <span class="vr">$stmt</span>-><span class="fn">fetchColumn</span>();  <span class="cmt">// retourne une valeur scalaire</span>
+<span class="kw">echo</span> <span class="vr">$nb</span> . <span class="str">' admin(s)'</span>;</code></pre>
+  </div>
+  <div class="callout info"><span class="ci">i</span><div><strong>fetch() vs fetchAll().</strong> <code>fetch()</code> recupere la ligne suivante (une a la fois) &mdash; utile pour les grands resultats ou quand on cherche un seul enregistrement. <code>fetchAll()</code> recupere toutes les lignes d'un coup en memoire &mdash; pratique pour les listes a afficher. <code>fetchColumn()</code> recupere la premiere colonne de la premiere ligne.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e4">
+  <div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Create</div><h2>INSERT &mdash; ajouter une ligne</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">INSERT avec PDO et recuperation de l'ID</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Inserer un nouvel utilisateur</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+    <span class="str">"INSERT INTO utilisateurs (nom, email, mot_de_passe)
+     VALUES (:nom, :email, :mdp)"</span>
+);
+
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([
+    <span class="str">'nom'</span>   => <span class="str">'Alice Dupont'</span>,
+    <span class="str">'email'</span> => <span class="str">'alice@example.com'</span>,
+    <span class="str">'mdp'</span>   => <span class="fn">password_hash</span>(<span class="str">'monMotDePasse'</span>, <span class="fn">PASSWORD_DEFAULT</span>),
+    <span class="cmt">// Ne jamais stocker le mdp en clair !</span>
+]);
+
+<span class="cmt">// Recuperer l'ID auto-incremente de la ligne inseree</span>
+<span class="vr">$newId</span> = (int) <span class="vr">$pdo</span>-><span class="fn">lastInsertId</span>();
+<span class="kw">echo</span> <span class="str">'Nouvel utilisateur cree avec l'ID : '</span> . <span class="vr">$newId</span>;
+
+<span class="cmt">// Verifier le nombre de lignes affectees</span>
+<span class="kw">echo</span> <span class="vr">$stmt</span>-><span class="fn">rowCount</span>() . <span class="str">' ligne(s) inseree(s)'</span>;</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e5">
+  <div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Update</div><h2>UPDATE &mdash; modifier une ligne</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">UPDATE avec PDO</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+    <span class="str">"UPDATE utilisateurs
+     SET nom = :nom, email = :email
+     WHERE id = :id"</span>
+);
+
+<span class="vr">$succes</span> = <span class="vr">$stmt</span>-><span class="fn">execute</span>([
+    <span class="str">'nom'</span>   => <span class="str">'Alice Martin'</span>,
+    <span class="str">'email'</span> => <span class="str">'alice.martin@example.com'</span>,
+    <span class="str">'id'</span>    => <span class="num">3</span>,
+]);
+
+<span class="cmt">// rowCount() = nombre de lignes reellement modifiees</span>
+<span class="kw">if</span> (<span class="vr">$stmt</span>-><span class="fn">rowCount</span>() > <span class="num">0</span>) {
+    <span class="kw">echo</span> <span class="str">'Modification effectuee.'</span>;
+} <span class="kw">else</span> {
+    <span class="kw">echo</span> <span class="str">'Aucune modification (id introuvable ou valeurs identiques).'</span>;
+}
+
+<span class="cmt">// Mettre a jour le mot de passe</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+    <span class="str">"UPDATE utilisateurs SET mot_de_passe = :mdp WHERE id = :id"</span>
+);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([
+    <span class="str">'mdp'</span> => <span class="fn">password_hash</span>(<span class="str">'nouveauMdp!'</span>, <span class="fn">PASSWORD_DEFAULT</span>),
+    <span class="str">'id'</span>  => <span class="num">3</span>,
+]);</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e6">
+  <div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Delete</div><h2>DELETE &mdash; supprimer une ligne</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">DELETE avec PDO</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Supprimer un utilisateur par ID</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">"DELETE FROM utilisateurs WHERE id = :id"</span>);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'id'</span> => <span class="num">5</span>]);
+
+<span class="kw">if</span> (<span class="vr">$stmt</span>-><span class="fn">rowCount</span>() > <span class="num">0</span>) {
+    <span class="kw">echo</span> <span class="str">'Utilisateur supprime.'</span>;
+} <span class="kw">else</span> {
+    <span class="kw">echo</span> <span class="str">'Utilisateur introuvable.'</span>;
+}
+
+<span class="cmt">// Soft delete recommande en production</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+    <span class="str">"UPDATE utilisateurs SET actif = 0 WHERE id = :id"</span>
+);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'id'</span> => <span class="num">5</span>]);
+<span class="cmt">// L'utilisateur existe toujours mais est desactive</span>
+<span class="cmt">// On peut restaurer : UPDATE ... SET actif = 1</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e7">
+  <div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Robustesse</div><h2>Gestion des erreurs PDO</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Gestion propre des exceptions PDO</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Avec ERRMODE_EXCEPTION (configure a la connexion),</span>
+<span class="cmt">// toute erreur SQL lance une PDOException</span>
+
+<span class="kw">try</span> {
+    <span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+        <span class="str">"INSERT INTO utilisateurs (email) VALUES (:email)"</span>
+    );
+    <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'email'</span> => <span class="str">'alice@example.com'</span>]);
+    <span class="kw">echo</span> <span class="str">'Insertion reussie, id = '</span> . <span class="vr">$pdo</span>-><span class="fn">lastInsertId</span>();
+
+} <span class="kw">catch</span> (<span class="fn">PDOException</span> <span class="vr">$e</span>) {
+    <span class="cmt">// Code d'erreur SQL (ex: 23000 = contrainte unique violee)</span>
+    <span class="vr">$code</span> = <span class="vr">$e</span>-><span class="fn">getCode</span>();
+
+    <span class="kw">if</span> (<span class="vr">$code</span> == <span class="str">'23000'</span>) {
+        <span class="cmt">// Violation de contrainte UNIQUE (email deja pris)</span>
+        <span class="vr">$erreur</span> = <span class="str">'Cet email est deja utilise.'</span>;
+    } <span class="kw">else</span> {
+        <span class="cmt">// En dev : afficher le detail</span>
+        <span class="vr">$erreur</span> = <span class="str">'Erreur base de donnees : '</span> . <span class="vr">$e</span>-><span class="fn">getMessage</span>();
+        <span class="cmt">// En prod : logger et afficher message generique</span>
+        <span class="cmt">// error_log($e->getMessage());</span>
+        <span class="cmt">// $erreur = 'Une erreur est survenue, veuillez reessayer.';</span>
+    }
+}</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e8">
+  <div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Atomicite</div><h2>Transactions &mdash; tout ou rien</h2></div></div>
+  <p class="prose">Une transaction regroupe plusieurs requetes en une seule operation atomique. Si une requete echoue, toutes les precedentes sont annulees (rollback). Indispensable pour les operations qui doivent etre consistantes ensemble.</p>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Transaction PDO &mdash; virement bancaire</span><span class="cb-badge good">Complet</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Exemple : transfert de stock entre deux entrepots</span>
+<span class="kw">try</span> {
+    <span class="vr">$pdo</span>-><span class="fn">beginTransaction</span>();
+    <span class="cmt">// Debut de la transaction</span>
+
+    <span class="cmt">// Requete 1 : deduire du stock entrepot A</span>
+    <span class="vr">$stmt1</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+        <span class="str">"UPDATE stock SET quantite = quantite - :qte WHERE entrepot_id = 1 AND produit_id = :pid"</span>
+    );
+    <span class="vr">$stmt1</span>-><span class="fn">execute</span>([<span class="str">'qte'</span> => <span class="num">10</span>, <span class="str">'pid'</span> => <span class="num">5</span>]);
+
+    <span class="cmt">// Requete 2 : ajouter au stock entrepot B</span>
+    <span class="vr">$stmt2</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+        <span class="str">"UPDATE stock SET quantite = quantite + :qte WHERE entrepot_id = 2 AND produit_id = :pid"</span>
+    );
+    <span class="vr">$stmt2</span>-><span class="fn">execute</span>([<span class="str">'qte'</span> => <span class="num">10</span>, <span class="str">'pid'</span> => <span class="num">5</span>]);
+
+    <span class="cmt">// Tout s'est passe correctement : valider</span>
+    <span class="vr">$pdo</span>-><span class="fn">commit</span>();
+    <span class="kw">echo</span> <span class="str">'Transfert effectue.'</span>;
+
+} <span class="kw">catch</span> (<span class="fn">PDOException</span> <span class="vr">$e</span>) {
+    <span class="cmt">// Une requete a echoue : annuler tout</span>
+    <span class="vr">$pdo</span>-><span class="fn">rollBack</span>();
+    <span class="kw">echo</span> <span class="str">'Erreur, transfert annule : '</span> . <span class="vr">$e</span>-><span class="fn">getMessage</span>();
+}</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e9">
+  <div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Bonne pratique</div><h2>Classe Database &mdash; singleton de connexion</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">config/database.php &mdash; connexion centralisee</span><span class="cb-badge good">Production</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// config/database.php</span>
+
+<span class="kw">function</span> <span class="fn">getDB</span>(): <span class="fn">PDO</span> {
+    <span class="kw">static</span> <span class="vr">$pdo</span> = <span class="bool">null</span>;
+    <span class="cmt">// static : instancier une seule fois</span>
+
+    <span class="kw">if</span> (<span class="vr">$pdo</span> === <span class="bool">null</span>) {
+        <span class="vr">$dsn</span> = <span class="str">"mysql:host="</span> . <span class="fn">getenv</span>(<span class="str">'DB_HOST'</span>) .
+               <span class="str">";dbname="</span>  . <span class="fn">getenv</span>(<span class="str">'DB_NAME'</span>) .
+               <span class="str">";charset=utf8mb4"</span>;
+        <span class="vr">$pdo</span> = <span class="kw">new</span> <span class="fn">PDO</span>(
+            <span class="vr">$dsn</span>,
+            <span class="fn">getenv</span>(<span class="str">'DB_USER'</span>),
+            <span class="fn">getenv</span>(<span class="str">'DB_PASS'</span>),
+            [
+                <span class="fn">PDO</span>::<span class="fn">ATTR_ERRMODE</span>           => <span class="fn">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>,
+                <span class="fn">PDO</span>::<span class="fn">ATTR_DEFAULT_FETCH_MODE</span> => <span class="fn">PDO</span>::<span class="fn">FETCH_ASSOC</span>,
+                <span class="fn">PDO</span>::<span class="fn">ATTR_EMULATE_PREPARES</span>   => <span class="bool">false</span>,
+            ]
+        );
+    }
+    <span class="kw">return</span> <span class="vr">$pdo</span>;
+}
+
+<span class="cmt">// Utilisation dans n'importe quel fichier :</span>
+<span class="cmt">// require_once 'config/database.php';</span>
+<span class="cmt">// $pdo = getDB();</span>
+<span class="cmt">// $stmt = $pdo->prepare("SELECT ...");</span></code></pre>
+  </div>
+  <div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Les 5 etapes PDO a memoriser :</strong> (1) new PDO($dsn, $user, $pass) (2) prepare($sql) (3) execute([$params]) (4) fetch() ou fetchAll() (5) lastInsertId() apres INSERT. Toujours dans un try/catch.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="quiz">
+  <div class="etape-header"><div class="etape-num">10</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; PDO</h2></div></div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Pourquoi utiliser des requetes preparees plutot que la concatenation de chaines ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">Les requetes preparees sont plus rapides a ecrire</button>
+      <button class="opt" onclick="ans(this,'q1',true)">Elles separent le SQL des donnees, rendant les injections SQL impossibles. Le serveur ne peut pas confondre une donnee avec une instruction SQL.</button>
+      <button class="opt" onclick="ans(this,'q1',false)">La concatenation genere des erreurs SQL en PHP 8</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Quelle methode PDO recupere une seule ligne de resultat ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',false)">fetchAll()</button>
+      <button class="opt" onclick="ans(this,'q2',true)">fetch()</button>
+      <button class="opt" onclick="ans(this,'q2',false)">getRow()</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Comment recuperer l'ID auto-incremente apres un INSERT avec PDO ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',false)">$stmt->getInsertId()</button>
+      <button class="opt" onclick="ans(this,'q3',true)">$pdo->lastInsertId()</button>
+      <button class="opt" onclick="ans(this,'q3',false)">$stmt->rowCount()</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> Dans quel cas utiliser une transaction PDO ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',false)">Pour toutes les requetes SELECT</button>
+      <button class="opt" onclick="ans(this,'q4',true)">Quand plusieurs requetes doivent reussir ou echouer ensemble &mdash; si l'une echoue, toutes les modifications sont annulees (rollback)</button>
+      <button class="opt" onclick="ans(this,'q4',false)">Pour ameliorer les performances des requetes</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> Que fait <code>PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC</code> ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q5',false)">Active le mode de chiffrement des donnees</button>
+      <button class="opt" onclick="ans(this,'q5',true)">fetch() et fetchAll() retournent des tableaux associatifs (acces par nom de colonne) au lieu de tableaux numeriques</button>
+      <button class="opt" onclick="ans(this,'q5',false)">Force PDO a utiliser les requetes preparees</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text"  style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll(".etape[id]"),nl=document.querySelectorAll(".nav-link");
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove("active"));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add("active");}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest(".code-block").querySelector("pre");navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent="Copie";btn.classList.add("ok");setTimeout(()=>{btn.textContent="copier";btn.classList.remove("ok");},1800);});}
+const fbs={
+  q1:{
+    ok:"Exact. Les requetes preparees separent structurellement le SQL des donnees. PDO envoie d'abord la structure SQL au serveur, puis les donnees separement. Le serveur MariaDB traite les donnees comme des valeurs pures, jamais comme du SQL. Meme si la donnee contient du SQL malveillant, il est inoffensif.",
+    ko:"Non. La raison fondamentale est la securite contre les injections SQL. Avec la concatenation, une donnee peut modifier la structure de la requete. Avec les requetes preparees, les donnees sont toujours traitees comme des valeurs, jamais comme du SQL."
+  },
+  q2:{
+    ok:"Exact. fetch() recupere la prochaine ligne du resultat et avance le curseur. fetch() retourne un tableau associatif (avec FETCH_ASSOC) ou false s'il n'y a plus de lignes. Pour une seule ligne attendue, on fait prepare()->execute()->fetch().",
+    ko:"Non. fetch() recupere une seule ligne. fetchAll() recupere toutes les lignes en une fois et retourne un tableau de tableaux. getRow() n'existe pas en PDO."
+  },
+  q3:{
+    ok:"Exact. Apres un INSERT reussi, $pdo->lastInsertId() retourne l'ID auto-incremente de la derniere ligne inseree. C'est une methode de l'objet PDO (pas du statement). Elle retourne une chaine, donc le cast (int) est recommande.",
+    ko:"Non. La methode correcte est $pdo->lastInsertId() appelee sur l'objet PDO apres le execute(). rowCount() retourne le nombre de lignes affectees, pas l'ID."
+  },
+  q4:{
+    ok:"Exact. Les transactions garantissent l'atomicite : soit toutes les requetes reussissent et sont validees (commit), soit l'une echoue et toutes sont annulees (rollback). Indispensable pour les operations qui doivent rester coherentes : virement, commande multi-tables, inscription multi-etapes.",
+    ko:"Non. Les transactions servent a grouper des operations qui doivent toutes reussir ou toutes echouer. Pour un virement : debit + credit. Si le credit echoue, le debit doit etre annule. Sans transaction, les donnees seraient dans un etat incoh'erent."
+  },
+  q5:{
+    ok:"Exact. FETCH_ASSOC configure le mode de recuperation par defaut. Avec ce mode, fetch() retourne un tableau avec les noms de colonnes comme cles : $row['nom'], $row['email']. Sans cela, on aurait aussi des indices numeriques : $row[0], $row[1].",
+    ko:"Non. PDO::FETCH_ASSOC definit le mode de recuperation : fetch() retourne un tableau indexe par les noms de colonnes. $row['nom'] au lieu de $row[0]. C'est plus lisible et resistant aux changements de structure de la requete."
+  }
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>o.disabled=true);
+  btn.classList.add(ok?"correct":"wrong");
+  if(!ok)btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>{if(o.onclick&&o.onclick.toString().includes(",true)"))o.classList.add("correct");});
+  const fb=document.getElementById("fb-"+qid);fb.innerHTML=fbs[qid][ok?"ok":"ko"];fb.className="fb show "+(ok?"ok":"ko");
+  if(Object.keys(rep).length===5){
+    const g=Object.values(rep).filter(Boolean).length,box=document.getElementById("score-box");
+    box.style.display="block";
+    document.getElementById("s-score").textContent=g+"/5";
+    document.getElementById("s-text").innerHTML=g===5?"Parfait &mdash; PDO maitrise !":g>=4?"Tres bien.":g>=3?"Revoir les transactions et lastInsertId().":"Reprendre connexion et requetes preparees.";
+    box.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+}
+</script>
+</body>
+</html>

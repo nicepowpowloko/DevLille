@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP 15 &mdash; Heritage et interfaces</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--border2:#cdc7bf;--accent:#0369a1;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--purple:#7c3aed;--teal:#0f766e;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}
+.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(3,105,161,.07);}
+.nav-link.active{background:rgba(3,105,161,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}
+.nav-serie-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;}
+.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(3,105,161,.08);border:1px solid rgba(3,105,161,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.b{background:rgba(3,105,161,.07);border-color:rgba(3,105,161,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--teal);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(3,105,161,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(3,105,161,.07);border:1px solid rgba(3,105,161,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}
+.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(3,105,161,.15);border:1px solid rgba(3,105,161,.3);color:#7dd3fc;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(3,105,161,.2);color:#7dd3fc;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}
+.vis{color:#cba6f7;font-weight:600;}.bool{color:#fab387;font-weight:600;}.iface{color:#fab387;font-weight:600;}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:2.2;box-shadow:var(--sh);}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--sh);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(3,105,161,.3);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>[ ] PHP &mdash; Bloc 4</span><p>Programmation Orientee Objet</p></div>
+  <div class="nav-section">
+    <div class="nav-label">Ce support</div>
+    <a href="#plan" class="nav-link active"><span class="nav-num">00</span>Heritage vs composition</a>
+    <a href="#e1"   class="nav-link"><span class="nav-num">01</span>extends</a>
+    <a href="#e2"   class="nav-link"><span class="nav-num">02</span>parent:: et override</a>
+    <a href="#e3"   class="nav-link"><span class="nav-num">03</span>Classes abstraites</a>
+    <a href="#e4"   class="nav-link"><span class="nav-num">04</span>Interfaces</a>
+    <a href="#e5"   class="nav-link"><span class="nav-num">05</span>implements multiple</a>
+    <a href="#e6"   class="nav-link"><span class="nav-num">06</span>Traits</a>
+    <a href="#e7"   class="nav-link"><span class="nav-num">07</span>Exemple complet</a>
+    <a href="#quiz" class="nav-link"><span class="nav-num">08</span>Quiz</a>
+  </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label">Bloc 4 &mdash; POO</div>
+    <a href="php-14-classes.html"    class="nav-serie-link">14 &mdash; Classes et objets</a>
+    <a href="php-15-heritage.html"   class="nav-serie-link current">15 &mdash; Heritage et interfaces</a>
+    <a href="php-16-composer.html"   class="nav-serie-link">16 &mdash; Namespaces et Composer</a>
+    <a href="php-17-exceptions.html" class="nav-serie-link">17 &mdash; Exceptions</a>
+  </div>
+</aside>
+<main class="content">
+
+<div class="page-header">
+  <div class="serie-badge">Bloc 4 &middot; Support 2/4</div>
+  <h1>Heritage<br><span class="hl">et interfaces</span></h1>
+  <p>L'heritage permet a une classe d'heriter des proprietes et methodes d'une autre. Les interfaces definissent des contrats que les classes doivent respecter. Les traits permettent de reutiliser du code sans heritage.</p>
+  <div class="objectifs">
+    <span class="obj b">extends</span>
+    <span class="obj g">abstract</span>
+    <span class="obj y">interface</span>
+    <span class="obj p">implements</span>
+    <span class="obj t">trait</span>
+  </div>
+</div>
+
+<section class="etape" id="plan">
+  <div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Concept</div><h2>Heritage &mdash; la relation "est-un"</h2></div></div>
+  <p class="prose">L'heritage modele la relation <strong>"est-un"</strong> : un <code>Chien</code> est un <code>Animal</code>, un <code>AdminUser</code> est un <code>User</code>. La classe enfant herite de tout le code du parent et peut l'etendre ou le modifier.</p>
+  <div class="schema">
+<span style="color:var(--accent);font-weight:700">Animal</span>              <span style="color:var(--dim)">&larr; classe parente (base)</span>
+  nom, age
+  manger(), dormir()
+       |
+       |--- <span style="color:var(--green);font-weight:700">Chien</span>    <span style="color:var(--dim)">&larr; herite de Animal + ajoute</span>
+       |      race
+       |      aboyer()
+       |
+       |--- <span style="color:var(--blue);font-weight:700">Chat</span>     <span style="color:var(--dim)">&larr; herite de Animal + ajoute</span>
+              ronronner()
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Mecanisme</th><th>Role</th><th>Mot-cle PHP</th></tr></thead>
+    <tbody>
+      <tr><td>Heritage</td><td>Reutiliser et etendre le code d'une classe parente</td><td>extends</td></tr>
+      <tr><td>Classe abstraite</td><td>Classe non instanciable, force l'implementation dans les enfants</td><td>abstract</td></tr>
+      <tr><td>Interface</td><td>Contrat : liste de methodes que la classe DOIT implementer</td><td>interface / implements</td></tr>
+      <tr><td>Trait</td><td>Morceau de code reutilisable sans heritage (mix-in)</td><td>trait / use</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e1">
+  <div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1</div><h2>extends &mdash; heriter d'une classe</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Heritage simple &mdash; extends</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Classe parente</span>
+<span class="kw">class</span> <span class="cls">User</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">protected</span> string <span class="vr">$nom</span>,
+        <span class="vis">protected</span> string <span class="vr">$email</span>,
+    ) {}
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">sePresenter</span>(): string {
+        <span class="kw">return</span> <span class="str">"Je suis "</span> . <span class="vr">$this</span>-><span class="vr">nom</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getEmail</span>(): string { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">email</span>; }
+}
+
+<span class="cmt">// Classe enfant : herite de User</span>
+<span class="kw">class</span> <span class="cls">AdminUser</span> <span class="kw">extends</span> <span class="cls">User</span> {
+    <span class="cmt">// Ajoute une nouvelle propriete</span>
+    <span class="vis">private</span> array <span class="vr">$permissions</span> = [];
+
+    <span class="cmt">// Ajoute une nouvelle methode</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">ajouterPermission</span>(string <span class="vr">$perm</span>): void {
+        <span class="vr">$this</span>-><span class="vr">permissions</span>[] = <span class="vr">$perm</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">peutFaire</span>(string <span class="vr">$action</span>): bool {
+        <span class="kw">return</span> <span class="fn">in_array</span>(<span class="vr">$action</span>, <span class="vr">$this</span>-><span class="vr">permissions</span>);
+    }
+}
+
+<span class="vr">$admin</span> = <span class="kw">new</span> <span class="cls">AdminUser</span>(<span class="str">"Alice"</span>, <span class="str">"alice@ex.com"</span>);
+<span class="kw">echo</span> <span class="vr">$admin</span>-><span class="fn">sePresenter</span>();  <span class="cmt">// heritee de User : "Je suis Alice"</span>
+<span class="kw">echo</span> <span class="vr">$admin</span>-><span class="fn">getEmail</span>();     <span class="cmt">// heritee de User</span>
+<span class="vr">$admin</span>-><span class="fn">ajouterPermission</span>(<span class="str">"supprimer_user"</span>);
+
+<span class="cmt">// instanceof verifie aussi l'heritage</span>
+<span class="fn">var_dump</span>(<span class="vr">$admin</span> <span class="kw">instanceof</span> <span class="cls">AdminUser</span>);  <span class="cmt">// true</span>
+<span class="fn">var_dump</span>(<span class="vr">$admin</span> <span class="kw">instanceof</span> <span class="cls">User</span>);       <span class="cmt">// true aussi !</span></code></pre>
+  </div>
+  <div class="callout warn"><span class="ci">!</span><div><strong>PHP n'autorise qu'un seul heritage.</strong> Une classe ne peut etendre qu'une seule classe parente (<code>class A extends B</code>). Pour heriter de plusieurs sources, on utilise les interfaces et les traits.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e2">
+  <div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2</div><h2>parent:: et surcharge de methodes</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">parent:: &mdash; appeler la methode parente</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">class</span> <span class="cls">Produit</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">protected</span> string <span class="vr">$nom</span>,
+        <span class="vis">protected</span> float  <span class="vr">$prix</span>,
+    ) {}
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">calculerTTC</span>(): float {
+        <span class="kw">return</span> <span class="fn">round</span>(<span class="vr">$this</span>-><span class="vr">prix</span> * <span class="num">1.20</span>, <span class="num">2</span>);
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">describe</span>(): string {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">nom</span> . <span class="str">" - "</span> . <span class="vr">$this</span>-><span class="vr">prix</span> . <span class="str">" EUR"</span>;
+    }
+}
+
+<span class="kw">class</span> <span class="cls">ProduitAlimentaire</span> <span class="kw">extends</span> <span class="cls">Produit</span> {
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        string <span class="vr">$nom</span>,
+        float  <span class="vr">$prix</span>,
+        <span class="vis">private</span> string <span class="vr">$dateLimite</span>,
+    ) {
+        <span class="cmt">// Appeler le constructeur parent AVANT tout</span>
+        <span class="kw">parent</span>::<span class="fn">__construct</span>(<span class="vr">$nom</span>, <span class="vr">$prix</span>);
+    }
+
+    <span class="cmt">// Surcharge (override) : redefinir une methode parente</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">calculerTTC</span>(): float {
+        <span class="cmt">// Alimentaire : TVA 5.5% au lieu de 20%</span>
+        <span class="kw">return</span> <span class="fn">round</span>(<span class="vr">$this</span>-><span class="vr">prix</span> * <span class="num">1.055</span>, <span class="num">2</span>);
+    }
+
+    <span class="cmt">// Etendre la methode parente</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">describe</span>(): string {
+        <span class="cmt">// Appeler la version parente puis ajouter</span>
+        <span class="kw">return</span> <span class="kw">parent</span>::<span class="fn">describe</span>() . <span class="str">" | DLC: "</span> . <span class="vr">$this</span>-><span class="vr">dateLimite</span>;
+    }
+}
+
+<span class="vr">$p</span>  = <span class="kw">new</span> <span class="cls">Produit</span>(<span class="str">"T-shirt"</span>, <span class="num">20</span>);
+<span class="vr">$pa</span> = <span class="kw">new</span> <span class="cls">ProduitAlimentaire</span>(<span class="str">"Yaourt"</span>, <span class="num">1.50</span>, <span class="str">"2025-06-01"</span>);
+
+<span class="kw">echo</span> <span class="vr">$p</span>-><span class="fn">calculerTTC</span>();     <span class="cmt">// 24.00 (TVA 20%)</span>
+<span class="kw">echo</span> <span class="vr">$pa</span>-><span class="fn">calculerTTC</span>();    <span class="cmt">// 1.58 (TVA 5.5%)</span>
+<span class="kw">echo</span> <span class="vr">$pa</span>-><span class="fn">describe</span>();       <span class="cmt">// "Yaourt - 1.5 EUR | DLC: 2025-06-01"</span></code></pre>
+  </div>
+  <div class="callout tip"><span class="ci">!</span><div><strong>Toujours appeler <code>parent::__construct()</code> dans le constructeur enfant.</strong> Si le parent initialise des proprietes dans son constructeur, l'enfant doit le rappeler pour que ces proprietes soient correctement initialisees. En general, on l'appelle en premiere ligne.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e3">
+  <div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3</div><h2>Classes abstraites &mdash; modeles non instanciables</h2></div></div>
+  <p class="prose">Une classe <strong>abstraite</strong> est un modele incomplet qui ne peut pas etre instancie directement. Elle peut definir des methodes avec implementation (heritees) et des methodes abstraites (sans implementation, que les enfants doivent implementer).</p>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">abstract &mdash; classe de base incomplete</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">abstract class</span> <span class="cls">Shape</span> {
+
+    <span class="cmt">// Methode abstraite : DOIT etre implementee par les enfants</span>
+    <span class="kw">abstract public function</span> <span class="fn">aire</span>(): float;
+    <span class="kw">abstract public function</span> <span class="fn">perimetre</span>(): float;
+
+    <span class="cmt">// Methode concrete : disponible telle quelle dans les enfants</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">describe</span>(): string {
+        <span class="kw">return</span> <span class="fn">get_class</span>(<span class="vr">$this</span>) .
+               <span class="str">" | aire: "</span> . <span class="fn">round</span>(<span class="vr">$this</span>-><span class="fn">aire</span>(), <span class="num">2</span>) .
+               <span class="str">" | perimetre: "</span> . <span class="fn">round</span>(<span class="vr">$this</span>-><span class="fn">perimetre</span>(), <span class="num">2</span>);
+    }
+}
+
+<span class="kw">class</span> <span class="cls">Cercle</span> <span class="kw">extends</span> <span class="cls">Shape</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(<span class="vis">private</span> float <span class="vr">$rayon</span>) {}
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">aire</span>(): float      { <span class="kw">return</span> <span class="fn">M_PI</span> * <span class="vr">$this</span>-><span class="vr">rayon</span> ** <span class="num">2</span>; }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">perimetre</span>(): float { <span class="kw">return</span> <span class="num">2</span> * <span class="fn">M_PI</span> * <span class="vr">$this</span>-><span class="vr">rayon</span>; }
+}
+
+<span class="kw">class</span> <span class="cls">Rectangle</span> <span class="kw">extends</span> <span class="cls">Shape</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(<span class="vis">private</span> float <span class="vr">$l</span>, <span class="vis">private</span> float <span class="vr">$h</span>) {}
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">aire</span>(): float      { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">l</span> * <span class="vr">$this</span>-><span class="vr">h</span>; }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">perimetre</span>(): float { <span class="kw">return</span> <span class="num">2</span> * (<span class="vr">$this</span>-><span class="vr">l</span> + <span class="vr">$this</span>-><span class="vr">h</span>); }
+}
+
+<span class="cmt">// new Shape() &larr; ERREUR : classe abstraite</span>
+<span class="vr">$c</span> = <span class="kw">new</span> <span class="cls">Cercle</span>(<span class="num">5</span>);
+<span class="vr">$r</span> = <span class="kw">new</span> <span class="cls">Rectangle</span>(<span class="num">4</span>, <span class="num">3</span>);
+
+<span class="kw">echo</span> <span class="vr">$c</span>-><span class="fn">describe</span>();  <span class="cmt">// Cercle | aire: 78.54 | perimetre: 31.42</span>
+<span class="kw">echo</span> <span class="vr">$r</span>-><span class="fn">describe</span>();  <span class="cmt">// Rectangle | aire: 12 | perimetre: 14</span>
+
+<span class="cmt">// Polymorphisme : meme code, comportements differents</span>
+<span class="vr">$shapes</span> = [<span class="kw">new</span> <span class="cls">Cercle</span>(<span class="num">3</span>), <span class="kw">new</span> <span class="cls">Rectangle</span>(<span class="num">5</span>, <span class="num">2</span>)];
+<span class="kw">foreach</span> (<span class="vr">$shapes</span> <span class="kw">as</span> <span class="vr">$s</span>) {
+    <span class="kw">echo</span> <span class="vr">$s</span>-><span class="fn">aire</span>() . <span class="str">"&lt;br&gt;"</span>;  <span class="cmt">// appel identique, resultat different</span>
+}</code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e4">
+  <div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4</div><h2>Interfaces &mdash; des contrats a respecter</h2></div></div>
+  <p class="prose">Une interface definit <strong>ce qu'une classe doit pouvoir faire</strong>, sans dire comment. Elle ne contient que des signatures de methodes (et des constantes). Une classe qui <code>implements</code> une interface s'engage a implementer toutes ses methodes.</p>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">interface &mdash; contrat et implements</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Definition d'une interface</span>
+<span class="kw">interface</span> <span class="iface">Exportable</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">toArray</span>(): array;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">toJson</span>(): string;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">toCsv</span>(): string;
+}
+
+<span class="kw">interface</span> <span class="iface">Validable</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">validate</span>(): bool;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getErrors</span>(): array;
+}
+
+<span class="cmt">// Une classe peut implementer plusieurs interfaces</span>
+<span class="kw">class</span> <span class="cls">Produit</span> <span class="kw">implements</span> <span class="iface">Exportable</span>, <span class="iface">Validable</span> {
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">private</span> string <span class="vr">$nom</span>,
+        <span class="vis">private</span> float  <span class="vr">$prix</span>,
+    ) {}
+
+    <span class="cmt">// Implementation de Exportable</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">toArray</span>(): array {
+        <span class="kw">return</span> [<span class="str">"nom"</span> => <span class="vr">$this</span>-><span class="vr">nom</span>, <span class="str">"prix"</span> => <span class="vr">$this</span>-><span class="vr">prix</span>];
+    }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">toJson</span>(): string {
+        <span class="kw">return</span> <span class="fn">json_encode</span>(<span class="vr">$this</span>-><span class="fn">toArray</span>());
+    }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">toCsv</span>(): string {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">nom</span> . <span class="str">";"</span> . <span class="vr">$this</span>-><span class="vr">prix</span>;
+    }
+
+    <span class="cmt">// Implementation de Validable</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">validate</span>(): bool {
+        <span class="kw">return</span> !<span class="fn">empty</span>(<span class="vr">$this</span>-><span class="vr">nom</span>) && <span class="vr">$this</span>-><span class="vr">prix</span> > <span class="num">0</span>;
+    }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getErrors</span>(): array {
+        <span class="vr">$errors</span> = [];
+        <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$this</span>-><span class="vr">nom</span>))    <span class="vr">$errors</span>[] = <span class="str">"Nom requis"</span>;
+        <span class="kw">if</span> (<span class="vr">$this</span>-><span class="vr">prix</span> <= <span class="num">0</span>) <span class="vr">$errors</span>[] = <span class="str">"Prix invalide"</span>;
+        <span class="kw">return</span> <span class="vr">$errors</span>;
+    }
+}
+
+<span class="vr">$p</span> = <span class="kw">new</span> <span class="cls">Produit</span>(<span class="str">"T-shirt"</span>, <span class="num">19.99</span>);
+<span class="kw">echo</span> <span class="vr">$p</span>-><span class="fn">toJson</span>();    <span class="cmt">// {"nom":"T-shirt","prix":19.99}</span>
+<span class="fn">var_dump</span>(<span class="vr">$p</span> <span class="kw">instanceof</span> <span class="iface">Exportable</span>);  <span class="cmt">// true</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e5">
+  <div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5</div><h2>Typage par interface &mdash; le polymorphisme</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Typer avec une interface &mdash; code generique</span><span class="cb-badge good">Bonne pratique</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">interface</span> <span class="iface">Notifiable</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">envoyer</span>(string <span class="vr">$message</span>): bool;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getDestinataire</span>(): string;
+}
+
+<span class="kw">class</span> <span class="cls">EmailNotification</span> <span class="kw">implements</span> <span class="iface">Notifiable</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(<span class="vis">private</span> string <span class="vr">$email</span>) {}
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">envoyer</span>(string <span class="vr">$msg</span>): bool {
+        <span class="cmt">// mail($this->email, 'Notif', $msg);</span>
+        <span class="kw">return</span> <span class="bool">true</span>;
+    }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getDestinataire</span>(): string { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">email</span>; }
+}
+
+<span class="kw">class</span> <span class="cls">SmsNotification</span> <span class="kw">implements</span> <span class="iface">Notifiable</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(<span class="vis">private</span> string <span class="vr">$tel</span>) {}
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">envoyer</span>(string <span class="vr">$msg</span>): bool {
+        <span class="cmt">// SmsGateway::send($this->tel, $msg);</span>
+        <span class="kw">return</span> <span class="bool">true</span>;
+    }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getDestinataire</span>(): string { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">tel</span>; }
+}
+
+<span class="cmt">// Fonction generique : accepte TOUT ce qui est Notifiable</span>
+<span class="kw">function</span> <span class="fn">notifier</span>(<span class="iface">Notifiable</span> <span class="vr">$canal</span>, string <span class="vr">$message</span>): void {
+    <span class="kw">if</span> (<span class="vr">$canal</span>-><span class="fn">envoyer</span>(<span class="vr">$message</span>)) {
+        <span class="kw">echo</span> <span class="str">"Envoye a : "</span> . <span class="vr">$canal</span>-><span class="fn">getDestinataire</span>();
+    }
+}
+
+<span class="cmt">// Fonctionne avec Email et SMS sans changer notifier()</span>
+<span class="fn">notifier</span>(<span class="kw">new</span> <span class="cls">EmailNotification</span>(<span class="str">"alice@ex.com"</span>), <span class="str">"Bonjour !"</span>);
+<span class="fn">notifier</span>(<span class="kw">new</span> <span class="cls">SmsNotification</span>(<span class="str">"0612345678"</span>),     <span class="str">"Bonjour !"</span>);</code></pre>
+  </div>
+  <div class="callout success"><span class="ci">+</span><div><strong>Typer par interface, pas par classe concrete.</strong> <code>function notifier(Notifiable $canal)</code> accepte n'importe quelle implementation future (WhatsApp, Push...) sans modifier le code. C'est le principe d'inversion de dependance (SOLID).</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e6">
+  <div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6</div><h2>Traits &mdash; reutilisation sans heritage</h2></div></div>
+  <p class="prose">Un trait est un ensemble de methodes qu'on peut inclure dans n'importe quelle classe avec <code>use</code>. C'est une solution a la limitation de l'heritage simple en PHP.</p>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">trait &mdash; definition et utilisation</span><span class="cb-badge">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Trait : morceau de code reutilisable</span>
+<span class="kw">trait</span> <span class="cls">Horodatable</span> {
+    <span class="vis">private</span> ?string <span class="vr">$creeLe</span>  = <span class="bool">null</span>;
+    <span class="vis">private</span> ?string <span class="vr">$modifLe</span> = <span class="bool">null</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">marquerCreation</span>(): void {
+        <span class="vr">$this</span>-><span class="vr">creeLe</span> = <span class="fn">date</span>(<span class="str">"Y-m-d H:i:s"</span>);
+    }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">marquerModification</span>(): void {
+        <span class="vr">$this</span>-><span class="vr">modifLe</span> = <span class="fn">date</span>(<span class="str">"Y-m-d H:i:s"</span>);
+    }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getCreeLe</span>():  ?string { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">creeLe</span>; }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getModifLe</span>(): ?string { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">modifLe</span>; }
+}
+
+<span class="kw">trait</span> <span class="cls">Serialisable</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">toArray</span>(): array {
+        <span class="kw">return</span> <span class="fn">get_object_vars</span>(<span class="vr">$this</span>);
+    }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">toJson</span>(): string {
+        <span class="kw">return</span> <span class="fn">json_encode</span>(<span class="vr">$this</span>-><span class="fn">toArray</span>(), <span class="fn">JSON_UNESCAPED_UNICODE</span>);
+    }
+}
+
+<span class="cmt">// Inclure plusieurs traits dans une classe</span>
+<span class="kw">class</span> <span class="cls">Article</span> {
+    <span class="kw">use</span> <span class="cls">Horodatable</span>, <span class="cls">Serialisable</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">public</span> string <span class="vr">$titre</span>,
+        <span class="vis">public</span> string <span class="vr">$contenu</span>,
+    ) {
+        <span class="vr">$this</span>-><span class="fn">marquerCreation</span>();
+    }
+}
+
+<span class="kw">class</span> <span class="cls">User</span> {
+    <span class="kw">use</span> <span class="cls">Horodatable</span>;  <span class="cmt">// meme trait, autre classe</span>
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(<span class="vis">public</span> string <span class="vr">$nom</span>) {
+        <span class="vr">$this</span>-><span class="fn">marquerCreation</span>();
+    }
+}
+
+<span class="vr">$a</span> = <span class="kw">new</span> <span class="cls">Article</span>(<span class="str">"Titre"</span>, <span class="str">"Contenu..."</span>);
+<span class="kw">echo</span> <span class="vr">$a</span>-><span class="fn">getCreeLe</span>();   <span class="cmt">// 2024-12-15 14:30:00</span>
+<span class="kw">echo</span> <span class="vr">$a</span>-><span class="fn">toJson</span>();       <span class="cmt">// {"titre":"Titre","contenu":"Contenu...",...}</span></code></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="e7">
+  <div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Synthese</div><h2>Tout ensemble &mdash; exemple complet</h2></div></div>
+  <div class="code-block">
+    <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Systeme de paiement &mdash; abstract + interface + trait</span><span class="cb-badge good">Complet</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+    <pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Interface : contrat commun</span>
+<span class="kw">interface</span> <span class="iface">Payable</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">payer</span>(float <span class="vr">$montant</span>): bool;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getNom</span>(): string;
+}
+
+<span class="cmt">// Trait : log reutilisable</span>
+<span class="kw">trait</span> <span class="cls">LoggablePaiement</span> {
+    <span class="vis">private</span> array <span class="vr">$logs</span> = [];
+    <span class="vis">protected</span> <span class="kw">function</span> <span class="fn">log</span>(string <span class="vr">$msg</span>): void {
+        <span class="vr">$this</span>-><span class="vr">logs</span>[] = <span class="fn">date</span>(<span class="str">"H:i:s"</span>) . <span class="str">" - "</span> . <span class="vr">$msg</span>;
+    }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getLogs</span>(): array { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">logs</span>; }
+}
+
+<span class="cmt">// Classe abstraite : base commune</span>
+<span class="kw">abstract class</span> <span class="cls">MethodePaiement</span> <span class="kw">implements</span> <span class="iface">Payable</span> {
+    <span class="kw">use</span> <span class="cls">LoggablePaiement</span>;
+
+    <span class="vis">protected</span> float <span class="vr">$solde</span> = <span class="num">0</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">crediter</span>(float <span class="vr">$montant</span>): void {
+        <span class="vr">$this</span>-><span class="vr">solde</span> += <span class="vr">$montant</span>;
+        <span class="vr">$this</span>-><span class="fn">log</span>(<span class="str">"Credit de "</span> . <span class="vr">$montant</span>);
+    }
+}
+
+<span class="cmt">// Implementation concrete</span>
+<span class="kw">class</span> <span class="cls">CarteBancaire</span> <span class="kw">extends</span> <span class="cls">MethodePaiement</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(<span class="vis">private</span> string <span class="vr">$numeroCarte</span>) {}
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">payer</span>(float <span class="vr">$montant</span>): bool {
+        <span class="kw">if</span> (<span class="vr">$montant</span> > <span class="vr">$this</span>-><span class="vr">solde</span>) {
+            <span class="vr">$this</span>-><span class="fn">log</span>(<span class="str">"ECHEC paiement de "</span> . <span class="vr">$montant</span>);
+            <span class="kw">return</span> <span class="bool">false</span>;
+        }
+        <span class="vr">$this</span>-><span class="vr">solde</span> -= <span class="vr">$montant</span>;
+        <span class="vr">$this</span>-><span class="fn">log</span>(<span class="str">"Paiement de "</span> . <span class="vr">$montant</span> . <span class="str">" OK"</span>);
+        <span class="kw">return</span> <span class="bool">true</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getNom</span>(): string {
+        <span class="kw">return</span> <span class="str">"CB **** "</span> . <span class="fn">substr</span>(<span class="vr">$this</span>-><span class="vr">numeroCarte</span>, -<span class="num">4</span>);
+    }
+}
+
+<span class="vr">$cb</span> = <span class="kw">new</span> <span class="cls">CarteBancaire</span>(<span class="str">"1234567890123456"</span>);
+<span class="vr">$cb</span>-><span class="fn">crediter</span>(<span class="num">100</span>);
+<span class="vr">$cb</span>-><span class="fn">payer</span>(<span class="num">30</span>);   <span class="cmt">// true</span>
+<span class="vr">$cb</span>-><span class="fn">payer</span>(<span class="num">80</span>);   <span class="cmt">// false (solde insuffisant)</span>
+<span class="fn">print_r</span>(<span class="vr">$cb</span>-><span class="fn">getLogs</span>());</code></pre>
+  </div>
+  <div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Quand utiliser quoi :</strong> <code>extends</code> pour une relation "est-un" avec reutilisation de code. <code>abstract</code> pour definir une base commune non instanciable. <code>interface</code> pour definir un contrat independant de l'implementation. <code>trait</code> pour du code reutilisable dans des classes sans lien d'heritage.</div></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="etape" id="quiz">
+  <div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; heritage et interfaces</h2></div></div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q1.</span> Une classe PHP peut-elle heriter de plusieurs classes ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q1',false)">Oui, avec extends ClasseA, ClasseB</button>
+      <button class="opt" onclick="ans(this,'q1',true)">Non, PHP n'autorise qu'un seul heritage. Pour plusieurs sources, on utilise les interfaces (implements) et les traits (use).</button>
+      <button class="opt" onclick="ans(this,'q1',false)">Oui, avec extends ClasseA extends ClasseB</button>
+    </div>
+    <div class="fb" id="fb-q1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q2.</span> Quelle est la difference entre une classe abstraite et une interface ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q2',false)">Ce sont des synonymes en PHP moderne</button>
+      <button class="opt" onclick="ans(this,'q2',true)">Une classe abstraite peut avoir du code (methodes concretes + abstraites) et des proprietes. Une interface ne contient que des signatures de methodes sans implementation.</button>
+      <button class="opt" onclick="ans(this,'q2',false)">Une interface peut etre instanciee, pas une classe abstraite</button>
+    </div>
+    <div class="fb" id="fb-q2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q3.</span> Pourquoi typer un parametre avec une interface plutot qu'une classe concrete ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q3',false)">Pour des raisons de performance</button>
+      <button class="opt" onclick="ans(this,'q3',true)">La fonction accepte alors toute implementation de l'interface, presente ou future, sans modification du code. C'est le principe de substitution de Liskov.</button>
+      <button class="opt" onclick="ans(this,'q3',false)">PHP exige le typage par interface pour les methodes abstraites</button>
+    </div>
+    <div class="fb" id="fb-q3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q4.</span> A quoi sert <code>parent::</code> dans le constructeur d'une classe enfant ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q4',false)">A acceder aux methodes private du parent</button>
+      <button class="opt" onclick="ans(this,'q4',true)">A appeler le constructeur de la classe parente pour initialiser les proprietes heritees avant d'executer le code specifique a la classe enfant</button>
+      <button class="opt" onclick="ans(this,'q4',false)">A empecher la surcharge de la methode parente</button>
+    </div>
+    <div class="fb" id="fb-q4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="q"><span class="qn">Q5.</span> En quoi un trait differe-t-il de l'heritage ?</div>
+    <div class="opts">
+      <button class="opt" onclick="ans(this,'q5',false)">Un trait est instanciable, une classe parente ne l'est pas</button>
+      <button class="opt" onclick="ans(this,'q5',true)">Un trait est un morceau de code inclus avec use, sans relation d'heritage. Plusieurs traits peuvent etre uses dans la meme classe. Un trait ne cree pas de relation instanceof.</button>
+      <button class="opt" onclick="ans(this,'q5',false)">Les traits sont des interfaces avec implementation</button>
+    </div>
+    <div class="fb" id="fb-q5"></div>
+  </div>
+
+  <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;">
+    <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+    <div id="s-text"  style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const secs=document.querySelectorAll(".etape[id]"),nl=document.querySelectorAll(".nav-link");
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove("active"));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add("active");}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest(".code-block").querySelector("pre");navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent="Copie";btn.classList.add("ok");setTimeout(()=>{btn.textContent="copier";btn.classList.remove("ok");},1800);});}
+const fbs={
+  q1:{
+    ok:"Exact. PHP n'autorise qu'un seul heritage (extends UneSeuleClasse). Pour integrer des comportements de plusieurs sources, PHP propose les interfaces (implements Plusieurs, Interfaces) et les traits (use Trait1, Trait2).",
+    ko:"Non. PHP n'autorise qu'un seul extends. C'est une limitation intentionnelle pour eviter l'ambiguite du diamant. Pour du code multi-sources, on utilise les interfaces et les traits."
+  },
+  q2:{
+    ok:"Exact. Classe abstraite = peut avoir du code (methodes concretes heritables), des proprietes, et des methodes abstraites a implementer. Interface = seulement des signatures de methodes (le contrat pur), sans implementation ni proprietes.",
+    ko:"Non. Classe abstraite : peut avoir du code reel (methodes concretes + abstraites), des proprietes. Interface : uniquement des signatures de methodes, aucune implementation. Une classe peut implementer plusieurs interfaces mais n'herite que d'une classe."
+  },
+  q3:{
+    ok:"Exact. function notifier(Notifiable $canal) accepte EmailNotification, SmsNotification, et toute future implementation de Notifiable sans changer le code de notifier(). C'est la base de la conception extensible (Open/Closed Principle).",
+    ko:"Non. Typer par interface permet d'accepter n'importe quelle classe qui respecte le contrat, presente ou future. Si on type par EmailNotification, la fonction refuse SmsNotification. Typer par interface rend le code extensible sans modification."
+  },
+  q4:{
+    ok:"Exact. Si la classe parente initialise des proprietes dans son __construct, la classe enfant doit appeler parent::__construct() pour que ces initialisations soient effectuees. Sans cela, les proprietes heritees ne seraient pas initialisees.",
+    ko:"Non. parent::__construct() appelle le constructeur de la classe parente. C'est necessaire pour initialiser les proprietes heritees que le parent configure dans son constructeur. En general on l'appelle en premiere ligne du constructeur enfant."
+  },
+  q5:{
+    ok:"Exact. Un trait est inclus avec use dans la classe, comme du copier-coller de code. Plusieurs traits peuvent etre utilises. Un trait ne cree pas de relation instanceof (contrairement a extends). Il ne peut pas etre instancie seul.",
+    ko:"Non. Un trait est un mecanisme de reutilisation de code sans heritage. use Trait inclut le code du trait dans la classe. Plusieurs traits sont possibles. Cela ne cree pas de relation instanceof. Un trait ne peut pas etre instancie."
+  }
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>o.disabled=true);
+  btn.classList.add(ok?"correct":"wrong");
+  if(!ok)btn.closest(".quiz-card").querySelectorAll(".opt").forEach(o=>{if(o.onclick&&o.onclick.toString().includes(",true)"))o.classList.add("correct");});
+  const fb=document.getElementById("fb-"+qid);fb.innerHTML=fbs[qid][ok?"ok":"ko"];fb.className="fb show "+(ok?"ok":"ko");
+  if(Object.keys(rep).length===5){
+    const g=Object.values(rep).filter(Boolean).length,box=document.getElementById("score-box");
+    box.style.display="block";
+    document.getElementById("s-score").textContent=g+"/5";
+    document.getElementById("s-text").innerHTML=g===5?"Parfait &mdash; heritage et interfaces maitrise !":g>=4?"Tres bien.":g>=3?"Revoir abstract vs interface et les traits.":"Reprendre extends et la notion de contrat.";
+    box.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+}
+</script>
+</body>
+</html>

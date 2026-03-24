@@ -1,0 +1,345 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PHP 17 &mdash; Exceptions</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--accent:#0f766e;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--purple:#7c3aed;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(15,118,110,.07);}.nav-link.active{background:rgba(15,118,110,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-serie{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid var(--border);margin-top:8px;}.nav-serie-label{font-size:.6rem;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;}
+.nav-serie-link{font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 0;}.nav-serie-link.current{color:var(--accent);font-weight:700;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(15,118,110,.08);border:1px solid rgba(15,118,110,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#14b8a6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(15,118,110,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}.prose strong{color:var(--text);}.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(15,118,110,.07);border:1px solid rgba(15,118,110,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(15,118,110,.15);border:1px solid rgba(15,118,110,.3);color:#5eead4;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(15,118,110,.2);color:#5eead4;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}.vis{color:#cba6f7;font-weight:600;}.ns{color:#94e2d5;}.ptag{color:#f38ba8;font-weight:700;}.exc{color:#f38ba8;font-weight:700;}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:2.2;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(15,118,110,.3);}.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}.fb.show{display:block;}.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style></head><body><div class="layout">
+<aside class="sidebar"><div class="sidebar-logo"><span>[ ] PHP &mdash; Bloc 4</span><p>Programmation Orientee Objet</p></div><div class="nav-section"><div class="nav-label">Ce support</div><a href="#plan" class="nav-link"><span class="nav-num">00</span>Erreur vs Exception</a><a href="#e1" class="nav-link"><span class="nav-num">01</span>try / catch / finally</a><a href="#e2" class="nav-link"><span class="nav-num">02</span>Attraper plusieurs types</a><a href="#e3" class="nav-link"><span class="nav-num">03</span>throw</a><a href="#e4" class="nav-link"><span class="nav-num">04</span>Exceptions personnalisees</a><a href="#e5" class="nav-link"><span class="nav-num">05</span>Hierarchie</a><a href="#e6" class="nav-link"><span class="nav-num">06</span>finally</a><a href="#e7" class="nav-link"><span class="nav-num">07</span>Bonnes pratiques</a><a href="#e8" class="nav-link"><span class="nav-num">08</span>Exemple complet</a><a href="#quiz" class="nav-link"><span class="nav-num">09</span>Quiz</a></div><div class="nav-serie"><div class="nav-serie-label">Bloc 4 &mdash; POO</div><a href="php-14-classes.html" class="nav-serie-link">14 &mdash; Classes et objets</a><a href="php-15-heritage.html" class="nav-serie-link">15 &mdash; Heritage et interfaces</a><a href="php-16-composer.html" class="nav-serie-link">16 &mdash; Namespaces et Composer</a><a href="php-17-exceptions.html" class="nav-serie-link current">17 &mdash; Exceptions</a></div></aside><main class="content">
+<div class="page-header"><div class="serie-badge">Bloc 4 &middot; Support 4/4</div><h1>Gestion des<br><span class="hl">exceptions</span></h1><p>Les exceptions permettent de signaler et de gerer les erreurs de facon structuree en PHP. Un bloc try/catch separe le code nominal du traitement des erreurs.</p><div class="objectifs"><span class="obj t">try / catch</span><span class="obj g">throw</span><span class="obj b">Exception</span><span class="obj y">finally</span><span class="obj p">Custom Exception</span></div></div>
+<section class="etape" id="plan"><div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Concept</div><h2>Erreur vs Exception</h2></div></div><p class="prose">Avant PHP 5, les erreurs etaient gerees par des codes de retour ou <code>trigger_error()</code>. Les exceptions offrent un mecanisme structurel : elles interrompent le flux normal et remontent la pile d'appels jusqu'a un gestionnaire.</p><div class="schema"><span style="color:var(--red);font-weight:700">Sans exception &mdash; code non structure :</span>
+  $result = diviser(10, 0);
+  if ($result === false) { /* gestion */ }
+  // Chaque appel doit verifier le retour manuellement
+
+<span style="color:var(--green);font-weight:700">Avec exception &mdash; structure claire :</span>
+  try {
+      $result = diviser(10, 0);  // lance une exception
+      echo $result;              // jamais execute
+  } catch (DivisionByZeroError $e) {
+      echo "Erreur : " . $e->getMessage();
+  }
+  // Code nominal et gestion d'erreur bien separes</div><div class="callout info"><span class="ci">i</span><div><strong>Exception = objet.</strong> Une exception est une instance de la classe <code>Exception</code> (ou d'une sous-classe). Elle contient un message, un code, le fichier et la ligne, et la trace d'appel (<code>getTrace()</code>).</div></div></section><div class="divider"></div>
+<section class="etape" id="e1"><div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1</div><h2>try / catch &mdash; syntaxe de base</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">try / catch &mdash; syntaxe de base</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">function</span> <span class="fn">diviser</span>(float <span class="vr">$a</span>, float <span class="vr">$b</span>): float {
+    <span class="kw">if</span> (<span class="vr">$b</span> === <span class="num">0.0</span>) {
+        <span class="kw">throw new</span> <span class="exc">InvalidArgumentException</span>(<span class="str">'Division par zero impossible'</span>);
+    }
+    <span class="kw">return</span> <span class="vr">$a</span> / <span class="vr">$b</span>;
+}
+
+<span class="cmt">// Structure try / catch</span>
+<span class="kw">try</span> {
+    <span class="cmt">// Code pouvant lancer une exception</span>
+    <span class="vr">$r1</span> = <span class="fn">diviser</span>(<span class="num">10</span>, <span class="num">2</span>);    <span class="cmt">// OK : 5</span>
+    <span class="vr">$r2</span> = <span class="fn">diviser</span>(<span class="num">10</span>, <span class="num">0</span>);    <span class="cmt">// Lance une exception</span>
+    <span class="vr">$r3</span> = <span class="fn">diviser</span>(<span class="num">8</span>, <span class="num">4</span>);     <span class="cmt">// Jamais execute</span>
+} <span class="kw">catch</span> (<span class="exc">InvalidArgumentException</span> <span class="vr">$e</span>) {
+    <span class="cmt">// Capture uniquement InvalidArgumentException</span>
+    <span class="kw">echo</span> <span class="str">'Erreur : '</span> . <span class="vr">$e</span>-><span class="fn">getMessage</span>();  <span class="cmt">// "Division par zero impossible"</span>
+    <span class="kw">echo</span> <span class="str">'Fichier : '</span> . <span class="vr">$e</span>-><span class="fn">getFile</span>();
+    <span class="kw">echo</span> <span class="str">'Ligne : '</span>  . <span class="vr">$e</span>-><span class="fn">getLine</span>();
+}
+
+<span class="cmt">// Methodes de l'objet Exception</span>
+<span class="cmt">// getMessage()  : message de l'exception</span>
+<span class="cmt">// getCode()     : code numerique (optionnel)</span>
+<span class="cmt">// getFile()     : fichier ou l'exception a ete lancee</span>
+<span class="cmt">// getLine()     : numero de ligne</span>
+<span class="cmt">// getTrace()    : tableau de la pile d'appels</span>
+<span class="cmt">// getPrevious() : exception precedente (chaining)</span></code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Le bloc try s'arrete au premier throw.</strong> Quand une exception est lancee dans un try, les instructions suivantes du try ne sont pas executees. L'execution reprend dans le catch correspondant.</div></div></section><div class="divider"></div>
+<section class="etape" id="e2"><div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2</div><h2>Attraper plusieurs types d'exceptions</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Plusieurs catch &mdash; du specifique au general</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">function</span> <span class="fn">chargerUtilisateur</span>(int <span class="vr">$id</span>): array {
+    <span class="kw">if</span> (<span class="vr">$id</span> <= <span class="num">0</span>) {
+        <span class="kw">throw new</span> <span class="exc">InvalidArgumentException</span>(<span class="str">'ID invalide : '</span> . <span class="vr">$id</span>);
+    }
+    <span class="cmt">// Simuler une erreur BDD</span>
+    <span class="kw">if</span> (<span class="vr">$id</span> === <span class="num">999</span>) {
+        <span class="kw">throw new</span> <span class="exc">RuntimeException</span>(<span class="str">'Connexion BDD perdue'</span>);
+    }
+    <span class="kw">return</span> [<span class="str">'id'</span> => <span class="vr">$id</span>, <span class="str">'nom'</span> => <span class="str">'Alice'</span>];
+}
+
+<span class="cmt">// Plusieurs catch : du plus specifique au plus general</span>
+<span class="kw">try</span> {
+    <span class="vr">$user</span> = <span class="fn">chargerUtilisateur</span>(<span class="vr">$_GET</span>[<span class="str">'id'</span>] ?? <span class="num">0</span>);
+    <span class="kw">echo</span> <span class="vr">$user</span>[<span class="str">'nom'</span>];
+} <span class="kw">catch</span> (<span class="exc">InvalidArgumentException</span> <span class="vr">$e</span>) {
+    <span class="cmt">// Erreur de validation : afficher a l'utilisateur</span>
+    <span class="kw">echo</span> <span class="str">'Saisie incorrecte : '</span> . <span class="vr">$e</span>-><span class="fn">getMessage</span>();
+} <span class="kw">catch</span> (<span class="exc">RuntimeException</span> <span class="vr">$e</span>) {
+    <span class="cmt">// Erreur technique : logguer</span>
+    <span class="fn">error_log</span>(<span class="vr">$e</span>-><span class="fn">getMessage</span>());
+    <span class="kw">echo</span> <span class="str">'Service temporairement indisponible'</span>;
+} <span class="kw">catch</span> (<span class="exc">Exception</span> <span class="vr">$e</span>) {
+    <span class="cmt">// Catch-all : toute autre exception</span>
+    <span class="kw">echo</span> <span class="str">'Erreur inattendue'</span>;
+}
+
+<span class="cmt">// PHP 8+ : catch groupee pour plusieurs types</span>
+<span class="kw">try</span> {
+    <span class="fn">chargerUtilisateur</span>(<span class="vr">$id</span>);
+} <span class="kw">catch</span> (<span class="exc">InvalidArgumentException</span> | <span class="exc">RuntimeException</span> <span class="vr">$e</span>) {
+    <span class="kw">echo</span> <span class="vr">$e</span>-><span class="fn">getMessage</span>();
+}</code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Ordre des catch : du plus specifique au plus general.</strong> PHP evalue les catch dans l'ordre. Si on met <code>Exception</code> en premier, il capturera tout et les catch suivants ne seront jamais atteints.</div></div></section><div class="divider"></div>
+<section class="etape" id="e3"><div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3</div><h2>throw &mdash; lancer une exception</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">throw &mdash; lancer une exception</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// throw interrompt l'execution et remonte la pile</span>
+<span class="kw">throw new</span> <span class="exc">Exception</span>(<span class="str">'Message'</span>);
+<span class="kw">throw new</span> <span class="exc">Exception</span>(<span class="str">'Message'</span>, <span class="num">404</span>);  <span class="cmt">// avec code</span>
+
+<span class="cmt">// Exceptions standards PHP les plus courantes</span>
+<span class="kw">throw new</span> <span class="exc">InvalidArgumentException</span>(<span class="str">'Argument invalide'</span>);  <span class="cmt">// mauvaise valeur</span>
+<span class="kw">throw new</span> <span class="exc">RuntimeException</span>(<span class="str">'Erreur runtime'</span>);          <span class="cmt">// erreur technique</span>
+<span class="kw">throw new</span> <span class="exc">LogicException</span>(<span class="str">'Erreur de logique'</span>);          <span class="cmt">// bug programmeur</span>
+<span class="kw">throw new</span> <span class="exc">OverflowException</span>(<span class="str">'Valeur trop grande'</span>);        <span class="cmt">// depassement</span>
+<span class="kw">throw new</span> <span class="exc">OutOfRangeException</span>(<span class="str">'Indice invalide'</span>);         <span class="cmt">// hors limite</span>
+<span class="kw">throw new</span> <span class="exc">DomainException</span>(<span class="str">'Valeur hors domaine'</span>);        <span class="cmt">// valeur non autorisee</span>
+
+<span class="cmt">// PHP 8 : throw comme expression</span>
+<span class="vr">$valeur</span> = <span class="vr">$input</span> ?? <span class="kw">throw new</span> <span class="exc">InvalidArgumentException</span>(<span class="str">'Requis'</span>);
+<span class="vr">$age</span> > <span class="num">0</span> || <span class="kw">throw new</span> <span class="exc">DomainException</span>(<span class="str">'Age negatif'</span>);
+<span class="kw">fn</span>(<span class="vr">$x</span>) => <span class="vr">$x</span> > <span class="num">0</span> ? <span class="vr">$x</span> : <span class="kw">throw new</span> <span class="exc">InvalidArgumentException</span>(<span class="str">'Negatif'</span>);</code></pre></div><div class="table-wrap"><table><thead><tr><th>Classe</th><th>Usage typique</th></tr></thead><tbody><tr><td>Exception</td><td>Classe de base, a sous-classer dans vos projets</td></tr><tr><td>RuntimeException</td><td>Erreur survenue a l'execution (BDD, fichier, reseau)</td></tr><tr><td>InvalidArgumentException</td><td>Argument d'une fonction invalide ou hors domaine</td></tr><tr><td>LogicException</td><td>Erreur de logique programmeur, previsible a la conception</td></tr><tr><td>DomainException</td><td>Valeur violant les regles metier du domaine</td></tr><tr><td>OverflowException</td><td>Ajout dans un conteneur plein</td></tr><tr><td>OutOfRangeException</td><td>Acces a un indice inexistant</td></tr><tr><td>PDOException</td><td>Erreur de base de donnees (etend RuntimeException)</td></tr></tbody></table></div></section><div class="divider"></div>
+<section class="etape" id="e4"><div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4</div><h2>Exceptions personnalisees</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Exceptions personnalisees</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Exceptions</span>;
+
+<span class="cmt">// Exception personnalisee : etend Exception (ou une sous-classe)</span>
+<span class="kw">class</span> <span class="exc">ValidationException</span> <span class="kw">extends</span> <span class="exc">RuntimeException</span> {
+    <span class="kw">private</span> array <span class="vr">$errors</span>;
+
+    <span class="kw">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(array <span class="vr">$errors</span>) {
+        <span class="vr">$this</span>-><span class="vr">errors</span> = <span class="vr">$errors</span>;
+        <span class="kw">parent</span>::<span class="fn">__construct</span>(<span class="str">'Donnees invalides : '</span> . <span class="fn">implode</span>(<span class="str">', '</span>, <span class="vr">$errors</span>));
+    }
+
+    <span class="kw">public</span> <span class="kw">function</span> <span class="fn">getErrors</span>(): array { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">errors</span>; }
+}
+
+<span class="kw">class</span> <span class="exc">NotFoundException</span> <span class="kw">extends</span> <span class="exc">RuntimeException</span> {
+    <span class="kw">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(string <span class="vr">$resource</span>, int <span class="vr">$id</span>) {
+        <span class="kw">parent</span>::<span class="fn">__construct</span>(<span class="vr">$resource</span> . <span class="str">' introuvable (id: '</span> . <span class="vr">$id</span> . <span class="str">')'</span>, <span class="num">404</span>);
+    }
+}
+
+<span class="cmt">// Utilisation</span>
+<span class="kw">try</span> {
+    <span class="vr">$errors</span> = [];
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>])) <span class="vr">$errors</span>[] = <span class="str">'Nom requis'</span>;
+    <span class="kw">if</span> (!<span class="fn">filter_var</span>(<span class="vr">$_POST</span>[<span class="str">'email'</span>], <span class="fn">FILTER_VALIDATE_EMAIL</span>)) <span class="vr">$errors</span>[] = <span class="str">'Email invalide'</span>;
+    <span class="kw">if</span> (!<span class="fn">empty</span>(<span class="vr">$errors</span>)) <span class="kw">throw new</span> <span class="exc">ValidationException</span>(<span class="vr">$errors</span>);
+} <span class="kw">catch</span> (<span class="exc">ValidationException</span> <span class="vr">$e</span>) {
+    <span class="kw">foreach</span> (<span class="vr">$e</span>-><span class="fn">getErrors</span>() <span class="kw">as</span> <span class="vr">$err</span>) {
+        <span class="kw">echo</span> <span class="str">'&lt;p class="error"&gt;'</span> . <span class="vr">$err</span> . <span class="str">'&lt;/p&gt;'</span>;
+    }
+}</code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>Creez vos propres exceptions.</strong> Une exception personnalisee peut transporter des donnees supplementaires (tableau d'erreurs, code HTTP, nom de la ressource). Le catch peut alors acceder a ces donnees via les methodes personnalisees.</div></div></section><div class="divider"></div>
+<section class="etape" id="e5"><div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5</div><h2>Hierarchie des exceptions</h2></div></div><p class="prose">Les exceptions forment une hierarchie d'heritage. Un <code>catch (Exception $e)</code> attrape toute exception qui herite d'<code>Exception</code>. On peut concevoir une hierarchie pour son domaine metier.</p><div class="schema"><span style="color:var(--blue);font-weight:700">Throwable</span>  (interface PHP &mdash; attrapable)
+   |
+   |--- <span style="color:var(--accent);font-weight:700">Error</span>         (erreurs moteur PHP : TypeError, ParseError...)
+   |
+   |--- <span style="color:var(--accent);font-weight:700">Exception</span>     (base de toutes les exceptions app)
+            |
+            |--- RuntimeException
+            |      |--- InvalidArgumentException
+            |      |--- OverflowException
+            |      |--- PDOException
+            |      |--- <span style="color:var(--green)">ValidationException</span>  (&lt;-- vos exceptions)
+            |      |--- <span style="color:var(--green)">NotFoundException</span>
+            |--- LogicException
+                   |--- DomainException
+                   |--- OutOfRangeException</div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Hierarchie &mdash; attraper au bon niveau</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Attraper a differents niveaux de la hierarchie</span>
+<span class="kw">try</span> {
+    <span class="fn">operationRisquee</span>();
+} <span class="kw">catch</span> (<span class="exc">ValidationException</span> <span class="vr">$e</span>) {
+    <span class="cmt">// Specifique : erreur metier, montrer a l'utilisateur</span>
+    <span class="kw">echo</span> <span class="vr">$e</span>-><span class="fn">getMessage</span>();
+} <span class="kw">catch</span> (<span class="exc">RuntimeException</span> <span class="vr">$e</span>) {
+    <span class="cmt">// Attrape RuntimeException ET toutes ses sous-classes</span>
+    <span class="fn">error_log</span>(<span class="vr">$e</span>-><span class="fn">getMessage</span>());
+} <span class="kw">catch</span> (<span class="exc">Throwable</span> <span class="vr">$e</span>) {
+    <span class="cmt">// Attrape TOUT : Exception ET Error (TypeError, etc.)</span>
+    <span class="fn">error_log</span>(<span class="str">'Erreur critique : '</span> . <span class="vr">$e</span>-><span class="fn">getMessage</span>());
+}</code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Catchable via Throwable.</strong> Pour attraper absolument tout (exceptions et erreurs PHP moteur comme TypeError), utiliser <code>catch (Throwable $e)</code>. En pratique, reserver aux gestionnaires globaux d'erreur.</div></div></section><div class="divider"></div>
+<section class="etape" id="e6"><div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6</div><h2>finally &mdash; execution garantie</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">finally &mdash; toujours execute</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">function</span> <span class="fn">lireFichier</span>(string <span class="vr">$chemin</span>): string {
+    <span class="vr">$handle</span> = <span class="fn">fopen</span>(<span class="vr">$chemin</span>, <span class="str">'r'</span>);
+    <span class="kw">if</span> (!<span class="vr">$handle</span>) <span class="kw">throw new</span> <span class="exc">RuntimeException</span>(<span class="str">'Impossible d''ouvrir : '</span> . <span class="vr">$chemin</span>);
+
+    <span class="kw">try</span> {
+        <span class="vr">$contenu</span> = <span class="fn">fread</span>(<span class="vr">$handle</span>, <span class="fn">filesize</span>(<span class="vr">$chemin</span>));
+        <span class="kw">if</span> (<span class="vr">$contenu</span> === <span class="kw">false</span>) <span class="kw">throw new</span> <span class="exc">RuntimeException</span>(<span class="str">'Erreur lecture'</span>);
+        <span class="kw">return</span> <span class="vr">$contenu</span>;
+    } <span class="kw">catch</span> (<span class="exc">RuntimeException</span> <span class="vr">$e</span>) {
+        <span class="kw">echo</span> <span class="str">'Erreur : '</span> . <span class="vr">$e</span>-><span class="fn">getMessage</span>();
+        <span class="kw">return</span> <span class="str">''</span>;
+    } <span class="kw">finally</span> {
+        <span class="cmt">// TOUJOURS execute : succes OU exception OU return</span>
+        <span class="fn">fclose</span>(<span class="vr">$handle</span>);   <span class="cmt">// fermer le fichier dans tous les cas</span>
+    }
+}
+
+<span class="cmt">// finally : ordre d'execution</span>
+<span class="kw">try</span> {
+    <span class="kw">echo</span> <span class="str">'1 - try'</span>;
+    <span class="kw">throw new</span> <span class="exc">Exception</span>(<span class="str">'test'</span>);
+    <span class="kw">echo</span> <span class="str">'jamais execute'</span>;
+} <span class="kw">catch</span> (<span class="exc">Exception</span> <span class="vr">$e</span>) {
+    <span class="kw">echo</span> <span class="str">'2 - catch'</span>;
+} <span class="kw">finally</span> {
+    <span class="kw">echo</span> <span class="str">'3 - finally'</span>;  <span class="cmt">// toujours execute en dernier</span>
+}
+<span class="cmt">// Sortie : "1 - try" "2 - catch" "3 - finally"</span></code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>finally = nettoyage garanti.</strong> Le bloc finally est execute que l'exception ait ete lancee ou non, meme si le try ou le catch contient un return. Parfait pour fermer une connexion BDD, un fichier, ou liberer une ressource.</div></div></section><div class="divider"></div>
+<section class="etape" id="e7"><div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Bonnes pratiques</div><h2>Ce qu'il faut faire et eviter</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Anti-pattern : swallow exception</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// MAL : utiliser Exception comme catch-all sans relancer</span>
+<span class="kw">try</span> {
+    <span class="fn">operationBDD</span>();
+} <span class="kw">catch</span> (<span class="exc">Exception</span> <span class="vr">$e</span>) {
+    <span class="cmt">// Swallow : l'exception est perdue silencieusement</span>
+}
+
+<span class="cmt">// BIEN : attraper le bon type, logguer, et gerer</span>
+<span class="kw">try</span> {
+    <span class="fn">operationBDD</span>();
+} <span class="kw">catch</span> (<span class="exc">PDOException</span> <span class="vr">$e</span>) {
+    <span class="fn">error_log</span>(<span class="str">'BDD : '</span> . <span class="vr">$e</span>-><span class="fn">getMessage</span>());
+    <span class="kw">throw new</span> <span class="exc">RuntimeException</span>(<span class="str">'Service indisponible'</span>, <span class="num">503</span>, <span class="vr">$e</span>);  <span class="cmt">// chaining</span>
+}</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Gestionnaire global et exception chaining</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// set_exception_handler : gestionnaire global</span>
+<span class="fn">set_exception_handler</span>(<span class="kw">function</span> (<span class="exc">Throwable</span> <span class="vr">$e</span>): void {
+    <span class="fn">error_log</span>(<span class="str">'Uncaught: '</span> . <span class="vr">$e</span>-><span class="fn">getMessage</span>() . <span class="str">' in '</span> . <span class="vr">$e</span>-><span class="fn">getFile</span>());
+    <span class="fn">http_response_code</span>(<span class="num">500</span>);
+    <span class="kw">echo</span> <span class="kw">json_encode</span>([<span class="str">'error'</span> => <span class="str">'Erreur interne'</span>]);
+});
+
+<span class="cmt">// Exception chaining : conserver la cause originale</span>
+<span class="kw">try</span> {
+    <span class="fn">connecterBDD</span>();
+} <span class="kw">catch</span> (<span class="exc">PDOException</span> <span class="vr">$e</span>) {
+    <span class="cmt">// Troisieme argument = exception precedente (chaining)</span>
+    <span class="kw">throw new</span> <span class="exc">RuntimeException</span>(<span class="str">'Impossible de se connecter'</span>, <span class="num">0</span>, <span class="vr">$e</span>);
+}
+<span class="cmt">// Le catch peut recuperer la cause : $e->getPrevious()</span></code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Ne jamais avaler une exception silencieusement.</strong> Un catch vide ou qui ne loggue pas cache les bugs. Toujours au minimum <code>error_log()</code> le message, puis soit gerer l'erreur, soit relancer (re-throw).</div></div></section><div class="divider"></div>
+<section class="etape" id="e8"><div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Synthese</div><h2>Exemple complet &mdash; UserService</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">UserService.php &mdash; gestion complete des exceptions</span><span class="cb-badge Complet">good</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Services</span>;
+
+<span class="kw">use</span> <span class="ns">App\Exceptions\NotFoundException</span>;
+<span class="kw">use</span> <span class="ns">App\Exceptions\ValidationException</span>;
+<span class="kw">use</span> \PDO;
+<span class="kw">use</span> \PDOException;
+
+<span class="kw">class</span> <span class="cls">UserService</span> {
+    <span class="kw">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(<span class="kw">private</span> <span class="cls">PDO</span> <span class="vr">$pdo</span>) {}
+
+    <span class="kw">public</span> <span class="kw">function</span> <span class="fn">creer</span>(string <span class="vr">$nom</span>, string <span class="vr">$email</span>): int {
+        <span class="cmt">// 1. Valider</span>
+        <span class="vr">$errors</span> = [];
+        <span class="kw">if</span> (<span class="fn">strlen</span>(<span class="vr">$nom</span>) < <span class="num">2</span>)    <span class="vr">$errors</span>[] = <span class="str">'Nom trop court'</span>;
+        <span class="kw">if</span> (!<span class="fn">filter_var</span>(<span class="vr">$email</span>, <span class="fn">FILTER_VALIDATE_EMAIL</span>)) <span class="vr">$errors</span>[] = <span class="str">'Email invalide'</span>;
+        <span class="kw">if</span> (!<span class="fn">empty</span>(<span class="vr">$errors</span>)) <span class="kw">throw new</span> <span class="exc">ValidationException</span>(<span class="vr">$errors</span>);
+
+        <span class="cmt">// 2. Persister</span>
+        <span class="kw">try</span> {
+            <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'INSERT INTO users (nom,email) VALUES (?,?)'</span>);
+            <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="vr">$nom</span>, <span class="vr">$email</span>]);
+            <span class="kw">return</span> (int)<span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">lastInsertId</span>();
+        } <span class="kw">catch</span> (<span class="exc">PDOException</span> <span class="vr">$e</span>) {
+            <span class="cmt">// Envelopper avec chaining</span>
+            <span class="kw">throw new</span> <span class="exc">RuntimeException</span>(<span class="str">'Erreur creation user'</span>, <span class="num">0</span>, <span class="vr">$e</span>);
+        }
+    }
+
+    <span class="kw">public</span> <span class="kw">function</span> <span class="fn">findById</span>(int <span class="vr">$id</span>): array {
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT * FROM users WHERE id=?'</span>);
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="vr">$id</span>]);
+        <span class="vr">$user</span> = <span class="vr">$stmt</span>-><span class="fn">fetch</span>(<span class="cls">PDO</span>::<span class="fn">FETCH_ASSOC</span>);
+        <span class="kw">if</span> (!<span class="vr">$user</span>) <span class="kw">throw new</span> <span class="exc">NotFoundException</span>(<span class="str">'User'</span>, <span class="vr">$id</span>);
+        <span class="kw">return</span> <span class="vr">$user</span>;
+    }
+}
+
+<span class="cmt">// Appel dans le controleur</span>
+<span class="kw">try</span> {
+    <span class="vr">$id</span> = <span class="vr">$service</span>-><span class="fn">creer</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>], <span class="vr">$_POST</span>[<span class="str">'email'</span>]);
+    <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="str">'id'</span> => <span class="vr">$id</span>]);
+} <span class="kw">catch</span> (<span class="exc">ValidationException</span> <span class="vr">$e</span>) {
+    <span class="fn">http_response_code</span>(<span class="num">422</span>);
+    <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="str">'errors'</span> => <span class="vr">$e</span>-><span class="fn">getErrors</span>()]);
+} <span class="kw">catch</span> (<span class="exc">RuntimeException</span> <span class="vr">$e</span>) {
+    <span class="fn">http_response_code</span>(<span class="num">500</span>);
+    <span class="fn">error_log</span>(<span class="vr">$e</span>-><span class="fn">getMessage</span>());
+    <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="str">'error'</span> => <span class="str">'Erreur interne'</span>]);
+}</code></pre></div><div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Pattern complet :</strong> valider puis <code>throw ValidationException</code>. Envelopper les erreurs BDD (<code>PDOException</code>) dans une <code>RuntimeException</code> avec chaining. Dans le controleur, attraper par type et renvoyer le bon code HTTP.</div></div></section><div class="divider"></div>
+<section class="etape" id="quiz"><div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; gestion des exceptions</h2></div></div><div class="quiz-card"><div class="q"><span class="qn">Q1.</span> Que se passe-t-il quand une exception est lancee dans un bloc <code>try</code> ?</div><div class="opts"><button class="opt" onclick="ans(this,'q1',false)">L'exception est affichee automatiquement et l'execution continue</button><button class="opt" onclick="ans(this,'q1',true)">L'execution du try s'arrete immediatement. PHP cherche un catch correspondant. Le code apres le throw dans le try n'est pas execute.</button><button class="opt" onclick="ans(this,'q1',false)">L'exception est ignoree si elle n'est pas catchee</button></div><div class="fb" id="fb-q1"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q2.</span> Pourquoi ordonner les catch du plus specifique au plus general ?</div><div class="opts"><button class="opt" onclick="ans(this,'q2',false)">PHP l'exige pour des raisons de syntaxe</button><button class="opt" onclick="ans(this,'q2',true)">PHP evalue les catch dans l'ordre. Un catch (Exception $e) en premier attraperait tout et les catch suivants ne seraient jamais atteints.</button><button class="opt" onclick="ans(this,'q2',false)">Pour de meilleures performances</button></div><div class="fb" id="fb-q2"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q3.</span> Quand est execute le bloc <code>finally</code> ?</div><div class="opts"><button class="opt" onclick="ans(this,'q3',false)">Uniquement quand une exception est lancee</button><button class="opt" onclick="ans(this,'q3',true)">Toujours, qu'il y ait eu une exception ou non, et meme si le try ou le catch contient un return.</button><button class="opt" onclick="ans(this,'q3',false)">Uniquement quand il n'y a pas eu d'exception</button></div><div class="fb" id="fb-q3"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q4.</span> Quel est l'avantage de creer une exception personnalisee comme <code>ValidationException</code> ?</div><div class="opts"><button class="opt" onclick="ans(this,'q4',false)">Cela ameliore les performances</button><button class="opt" onclick="ans(this,'q4',true)">Elle peut transporter des donnees supplementaires (tableau d'erreurs, code HTTP...) et permet un catch specifique qui accede a ces donnees via des methodes personnalisees.</button><button class="opt" onclick="ans(this,'q4',false)">PHP exige des exceptions personnalisees pour les erreurs metier</button></div><div class="fb" id="fb-q4"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q5.</span> Qu'est-ce que le "exception chaining" (troisieme argument du constructeur) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q5',false)">C'est une technique pour lancer plusieurs exceptions a la fois</button><button class="opt" onclick="ans(this,'q5',true)">On passe l'exception originale comme troisieme argument au constructeur. La nouvelle exception enveloppe l'originale. On peut recuperer la cause via getPrevious().</button><button class="opt" onclick="ans(this,'q5',false)">C'est la meme chose que les catch multiples</button></div><div class="fb" id="fb-q5"></div></div><div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;"><div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div><div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div></div></section></main></div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copie';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+const fbs={
+  q1:{ok:'Exact. Le throw dans le try interrompt immediatement le bloc try. Les instructions suivantes du try ne sont pas executees. PHP cherche dans l ordre un catch dont le type correspond a l exception lancee.',ko:'Non. Quand une exception est lancee, le try s arrete immediatement. PHP cherche un catch correspondant. Sans catch, l exception remonte la pile jusqu a en trouver un ou provoquer une fatal error.'},
+  q2:{ok:'Exact. PHP essaie chaque catch dans l ordre. Si catch(Exception $e) est en premier, il attrape tout car toutes les exceptions heritent d Exception. Les catch plus specifiques en-dessous ne seraient jamais atteints.',ko:'Non. L ordre importe pour la capture. PHP evalue les catch dans l ordre de leur declaration. Un catch(Exception) en premier attraperait tout, empechant les catch plus specifiques de fonctionner.'},
+  q3:{ok:'Exact. finally est execute dans tous les cas : succes (fin normale du try), exception catchee, exception non catchee, et meme apres un return dans le try ou le catch. C est le bloc de nettoyage garanti.',ko:'Non. finally est toujours execute, qu il y ait eu une exception ou non, meme apres un return. C est precisement son interet pour fermer des ressources.'},
+  q4:{ok:'Exact. Une exception personnalisee peut stocker un tableau d erreurs, un code HTTP, l identifiant de la ressource manquante... Le catch specifique accede a ces donnees via des methodes supplementaires comme getErrors().',ko:'Non. L avantage est de transporter des donnees supplementaires pertinentes pour le contexte. Un catch(ValidationException) peut appeler getErrors() et obtenir directement le tableau des erreurs de validation.'},
+  q5:{ok:'Exact. Le chaining passe l exception originale comme troisieme argument : new RuntimeException(message, 0, $e). On peut ensuite appeler getPrevious() pour retrouver la cause technique originale, utile pour le debug.',ko:'Non. Le exception chaining consiste a passer l exception originale comme troisieme argument au constructeur. La nouvelle exception enveloppe l originale accessible via getPrevious().'},
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').innerHTML=g===5?'Parfait &mdash; Bloc 4 complete !':g>=4?'Tres bien.':g>=3?'Revoir finally et le chaining.':'Reprendre try/catch.';box.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+</script></body></html>

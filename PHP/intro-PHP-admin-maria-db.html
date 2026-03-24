@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administrer MariaDB — Support pédagogique</title>
+<style>
+:root {
+    --bg:#f5f2ee;
+    --card:#ffffff;
+    --surface:#faf8f5;
+    --border:#e2ddd7;
+    --border2:#cdc7bf;
+    --accent:#0f766e;
+    --accent2:#0d9488;
+    --green:#16a34a;
+    --yellow:#b45309;
+    --red:#dc2626;
+    --purple:#7c3aed;
+    --blue:#2563eb;
+    --orange:#c2410c;
+    --text:#1c1917;
+    --muted:#57534e;
+    --dim:#a8a29e;
+    --title:#f0ece6;
+    --mono:'SF Mono','Fira Code','Consolas',monospace;
+    --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+    --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;width:240px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--shadow);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo span{font-size:.85rem;font-weight:800;color:var(--accent);letter-spacing:-.01em;}
+.sidebar-logo p{font-size:.68rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(15,118,110,.07);color:var(--text);}
+.nav-link.active{background:rgba(15,118,110,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+
+.content{margin-left:240px;padding:48px 52px 80px;max-width:calc(100% - 240px);}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:52px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;color:var(--text);}
+.hl{background:linear-gradient(135deg,var(--accent),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:580px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}
+.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--accent);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.o{background:rgba(194,65,12,.07);border-color:rgba(194,65,12,.25);color:var(--orange);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+
+/* ÉTAPE */
+.etape{margin-bottom:60px;scroll-margin-top:24px;}
+.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(15,118,110,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;color:var(--text);}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}
+.prose strong{color:var(--text);}
+.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(15,118,110,.07);border:1px solid rgba(15,118,110,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+
+/* CALLOUT */
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;align-items:flex-start;}
+.callout-icon{font-family:var(--mono);font-size:.75rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}
+.callout.info .callout-icon{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}
+.callout.tip .callout-icon{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.callout.warn .callout-icon{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}
+.callout.success .callout-icon{background:rgba(22,163,74,.1);color:var(--green);}
+.callout.teal{background:rgba(15,118,110,.05);border:1px solid rgba(15,118,110,.2);color:#134e4a;}
+.callout.teal .callout-icon{background:rgba(15,118,110,.1);color:var(--accent);}
+.callout strong{color:inherit;}
+.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+
+/* CODE BLOCK */
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow-md);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}
+.dots{display:flex;gap:5px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}
+.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;}
+.cb-badge.new{background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.warn{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#f87171;}
+.cb-badge.info{background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.3);color:#93c5fd;}
+.cb-badge.sql{background:rgba(15,118,110,.15);border:1px solid rgba(15,118,110,.3);color:#5eead4;}
+.cb-badge.shell{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(15,118,110,.2);border-color:rgba(15,118,110,.4);color:#5eead4;}
+.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+/* SQL syntax */
+.kw{color:#cba6f7;font-weight:600;}
+.kw2{color:#89dceb;font-weight:600;}
+.fn{color:#89b4fa;}
+.str{color:#a6e3a1;}
+.num{color:#fab387;}
+.cmt{color:#6c7086;font-style:italic;}
+.vr{color:#f5c2e7;}
+.op{color:#89dceb;}
+.tbl{color:#f38ba8;}
+.sh{color:#fab387;}  /* shell prompt */
+.shk{color:#cba6f7;} /* shell keyword */
+.shv{color:#a6e3a1;} /* shell value */
+.shc{color:#6c7086;font-style:italic;}  /* shell comment */
+.hl-line{background:rgba(15,118,110,.12);display:block;margin:0 -20px;padding:0 20px;border-left:2px solid #14b8a6;}
+
+/* RESULTAT */
+.resultat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:14px;box-shadow:var(--shadow);}
+.resultat-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.resultat-body{font-size:.88rem;color:var(--muted);line-height:1.8;}
+
+/* SCHEMA / ARBRE */
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.82rem;line-height:2.2;box-shadow:var(--shadow);overflow-x:auto;}
+.sc-key{color:var(--accent);font-weight:700;}
+.sc-val{color:var(--green);}
+.sc-dim{color:var(--dim);}
+.sc-warn{color:var(--red);}
+.sc-blue{color:var(--blue);}
+.sc-orange{color:var(--orange);}
+
+/* CHECKPOINT */
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(15,118,110,.05);border:1px solid rgba(15,118,110,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}
+.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--accent);flex-shrink:0;border:1px solid rgba(15,118,110,.3);padding:2px 7px;border-radius:3px;}
+.cp-text{font-size:.84rem;color:#134e4a;line-height:1.6;}
+.cp-text strong{color:var(--accent);}
+
+/* TABLEAU */
+.table-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--shadow);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(15,118,110,.02);}
+.td-good{color:var(--green);font-weight:600;}
+.td-warn{color:var(--yellow);font-weight:600;}
+.td-bad{color:var(--red);font-weight:600;}
+.td-mono{font-family:var(--mono);font-size:.78rem;}
+
+/* QUIZ */
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:var(--shadow);}
+.q{font-weight:600;font-size:.91rem;margin-bottom:13px;color:var(--text);}
+.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(15,118,110,.3);color:var(--text);background:rgba(15,118,110,.04);}
+.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}
+.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}
+.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+
+/* ─── SIMULATEUR DROITS ─── */
+.perm-sim{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow-md);}
+.perm-sim-head{background:var(--title);padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.perm-sim-label{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--muted);}
+.perm-sim-badge{font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:3px;background:rgba(15,118,110,.1);border:1px solid rgba(15,118,110,.2);color:var(--accent);}
+.perm-body{padding:20px;}
+.perm-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.perm-field{display:flex;flex-direction:column;gap:5px;}
+.perm-field.full{grid-column:1/-1;}
+.perm-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:600;}
+.perm-input,.perm-select{padding:8px 11px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.82rem;width:100%;outline:none;transition:border-color .15s;}
+.perm-input:focus,.perm-select:focus{border-color:rgba(15,118,110,.4);}
+.perm-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.perm-priv{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface);font-family:var(--mono);font-size:.75rem;color:var(--muted);cursor:pointer;user-select:none;transition:all .15s;}
+.perm-priv:hover{border-color:rgba(15,118,110,.3);color:var(--text);}
+.perm-priv.checked{border-color:rgba(15,118,110,.4);background:rgba(15,118,110,.08);color:var(--accent);}
+.perm-priv input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px;}
+.perm-actions{display:flex;gap:8px;margin-bottom:14px;}
+.perm-btn{padding:8px 20px;border-radius:7px;cursor:pointer;font-family:var(--mono);font-size:.78rem;font-weight:700;transition:all .15s;border:1px solid rgba(15,118,110,.3);background:rgba(15,118,110,.08);color:var(--accent);}
+.perm-btn:hover{background:rgba(15,118,110,.16);}
+.perm-btn.danger{border-color:rgba(220,38,38,.3);background:rgba(220,38,38,.07);color:var(--red);}
+.perm-btn.danger:hover{background:rgba(220,38,38,.14);}
+.perm-output{background:#1e1e2e;border-radius:8px;padding:14px 16px;font-family:var(--mono);font-size:.8rem;line-height:2;min-height:64px;}
+.perm-output .lbl{color:#6c7086;font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+
+/* ─── SIMULATEUR SAUVEGARDE ─── */
+.backup-panel{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.backup-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;box-shadow:var(--shadow);}
+.backup-card-title{font-weight:700;font-size:.88rem;color:var(--text);margin-bottom:10px;font-family:var(--mono);}
+.backup-card-desc{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:12px;}
+.backup-card-btn{padding:7px 16px;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:.75rem;font-weight:700;transition:all .15s;border:1px solid rgba(15,118,110,.3);background:rgba(15,118,110,.08);color:var(--accent);width:100%;}
+.backup-card-btn:hover{background:rgba(15,118,110,.16);}
+.backup-card-btn.restore{border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.07);color:var(--blue);}
+.backup-card-btn.restore:hover{background:rgba(37,99,235,.14);}
+
+/* ─── TIMELINE ETAPES ─── */
+.timeline{display:flex;flex-direction:column;gap:0;margin-bottom:14px;}
+.tl-step{display:flex;gap:16px;align-items:flex-start;}
+.tl-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:32px;}
+.tl-dot{width:14px;height:14px;border-radius:50%;border:2px solid;flex-shrink:0;margin-top:3px;}
+.tl-dot.teal{border-color:var(--accent);background:rgba(15,118,110,.2);}
+.tl-dot.blue{border-color:var(--blue);background:rgba(37,99,235,.15);}
+.tl-dot.green{border-color:var(--green);background:rgba(22,163,74,.15);}
+.tl-dot.orange{border-color:var(--orange);background:rgba(194,65,12,.12);}
+.tl-dot.red{border-color:var(--red);background:rgba(220,38,38,.12);}
+.tl-line{width:2px;flex:1;background:var(--border);margin-top:2px;min-height:22px;}
+.tl-content{padding-bottom:20px;}
+.tl-title{font-weight:700;font-size:.88rem;color:var(--text);margin-bottom:3px;}
+.tl-desc{font-size:.82rem;color:var(--muted);line-height:1.6;}
+.tl-code{font-family:var(--mono);font-size:.76rem;color:var(--accent);background:rgba(15,118,110,.06);border:1px solid rgba(15,118,110,.14);padding:2px 8px;border-radius:3px;display:inline-block;margin-top:4px;}
+
+/* Droits visuels — matrice */
+.priv-matrix{overflow-x:auto;margin-bottom:14px;}
+.priv-matrix table{min-width:560px;}
+.priv-matrix td,.priv-matrix th{padding:8px 12px;text-align:center;}
+.priv-matrix td:first-child{text-align:left;}
+.priv-cell-y{color:var(--green);font-weight:700;font-size:.9rem;}
+.priv-cell-n{color:var(--border2);font-size:.8rem;}
+.priv-cell-s{color:var(--yellow);font-weight:700;font-size:.82rem;}
+
+.divider{height:1px;background:var(--border);margin:48px 0;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}.backup-panel{grid-template-columns:1fr;}.perm-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <span>[ ] PHP &mdash; Bloc 3</span>
+        <p>Base de donnees</p>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Introduction</div>
+        <a href="#plan" class="nav-link active"><span class="nav-num">00</span>Architecture et connexion</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Gestion des utilisateurs</div>
+        <a href="#etape1" class="nav-link"><span class="nav-num">01</span>Creer un utilisateur</a>
+        <a href="#etape2" class="nav-link"><span class="nav-num">02</span>Les droits GRANT</a>
+        <a href="#etape3" class="nav-link"><span class="nav-num">03</span>Simulateur de droits</a>
+        <a href="#etape4" class="nav-link"><span class="nav-num">04</span>Modifier et supprimer</a>
+        <a href="#etape5" class="nav-link"><span class="nav-num">05</span>Voir les droits</span></a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Sauvegarde et restauration</div>
+        <a href="#etape6" class="nav-link"><span class="nav-num">06</span>mysqldump</a>
+        <a href="#etape7" class="nav-link"><span class="nav-num">07</span>Restaurer une sauvegarde</a>
+        <a href="#etape8" class="nav-link"><span class="nav-num">08</span>Stratégies de sauvegarde</a>
+        <a href="#etape9" class="nav-link"><span class="nav-num">09</span>Simulateur interactif</a>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label">Evaluation</div>
+        <a href="#quiz" class="nav-link"><span class="nav-num">10</span>Quiz</a>
+    </div>
+  <div class="nav-serie">
+    <div class="nav-serie-label" style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;font-weight:700;padding:0 8px;">Bloc 3 &mdash; Base de donnees</div>
+    <a href="php-10-sql.html"      style="font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 12px;display:block;">10 &mdash; Introduction SQL</a>
+    <a href="php-11-pdo.html"      style="font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 12px;display:block;">11 &mdash; PDO</a>
+    <a href="mariadb-admin.html"   style="font-size:.75rem;color:var(--accent);font-weight:700;text-decoration:none;padding:3px 12px;display:block;">12 &mdash; Administration MariaDB</a>
+    <a href="php-13-crud-bdd.html" style="font-size:.75rem;color:var(--dim);text-decoration:none;padding:3px 12px;display:block;">13 &mdash; CRUD avec BDD</a>
+  </div>
+</aside>
+
+<main class="content">
+
+<div class="page-header"><div style="display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(15,118,110,.08);border:1px solid rgba(15,118,110,.2);color:var(--accent);margin-bottom:12px;">Bloc 3 &middot; Support 3/4</div>
+    <h1>Administrer<br><span class="hl">MariaDB</span></h1>
+    <p>Gestion des utilisateurs, attribution des droits, sauvegarde et restauration des bases de données. Ce support couvre les commandes essentielles d'administration que tout développeur doit maîtriser.</p>
+    <div class="objectifs">
+        <span class="obj t">CREATE USER</span>
+        <span class="obj t">GRANT / REVOKE</span>
+        <span class="obj b">mysqldump</span>
+        <span class="obj g">Restauration</span>
+        <span class="obj o">Stratégies backup</span>
+        <span class="obj p">Securite</span>
+    </div>
+</div>
+
+<!-- ── 00 ARCHITECTURE ── -->
+<section class="etape" id="plan">
+    <div class="etape-header">
+        <div class="etape-num">00</div>
+        <div class="etape-info">
+            <div class="etape-tag">Introduction</div>
+            <h2>Architecture de sécurité MariaDB — le modèle utilisateurs</h2>
+        </div>
+    </div>
+
+    <p class="prose">MariaDB utilise un système d'authentification à deux niveaux : <strong>qui peut se connecter</strong> (utilisateur + hôte) et <strong>ce qu'il peut faire</strong> (privilèges). Un utilisateur MariaDB n'est pas juste un nom — c'est une paire <code>nom@hote</code>.</p>
+
+    <div class="schema">
+<span class="sc-key">MariaDB</span>
+  ├── <span class="sc-blue">Serveur</span>                          <span class="sc-dim">port 3306, service mariadb</span>
+  │
+  ├── <span class="sc-key">Utilisateurs</span>                     <span class="sc-dim">stockés dans mysql.user</span>
+  │     ├── <span class="sc-val">root@localhost</span>              <span class="sc-dim">super-admin, accès local uniquement</span>
+  │     ├── <span class="sc-val">appuser@localhost</span>           <span class="sc-dim">accès local seulement</span>
+  │     ├── <span class="sc-val"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="791809090c0a1c0b3948404b57484f415748">[email&#160;protected]</a>.%</span>         <span class="sc-dim">accès depuis un sous-réseau</span>
+  │     └── <span class="sc-val">appuser@%</span>                   <span class="sc-dim">accès depuis n'importe où (dangereux)</span>
+  │
+  ├── <span class="sc-key">Bases de données</span>
+  │     ├── <span class="sc-orange">mysql</span>                       <span class="sc-dim">système — droits, users (ne pas modifier)</span>
+  │     ├── <span class="sc-orange">information_schema</span>          <span class="sc-dim">métadonnées en lecture seule</span>
+  │     └── <span class="sc-orange">boutique</span>                    <span class="sc-dim">votre base applicative</span>
+  │
+  └── <span class="sc-key">Privilèges</span>                       <span class="sc-dim">qui peut faire quoi sur quoi</span>
+        ├── <span class="sc-val">Globaux</span>  *.*               <span class="sc-dim">sur toutes les bases</span>
+        ├── <span class="sc-val">Base</span>     boutique.*         <span class="sc-dim">sur toute une base</span>
+        └── <span class="sc-val">Table</span>    boutique.produits   <span class="sc-dim">sur une table précise</span>
+    </div>
+
+    <div class="callout warn">
+        <span class="callout-icon">!</span>
+        <div><strong>root ne doit jamais être utilisé par une application.</strong> Le compte <code>root</code> a tous les droits sur tout le serveur. Une application web ne doit jamais se connecter avec root — créez toujours un utilisateur dédié avec uniquement les droits nécessaires.</div>
+    </div>
+
+    <p class="prose">Se connecter au serveur MariaDB en ligne de commande :</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Terminal — connexion au serveur</span><span class="cb-badge shell">Shell</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="shc"># Connexion en tant que root (local)</span>
+<span class="sh">$</span> mariadb -u root -p
+<span class="shc">#         -u root  = utilisateur root</span>
+<span class="shc">#         -p       = demander le mot de passe</span>
+
+<span class="shc"># Connexion avec un utilisateur spécifique sur une base précise</span>
+<span class="sh">$</span> mariadb -u appuser -p boutique
+<span class="shc">#                       ^ base de données cible</span>
+
+<span class="shc"># Connexion sur un hôte distant</span>
+<span class="sh">$</span> mariadb -h 192.168.1.10 -u appuser -p boutique
+
+<span class="shc"># Vérifier la version</span>
+<span class="sh">$</span> mariadb --version</code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Premières commandes dans le shell MariaDB</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Lister toutes les bases de données</span>
+<span class="kw">SHOW</span> <span class="kw">DATABASES</span>;
+
+<span class="cmt">-- Sélectionner une base</span>
+<span class="kw">USE</span> boutique;
+
+<span class="cmt">-- Lister les tables de la base courante</span>
+<span class="kw">SHOW</span> <span class="kw">TABLES</span>;
+
+<span class="cmt">-- Voir tous les utilisateurs du serveur</span>
+<span class="kw">SELECT</span> <span class="vr">User</span>, <span class="vr">Host</span> <span class="kw">FROM</span> <span class="tbl">mysql.user</span>;
+
+<span class="cmt">-- Quitter</span>
+<span class="kw">EXIT</span>;</code></pre>
+    </div>
+
+    <div class="callout info">
+        <span class="callout-icon">i</span>
+        <div><strong>MariaDB vs MySQL.</strong> MariaDB est un fork de MySQL créé en 2009. Les commandes d'administration sont quasi identiques. Sur Debian/Ubuntu, le service s'appelle <code>mariadb</code> (pas <code>mysql</code>). Le client en ligne de commande est <code>mariadb</code> (ou <code>mysql</code> selon les versions).</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 01 CRÉER UTILISATEUR ── -->
+<section class="etape" id="etape1">
+    <div class="etape-header">
+        <div class="etape-num">01</div>
+        <div class="etape-info">
+            <div class="etape-tag">Gestion des utilisateurs</div>
+            <h2>Créer un utilisateur — CREATE USER</h2>
+        </div>
+    </div>
+
+    <p class="prose">La commande <code>CREATE USER</code> crée un compte sans aucun privilège. L'utilisateur peut se connecter mais ne voit rien. Les droits sont attribués séparément avec <code>GRANT</code>. Cette séparation est intentionnelle : elle force à réfléchir à ce qu'on accorde.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Syntaxe CREATE USER — exemples progressifs</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Syntaxe de base</span>
+<span class="kw">CREATE USER</span> <span class="str">'nom_utilisateur'</span>@<span class="str">'hote'</span> <span class="kw">IDENTIFIED BY</span> <span class="str">'mot_de_passe'</span>;
+
+<span class="cmt">-- Exemple 1 : accès local uniquement (recommandé pour les apps web)</span>
+<span class="kw">CREATE USER</span> <span class="str">'appuser'</span>@<span class="str">'localhost'</span> <span class="kw">IDENTIFIED BY</span> <span class="str">'MotDePasse_S3cur!'</span>;
+
+<span class="cmt">-- Exemple 2 : accès depuis une IP précise</span>
+<span class="kw">CREATE USER</span> <span class="str">'reporter'</span>@<span class="str">'192.168.1.42'</span> <span class="kw">IDENTIFIED BY</span> <span class="str">'ReportPass2024!'</span>;
+
+<span class="cmt">-- Exemple 3 : accès depuis un sous-réseau (wildcard %)</span>
+<span class="kw">CREATE USER</span> <span class="str">'devteam'</span>@<span class="str">'192.168.1.%'</span> <span class="kw">IDENTIFIED BY</span> <span class="str">'DevPass_99!'</span>;
+<span class="cmt">--                              % = n'importe quelle valeur dans ce segment</span>
+
+<span class="cmt">-- Exemple 4 : depuis n'importe où (DÉCONSEILLÉ en production)</span>
+<span class="kw">CREATE USER</span> <span class="str">'testuser'</span>@<span class="str">'%'</span> <span class="kw">IDENTIFIED BY</span> <span class="str">'TestPass!'</span>;
+
+<span class="cmt">-- Vérifier que l'utilisateur a bien été créé</span>
+<span class="kw">SELECT</span> <span class="vr">User</span>, <span class="vr">Host</span>, <span class="vr">authentication_string</span> <span class="kw">FROM</span> <span class="tbl">mysql.user</span>
+<span class="kw">WHERE</span> <span class="vr">User</span> = <span class="str">'appuser'</span>;</code></pre>
+    </div>
+
+    <div class="resultat">
+        <div class="resultat-label">La paire utilisateur@hote — pourquoi c'est important</div>
+        <div class="resultat-body">
+            <code style="color:var(--accent)">appuser@localhost</code> et <code style="color:var(--accent)">appuser@%</code> sont <strong>deux comptes distincts</strong> pour MariaDB, même s'ils ont le même nom. Ils peuvent avoir des mots de passe et des droits différents. Quand un utilisateur se connecte, MariaDB cherche l'entrée la plus précise qui correspond à son IP.<br><br>
+            Ordre de priorité : <code>IP exacte</code> &gt; <code>sous-réseau</code> &gt; <code>hostname</code> &gt; <code>%</code>
+        </div>
+    </div>
+
+    <div class="callout warn">
+        <span class="callout-icon">!</span>
+        <div><strong>Mots de passe forts obligatoires.</strong> MariaDB peut avoir une politique de validation des mots de passe (plugin <code>validate_password</code>). En production, utilisez au minimum 12 caractères avec majuscules, minuscules, chiffres et caractères spéciaux. Ne jamais utiliser le mot de passe dans un script versionné — utilisez des variables d'environnement ou un fichier <code>.my.cnf</code> hors dépôt.</div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Fichier .my.cnf — eviter de taper le mot de passe</span><span class="cb-badge shell">Config</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="shc"># ~/.my.cnf — fichier de configuration personnel (chmod 600)</span>
+[client]
+<span class="shv">user</span>     = appuser
+<span class="shv">password</span> = MotDePasse_S3cur!
+<span class="shv">host</span>     = localhost
+
+<span class="shc"># Avec ce fichier, on peut se connecter sans saisir les identifiants :</span>
+<span class="sh">$</span> mariadb boutique
+<span class="shc"># Au lieu de : mariadb -u appuser -p boutique</span>
+
+<span class="shc"># Sécuriser le fichier</span>
+<span class="sh">$</span> chmod 600 ~/.my.cnf</code></pre>
+    </div>
+
+    <div class="checkpoint">
+        <span class="cp-icon">OK</span>
+        <div class="cp-text"><strong>A retenir :</strong> un utilisateur est toujours une paire <code>nom@hote</code>. Après CREATE USER, l'utilisateur n'a aucun droit. Les droits s'attribuent avec GRANT. Toujours préférer <code>localhost</code> à <code>%</code>.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 02 GRANT ── -->
+<section class="etape" id="etape2">
+    <div class="etape-header">
+        <div class="etape-num">02</div>
+        <div class="etape-info">
+            <div class="etape-tag">Gestion des droits</div>
+            <h2>GRANT — attribuer des privilèges</h2>
+        </div>
+    </div>
+
+    <p class="prose"><code>GRANT</code> est la commande centrale de la gestion des droits. Elle suit toujours la même structure : <strong>quels privilèges</strong>, <strong>sur quoi</strong>, <strong>pour qui</strong>. Le principe de moindre privilège est la règle d'or : n'accorder que ce qui est strictement nécessaire.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Syntaxe GRANT — structure</span><span class="cb-badge sql">SQL</span></div>
+        <pre><code><span class="kw">GRANT</span> <span class="vr">privilege1</span>, <span class="vr">privilege2</span>, ...
+<span class="kw">ON</span> <span class="vr">base_de_donnees</span>.<span class="vr">table</span>
+<span class="kw">TO</span> <span class="str">'utilisateur'</span>@<span class="str">'hote'</span>;
+
+<span class="cmt">--  ON base.*    → toutes les tables de la base</span>
+<span class="cmt">--  ON *.*       → toutes les bases, toutes les tables (global)</span>
+<span class="cmt">--  ON base.tab  → une table précise</span></code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Exemples GRANT selon les profils</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Profil 1 : application web (lecture + écriture, pas de structure)</span>
+<span class="kw">GRANT</span> <span class="op">SELECT</span>, <span class="op">INSERT</span>, <span class="op">UPDATE</span>, <span class="op">DELETE</span>
+<span class="kw">ON</span> <span class="tbl">boutique</span>.*
+<span class="kw">TO</span> <span class="str">'appuser'</span>@<span class="str">'localhost'</span>;
+
+<span class="cmt">-- Profil 2 : lecture seule (rapports, BI, monitoring)</span>
+<span class="kw">GRANT</span> <span class="op">SELECT</span>
+<span class="kw">ON</span> <span class="tbl">boutique</span>.*
+<span class="kw">TO</span> <span class="str">'reporter'</span>@<span class="str">'192.168.1.42'</span>;
+
+<span class="cmt">-- Profil 3 : développeur (tout sur une base, pas d'admin)</span>
+<span class="kw">GRANT</span> <span class="op">SELECT</span>, <span class="op">INSERT</span>, <span class="op">UPDATE</span>, <span class="op">DELETE</span>,
+      <span class="op">CREATE</span>, <span class="op">DROP</span>, <span class="op">ALTER</span>, <span class="op">INDEX</span>
+<span class="kw">ON</span> <span class="tbl">dev_boutique</span>.*
+<span class="kw">TO</span> <span class="str">'devteam'</span>@<span class="str">'192.168.1.%'</span>;
+
+<span class="cmt">-- Profil 4 : administrateur de base (tous droits sur une base)</span>
+<span class="kw">GRANT ALL PRIVILEGES</span>
+<span class="kw">ON</span> <span class="tbl">boutique</span>.*
+<span class="kw">TO</span> <span class="str">'dbadmin'</span>@<span class="str">'localhost'</span>;
+
+<span class="cmt">-- INDISPENSABLE après tout GRANT : appliquer les changements</span>
+<span class="kw">FLUSH PRIVILEGES</span>;
+<span class="cmt">-- Dans les versions récentes, automatique après GRANT/REVOKE</span>
+<span class="cmt">-- Mais bonne pratique de toujours le faire</span></code></pre>
+    </div>
+
+    <p class="prose">Les <strong>privilèges disponibles</strong> — classés du moins au plus dangereux :</p>
+
+    <div class="priv-matrix">
+        <table>
+            <thead><tr><th style="text-align:left">Privilège</th><th>Lecture</th><th>Données</th><th>Structure</th><th>Admin</th><th>Usage courant</th></tr></thead>
+            <tbody>
+                <tr><td>SELECT</td><td class="priv-cell-y">Oui</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td style="text-align:left;font-size:.8rem;color:var(--muted)">Lire des données. Base de tout accès.</td></tr>
+                <tr><td>INSERT</td><td class="priv-cell-n">—</td><td class="priv-cell-y">Oui</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td style="text-align:left;font-size:.8rem;color:var(--muted)">Insérer des lignes.</td></tr>
+                <tr><td>UPDATE</td><td class="priv-cell-n">—</td><td class="priv-cell-y">Oui</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td style="text-align:left;font-size:.8rem;color:var(--muted)">Modifier des lignes existantes.</td></tr>
+                <tr><td>DELETE</td><td class="priv-cell-n">—</td><td class="priv-cell-y">Oui</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td style="text-align:left;font-size:.8rem;color:var(--muted)">Supprimer des lignes.</td></tr>
+                <tr><td>CREATE</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td class="priv-cell-y">Oui</td><td class="priv-cell-n">—</td><td style="text-align:left;font-size:.8rem;color:var(--muted)">Créer des tables et bases.</td></tr>
+                <tr><td>DROP</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td class="priv-cell-y">Oui</td><td class="priv-cell-n">—</td><td style="text-align:left;font-size:.8rem;color:var(--muted)">Supprimer tables et bases. Dangereux.</td></tr>
+                <tr><td>ALTER</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td class="priv-cell-y">Oui</td><td class="priv-cell-n">—</td><td style="text-align:left;font-size:.8rem;color:var(--muted)">Modifier la structure des tables.</td></tr>
+                <tr><td>INDEX</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td class="priv-cell-y">Oui</td><td class="priv-cell-n">—</td><td style="text-align:left;font-size:.8rem;color:var(--muted)">Créer et supprimer des index.</td></tr>
+                <tr><td>EXECUTE</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td class="priv-cell-s">Proc</td><td class="priv-cell-n">—</td><td style="text-align:left;font-size:.8rem;color:var(--muted)">Exécuter procédures stockées.</td></tr>
+                <tr><td>GRANT OPTION</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td class="priv-cell-n">—</td><td class="priv-cell-y">Oui</td><td style="text-align:left;font-size:.8rem;color:var(--muted)">Donner ses propres droits à d'autres. Très dangereux.</td></tr>
+                <tr><td>ALL PRIVILEGES</td><td class="priv-cell-y">Oui</td><td class="priv-cell-y">Oui</td><td class="priv-cell-y">Oui</td><td class="priv-cell-y">Oui</td><td style="text-align:left;font-size:.8rem;color:var(--muted)">Tout. Réserver aux admins de base.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout teal">
+        <span class="callout-icon">i</span>
+        <div><strong>Principe de moindre privilège.</strong> Une application de boutique en ligne n'a besoin que de SELECT, INSERT, UPDATE, DELETE. Jamais de CREATE, DROP ou ALTER en production — ces opérations se font par des migrations dédiées exécutées par un utilisateur de déploiement séparé, pas par l'utilisateur applicatif.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 03 SIMULATEUR DROITS ── -->
+<section class="etape" id="etape3">
+    <div class="etape-header">
+        <div class="etape-num">03</div>
+        <div class="etape-info">
+            <div class="etape-tag">Interactif</div>
+            <h2>Simulateur de droits — générer vos GRANT</h2>
+        </div>
+    </div>
+
+    <p class="prose">Configurez un profil utilisateur et observez les commandes SQL générées en temps réel. Sélectionnez les privilèges dont l'utilisateur a besoin selon son rôle.</p>
+
+    <div class="perm-sim">
+        <div class="perm-sim-head">
+            <div class="perm-sim-label">Générateur GRANT / REVOKE</div>
+            <div class="perm-sim-badge">Simulation</div>
+        </div>
+        <div class="perm-body">
+            <div class="perm-row">
+                <div class="perm-field">
+                    <label class="perm-label" for="pu-name">Nom d'utilisateur</label>
+                    <input class="perm-input" id="pu-name" type="text" value="appuser" placeholder="appuser">
+                </div>
+                <div class="perm-field">
+                    <label class="perm-label" for="pu-host">Hôte</label>
+                    <select class="perm-select" id="pu-host">
+                        <option value="localhost" selected>localhost (recommandé)</option>
+                        <option value="192.168.1.%">192.168.1.% (sous-réseau)</option>
+                        <option value="192.168.1.10">192.168.1.10 (IP fixe)</option>
+                        <option value="%">% (partout — déconseillé)</option>
+                    </select>
+                </div>
+                <div class="perm-field">
+                    <label class="perm-label" for="pu-scope">Portée</label>
+                    <select class="perm-select" id="pu-scope">
+                        <option value="db" selected>Base entière (mabase.*)</option>
+                        <option value="table">Table précise (mabase.matable)</option>
+                        <option value="global">Global (*.*)</option>
+                    </select>
+                </div>
+                <div class="perm-field">
+                    <label class="perm-label" for="pu-db">Base / Table</label>
+                    <input class="perm-input" id="pu-db" type="text" value="boutique" placeholder="boutique">
+                </div>
+            </div>
+            <div class="perm-label" style="margin-bottom:8px;">Profil rapide</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+                <button class="perm-btn" onclick="permProfil('webapp')">App web</button>
+                <button class="perm-btn" onclick="permProfil('readonly')">Lecture seule</button>
+                <button class="perm-btn" onclick="permProfil('dev')">Développeur</button>
+                <button class="perm-btn" onclick="permProfil('admin')">Admin base</button>
+                <button class="perm-btn danger" onclick="permProfil('clear')">Tout effacer</button>
+            </div>
+            <div class="perm-label" style="margin-bottom:8px;">Privilèges</div>
+            <div class="perm-grid" id="perm-grid">
+                <label class="perm-priv" id="pp-select"><input type="checkbox" value="SELECT" onchange="permUpdate()"> SELECT</label>
+                <label class="perm-priv" id="pp-insert"><input type="checkbox" value="INSERT" onchange="permUpdate()"> INSERT</label>
+                <label class="perm-priv" id="pp-update"><input type="checkbox" value="UPDATE" onchange="permUpdate()"> UPDATE</label>
+                <label class="perm-priv" id="pp-delete"><input type="checkbox" value="DELETE" onchange="permUpdate()"> DELETE</label>
+                <label class="perm-priv" id="pp-create"><input type="checkbox" value="CREATE" onchange="permUpdate()"> CREATE</label>
+                <label class="perm-priv" id="pp-drop"><input type="checkbox" value="DROP" onchange="permUpdate()"> DROP</label>
+                <label class="perm-priv" id="pp-alter"><input type="checkbox" value="ALTER" onchange="permUpdate()"> ALTER</label>
+                <label class="perm-priv" id="pp-index"><input type="checkbox" value="INDEX" onchange="permUpdate()"> INDEX</label>
+                <label class="perm-priv" id="pp-execute"><input type="checkbox" value="EXECUTE" onchange="permUpdate()"> EXECUTE</label>
+                <label class="perm-priv" id="pp-all"><input type="checkbox" value="ALL PRIVILEGES" onchange="permAll(this)"> ALL PRIVILEGES</label>
+            </div>
+            <div class="perm-output" id="perm-out">
+                <div class="lbl">Commandes SQL générées</div>
+                <div id="perm-code" style="color:#6c7086;font-style:italic;">Selectionnez des privilèges ci-dessus...</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 04 MODIFIER / SUPPRIMER ── -->
+<section class="etape" id="etape4">
+    <div class="etape-header">
+        <div class="etape-num">04</div>
+        <div class="etape-info">
+            <div class="etape-tag">Gestion des utilisateurs</div>
+            <h2>Modifier, révoquer, supprimer</h2>
+        </div>
+    </div>
+
+    <p class="prose">Trois opérations courantes sur les utilisateurs : changer le mot de passe, révoquer des privilèges avec <code>REVOKE</code>, et supprimer définitivement un compte avec <code>DROP USER</code>.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Modifier un mot de passe</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Méthode recommandée (MariaDB 10.4+)</span>
+<span class="kw">ALTER USER</span> <span class="str">'appuser'</span>@<span class="str">'localhost'</span>
+<span class="kw">IDENTIFIED BY</span> <span class="str">'NouveauMotDePasse_2024!'</span>;
+
+<span class="cmt">-- Ancienne syntaxe (encore valide)</span>
+<span class="kw">SET PASSWORD FOR</span> <span class="str">'appuser'</span>@<span class="str">'localhost'</span>
+    = <span class="fn">PASSWORD</span>(<span class="str">'NouveauMotDePasse_2024!'</span>);
+
+<span class="cmt">-- Changer son propre mot de passe (utilisateur connecté)</span>
+<span class="kw">SET PASSWORD</span> = <span class="fn">PASSWORD</span>(<span class="str">'MonNouveauMdp!'</span>);
+
+<span class="kw">FLUSH PRIVILEGES</span>;</code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">REVOKE — retirer des privilèges</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Retirer un privilège précis</span>
+<span class="kw">REVOKE</span> <span class="op">DELETE</span>
+<span class="kw">ON</span> <span class="tbl">boutique</span>.*
+<span class="kw">FROM</span> <span class="str">'appuser'</span>@<span class="str">'localhost'</span>;
+
+<span class="cmt">-- Retirer plusieurs privilèges</span>
+<span class="kw">REVOKE</span> <span class="op">INSERT</span>, <span class="op">UPDATE</span>, <span class="op">DELETE</span>
+<span class="kw">ON</span> <span class="tbl">boutique</span>.*
+<span class="kw">FROM</span> <span class="str">'reporter'</span>@<span class="str">'192.168.1.42'</span>;
+
+<span class="cmt">-- Retirer tous les privilèges d'une base</span>
+<span class="kw">REVOKE ALL PRIVILEGES</span>
+<span class="kw">ON</span> <span class="tbl">boutique</span>.*
+<span class="kw">FROM</span> <span class="str">'appuser'</span>@<span class="str">'localhost'</span>;
+<span class="cmt">-- Note : l'utilisateur existe toujours, il n'a plus de droits</span>
+
+<span class="kw">FLUSH PRIVILEGES</span>;</code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">DROP USER — supprimer un compte</span><span class="cb-badge warn">Irréversible</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Supprimer un utilisateur (ses droits sont aussi supprimés)</span>
+<span class="kw">DROP USER</span> <span class="str">'appuser'</span>@<span class="str">'localhost'</span>;
+
+<span class="cmt">-- Supprimer plusieurs utilisateurs</span>
+<span class="kw">DROP USER</span>
+    <span class="str">'appuser'</span>@<span class="str">'localhost'</span>,
+    <span class="str">'reporter'</span>@<span class="str">'192.168.1.42'</span>;
+
+<span class="cmt">-- Supprimer si existe (évite une erreur si absent)</span>
+<span class="kw">DROP USER IF EXISTS</span> <span class="str">'ancienuser'</span>@<span class="str">'localhost'</span>;
+
+<span class="kw">FLUSH PRIVILEGES</span>;</code></pre>
+    </div>
+
+    <div class="callout warn">
+        <span class="callout-icon">!</span>
+        <div><strong>DROP USER supprime aussi les droits associés</strong> dans <code>mysql.user</code> et <code>mysql.db</code>. C'est différent de REVOKE ALL qui laisse le compte exister sans droits. Si l'utilisateur est connecté au moment du DROP, sa session reste active jusqu'à déconnexion — il ne peut plus se reconnecter ensuite.</div>
+    </div>
+
+    <div class="callout tip">
+        <span class="callout-icon">!</span>
+        <div><strong>Bloquer temporairement un compte sans le supprimer.</strong> Depuis MariaDB 10.4, on peut verrouiller un compte sans le supprimer : <code>ALTER USER 'appuser'@'localhost' ACCOUNT LOCK;</code>. Pour déverrouiller : <code>ACCOUNT UNLOCK;</code>. Utile pour désactiver temporairement un accès sans perdre les droits configurés.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 05 VOIR LES DROITS ── -->
+<section class="etape" id="etape5">
+    <div class="etape-header">
+        <div class="etape-num">05</div>
+        <div class="etape-info">
+            <div class="etape-tag">Audit et vérification</div>
+            <h2>Consulter les droits — SHOW GRANTS</h2>
+        </div>
+    </div>
+
+    <p class="prose">Avant de modifier des droits, il faut savoir ce qui existe. <code>SHOW GRANTS</code> affiche exactement les commandes GRANT qui recréeraient la configuration actuelle d'un utilisateur. C'est aussi la commande d'audit fondamentale.</p>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">SHOW GRANTS — lire les droits</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Droits de l'utilisateur courant (vous-même)</span>
+<span class="kw">SHOW GRANTS</span>;
+
+<span class="cmt">-- Droits d'un utilisateur spécifique</span>
+<span class="kw">SHOW GRANTS FOR</span> <span class="str">'appuser'</span>@<span class="str">'localhost'</span>;
+
+<span class="cmt">-- Résultat typique :</span>
+<span class="cmt">-- +------------------------------------------------------------+</span>
+<span class="cmt">-- | Grants for appuser@localhost                               |</span>
+<span class="cmt">-- +------------------------------------------------------------+</span>
+<span class="cmt">-- | GRANT USAGE ON *.* TO 'appuser'@'localhost'                |</span>
+<span class="cmt">-- | GRANT SELECT, INSERT, UPDATE, DELETE ON `boutique`.* TO   |</span>
+<span class="cmt">-- |   'appuser'@'localhost'                                    |</span>
+<span class="cmt">-- +------------------------------------------------------------+</span>
+
+<span class="cmt">-- Note : GRANT USAGE signifie "peut se connecter mais rien d'autre"</span>
+<span class="cmt">-- C'est le droit de base présent même avec un compte vide</span></code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Audit complet — vue d'ensemble de tous les droits</span><span class="cb-badge sql">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="cmt">-- Tous les utilisateurs et leurs hôtes</span>
+<span class="kw">SELECT</span> <span class="vr">User</span>, <span class="vr">Host</span>, <span class="vr">account_locked</span>
+<span class="kw">FROM</span> <span class="tbl">mysql.user</span>
+<span class="kw">ORDER BY</span> <span class="vr">User</span>;
+
+<span class="cmt">-- Droits par base de données</span>
+<span class="kw">SELECT</span> <span class="vr">User</span>, <span class="vr">Host</span>, <span class="vr">Db</span>,
+       <span class="vr">Select_priv</span>, <span class="vr">Insert_priv</span>, <span class="vr">Update_priv</span>,
+       <span class="vr">Delete_priv</span>, <span class="vr">Create_priv</span>, <span class="vr">Drop_priv</span>
+<span class="kw">FROM</span> <span class="tbl">mysql.db</span>
+<span class="kw">ORDER BY</span> <span class="vr">User</span>, <span class="vr">Db</span>;
+
+<span class="cmt">-- Vérifier si un utilisateur peut accéder à une base précise</span>
+<span class="kw">SELECT</span> <span class="vr">User</span>, <span class="vr">Host</span>, <span class="vr">Db</span>,
+       <span class="vr">Select_priv</span>, <span class="vr">Insert_priv</span>
+<span class="kw">FROM</span> <span class="tbl">mysql.db</span>
+<span class="kw">WHERE</span> <span class="vr">Db</span> = <span class="str">'boutique'</span>;</code></pre>
+    </div>
+
+    <div class="checkpoint">
+        <span class="cp-icon">OK</span>
+        <div class="cp-text"><strong>Workflow de gestion des droits :</strong> SHOW GRANTS → identifier ce qui existe → REVOKE ce qui est en trop → GRANT ce qui manque → FLUSH PRIVILEGES → SHOW GRANTS pour vérifier.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 06 MYSQLDUMP ── -->
+<section class="etape" id="etape6">
+    <div class="etape-header">
+        <div class="etape-num">06</div>
+        <div class="etape-info">
+            <div class="etape-tag">Sauvegarde</div>
+            <h2>mysqldump — sauvegarder une base</h2>
+        </div>
+    </div>
+
+    <p class="prose"><code>mysqldump</code> est l'outil standard de sauvegarde logique de MariaDB. Il génère un fichier SQL contenant toutes les instructions nécessaires pour recréer la base : structure des tables, données, vues, procédures. C'est une sauvegarde lisible et portable.</p>
+
+    <div class="callout teal">
+        <span class="callout-icon">i</span>
+        <div><strong>Sauvegarde logique vs physique.</strong> <code>mysqldump</code> produit une sauvegarde <em>logique</em> : un fichier texte SQL. C'est portable, facile à inspecter, mais lent sur de très grandes bases. Pour les bases volumineuses (&gt; 50 Go), <code>mariabackup</code> (sauvegarde physique) est plus adapté.</div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">mysqldump — exemples essentiels</span><span class="cb-badge shell">Shell</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="shc"># Sauvegarder une base complète (structure + données)</span>
+<span class="sh">$</span> mysqldump -u root -p boutique > boutique_backup.sql
+
+<span class="shc"># Sauvegarder avec compression (recommandé)</span>
+<span class="sh">$</span> mysqldump -u root -p boutique | gzip > boutique_$(date +%Y%m%d).sql.gz
+
+<span class="shc"># Sauvegarder plusieurs bases</span>
+<span class="sh">$</span> mysqldump -u root -p --databases boutique catalogue > multi_backup.sql
+
+<span class="shc"># Sauvegarder TOUTES les bases (y compris mysql, users, droits)</span>
+<span class="sh">$</span> mysqldump -u root -p --all-databases > full_backup.sql
+
+<span class="shc"># Sauvegarder uniquement la structure (sans les données)</span>
+<span class="sh">$</span> mysqldump -u root -p --no-data boutique > boutique_structure.sql
+
+<span class="shc"># Sauvegarder uniquement les données (sans la structure)</span>
+<span class="sh">$</span> mysqldump -u root -p --no-create-info boutique > boutique_data.sql
+
+<span class="shc"># Sauvegarder une seule table</span>
+<span class="sh">$</span> mysqldump -u root -p boutique produits > produits_backup.sql
+
+<span class="shc"># Sauvegarde complète avec options de fiabilité (production)</span>
+<span class="sh">$</span> mysqldump -u root -p \
+    --single-transaction \
+    --routines \
+    --triggers \
+    --events \
+    boutique | gzip > boutique_$(date +%Y%m%d_%H%M).sql.gz</code></pre>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Option</th><th>Rôle</th><th>Usage</th></tr></thead>
+            <tbody>
+                <tr><td>--single-transaction</td><td>Sauvegarde cohérente sans verrouiller les tables (InnoDB)</td><td class="td-good td-mono">Production obligatoire</td></tr>
+                <tr><td>--routines (-R)</td><td>Inclure les procédures et fonctions stockées</td><td class="td-mono">Si vous utilisez des stored procedures</td></tr>
+                <tr><td>--triggers</td><td>Inclure les triggers (déclencheurs)</td><td class="td-mono">Inclus par défaut, option pour l'exclure</td></tr>
+                <tr><td>--events (-E)</td><td>Inclure les évènements planifiés (cron SQL)</td><td class="td-mono">Si vous utilisez EVENT SCHEDULER</td></tr>
+                <tr><td>--no-data (-d)</td><td>Structure seulement, pas de données</td><td class="td-mono">Partager le schéma sans les données</td></tr>
+                <tr><td>--all-databases (-A)</td><td>Toutes les bases + mysql.user (droits)</td><td class="td-warn td-mono">Migration serveur complète</td></tr>
+                <tr><td>--compress (-C)</td><td>Compression du flux client-serveur</td><td class="td-mono">Sauvegarde depuis un serveur distant</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout warn">
+        <span class="callout-icon">!</span>
+        <div><strong>--single-transaction est indispensable sur InnoDB.</strong> Sans cette option, mysqldump pose des verrous sur toutes les tables pendant la sauvegarde — votre application est bloquée en écriture. Avec <code>--single-transaction</code>, la sauvegarde se fait dans une transaction isolée : cohérente et sans blocage. Cela ne fonctionne qu'avec InnoDB (pas MyISAM).</div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Cron job — automatiser la sauvegarde quotidienne</span><span class="cb-badge shell">Shell</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="shc"># Éditer la crontab : crontab -e</span>
+<span class="shc"># Sauvegarde tous les jours à 3h00</span>
+<span class="sh">0 3 * * *</span> mysqldump -u backupuser -p<span class="shv">MotDePasse</span> \
+    --single-transaction --routines boutique \
+    | gzip > /var/backups/mariadb/boutique_$(date +\%Y\%m\%d).sql.gz
+
+<span class="shc"># Purger les sauvegardes de plus de 30 jours</span>
+<span class="sh">0 4 * * *</span> find /var/backups/mariadb/ -name "*.sql.gz" -mtime +30 -delete
+
+<span class="shc"># Créer un utilisateur dédié aux sauvegardes (lecture seule)</span>
+<span class="cmt">-- Dans MariaDB :</span>
+<span class="kw">CREATE USER</span> <span class="str">'backupuser'</span>@<span class="str">'localhost'</span> <span class="kw">IDENTIFIED BY</span> <span class="str">'BackupPass!'</span>;
+<span class="kw">GRANT SELECT</span>, <span class="op">LOCK TABLES</span>, <span class="op">SHOW VIEW</span>, <span class="op">EVENT</span>, <span class="op">TRIGGER</span>
+<span class="kw">ON</span> <span class="tbl">boutique</span>.*
+<span class="kw">TO</span> <span class="str">'backupuser'</span>@<span class="str">'localhost'</span>;
+<span class="kw">FLUSH PRIVILEGES</span>;</code></pre>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 07 RESTAURER ── -->
+<section class="etape" id="etape7">
+    <div class="etape-header">
+        <div class="etape-num">07</div>
+        <div class="etape-info">
+            <div class="etape-tag">Restauration</div>
+            <h2>Restaurer une sauvegarde</h2>
+        </div>
+    </div>
+
+    <p class="prose">La restauration consiste à <strong>rejouer le fichier SQL</strong> sur le serveur. MariaDB exécute les instructions dans l'ordre : DROP TABLE, CREATE TABLE, INSERT. La base est recréée à l'état exact de la sauvegarde.</p>
+
+    <div class="callout warn">
+        <span class="callout-icon">!</span>
+        <div><strong>Une restauration écrase les données existantes.</strong> Si la base cible existe et contient des données, les INSERT du fichier SQL les remplaceront (ou généreront des erreurs de doublon). Toujours restaurer sur une base vide ou avec --add-drop-database dans la sauvegarde.</div>
+    </div>
+
+    <div class="timeline">
+        <div class="tl-step">
+            <div class="tl-left"><div class="tl-dot teal"></div><div class="tl-line"></div></div>
+            <div class="tl-content">
+                <div class="tl-title">Étape 1 — Préparer la base cible</div>
+                <div class="tl-desc">Créer une base vide si elle n'existe pas, ou vider l'existante avant de restaurer.</div>
+                <span class="tl-code">CREATE DATABASE IF NOT EXISTS boutique;</span>
+            </div>
+        </div>
+        <div class="tl-step">
+            <div class="tl-left"><div class="tl-dot blue"></div><div class="tl-line"></div></div>
+            <div class="tl-content">
+                <div class="tl-title">Étape 2 — Décompresser si nécessaire</div>
+                <div class="tl-desc">Si la sauvegarde est compressée (.sql.gz), décompresser avant ou utiliser zcat en pipe.</div>
+                <span class="tl-code">gunzip boutique_20241215.sql.gz</span>
+            </div>
+        </div>
+        <div class="tl-step">
+            <div class="tl-left"><div class="tl-dot green"></div><div class="tl-line"></div></div>
+            <div class="tl-content">
+                <div class="tl-title">Étape 3 — Importer le fichier SQL</div>
+                <div class="tl-desc">Rejouer le fichier SQL sur la base cible.</div>
+                <span class="tl-code">mariadb -u root -p boutique &lt; boutique_backup.sql</span>
+            </div>
+        </div>
+        <div class="tl-step">
+            <div class="tl-left"><div class="tl-dot teal"></div></div>
+            <div class="tl-content">
+                <div class="tl-title">Étape 4 — Vérifier la restauration</div>
+                <div class="tl-desc">Contrôler que les tables existent et contiennent le bon nombre de lignes.</div>
+                <span class="tl-code">SHOW TABLES; SELECT COUNT(*) FROM produits;</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Commandes de restauration — tous les cas</span><span class="cb-badge shell">Shell</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="shc"># Restauration basique (fichier .sql non compressé)</span>
+<span class="sh">$</span> mariadb -u root -p boutique < boutique_backup.sql
+
+<span class="shc"># Restauration depuis un fichier compressé (sans décompresser)</span>
+<span class="sh">$</span> zcat boutique_20241215.sql.gz | mariadb -u root -p boutique
+
+<span class="shc"># Restauration avec création automatique de la base</span>
+<span class="shc"># (nécessite que le dump ait été fait avec --databases ou --all-databases)</span>
+<span class="sh">$</span> mariadb -u root -p < boutique_backup.sql
+
+<span class="shc"># Restauration vers une base différente (renommer à la volée)</span>
+<span class="shc"># Étape 1 : créer la nouvelle base</span>
+<span class="sh">$</span> mariadb -u root -p -e <span class="shv">"CREATE DATABASE boutique_restore;"</span>
+<span class="shc"># Étape 2 : importer</span>
+<span class="sh">$</span> mariadb -u root -p boutique_restore < boutique_backup.sql
+
+<span class="shc"># Restauration d'une seule table depuis un dump complet</span>
+<span class="shc"># Extraire la table 'produits' du dump avec grep</span>
+<span class="sh">$</span> grep -n "Table structure for table \`produits\`" boutique_backup.sql
+<span class="shc"># Puis extraire les lignes correspondantes manuellement ou :</span>
+<span class="sh">$</span> mariadb -u root -p boutique \
+    -e <span class="shv">"SET FOREIGN_KEY_CHECKS=0; DROP TABLE IF EXISTS produits;"</span>
+<span class="sh">$</span> mariadb -u root -p boutique < produits_backup.sql
+
+<span class="shc"># Vérifier après restauration</span>
+<span class="sh">$</span> mariadb -u root -p boutique \
+    -e <span class="shv">"SHOW TABLES; SELECT COUNT(*) FROM produits;"</span></code></pre>
+    </div>
+
+    <div class="code-block">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Script de restauration sécurisé</span><span class="cb-badge shell">Script bash</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre><code><span class="shc">#!/bin/bash</span>
+<span class="shc"># restore.sh — restauration avec vérifications</span>
+
+<span class="shv">DB_NAME</span>=<span class="str">"boutique"</span>
+<span class="shv">BACKUP_FILE</span>=<span class="str">"$1"</span>
+<span class="shv">DB_USER</span>=<span class="str">"root"</span>
+
+<span class="shk">if</span> [ -z <span class="str">"$BACKUP_FILE"</span> ]; <span class="shk">then</span>
+    <span class="shk">echo</span> <span class="str">"Usage: ./restore.sh fichier_backup.sql[.gz]"</span>
+    <span class="shk">exit</span> 1
+<span class="shk">fi</span>
+
+<span class="shk">if</span> [ ! -f <span class="str">"$BACKUP_FILE"</span> ]; <span class="shk">then</span>
+    <span class="shk">echo</span> <span class="str">"ERREUR : fichier introuvable : $BACKUP_FILE"</span>
+    <span class="shk">exit</span> 1
+<span class="shk">fi</span>
+
+<span class="shk">echo</span> <span class="str">"Restauration de $BACKUP_FILE vers $DB_NAME..."</span>
+<span class="shk">echo</span> <span class="str">"ATTENTION : cela va ecraser les données existantes."</span>
+<span class="shk">read</span> -p <span class="str">"Confirmer ? (oui/non) : "</span> <span class="shv">CONFIRM</span>
+
+<span class="shk">if</span> [ <span class="str">"$CONFIRM"</span> != <span class="str">"oui"</span> ]; <span class="shk">then</span>
+    <span class="shk">echo</span> <span class="str">"Annulé."</span>; <span class="shk">exit</span> 0
+<span class="shk">fi</span>
+
+<span class="shc"># Décompresser ou restaurer directement</span>
+<span class="shk">if</span> [[ <span class="str">"$BACKUP_FILE"</span> == *.gz ]]; <span class="shk">then</span>
+    zcat <span class="str">"$BACKUP_FILE"</span> | mariadb -u <span class="shv">$DB_USER</span> -p <span class="shv">$DB_NAME</span>
+<span class="shk">else</span>
+    mariadb -u <span class="shv">$DB_USER</span> -p <span class="shv">$DB_NAME</span> < <span class="str">"$BACKUP_FILE"</span>
+<span class="shk">fi</span>
+
+<span class="shk">echo</span> <span class="str">"Restauration terminée."</span></code></pre>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 08 STRATÉGIES ── -->
+<section class="etape" id="etape8">
+    <div class="etape-header">
+        <div class="etape-num">08</div>
+        <div class="etape-info">
+            <div class="etape-tag">Bonnes pratiques</div>
+            <h2>Stratégies de sauvegarde — la règle 3-2-1</h2>
+        </div>
+    </div>
+
+    <p class="prose">Une sauvegarde qui n'a jamais été testée n'est pas une sauvegarde — c'est une espérance. La stratégie de sauvegarde doit répondre à deux questions : <strong>quelle est la perte de données maximale acceptable</strong> (RPO) et <strong>en combien de temps doit-on être de nouveau opérationnel</strong> (RTO) ?</p>
+
+    <div class="schema">
+<span class="sc-key">Règle 3-2-1</span>
+  ├── <span class="sc-val">3</span> copies des données
+  │     <span class="sc-dim">l'originale + 2 sauvegardes</span>
+  ├── <span class="sc-val">2</span> supports différents
+  │     <span class="sc-dim">disque local + NAS, ou disque + cloud</span>
+  └── <span class="sc-val">1</span> copie hors site
+        <span class="sc-dim">cloud, autre datacenter, autre bâtiment physique</span>
+
+<span class="sc-key">RPO / RTO</span>
+  ├── <span class="sc-blue">RPO</span> (Recovery Point Objective)
+  │     <span class="sc-dim">perte de données max acceptable</span>
+  │     <span class="sc-dim">Ex : RPO = 1h → sauvegarde toutes les heures</span>
+  └── <span class="sc-blue">RTO</span> (Recovery Time Objective)
+        <span class="sc-dim">temps max pour être de nouveau opérationnel</span>
+        <span class="sc-dim">Ex : RTO = 4h → procédure de restauration testée et < 4h</span>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Type de sauvegarde</th><th>Fréquence</th><th>Rétention</th><th>Avantages</th><th>Inconvénients</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td>Complète quotidienne</td>
+                    <td class="td-mono">1x/jour (nuit)</td>
+                    <td class="td-mono">7 à 30 jours</td>
+                    <td style="font-size:.8rem;">Simple, restauration directe</td>
+                    <td style="font-size:.8rem;">Volumineux, prend du temps</td>
+                </tr>
+                <tr>
+                    <td>Incrémentale horaire</td>
+                    <td class="td-mono">1x/heure</td>
+                    <td class="td-mono">24-48 heures</td>
+                    <td style="font-size:.8rem;">RPO court, petit volume</td>
+                    <td style="font-size:.8rem;">Restauration plus complexe</td>
+                </tr>
+                <tr>
+                    <td>Binary logs (PITR)</td>
+                    <td class="td-mono">En continu</td>
+                    <td class="td-mono">3-7 jours</td>
+                    <td style="font-size:.8rem;">Restauration à la minute près</td>
+                    <td style="font-size:.8rem;">Configuration complexe</td>
+                </tr>
+                <tr>
+                    <td>Snapshot Cloud</td>
+                    <td class="td-mono">1x/jour ou +</td>
+                    <td class="td-mono">Paramétrable</td>
+                    <td style="font-size:.8rem;">Hors site automatique</td>
+                    <td style="font-size:.8rem;">Coût selon volume</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout success">
+        <span class="callout-icon">+</span>
+        <div><strong>Tester la restauration régulièrement.</strong> Planifiez un test de restauration mensuel sur un environnement de staging. Un fichier .sql.gz corrompu ou une restauration qui échoue après un incident n'est découvert qu'au moment où on en a le plus besoin. La procédure de restauration doit être documentée et connue de toute l'équipe.</div>
+    </div>
+
+    <div class="callout tip">
+        <span class="callout-icon">!</span>
+        <div><strong>Surveiller la taille et la durée des sauvegardes.</strong> Si votre dump passe soudainement de 200 Mo à 20 Mo ou si son temps d'exécution change brutalement, c'est un signal d'alerte. Ajoutez une vérification de taille minimale dans vos scripts de sauvegarde et envoyez une alerte si le fichier est anormalement petit.</div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── 09 SIMULATEUR SAUVEGARDE ── -->
+<section class="etape" id="etape9">
+    <div class="etape-header">
+        <div class="etape-num">09</div>
+        <div class="etape-info">
+            <div class="etape-tag">Simulateur interactif</div>
+            <h2>Simulateur de commandes backup</h2>
+        </div>
+    </div>
+
+    <p class="prose">Sélectionnez un scénario de sauvegarde ou de restauration et observez la commande générée avec toutes les options expliquées.</p>
+
+    <div class="backup-panel">
+        <div class="backup-card">
+            <div class="backup-card-title">Sauvegarde complète</div>
+            <div class="backup-card-desc">Dump complet avec compression, options de fiabilité pour production. Base unique.</div>
+            <button class="backup-card-btn" onclick="simBackup('full')">Générer la commande</button>
+        </div>
+        <div class="backup-card">
+            <div class="backup-card-title">Structure seulement</div>
+            <div class="backup-card-desc">Schéma sans données. Utile pour partager le modèle ou initialiser un environnement.</div>
+            <button class="backup-card-btn" onclick="simBackup('struct')">Générer la commande</button>
+        </div>
+        <div class="backup-card">
+            <div class="backup-card-title">Toutes les bases</div>
+            <div class="backup-card-desc">Dump complet du serveur incluant les utilisateurs et droits. Migration serveur.</div>
+            <button class="backup-card-btn" onclick="simBackup('all')">Générer la commande</button>
+        </div>
+        <div class="backup-card">
+            <div class="backup-card-title">Restauration simple</div>
+            <div class="backup-card-desc">Restaurer un fichier .sql.gz sur une base existante.</div>
+            <button class="backup-card-btn restore" onclick="simBackup('restore')">Générer la commande</button>
+        </div>
+        <div class="backup-card">
+            <div class="backup-card-title">Restauration hors-ligne</div>
+            <div class="backup-card-desc">Créer une base puis y restaurer une sauvegarde. Base inexistante au départ.</div>
+            <button class="backup-card-btn restore" onclick="simBackup('restore_new')">Générer la commande</button>
+        </div>
+        <div class="backup-card">
+            <div class="backup-card-title">Script cron complet</div>
+            <div class="backup-card-desc">Script bash prêt pour la crontab avec rotation automatique des anciens dumps.</div>
+            <button class="backup-card-btn" onclick="simBackup('cron')">Générer le script</button>
+        </div>
+    </div>
+
+    <div class="code-block" id="backup-output-block" style="display:none;">
+        <div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name" id="backup-output-title">Commande générée</span><button class="cb-copy" onclick="cp(this)">copier</button></div>
+        <pre id="backup-output-pre" style="min-height:48px;"></pre>
+    </div>
+
+    <div id="backup-explain" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-top:4px;box-shadow:var(--shadow);">
+        <div style="font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;">Explication des options</div>
+        <div id="backup-explain-body" style="font-size:.85rem;color:var(--muted);line-height:1.8;"></div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── QUIZ ── -->
+<section class="etape" id="quiz">
+    <div class="etape-header">
+        <div class="etape-num">10</div>
+        <div class="etape-info">
+            <div class="etape-tag">Evaluation</div>
+            <h2>Vérifiez votre compréhension</h2>
+        </div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q1.</span> Quelle est la différence entre <code>appuser@localhost</code> et <code>appuser@%</code> dans MariaDB ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q1',false)">Aucune — c'est le même compte avec deux alias</button>
+            <button class="opt" onclick="ans(this,'q1',true)">Ce sont deux comptes distincts. localhost limite la connexion à la machine locale, % autorise toute origine</button>
+            <button class="opt" onclick="ans(this,'q1',false)">appuser@% est plus sécurisé car il gère tous les hôtes en une seule entrée</button>
+        </div>
+        <div class="fb" id="fb-q1"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q2.</span> Après <code>CREATE USER 'appuser'@'localhost'</code>, l'utilisateur se connecte et tape <code>SHOW DATABASES</code>. Que voit-il ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q2',false)">Toutes les bases du serveur — il est connecté</button>
+            <button class="opt" onclick="ans(this,'q2',true)">Uniquement information_schema — CREATE USER ne donne aucun droit, même pas de lecture</button>
+            <button class="opt" onclick="ans(this,'q2',false)">Une erreur d'authentification — il faut d'abord un GRANT</button>
+        </div>
+        <div class="fb" id="fb-q2"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q3.</span> Vous voulez supprimer le droit DELETE d'un utilisateur sans supprimer ses autres droits. Quelle commande utilisez-vous ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q3',false)">DROP PRIVILEGE DELETE FROM 'user'@'localhost' ON boutique.*</button>
+            <button class="opt" onclick="ans(this,'q3',true)">REVOKE DELETE ON boutique.* FROM 'user'@'localhost'</button>
+            <button class="opt" onclick="ans(this,'q3',false)">ALTER USER 'user'@'localhost' REMOVE DELETE ON boutique.*</button>
+        </div>
+        <div class="fb" id="fb-q3"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q4.</span> Pourquoi l'option <code>--single-transaction</code> est-elle recommandée avec mysqldump sur une base InnoDB en production ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q4',false)">Elle compresse automatiquement le fichier de sauvegarde</button>
+            <button class="opt" onclick="ans(this,'q4',true)">Elle crée une transaction isolée : la sauvegarde est cohérente sans poser de verrous qui bloqueraient les écritures de l'application</button>
+            <button class="opt" onclick="ans(this,'q4',false)">Elle divise la sauvegarde en plusieurs fichiers pour les grandes bases</button>
+        </div>
+        <div class="fb" id="fb-q4"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q5.</span> Vous avez un fichier <code>boutique_20241215.sql.gz</code>. Quelle commande restaure cette sauvegarde <strong>sans la décompresser</strong> d'abord ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q5',false)">mariadb -u root -p boutique &lt; boutique_20241215.sql.gz</button>
+            <button class="opt" onclick="ans(this,'q5',true)">zcat boutique_20241215.sql.gz | mariadb -u root -p boutique</button>
+            <button class="opt" onclick="ans(this,'q5',false)">mysqldump -u root -p boutique --restore boutique_20241215.sql.gz</button>
+        </div>
+        <div class="fb" id="fb-q5"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q6.</span> Une application PHP doit lire et écrire dans la base <code>boutique</code> mais ne doit jamais modifier la structure des tables. Quel est le bon GRANT ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q6',false)">GRANT ALL PRIVILEGES ON boutique.* TO 'app'@'localhost'</button>
+            <button class="opt" onclick="ans(this,'q6',false)">GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER ON boutique.* TO 'app'@'localhost'</button>
+            <button class="opt" onclick="ans(this,'q6',true)">GRANT SELECT, INSERT, UPDATE, DELETE ON boutique.* TO 'app'@'localhost'</button>
+        </div>
+        <div class="fb" id="fb-q6"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q7.</span> Vous supprimez un utilisateur avec <code>DROP USER 'appuser'@'localhost'</code> pendant qu'il est connecté. Que se passe-t-il pour sa session active ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q7',false)">Sa connexion est immédiatement fermée</button>
+            <button class="opt" onclick="ans(this,'q7',true)">Sa session reste active jusqu'à déconnexion — mais il ne pourra plus se reconnecter</button>
+            <button class="opt" onclick="ans(this,'q7',false)">DROP USER échoue si l'utilisateur est connecté</button>
+        </div>
+        <div class="fb" id="fb-q7"></div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="q"><span class="qn">Q8.</span> Quelle commande affiche les droits d'un utilisateur sous forme de commandes GRANT prêtes à être rejouées ?</div>
+        <div class="opts">
+            <button class="opt" onclick="ans(this,'q8',false)">SELECT * FROM mysql.user WHERE User='appuser'</button>
+            <button class="opt" onclick="ans(this,'q8',false)">DESCRIBE GRANTS FOR 'appuser'@'localhost'</button>
+            <button class="opt" onclick="ans(this,'q8',true)">SHOW GRANTS FOR 'appuser'@'localhost'</button>
+        </div>
+        <div class="fb" id="fb-q8"></div>
+    </div>
+
+    <div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;box-shadow:var(--shadow);">
+        <div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div>
+        <div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div>
+    </div>
+</section>
+
+</main>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── Nav scroll spy ──
+const sections = document.querySelectorAll('.etape[id]')
+const navLinks  = document.querySelectorAll('.nav-link')
+const obs = new IntersectionObserver(e => {
+    e.forEach(entry => {
+        if (entry.isIntersecting) {
+            navLinks.forEach(l => l.classList.remove('active'))
+            const l = document.querySelector(`.nav-link[href="#${entry.target.id}"]`)
+            if (l) l.classList.add('active')
+        }
+    })
+}, { threshold: 0.2 })
+sections.forEach(s => obs.observe(s))
+
+// ── Copy ──
+function cp(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre')
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = 'Copié'; btn.classList.add('ok')
+        setTimeout(() => { btn.textContent = 'copier'; btn.classList.remove('ok') }, 1800)
+    })
+}
+
+// ── Simulateur GRANT ─────────────────────────────────────────────
+const PRIVS = ['SELECT','INSERT','UPDATE','DELETE','CREATE','DROP','ALTER','INDEX','EXECUTE','ALL PRIVILEGES']
+const PROFILES = {
+    webapp:   ['SELECT','INSERT','UPDATE','DELETE'],
+    readonly: ['SELECT'],
+    dev:      ['SELECT','INSERT','UPDATE','DELETE','CREATE','DROP','ALTER','INDEX'],
+    admin:    ['ALL PRIVILEGES'],
+    clear:    [],
+}
+
+function permProfil(name) {
+    const privs = PROFILES[name] || []
+    PRIVS.forEach(p => {
+        const key = p.toLowerCase().replace(' ', '')
+        const lbl = document.getElementById('pp-' + key.split('_')[0]) ||
+                    document.getElementById('pp-' + key)
+    })
+    // Reset all
+    document.querySelectorAll('.perm-priv input').forEach(cb => {
+        cb.checked = privs.includes(cb.value)
+        cb.closest('.perm-priv').classList.toggle('checked', cb.checked)
+    })
+    permUpdate()
+}
+
+function permAll(cb) {
+    if (cb.checked) {
+        document.querySelectorAll('.perm-priv input').forEach(c => {
+            c.checked = c.value === 'ALL PRIVILEGES'
+            c.closest('.perm-priv').classList.toggle('checked', c.checked)
+        })
+    }
+    permUpdate()
+}
+
+function permUpdate() {
+    const user  = document.getElementById('pu-name').value.trim() || 'appuser'
+    const host  = document.getElementById('pu-host').value
+    const scope = document.getElementById('pu-scope').value
+    const db    = document.getElementById('pu-db').value.trim() || 'mabase'
+
+    // Portée SQL
+    let on
+    if (scope === 'global') on = '*.*'
+    else if (scope === 'db') on = '`' + db + '`.*'
+    else on = '`' + db + '`.`' + db + '_table`'
+
+    const checked = []
+    document.querySelectorAll('.perm-priv input:checked').forEach(cb => {
+        cb.closest('.perm-priv').classList.add('checked')
+        checked.push(cb.value)
+    })
+    document.querySelectorAll('.perm-priv input:not(:checked)').forEach(cb => {
+        cb.closest('.perm-priv').classList.remove('checked')
+    })
+
+    const out = document.getElementById('perm-code')
+    if (checked.length === 0) {
+        out.innerHTML = '<span style="color:#6c7086;font-style:italic;">Aucun privilège sélectionné — l\'utilisateur pourra se connecter mais ne verra rien.</span>'
+        return
+    }
+
+    const privStr = checked.includes('ALL PRIVILEGES') ? 'ALL PRIVILEGES' : checked.join(', ')
+
+    const grantLine = `<span style="color:#cba6f7;font-weight:600">GRANT</span> <span style="color:#89dceb">${privStr}</span>\n<span style="color:#cba6f7;font-weight:600">ON</span> <span style="color:#f38ba8">${on}</span>\n<span style="color:#cba6f7;font-weight:600">TO</span> <span style="color:#a6e3a1">'${user}'</span>@<span style="color:#a6e3a1">'${host}'</span>;\n\n<span style="color:#cba6f7;font-weight:600">FLUSH PRIVILEGES</span>;\n\n<span style="color:#6c7086;font-style:italic">-- Vérifier :</span>\n<span style="color:#cba6f7;font-weight:600">SHOW GRANTS FOR</span> <span style="color:#a6e3a1">'${user}'</span>@<span style="color:#a6e3a1">'${host}'</span>;`
+
+    out.innerHTML = grantLine
+
+    // Avertissement GRANT OPTION / ALL sur *.*
+    if (checked.includes('ALL PRIVILEGES') && scope === 'global') {
+        out.innerHTML += '\n\n<span style="color:#f38ba8">-- ATTENTION : ALL PRIVILEGES sur *.* donne les droits super-admin</span>'
+    }
+    if (host === '%') {
+        out.innerHTML += '\n<span style="color:#fab387">-- ATTENTION : hôte % autorise les connexions depuis n\'importe quelle IP</span>'
+    }
+}
+
+// Écouter les champs utilisateur pour mettre à jour le code
+;['pu-name','pu-host','pu-scope','pu-db'].forEach(id => {
+    document.getElementById(id).addEventListener('input', permUpdate)
+    document.getElementById(id).addEventListener('change', permUpdate)
+})
+
+// ── Simulateur Backup ─────────────────────────────────────────────
+const BACKUP_SCENARIOS = {
+    full: {
+        title: 'Sauvegarde complète — production',
+        code: '# Sauvegarde complète avec compression\n$ mysqldump -u root -p \\\n    --single-transaction \\\n    --routines \\\n    --triggers \\\n    --events \\\n    boutique \\\n    | gzip > boutique_$(date +%Y%m%d_%H%M).sql.gz\n\n# Vérifier que le fichier n\'est pas vide\n$ ls -lh boutique_*.sql.gz',
+        explain: `<strong style="color:var(--text)">--single-transaction</strong> — sauvegarde cohérente sans verrouiller les tables. Indispensable sur InnoDB en production.<br>
+<strong style="color:var(--text)">--routines</strong> — inclure les procédures stockées et fonctions.<br>
+<strong style="color:var(--text)">--triggers</strong> — inclure les déclencheurs (triggers).<br>
+<strong style="color:var(--text)">--events</strong> — inclure les évènements planifiés (EVENT SCHEDULER).<br>
+<strong style="color:var(--text)">| gzip</strong> — compresser à la volée via un pipe. Réduit la taille de 70 à 90%.<br>
+<strong style="color:var(--text)">$(date +%Y%m%d_%H%M)</strong> — horodatage dans le nom de fichier pour retrouver facilement la sauvegarde.`
+    },
+    struct: {
+        title: 'Structure seule — schéma sans données',
+        code: '# Structure uniquement (CREATE TABLE sans INSERT)\n$ mysqldump -u root -p --no-data boutique > boutique_schema.sql\n\n# Avec compression\n$ mysqldump -u root -p --no-data boutique \\\n    | gzip > boutique_schema_$(date +%Y%m%d).sql.gz',
+        explain: `<strong style="color:var(--text)">--no-data (-d)</strong> — exporter uniquement la structure (CREATE TABLE, CREATE INDEX, etc.) sans aucun INSERT. Utile pour : partager le schéma avec l'équipe, initialiser un nouvel environnement, documenter le modèle de données. Le fichier résultant est très petit même pour une grande base.`
+    },
+    all: {
+        title: 'Toutes les bases — migration serveur',
+        code: '# Dump complet incluant les utilisateurs et droits\n$ mysqldump -u root -p \\\n    --all-databases \\\n    --single-transaction \\\n    --routines \\\n    --events \\\n    | gzip > full_server_$(date +%Y%m%d).sql.gz\n\n# Note : inclut mysql.user (utilisateurs et droits)\n# A utiliser pour migrer tout un serveur',
+        explain: `<strong style="color:var(--text)">--all-databases (-A)</strong> — exporte toutes les bases y compris <code>mysql</code> (qui contient les utilisateurs et leurs droits). Indispensable pour une migration complète de serveur. Attention lors de la restauration : si les versions MariaDB diffèrent, les tables système <code>mysql.*</code> peuvent avoir une structure différente — restaurer avec précaution.`
+    },
+    restore: {
+        title: 'Restauration depuis un .sql.gz',
+        code: '# Restaurer sans décompresser (via pipe zcat)\n$ zcat boutique_20241215.sql.gz | mariadb -u root -p boutique\n\n# Ou décompresser d\'abord, puis restaurer\n$ gunzip boutique_20241215.sql.gz\n$ mariadb -u root -p boutique < boutique_20241215.sql\n\n# Vérifier après restauration\n$ mariadb -u root -p boutique \\\n    -e "SHOW TABLES; SELECT COUNT(*) FROM produits;"',
+        explain: `<strong style="color:var(--text)">zcat fichier.gz |</strong> — décompresse à la volée et envoie vers le pipe. Évite de décompresser sur disque (économise de l'espace). La base <code>boutique</code> doit exister avant la restauration si le dump ne contient pas de CREATE DATABASE. Le <code>-e</code> de vérification exécute une requête directement depuis le shell sans entrer dans le client interactif.`
+    },
+    restore_new: {
+        title: 'Restauration sur une base inexistante',
+        code: '# Étape 1 : créer la base cible\n$ mariadb -u root -p \\\n    -e "CREATE DATABASE IF NOT EXISTS boutique \\\n         CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"\n\n# Étape 2 : restaurer\n$ zcat boutique_backup.sql.gz | mariadb -u root -p boutique\n\n# Étape 3 : recréer l\'utilisateur et ses droits\n$ mariadb -u root -p << \'EOF\'\nCREATE USER IF NOT EXISTS \'appuser\'@\'localhost\'\n    IDENTIFIED BY \'MotDePasse!\';\nGRANT SELECT, INSERT, UPDATE, DELETE\n    ON boutique.* TO \'appuser\'@\'localhost\';\nFLUSH PRIVILEGES;\nEOF',
+        explain: `<strong style="color:var(--text)">CHARACTER SET utf8mb4</strong> — encodage recommandé pour le support complet Unicode (y compris emojis). À spécifier à la création pour éviter des problèmes d'encodage. La restauration depuis le dump recrée les tables avec leurs données mais <strong>pas les utilisateurs</strong> (sauf si le dump inclut <code>--all-databases</code>). Il faut donc recréer les utilisateurs et leurs droits séparément après la restauration.`
+    },
+    cron: {
+        title: 'Script cron complet avec rotation',
+        code: '#!/bin/bash\n# /etc/cron.daily/mariadb-backup\n# Sauvegarde quotidienne avec rotation 30 jours\n\nBACKUP_DIR="/var/backups/mariadb"\nDB_NAME="boutique"\nDB_USER="backupuser"\nDB_PASS="BackupPass!"\nRETENTION=30  # jours\nDATE=$(date +%Y%m%d_%H%M)\n\n# Créer le répertoire si nécessaire\nmkdir -p "$BACKUP_DIR"\n\n# Sauvegarde\nmysqldump -u "$DB_USER" -p"$DB_PASS" \\\n    --single-transaction --routines \\\n    "$DB_NAME" \\\n    | gzip > "$BACKUP_DIR/${DB_NAME}_${DATE}.sql.gz"\n\n# Vérifier que le fichier n\'est pas vide\nif [ ! -s "$BACKUP_DIR/${DB_NAME}_${DATE}.sql.gz" ]; then\n    echo "ERREUR : sauvegarde vide !" | mail -s "Backup FAILED" admin@monsite.com\n    exit 1\nfi\n\n# Purger les anciennes sauvegardes\nfind "$BACKUP_DIR" -name "*.sql.gz" -mtime +$RETENTION -delete\n\necho "Backup OK : ${DB_NAME}_${DATE}.sql.gz"',
+        explain: `<strong style="color:var(--text)">! -s fichier</strong> — vérifie que le fichier n'est pas vide (-s = taille > 0). Si la sauvegarde échoue silencieusement, le fichier peut être créé mais vide : cette vérification envoie une alerte. <strong style="color:var(--text)">find -mtime +30 -delete</strong> — supprime les fichiers modifiés il y a plus de 30 jours. La rotation automatique évite que le disque se remplisse. Placez ce script dans <code>/etc/cron.daily/</code> et donnez-lui les droits d'exécution avec <code>chmod +x</code>.`
+    }
+}
+
+function simBackup(type) {
+    const scenario = BACKUP_SCENARIOS[type]
+    if (!scenario) return
+
+    const block   = document.getElementById('backup-output-block')
+    const title   = document.getElementById('backup-output-title')
+    const pre     = document.getElementById('backup-output-pre')
+    const explain = document.getElementById('backup-explain')
+    const body    = document.getElementById('backup-explain-body')
+
+    block.style.display = 'block'
+    title.textContent = scenario.title
+
+    // Coloration syntaxique shell basique
+    let code = scenario.code
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        // lignes de commentaires
+        .replace(/(#[^\n]*)/g, '<span style="color:#6c7086;font-style:italic;">$1</span>')
+        // $ prompt
+        .replace(/^\$ /gm, '<span style="color:#fab387">$ </span>')
+        // options --
+        .replace(/(--[\w-]+)/g, '<span style="color:#89b4fa">$1</span>')
+        // SQL keywords
+        .replace(/\b(GRANT|REVOKE|CREATE|DROP|FLUSH|SELECT|INSERT|UPDATE|DELETE|ALTER|ON|TO|FROM|IF|NOT|EXISTS|USER|DATABASE|PRIVILEGES|EOF)\b/g,
+            '<span style="color:#cba6f7;font-weight:600">$1</span>')
+        // strings
+        .replace(/'([^']*)'/g, "<span style='color:#a6e3a1'>\'$1\'</span>")
+
+    pre.innerHTML = '<code>' + code + '</code>'
+    explain.style.display = 'block'
+    body.innerHTML = scenario.explain
+    block.scrollIntoView({ behavior:'smooth', block:'nearest' })
+}
+
+// ── Quiz ──────────────────────────────────────────────────────────
+const fbs = {
+    q1: {
+        ok: 'Exact. Dans MariaDB, un utilisateur est identifié par la paire nom@hote. appuser@localhost et appuser@% sont deux entrées distinctes dans mysql.user avec potentiellement des mots de passe et des droits différents. MariaDB choisit l\'entrée la plus précise correspondant à l\'IP de connexion.',
+        ko: 'Non. Ce sont deux comptes distincts dans mysql.user. appuser@localhost n\'autorise la connexion que depuis la machine hébergeant MariaDB. appuser@% autorise depuis n\'importe quelle adresse IP. Ils peuvent avoir des droits différents et coexister.'
+    },
+    q2: {
+        ok: 'Exact. CREATE USER crée uniquement la capacité de connexion (GRANT USAGE sur *.* est implicite). Aucun accès aux données n\'est donné. L\'utilisateur voit information_schema qui est accessible en lecture par tout utilisateur connecté, mais aucune autre base. Les droits sur les données s\'attribuent séparément avec GRANT.',
+        ko: 'Non. CREATE USER ne donne aucun accès aux données. L\'utilisateur peut se connecter (authentification OK) mais MariaDB lui cache toutes les bases auxquelles il n\'a pas de droit. Il voit uniquement information_schema. Les erreurs d\'authentification surviennent avant la connexion, pas après.'
+    },
+    q3: {
+        ok: 'Exact. REVOKE est l\'opération symétrique de GRANT. Elle retire un ou plusieurs privilèges sans affecter les autres droits de l\'utilisateur. La syntaxe suit la même logique : REVOKE privilege ON portée FROM utilisateur@hote. Ne pas oublier FLUSH PRIVILEGES pour que le changement soit immédiatement effectif.',
+        ko: 'Non. La commande pour retirer des droits est REVOKE, pas DROP PRIVILEGE (qui n\'existe pas) ni ALTER USER REMOVE. REVOKE privilege ON portée FROM utilisateur@hote retire exactement le droit spécifié sans toucher aux autres. ALTER USER gère les attributs du compte (mot de passe, verrouillage) pas les privilèges.'
+    },
+    q4: {
+        ok: 'Exact. Sans --single-transaction, mysqldump pose un verrou de lecture sur toutes les tables (LOCK TABLES) au début du dump. Pendant toute la durée de la sauvegarde, les INSERT/UPDATE/DELETE de l\'application sont bloqués ou mis en attente. --single-transaction démarre une transaction READ COMMITTED sur InnoDB : la snapshot est cohérente et aucun verrou n\'est posé.',
+        ko: 'Non. --single-transaction ne compresse pas et ne divise pas le fichier. Son rôle est de réaliser la sauvegarde dans une transaction isolée (READ COMMITTED) sur InnoDB. Cela garantit la cohérence des données (toutes les tables sont sauvegardées au même état transactionnel) sans bloquer les écritures de l\'application pendant le dump.'
+    },
+    q5: {
+        ok: 'Exact. zcat décompresse le .gz et envoie le flux SQL vers le pipe |. mariadb lit ce flux et l\'exécute directement. C\'est plus rapide et économise l\'espace disque car on ne crée pas de fichier .sql temporaire. La redirection < boutique.sql.gz ne fonctionnerait pas — mariadb ne sait pas décompresser lui-même.',
+        ko: 'Non. La redirection < avec un .gz ne fonctionne pas — mariadb ne peut pas décompresser un fichier .gz. Il faut soit décompresser d\'abord avec gunzip, soit utiliser un pipe : zcat fichier.sql.gz | mariadb -u root -p boutique. Le pipe est la méthode recommandée car elle évite de créer un fichier temporaire sur disque.'
+    },
+    q6: {
+        ok: 'Exact. SELECT, INSERT, UPDATE, DELETE couvrent toutes les opérations sur les données sans toucher à la structure. CREATE et ALTER permettent de créer ou modifier des tables — opérations dangereuses pour une application en production qui ne doit pas pouvoir altérer le schéma. ALL PRIVILEGES donnerait l\'équivalent de root sur cette base.',
+        ko: 'Non. L\'option correcte est SELECT, INSERT, UPDATE, DELETE. CREATE permet de créer des tables (inutile pour une app en prod), ALTER permet de modifier la structure (dangereux), DROP permet de supprimer des tables (catastrophique). ALL PRIVILEGES est encore plus excessif. Le principe de moindre privilège : n\'accorder que ce qui est strictement nécessaire au fonctionnement.'
+    },
+    q7: {
+        ok: 'Exact. DROP USER marque le compte comme supprimé dans mysql.user mais ne ferme pas les connexions actives. Les sessions ouvertes continuent à fonctionner avec les droits qu\'elles avaient jusqu\'à leur déconnexion. Une fois déconnecté, l\'utilisateur ne peut plus se reconnecter car son compte n\'existe plus. Pour forcer la déconnexion, il faut utiliser KILL PROCESSLIST.',
+        ko: 'Non. DROP USER ne ferme pas les connexions actives. En MariaDB, les sessions en cours ne sont pas interrompues — elles continuent jusqu\'à leur déconnexion naturelle. Après déconnexion, le compte n\'existant plus, l\'utilisateur ne pourra pas se reconnecter. Pour forcer une déconnexion : SHOW PROCESSLIST pour trouver l\'ID de session, puis KILL id_session.'
+    },
+    q8: {
+        ok: 'Exact. SHOW GRANTS FOR \'user\'@\'hote\' affiche les droits sous forme de commandes GRANT reconstituées — exactement ce qu\'il faudrait rejouer pour recréer la configuration. C\'est la commande d\'audit standard. SELECT * FROM mysql.user donne les données brutes (colonnes Y/N) mais pas sous forme de GRANT lisible.',
+        ko: 'Non. La commande est SHOW GRANTS FOR \'utilisateur\'@\'hote\'. Elle retourne les droits sous forme de commandes GRANT reconstituées, lisibles et rejouables. SELECT * FROM mysql.user montre les colonnes brutes de la table système (Y/N pour chaque droit global) mais pas les droits par base. DESCRIBE GRANTS n\'existe pas.'
+    }
+}
+
+const rep = {}
+function ans(btn, qid, ok) {
+    if (rep[qid] !== undefined) return
+    rep[qid] = ok
+    btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => o.disabled = true)
+    btn.classList.add(ok ? 'correct' : 'wrong')
+    if (!ok) {
+        btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o => {
+            if (o.onclick?.toString().includes(',true)')) o.classList.add('correct')
+        })
+    }
+    const fb = document.getElementById('fb-' + qid)
+    fb.innerHTML = fbs[qid][ok ? 'ok' : 'ko']
+    fb.className = 'fb show ' + (ok ? 'ok' : 'ko')
+
+    if (Object.keys(rep).length === 8) {
+        const g = Object.values(rep).filter(Boolean).length
+        const box = document.getElementById('score-box')
+        box.style.display = 'block'
+        document.getElementById('s-score').textContent = g + '/8'
+        const msg = g === 8 ? 'Maitrise parfaite — utilisateurs, droits, sauvegarde et restauration.'
+                  : g >= 7 ? 'Tres bien — relisez le point manqué.'
+                  : g >= 6 ? 'Bonne base — consolidez les sections sauvegarde.'
+                  : g >= 4 ? 'Des lacunes — reprenez les sections sur GRANT et m
