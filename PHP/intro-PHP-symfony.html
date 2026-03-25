@@ -1,0 +1,486 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PHP &mdash; Symfony</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--accent:#1d4ed8;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--teal:#0f766e;--purple:#7c3aed;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(29,78,216,.07);}.nav-link.active{background:rgba(29,78,216,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(29,78,216,.08);border:1px solid rgba(29,78,216,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.b{background:rgba(29,78,216,.07);border-color:rgba(29,78,216,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--teal);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(29,78,216,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}.prose strong{color:var(--text);}.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(29,78,216,.07);border:1px solid rgba(29,78,216,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--accent);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(29,78,216,.15);border:1px solid rgba(29,78,216,.3);color:#93c5fd;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.sh{background:rgba(15,118,110,.12);border:1px solid rgba(15,118,110,.3);color:#5eead4;}
+.cb-badge.twig{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;}
+.cb-badge.yaml{background:rgba(180,83,9,.12);border:1px solid rgba(180,83,9,.3);color:#fcd34d;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(29,78,216,.2);color:#93c5fd;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}.vis{color:#cba6f7;font-weight:600;}.ns{color:#94e2d5;}.ptag{color:#f38ba8;font-weight:700;}.attr{color:#89dceb;font-style:italic;}.sh{color:#a6e3a1;}.tw{color:#89dceb;}.tw-tag{color:#f38ba8;}.tw-var{color:#89b4fa;}.tw-kw{color:#cba6f7;font-weight:600;}.yaml-k{color:#89b4fa;}.yaml-v{color:#a6e3a1;}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:2.2;}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.compare-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;}.compare-card h4{font-size:.82rem;font-weight:800;margin-bottom:10px;font-family:var(--mono);}
+.compare-card.maison h4{color:var(--yellow);}.compare-card.symfony h4{color:var(--accent);}
+.compare-item{font-size:.78rem;color:var(--muted);padding:3px 0;border-bottom:1px solid var(--border);line-height:1.5;}
+.compare-item:last-child{border-bottom:none;}.compare-item code{font-family:var(--mono);font-size:.74rem;background:rgba(0,0,0,.05);padding:1px 4px;border-radius:2px;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(29,78,216,.3);}.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}.fb.show{display:block;}.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}.compare-grid{grid-template-columns:1fr;}}
+</style></head><body><div class="layout">
+<aside class="sidebar"><div class="sidebar-logo"><span>[ ] Symfony</span><p>Le framework PHP professionnel</p></div><div class="nav-section"><div class="nav-label">Ce support</div><a href="#plan" class="nav-link"><span class="nav-num">00</span>MVC maison vs Symfony</a><a href="#e1" class="nav-link"><span class="nav-num">01</span>Installation</a><a href="#e2" class="nav-link"><span class="nav-num">02</span>Structure du projet</a><a href="#e3" class="nav-link"><span class="nav-num">03</span>Routing &mdash; #[Route]</a><a href="#e4" class="nav-link"><span class="nav-num">04</span>Controller</a><a href="#e5" class="nav-link"><span class="nav-num">05</span>Twig &mdash; les templates</a><a href="#e6" class="nav-link"><span class="nav-num">06</span>Doctrine &mdash; Entity</a><a href="#e7" class="nav-link"><span class="nav-num">07</span>Doctrine &mdash; Repository</a><a href="#e8" class="nav-link"><span class="nav-num">08</span>Console Symfony make:</a><a href="#e9" class="nav-link"><span class="nav-num">09</span>CRUD complet</a><a href="#quiz" class="nav-link"><span class="nav-num">10</span>Quiz</a></div></aside><main class="content">
+<div class="page-header"><div class="serie-badge">Support 18b</div><h1>Symfony<br><span class="hl">le framework</span></h1><p>Symfony est le framework PHP professionnel le plus utilise en France. Il repose exactement sur les memes principes que notre MVC maison &mdash; router, controller, model, vues &mdash; mais avec des outils industriels : injection de dependances, ORM Doctrine, moteur de templates Twig.</p><div class="objectifs"><span class="obj b">Routing</span><span class="obj g">Controller</span><span class="obj t">Twig</span><span class="obj y">Doctrine</span><span class="obj p">Console</span></div></div>
+<section class="etape" id="plan"><div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Comparatif</div><h2>MVC maison vs Symfony</h2></div></div><p class="prose">Vous avez construit un MVC from scratch. Symfony fait exactement la meme chose, avec les memes concepts &mdash; mais en version industrielle, testee, maintenue, et extensible.</p><div class="compare-grid"><div class="compare-card maison"><h4>[ ] MVC maison (PHP 18)</h4><div class="compare-item">Routing : tableau <code>$routes[]</code> dans index.php</div><div class="compare-item">Controller : <code>class Ctrl extends Controller</code></div><div class="compare-item">Model : <code>class Model + PDO</code> maison</div><div class="compare-item">Vues : fichiers PHP + <code>extract($data)</code></div><div class="compare-item">Autoloader : Composer PSR-4</div><div class="compare-item">Front controller : <code>public/index.php</code></div></div><div class="compare-card symfony"><h4>[S] Symfony</h4><div class="compare-item">Routing : attribut <code>#[Route('/')]</code> sur le controller</div><div class="compare-item">Controller : <code>class Ctrl extends AbstractController</code></div><div class="compare-item">Model : Doctrine ORM (Entity + Repository)</div><div class="compare-item">Vues : Twig (<code>.html.twig</code>) avec heritage de template</div><div class="compare-item">Autoloader : Composer PSR-4</div><div class="compare-item">Front controller : <code>public/index.php</code> (identique)</div></div></div><div class="callout success"><span class="ci">+</span><div><strong>Votre MVC maison ET Symfony ont le meme public/index.php.</strong> Les deux creent un objet noyau, lui passent la requete HTTP, le noyau appelle le bon controller qui renvoie une reponse. Symfony industrialise ce que vous avez fait a la main. Comprendre le MVC maison, c'est comprendre Symfony.</div></div></section><div class="divider"></div>
+<section class="etape" id="e1"><div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1</div><h2>Installation</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Installation Symfony &mdash; CLI et Composer</span><span class="cb-badge sh">Terminal</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># Prerequis : PHP 8.1+, Composer, Symfony CLI (optionnel mais pratique)</span>
+
+<span class="cmt"># Installer la CLI Symfony (recommande)</span>
+<span class="cmt"># Mac / Linux</span>
+<span class="sh">curl -sS https://get.symfony.com/cli/installer | bash</span>
+<span class="cmt"># Windows : telecharger symfony.exe sur symfony.com/download</span>
+
+<span class="cmt"># Verifier les prerequis</span>
+<span class="sh">symfony check:requirements</span>
+
+<span class="cmt"># Creer un projet web complet (recommande pour nos TPs)</span>
+<span class="sh">symfony new mon-projet --version="7.*" --webapp</span>
+
+<span class="cmt"># Ou via Composer directement (sans CLI Symfony)</span>
+<span class="sh">composer create-project symfony/skeleton:"7.*" mon-projet</span>
+<span class="sh">cd mon-projet</span>
+<span class="sh">composer require webapp</span>
+
+<span class="cmt"># Demarrer le serveur de dev</span>
+<span class="sh">cd mon-projet</span>
+<span class="sh">symfony serve</span>
+<span class="cmt"># Ou : php -S localhost:8000 -t public/</span>
+
+<span class="cmt"># Ouvrir http://localhost:8000</span>
+<span class="cmt"># La page de bienvenue Symfony s'affiche</span></code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Configuration BDD &mdash; .env</span><span class="cb-badge yaml">Config</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># .env &mdash; configuration base de donnees</span>
+<span class="cmt"># Modifier la ligne DATABASE_URL dans .env</span>
+
+<span class="cmt"># MySQL / MariaDB</span>
+DATABASE_URL="mysql://root:@127.0.0.1:3306/boutique_sf?serverVersion=8.0&charset=utf8mb4"
+
+<span class="cmt"># MAMP Mac (port 8889)</span>
+DATABASE_URL="mysql://root:root@127.0.0.1:8889/boutique_sf?serverVersion=8.0&charset=utf8mb4"
+
+<span class="cmt"># Creer la base de donnees</span>
+<span class="sh">php bin/console doctrine:database:create</span>
+
+<span class="cmt"># Ne jamais committer .env avec les vrais identifiants</span>
+<span class="cmt"># Utiliser .env.local pour les surcharges locales</span></code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>--webapp installe tout le necessaire.</strong> La commande <code>symfony new --webapp</code> installe Symfony avec Twig, Doctrine, le systeme de formulaires, la securite et le profiler de debug. C'est le bon point de depart pour un projet web complet.</div></div></section><div class="divider"></div>
+<section class="etape" id="e2"><div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2</div><h2>Structure du projet</h2></div></div><p class="prose">La structure Symfony est standardisee. Chaque dossier a un role precis. <code>src/</code> contient votre code, <code>templates/</code> les vues Twig, <code>config/</code> la configuration.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Structure d'un projet Symfony</span><span class="cb-badge ">Dossiers</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code>mon-projet/
+  bin/
+    console                <span class="cmt">&lt;-- commandes symfony (make:, doctrine:, etc.)</span>
+  config/
+    packages/              <span class="cmt">&lt;-- config doctrine, twig, security...</span>
+    routes.yaml            <span class="cmt">&lt;-- routes globales (optionnel)</span>
+    services.yaml          <span class="cmt">&lt;-- injection de dependances</span>
+  public/
+    index.php              <span class="cmt">&lt;-- front controller (identique a notre MVC maison !)</span>
+    assets/                <span class="cmt">&lt;-- CSS, JS, images</span>
+  src/
+    Controller/            <span class="cmt">&lt;-- vos controllers</span>
+      ProduitController.php
+    Entity/                <span class="cmt">&lt;-- vos entites Doctrine (= les "Models")</span>
+      Produit.php
+    Repository/            <span class="cmt">&lt;-- vos repositories PDO auto-generes</span>
+      ProduitRepository.php
+    Form/                  <span class="cmt">&lt;-- formulaires Symfony</span>
+      ProduitType.php
+  templates/
+    base.html.twig         <span class="cmt">&lt;-- layout principal (= notre layout.php)</span>
+    produit/
+      index.html.twig      <span class="cmt">&lt;-- liste des produits</span>
+      show.html.twig
+      _form.html.twig      <span class="cmt">&lt;-- partiel formulaire</span>
+  migrations/              <span class="cmt">&lt;-- migrations BDD generees par Doctrine</span>
+  var/                     <span class="cmt">&lt;-- cache et logs (ne pas versionner)</span>
+  vendor/                  <span class="cmt">&lt;-- packages Composer</span>
+  .env
+  composer.json</code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>src/Entity/ = vos Models.</strong> En Symfony, les classes de la couche donnees s'appellent des <strong>Entities</strong> (entites). Doctrine les mappe sur les tables SQL. Un <code>ProduitEntity</code> correspond a la table <code>produit</code>. C'est notre Model, version Doctrine.</div></div></section><div class="divider"></div>
+<section class="etape" id="e3"><div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3</div><h2>Routing avec #[Route]</h2></div></div><p class="prose">Notre MVC maison declarait les routes dans <code>index.php</code>. Symfony utilise les <strong>attributs PHP 8</strong> directement sur les methodes du controller. Plus besoin de fichier de routes separe &mdash; le controller documente lui-meme ses URLs.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Comparatif routing &mdash; MVC maison vs Symfony</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Notre MVC maison &mdash; routes declarees dans index.php</span>
+<span class="vr">$router</span>-><span class="fn">get</span>(<span class="str">'/produits'</span>,        <span class="str">'ProduitController@index'</span>);
+<span class="vr">$router</span>-><span class="fn">get</span>(<span class="str">'/produits/{id}'</span>,  <span class="str">'ProduitController@show'</span>);
+
+<span class="cmt">// Symfony &mdash; routes declarees directement sur le controller</span>
+<span class="cmt">// via les attributs PHP 8 #[Route(...)]</span>
+</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">src/Controller/ProduitController.php &mdash; routing par attributs</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Controller</span>;
+
+<span class="kw">use</span> <span class="ns">Symfony\Bundle\FrameworkBundle\Controller\AbstractController</span>;
+<span class="kw">use</span> <span class="ns">Symfony\Component\HttpFoundation\Response</span>;
+<span class="kw">use</span> <span class="ns">Symfony\Component\Routing\Attribute\Route</span>;
+
+<span class="attr">#[Route('/produits', name: 'produit_')]</span>
+<span class="kw">class</span> <span class="cls">ProduitController</span> <span class="kw">extends</span> <span class="cls">AbstractController</span> {
+
+    <span class="cmt">// GET /produits</span>
+    <span class="attr">#[Route('/', name: 'index', methods: ['GET'])]</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">index</span>(): <span class="cls">Response</span> { ... }
+
+    <span class="cmt">// GET /produits/42</span>
+    <span class="attr">#[Route('/{id}', name: 'show', methods: ['GET'])]</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">show</span>(int <span class="vr">$id</span>): <span class="cls">Response</span> { ... }
+
+    <span class="cmt">// GET /produits/nouveau</span>
+    <span class="attr">#[Route('/nouveau', name: 'new', methods: ['GET', 'POST'])]</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">new</span>(Request <span class="vr">$request</span>): <span class="cls">Response</span> { ... }
+
+    <span class="cmt">// POST /produits/42/supprimer</span>
+    <span class="attr">#[Route('/{id}/supprimer', name: 'delete', methods: ['POST'])]</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">delete</span>(int <span class="vr">$id</span>): <span class="cls">Response</span> { ... }
+}
+
+<span class="cmt">// Voir toutes les routes generees</span>
+<span class="sh">php bin/console debug:router</span>
+
+<span class="cmt">// Generer une URL dans le controller</span>
+<span class="vr">$this</span>-><span class="fn">generateUrl</span>(<span class="str">'produit_show'</span>, [<span class="str">'id'</span> => <span class="vr">$id</span>]);
+<span class="cmt">// Dans Twig : {{ path('produit_show', {id: produit.id}) }}</span></code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Le prefixe de classe + nom de route = nom complet.</strong> Le <code>#[Route('/produits', name: 'produit_')]</code> sur la classe prefixe toutes les routes du controller. La methode <code>index</code> avec <code>name: 'index'</code> genere la route nommee <code>produit_index</code>. <code>debug:router</code> liste tout.</div></div></section><div class="divider"></div>
+<section class="etape" id="e4"><div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4</div><h2>Controller Symfony</h2></div></div><p class="prose"><code>AbstractController</code> fournit <code>render()</code>, <code>redirectToRoute()</code>, <code>addFlash()</code> et d'autres methodes utilitaires. La grande nouveaute par rapport a notre MVC maison : l'<strong>injection de dependances</strong>. Symfony cree et injecte automatiquement les services demandes en constructeur.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">src/Controller/ProduitController.php</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Controller</span>;
+
+<span class="kw">use</span> <span class="ns">App\Entity\Produit</span>;
+<span class="kw">use</span> <span class="ns">App\Repository\ProduitRepository</span>;
+<span class="kw">use</span> <span class="ns">Doctrine\ORM\EntityManagerInterface</span>;
+<span class="kw">use</span> <span class="ns">Symfony\Bundle\FrameworkBundle\Controller\AbstractController</span>;
+<span class="kw">use</span> <span class="ns">Symfony\Component\HttpFoundation\Response</span>;
+<span class="kw">use</span> <span class="ns">Symfony\Component\Routing\Attribute\Route</span>;
+
+<span class="attr">#[Route('/produits', name: 'produit_')]</span>
+<span class="kw">class</span> <span class="cls">ProduitController</span> <span class="kw">extends</span> <span class="cls">AbstractController</span> {
+
+    <span class="cmt">// Injection de dependances : Symfony fournit automatiquement</span>
+    <span class="cmt">// les services declares en parametre du constructeur</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="kw">private</span> <span class="cls">ProduitRepository</span>      <span class="vr">$produitRepo</span>,
+        <span class="kw">private</span> <span class="cls">EntityManagerInterface</span>  <span class="vr">$em</span>,
+    ) {}
+
+    <span class="attr">#[Route('/', name: 'index', methods: ['GET'])]</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">index</span>(): <span class="cls">Response</span> {
+        <span class="vr">$produits</span> = <span class="vr">$this</span>-><span class="vr">produitRepo</span>-><span class="fn">findAll</span>();
+        <span class="cmt">// render() de AbstractController = notre render() maison</span>
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'produit/index.html.twig'</span>, [
+            <span class="str">'produits'</span> => <span class="vr">$produits</span>,
+        ]);
+    }
+
+    <span class="attr">#[Route('/{id}', name: 'show', methods: ['GET'])]</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">show</span>(<span class="cls">Produit</span> <span class="vr">$produit</span>): <span class="cls">Response</span> {
+        <span class="cmt">// ParamConverter : Symfony recupere l'entite depuis l'id automatiquement</span>
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'produit/show.html.twig'</span>, [
+            <span class="str">'produit'</span> => <span class="vr">$produit</span>,
+        ]);
+    }
+
+    <span class="attr">#[Route('/{id}/supprimer', name: 'delete', methods: ['POST'])]</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">delete</span>(<span class="cls">Produit</span> <span class="vr">$produit</span>): <span class="cls">Response</span> {
+        <span class="vr">$this</span>-><span class="vr">em</span>-><span class="fn">remove</span>(<span class="vr">$produit</span>);
+        <span class="vr">$this</span>-><span class="vr">em</span>-><span class="fn">flush</span>();
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="fn">redirectToRoute</span>(<span class="str">'produit_index'</span>);
+    }
+}
+</code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>ParamConverter &mdash; magie de Symfony.</strong> Quand la signature est <code>show(Produit $produit)</code> et que la route a <code>{id}</code>, Symfony fait automatiquement <code>SELECT * FROM produit WHERE id = $id</code> et passe l'entite trouvee. S'il n'existe pas, il renvoie une 404. Plus besoin d'ecrire ce code dans le controller.</div></div></section><div class="divider"></div>
+<section class="etape" id="e5"><div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5</div><h2>Twig &mdash; moteur de templates</h2></div></div><p class="prose">Twig remplace nos fichiers PHP de vue. Sa syntaxe est plus claire et securisee : les variables sont <strong>echappees automatiquement</strong> contre les XSS. On utilise <code>extends</code> et <code>block</code> pour l'heritage de templates &mdash; equivalent de notre <code>layout.php</code>.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">templates/base.html.twig &mdash; layout principal</span><span class="cb-badge twig">Twig</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">{# templates/base.html.twig &mdash; = notre layout.php #}</span>
+<span class="tw-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tw-tag">&lt;html</span> lang="fr"<span class="tw-tag">&gt;</span>
+<span class="tw-tag">&lt;head&gt;</span>
+    <span class="tw-tag">&lt;title&gt;</span><span class="tw-kw">{% block title %}</span>Mon App<span class="tw-kw">{% endblock %}</span><span class="tw-tag">&lt;/title&gt;</span>
+    <span class="tw-tag">&lt;link</span> rel="stylesheet" href="{{ asset('css/style.css') }}"<span class="tw-tag">&gt;</span>
+<span class="tw-tag">&lt;/head&gt;</span>
+<span class="tw-tag">&lt;body&gt;</span>
+<span class="tw-tag">&lt;nav&gt;</span>
+    <span class="tw-tag">&lt;a</span> href="{{ path('produit_index') }}"<span class="tw-tag">&gt;</span>Produits<span class="tw-tag">&lt;/a&gt;</span>
+<span class="tw-tag">&lt;/nav&gt;</span>
+<span class="tw-kw">{% block body %}</span><span class="tw-kw">{% endblock %}</span>  <span class="cmt">{# le contenu de la page va ici #}</span>
+<span class="tw-tag">&lt;/body&gt;&lt;/html&gt;</span></code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">templates/produit/index.html.twig &mdash; liste</span><span class="cb-badge twig">Twig</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">{# templates/produit/index.html.twig #}</span>
+<span class="tw-kw">{% extends 'base.html.twig' %}</span>
+
+<span class="tw-kw">{% block title %}</span>Catalogue<span class="tw-kw">{% endblock %}</span>
+
+<span class="tw-kw">{% block body %}</span>
+<span class="tw-tag">&lt;h1&gt;</span>Catalogue produits<span class="tw-tag">&lt;/h1&gt;</span>
+
+<span class="tw-tag">&lt;a</span> href="{{ path('produit_new') }}"<span class="tw-tag">&gt;</span>+ Nouveau<span class="tw-tag">&lt;/a&gt;</span>
+
+<span class="tw-tag">&lt;table&gt;</span>
+<span class="tw-kw">{% for produit in produits %}</span>
+    <span class="tw-tag">&lt;tr&gt;</span>
+        <span class="tw-tag">&lt;td&gt;</span>{{ produit.nom }}<span class="tw-tag">&lt;/td&gt;</span>  <span class="cmt">{# echappement XSS automatique #}</span>
+        <span class="tw-tag">&lt;td&gt;</span>{{ produit.prix|number_format(2, ',', '.') }} EUR<span class="tw-tag">&lt;/td&gt;</span>
+        <span class="tw-tag">&lt;td&gt;</span>{{ produit.stock > 0 ? 'Dispo' : 'Rupture' }}<span class="tw-tag">&lt;/td&gt;</span>
+        <span class="tw-tag">&lt;td&gt;</span>
+            <span class="tw-tag">&lt;a</span> href="{{ path('produit_show', {id: produit.id}) }}"<span class="tw-tag">&gt;</span>Voir<span class="tw-tag">&lt;/a&gt;</span>
+        <span class="tw-tag">&lt;/td&gt;</span>
+    <span class="tw-tag">&lt;/tr&gt;</span>
+<span class="tw-kw">{% else %}</span>
+    <span class="tw-tag">&lt;tr&gt;&lt;td</span> colspan="4"<span class="tw-tag">&gt;</span>Aucun produit.<span class="tw-tag">&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="tw-kw">{% endfor %}</span>
+<span class="tw-tag">&lt;/table&gt;</span>
+<span class="tw-kw">{% endblock %}</span></code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Syntaxe Twig &mdash; reference rapide</span><span class="cb-badge twig">Twig</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">{# Syntaxe Twig &mdash; reference rapide #}</span>
+
+<span class="cmt">{# Afficher une variable (echappe XSS automatiquement) #}</span>
+{{ variable }}
+{{ produit.nom }}    <span class="cmt">{# appelle getProduit().getNom() ou $produit['nom'] #}</span>
+{{ variable|raw }}   <span class="cmt">{# sans echappement HTML #}</span>
+
+<span class="cmt">{# Conditions #}</span>
+<span class="tw-kw">{% if</span> produit.stock > 0 <span class="tw-kw">%}</span> Dispo <span class="tw-kw">{% else %}</span> Rupture <span class="tw-kw">{% endif %}</span>
+
+<span class="cmt">{# Boucles #}</span>
+<span class="tw-kw">{% for</span> item in items <span class="tw-kw">%}</span> ... <span class="tw-kw">{% endfor %}</span>
+
+<span class="cmt">{# Filtres courants #}</span>
+{{ texte|upper }}                    <span class="cmt">{# majuscules #}</span>
+{{ texte|truncate(50) }}             <span class="cmt">{# couper a 50 chars #}</span>
+{{ date|date('d/m/Y') }}           <span class="cmt">{# formater une date #}</span>
+{{ prix|number_format(2,',','.') }} <span class="cmt">{# formater un nombre #}</span>
+
+<span class="cmt">{# Inclure un template partiel #}</span>
+<span class="tw-kw">{% include</span> 'produit/_form.html.twig' with {form: form} <span class="tw-kw">%}</span>
+
+<span class="cmt">{# URLs et assets #}</span>
+{{ path('produit_index') }}
+{{ path('produit_show', {id: produit.id}) }}
+{{ asset('css/style.css') }}</code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>Twig echappe automatiquement.</strong> Dans notre MVC maison, on devait ecrire <code>htmlspecialchars($var)</code> partout. Dans Twig, <code>{{ variable }}</code> echappe automatiquement les caracteres dangereux. Pour afficher du HTML brut (cas rare), on utilise <code>{{ variable|raw }}</code>.</div></div></section><div class="divider"></div>
+<section class="etape" id="e6"><div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6</div><h2>Doctrine &mdash; Entity</h2></div></div><p class="prose">Une <strong>Entity</strong> Doctrine est une classe PHP annotee qui se mappe sur une table SQL. Les annotations <code>#[ORM\Column]</code> decrivent les colonnes. Doctrine genere et execute le SQL a votre place.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">src/Entity/Produit.php &mdash; entite Doctrine</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Entity</span>;
+
+<span class="kw">use</span> <span class="ns">App\Repository\ProduitRepository</span>;
+<span class="kw">use</span> <span class="ns">Doctrine\ORM\Mapping</span> <span class="kw">as</span> ORM;
+
+<span class="attr">#[ORM\Entity(repositoryClass: ProduitRepository::class)]</span>
+<span class="kw">class</span> <span class="cls">Produit</span> {
+
+    <span class="attr">#[ORM\Id]</span>
+    <span class="attr">#[ORM\GeneratedValue]</span>
+    <span class="attr">#[ORM\Column]</span>
+    <span class="vis">private</span> ?int <span class="vr">$id</span> = <span class="kw">null</span>;
+
+    <span class="attr">#[ORM\Column(length: 200)]</span>
+    <span class="vis">private</span> string <span class="vr">$nom</span> = <span class="str">''</span>;
+
+    <span class="attr">#[ORM\Column(type: 'decimal', precision: 10, scale: 2)]</span>
+    <span class="vis">private</span> string <span class="vr">$prix</span> = <span class="str">'0.00'</span>;
+
+    <span class="attr">#[ORM\Column(type: 'integer')]</span>
+    <span class="vis">private</span> int <span class="vr">$stock</span> = <span class="num">0</span>;
+
+    <span class="attr">#[ORM\Column(nullable: true)]</span>
+    <span class="vis">private</span> ?string <span class="vr">$description</span> = <span class="kw">null</span>;
+
+    <span class="cmt">// Getters et setters (generes par make:entity)</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getId</span>(): ?int      { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">id</span>; }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getNom</span>(): string    { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">nom</span>; }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">setNom</span>(string <span class="vr">$n</span>): static  { <span class="vr">$this</span>-><span class="vr">nom</span> = <span class="vr">$n</span>; <span class="kw">return</span> <span class="vr">$this</span>; }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getPrix</span>(): string   { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">prix</span>; }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">setPrix</span>(string <span class="vr">$p</span>): static  { <span class="vr">$this</span>-><span class="vr">prix</span> = <span class="vr">$p</span>; <span class="kw">return</span> <span class="vr">$this</span>; }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">getStock</span>(): int     { <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">stock</span>; }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">setStock</span>(int <span class="vr">$s</span>): static  { <span class="vr">$this</span>-><span class="vr">stock</span> = <span class="vr">$s</span>; <span class="kw">return</span> <span class="vr">$this</span>; }
+}
+</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Workflow Entity &mdash; make:entity + migrations</span><span class="cb-badge sh">Terminal</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># Generer l'entite avec la console (recommande)</span>
+<span class="sh">php bin/console make:entity Produit</span>
+<span class="cmt"># La console pose les questions : nom du champ, type, nullable...</span>
+<span class="cmt"># Genere automatiquement src/Entity/Produit.php</span>
+
+<span class="cmt"># Generer la migration SQL</span>
+<span class="sh">php bin/console make:migration</span>
+<span class="cmt"># Cree migrations/Version20241215XXXXXX.php avec le SQL</span>
+
+<span class="cmt"># Executer la migration (cree la table en BDD)</span>
+<span class="sh">php bin/console doctrine:migrations:migrate</span>
+
+<span class="cmt"># Voir l'etat des migrations</span>
+<span class="sh">php bin/console doctrine:migrations:status</span></code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>Doctrine gere le schema BDD automatiquement.</strong> Plus besoin d'ecrire le CREATE TABLE a la main. Vous definissez l'Entity PHP, Doctrine genere le SQL. Quand vous ajoutez une propriete, vous generez une nouvelle migration qui fait l'ALTER TABLE. Le schema suit le code.</div></div></section><div class="divider"></div>
+<section class="etape" id="e7"><div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Etape 7</div><h2>Doctrine &mdash; Repository et persist</h2></div></div><p class="prose">Le Repository Doctrine etend <code>ServiceEntityRepository</code> et herite automatiquement de <code>findAll()</code>, <code>find()</code>, <code>findBy()</code>. Pour les requetes complexes on utilise le <strong>QueryBuilder</strong> &mdash; une API fluide qui genere le DQL.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">src/Repository/ProduitRepository.php</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Repository</span>;
+
+<span class="kw">use</span> <span class="ns">App\Entity\Produit</span>;
+<span class="kw">use</span> <span class="ns">Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository</span>;
+<span class="kw">use</span> <span class="ns">Doctrine\Persistence\ManagerRegistry</span>;
+
+<span class="kw">class</span> <span class="cls">ProduitRepository</span> <span class="kw">extends</span> <span class="cls">ServiceEntityRepository</span> {
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(<span class="cls">ManagerRegistry</span> <span class="vr">$registry</span>) {
+        <span class="kw">parent</span>::<span class="fn">__construct</span>(<span class="vr">$registry</span>, <span class="cls">Produit</span>::<span class="kw">class</span>);
+    }
+
+    <span class="cmt">// Methodes heritees automatiquement :</span>
+    <span class="cmt">// findAll(), find($id), findBy([]), findOneBy([]), count([])</span>
+
+    <span class="cmt">// Methode personnalisee : requete DQL (Doctrine Query Language)</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findActifsOrderedByNom</span>(): array {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="fn">createQueryBuilder</span>(<span class="str">'p'</span>)
+            -><span class="fn">andWhere</span>(<span class="str">'p.actif = :actif'</span>)
+            -><span class="fn">setParameter</span>(<span class="str">'actif'</span>, <span class="num">true</span>)
+            -><span class="fn">orderBy</span>(<span class="str">'p.nom'</span>, <span class="str">'ASC'</span>)
+            -><span class="fn">getQuery</span>()
+            -><span class="fn">getResult</span>();
+    }
+
+    <span class="cmt">// Recherche LIKE</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">search</span>(string <span class="vr">$terme</span>): array {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="fn">createQueryBuilder</span>(<span class="str">'p'</span>)
+            -><span class="fn">andWhere</span>(<span class="str">'p.nom LIKE :terme'</span>)
+            -><span class="fn">setParameter</span>(<span class="str">'terme'</span>, <span class="str">'%'</span> . <span class="vr">$terme</span> . <span class="str">'%'</span>)
+            -><span class="fn">getQuery</span>()-><span class="fn">getResult</span>();
+    }
+
+    <span class="cmt">// Utilisation dans le Controller :</span>
+    <span class="cmt">// $produits = $this->produitRepo->findAll();</span>
+    <span class="cmt">// $produit  = $this->produitRepo->find($id);</span>
+    <span class="cmt">// $produits = $this->produitRepo->findBy(['actif' => true]);</span>
+    <span class="cmt">// $produits = $this->produitRepo->search('t-shirt');</span>
+}
+</code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Persister et supprimer avec EntityManager.</strong> Pour creer/modifier/supprimer, on utilise <code>$em->persist($produit)</code> + <code>$em->flush()</code>. <code>persist</code> met l'entite dans la "file d'attente" Doctrine, <code>flush</code> execute le SQL. Sans <code>flush()</code>, rien n'est sauvegarde en BDD.</div></div></section><div class="divider"></div>
+<section class="etape" id="e8"><div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Etape 8</div><h2>Console Symfony make:</h2></div></div><p class="prose">La commande <code>php bin/console</code> est le coeur de la productivite Symfony. Les commandes <code>make:</code> (fournies par MakerBundle) generent du code standard. On gagne un temps enorme sur le code repetitif.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Commandes Symfony essentielles &mdash; make: et debug:</span><span class="cb-badge sh">Terminal</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># Generer un controller complet</span>
+<span class="sh">php bin/console make:controller ProduitController</span>
+<span class="cmt"># Cree src/Controller/ProduitController.php + template Twig</span>
+
+<span class="cmt"># Generer une entite</span>
+<span class="sh">php bin/console make:entity Produit</span>
+<span class="cmt"># Wizard interactif : nom du champ, type, longueur, nullable...</span>
+
+<span class="cmt"># Generer le CRUD complet (controller + vues Twig + formulaire)</span>
+<span class="sh">php bin/console make:crud Produit</span>
+<span class="cmt"># Genere index/show/new/edit/delete + ProduitType</span>
+
+<span class="cmt"># Generer un formulaire</span>
+<span class="sh">php bin/console make:form ProduitType Produit</span>
+
+<span class="cmt"># Voir les routes</span>
+<span class="sh">php bin/console debug:router</span>
+
+<span class="cmt"># Voir les services disponibles</span>
+<span class="sh">php bin/console debug:container</span>
+
+<span class="cmt"># Migrations</span>
+<span class="sh">php bin/console make:migration</span>
+<span class="sh">php bin/console doctrine:migrations:migrate</span>
+
+<span class="cmt"># Vider le cache</span>
+<span class="sh">php bin/console cache:clear</span>
+
+<span class="cmt"># Lister toutes les commandes disponibles</span>
+<span class="sh">php bin/console list make</span></code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>make:crud en une commande.</strong> <code>php bin/console make:crud Produit</code> genere en quelques secondes le controller complet avec les 5 actions (index, show, new, edit, delete), les 5 templates Twig, et le formulaire. C'est la puissance d'un framework : le code repetitif est automatise.</div></div></section><div class="divider"></div>
+<section class="etape" id="e9"><div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Synthese</div><h2>CRUD complet Symfony</h2></div></div><p class="prose">Le workflow CRUD Symfony est tres similaire a notre MVC maison, avec deux differences majeures : le systeme de <strong>formulaires</strong> gere la validation et la liaison avec l'entite, et <code>addFlash()</code> stocke un message en session pour l'afficher apres la redirection.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Controller new + edit &mdash; formulaires Symfony</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Controller complet new + edit genere par make:crud</span>
+
+    <span class="attr">#[Route('/nouveau', name: 'new', methods: ['GET', 'POST'])]</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">new</span>(<span class="cls">Request</span> <span class="vr">$request</span>): <span class="cls">Response</span> {
+        <span class="vr">$produit</span> = <span class="kw">new</span> <span class="cls">Produit</span>();
+        <span class="vr">$form</span> = <span class="vr">$this</span>-><span class="fn">createForm</span>(<span class="cls">ProduitType</span>::<span class="kw">class</span>, <span class="vr">$produit</span>);
+        <span class="vr">$form</span>-><span class="fn">handleRequest</span>(<span class="vr">$request</span>);
+
+        <span class="kw">if</span> (<span class="vr">$form</span>-><span class="fn">isSubmitted</span>() && <span class="vr">$form</span>-><span class="fn">isValid</span>()) {
+            <span class="cmt">// Doctrine enregistre l'entite en BDD</span>
+            <span class="vr">$this</span>-><span class="vr">em</span>-><span class="fn">persist</span>(<span class="vr">$produit</span>);
+            <span class="vr">$this</span>-><span class="vr">em</span>-><span class="fn">flush</span>();
+
+            <span class="cmt">// Message flash affiché dans la vue suivante</span>
+            <span class="vr">$this</span>-><span class="fn">addFlash</span>(<span class="str">'success'</span>, <span class="str">'Produit cree avec succes !'</span>);
+
+            <span class="kw">return</span> <span class="vr">$this</span>-><span class="fn">redirectToRoute</span>(<span class="str">'produit_index'</span>);
+        }
+
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'produit/new.html.twig'</span>, [
+            <span class="str">'form'</span> => <span class="vr">$form</span>,
+        ]);
+    }
+
+    <span class="attr">#[Route('/{id}/modifier', name: 'edit', methods: ['GET', 'POST'])]</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">edit</span>(<span class="cls">Request</span> <span class="vr">$request</span>, <span class="cls">Produit</span> <span class="vr">$produit</span>): <span class="cls">Response</span> {
+        <span class="vr">$form</span> = <span class="vr">$this</span>-><span class="fn">createForm</span>(<span class="cls">ProduitType</span>::<span class="kw">class</span>, <span class="vr">$produit</span>);
+        <span class="vr">$form</span>-><span class="fn">handleRequest</span>(<span class="vr">$request</span>);
+
+        <span class="kw">if</span> (<span class="vr">$form</span>-><span class="fn">isSubmitted</span>() && <span class="vr">$form</span>-><span class="fn">isValid</span>()) {
+            <span class="vr">$this</span>-><span class="vr">em</span>-><span class="fn">flush</span>();  <span class="cmt">// pas de persist car deja suivi</span>
+            <span class="vr">$this</span>-><span class="fn">addFlash</span>(<span class="str">'success'</span>, <span class="str">'Produit modifie !'</span>);
+            <span class="kw">return</span> <span class="vr">$this</span>-><span class="fn">redirectToRoute</span>(<span class="str">'produit_show'</span>, [<span class="str">'id'</span> => <span class="vr">$produit</span>-><span class="fn">getId</span>()]);
+        }
+
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'produit/edit.html.twig'</span>, [
+            <span class="str">'produit'</span> => <span class="vr">$produit</span>,
+            <span class="str">'form'</span>    => <span class="vr">$form</span>,
+        ]);
+    }
+</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Template Twig &mdash; formulaire et messages flash</span><span class="cb-badge twig">Twig</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">{# templates/produit/new.html.twig #}</span>
+<span class="tw-kw">{% extends 'base.html.twig' %}</span>
+<span class="tw-kw">{% block body %}</span>
+
+<span class="cmt">{# Afficher les messages flash #}</span>
+<span class="tw-kw">{% for message in app.flashes('success') %}</span>
+    <span class="tw-tag">&lt;div</span> class="alert success"<span class="tw-tag">&gt;</span>{{ message }}<span class="tw-tag">&lt;/div&gt;</span>
+<span class="tw-kw">{% endfor %}</span>
+
+<span class="cmt">{# Rendu du formulaire Symfony #}</span>
+{{ form_start(form) }}
+    {{ form_row(form.nom) }}      <span class="cmt">{# label + input + erreurs #}</span>
+    {{ form_row(form.prix) }}
+    {{ form_row(form.stock) }}
+    <span class="tw-tag">&lt;button</span> type="submit"<span class="tw-tag">&gt;</span>Enregistrer<span class="tw-tag">&lt;/button&gt;</span>
+{{ form_end(form) }}
+
+<span class="tw-kw">{% endblock %}</span></code></pre></div><div class="table-wrap"><table><thead><tr><th>Concept</th><th>MVC maison</th><th>Symfony</th></tr></thead><tbody><tr><td>Creer un objet</td><td>new Produit() + tableau $data</td><td>new Produit() + $form->getData()</td></tr><tr><td>Sauvegarder</td><td>$model->create($data)</td><td>$em->persist($p); $em->flush()</td></tr><tr><td>Modifier</td><td>$model->update($id, $data)</td><td>$em->flush() (entite deja trackee)</td></tr><tr><td>Supprimer</td><td>$model->delete($id)</td><td>$em->remove($p); $em->flush()</td></tr><tr><td>Rediriger</td><td>$this->redirect('/url')</td><td>$this->redirectToRoute('nom_route')</td></tr><tr><td>Message apres redirect</td><td>Session $_SESSION</td><td>$this->addFlash('success', msg)</td></tr><tr><td>Valider les donnees</td><td>Manuel (if empty...)</td><td>$form->isValid() + contraintes Entity</td></tr></tbody></table></div><div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Tout ce que vous avez appris reste valable.</strong> MVC, routing, controller, model, vues, requetes preparees, transactions &mdash; Symfony est la version industrialisee de tout ca. Votre MVC maison vous a donne la comprehension, Symfony vous donne la productivite.</div></div></section><div class="divider"></div>
+<section class="etape" id="quiz"><div class="etape-header"><div class="etape-num">10</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; Symfony</h2></div></div><div class="quiz-card"><div class="q"><span class="qn">Q1.</span> A quoi correspond src/Entity/ dans Symfony par rapport a notre MVC maison ?</div><div class="opts"><button class="opt" onclick="ans(this,'q1',false)">Au dossier public/ qui contient les fichiers accessibles</button><button class="opt" onclick="ans(this,'q1',true)">C'est l'equivalent de nos Models. Une Entity est une classe PHP qui se mappe sur une table SQL via Doctrine ORM. Doctrine genere le SQL automatiquement.</button><button class="opt" onclick="ans(this,'q1',false)">Au dossier core/ qui contient le framework</button></div><div class="fb" id="fb-q1"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q2.</span> Quelle est la difference entre $em->persist() et $em->flush() ?</div><div class="opts"><button class="opt" onclick="ans(this,'q2',false)">Ce sont des synonymes qui font la meme chose</button><button class="opt" onclick="ans(this,'q2',true)">persist() met l'entite dans la file d'attente Doctrine (aucun SQL encore). flush() execute tous les SQL en attente. Sans flush(), rien n'est sauvegarde en BDD.</button><button class="opt" onclick="ans(this,'q2',false)">persist() fait le SELECT, flush() fait le INSERT</button></div><div class="fb" id="fb-q2"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q3.</span> Qu'est-ce que le ParamConverter de Symfony ?</div><div class="opts"><button class="opt" onclick="ans(this,'q3',false)">Un outil pour convertir des fichiers de configuration YAML en PHP</button><button class="opt" onclick="ans(this,'q3',true)">Quand la signature de methode est show(Produit $produit) et la route a {id}, Symfony recupere automatiquement l'entite depuis l'id et injecte le bon objet. S'il n'existe pas, il renvoie une 404.</button><button class="opt" onclick="ans(this,'q3',false)">Un plugin qui convertit le PHP en JavaScript</button></div><div class="fb" id="fb-q3"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q4.</span> Pourquoi les variables Twig sont-elles plus sures que <?= $var ?> en PHP pur ?</div><div class="opts"><button class="opt" onclick="ans(this,'q4',false)">Twig est plus rapide que PHP pour le rendu</button><button class="opt" onclick="ans(this,'q4',true)">{{ variable }} echappe automatiquement les caracteres HTML (<, >, ", &). Contrairement a <?= $var ?>, il n'y a pas besoin d'appeler htmlspecialchars() manuellement. Le risque XSS est elimine par defaut.</button><button class="opt" onclick="ans(this,'q4',false)">Twig chiffre les variables pour les stocker</button></div><div class="fb" id="fb-q4"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q5.</span> Quelle commande genere automatiquement le CRUD complet (controller + vues + formulaire) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q5',false)">php bin/console make:controller ProduitController</button><button class="opt" onclick="ans(this,'q5',true)">php bin/console make:crud Produit &mdash; genere en quelques secondes les 5 actions (index/show/new/edit/delete), les 5 templates Twig et le formulaire ProduitType.</button><button class="opt" onclick="ans(this,'q5',false)">php bin/console doctrine:generate:crud</button></div><div class="fb" id="fb-q5"></div></div><div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;"><div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div><div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div></div></section></main></div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copie';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+const fbs={
+  q1:{ok:'Exact. src/Entity/ = les Models. Une Entity Doctrine est une classe PHP qui mappe une table SQL via des attributs #[ORM]. Doctrine genere le CREATE TABLE et les migrations automatiquement.',ko:'Non. src/Entity/ correspond a la couche Model de notre MVC maison. Les entites sont les classes de donnees que Doctrine mappe sur les tables SQL.'},
+  q2:{ok:'Exact. persist() enregistre l entite dans le gestionnaire Doctrine sans executer de SQL. flush() execute tous les SQL en attente (INSERT, UPDATE, DELETE). C est le pattern Unit of Work : on accumule les changements puis on les valide en une fois.',ko:'Non. persist() met l entite dans la file d attente Doctrine (pas de SQL). flush() execute tous les SQL. Sans flush(), les modifications ne sont jamais enregistrees en BDD.'},
+  q3:{ok:'Exact. Le ParamConverter lit la signature de la methode. show(Produit $produit) avec {id} dans la route => Symfony fait SELECT * FROM produit WHERE id = $id automatiquement. Erreur 404 automatique si non trouve.',ko:'Non. Le ParamConverter analyse la signature de la methode. Quand le type hint est une Entity (Produit $produit) et la route a {id}, Symfony recupere automatiquement l entite depuis la BDD.'},
+  q4:{ok:'Exact. Twig echappe automatiquement < > & " en entites HTML. Ecrire {{ produit.nom }} est equivalent a <?= htmlspecialchars($produit->getNom()) ?>. On ne peut pas oublier l echappement car c est le comportement par defaut.',ko:'Non. {{ variable }} en Twig echappe automatiquement le HTML. C est comme htmlspecialchars() appele systematiquement. Il n est pas possible d oublier de proteger une variable.'},
+  q5:{ok:'Exact. php bin/console make:crud Produit genere : ProduitController avec 5 actions, 5 templates Twig (index/show/new/edit + partiel _form), et ProduitType. C est le code CRUD standard complet en une seule commande.',ko:'Non. make:crud Produit genere le CRUD complet : controller avec 5 actions, 5 templates Twig, formulaire ProduitType. make:controller cree seulement un controller vide.'}
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').innerHTML=g===5?'Parfait &mdash; Symfony maitrise !':g>=4?'Tres bien.':g>=3?'Revoir Doctrine et le ParamConverter.':'Reprendre depuis le comparatif MVC.';box.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+</script></body></html>

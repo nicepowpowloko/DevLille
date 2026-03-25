@@ -1,0 +1,451 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PHP 20 &mdash; Authentification complete</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--accent:#dc2626;--green:#16a34a;--yellow:#b45309;--blue:#2563eb;--teal:#0f766e;--purple:#7c3aed;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(220,38,38,.07);}.nav-link.active{background:rgba(220,38,38,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#f87171);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.r{background:rgba(220,38,38,.07);border-color:rgba(220,38,38,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(220,38,38,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}.prose strong{color:var(--text);}.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--accent);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);color:#fca5a5;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.html{background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.3);color:#93c5fd;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(220,38,38,.2);color:#fca5a5;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}.vis{color:#cba6f7;font-weight:600;}.ns{color:#94e2d5;}.ptag{color:#f38ba8;font-weight:700;}.html-tag{color:#f38ba8;}.html-attr{color:#89b4fa;}.html-val{color:#a6e3a1;}.sql-kw{color:#cba6f7;font-weight:600;}.sql-type{color:#fab387;}.sql-str{color:#a6e3a1;}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:2.2;}
+.flow{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.flow-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:var(--mono);font-size:.78rem;text-align:center;}
+.flow-box.r{border-color:rgba(220,38,38,.3);background:rgba(220,38,38,.04);color:var(--accent);}
+.flow-box.g{border-color:rgba(22,163,74,.3);background:rgba(22,163,74,.04);color:var(--green);}
+.flow-box.b{border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.04);color:var(--blue);}
+.flow-sub{font-size:.62rem;color:var(--dim);margin-top:3px;}
+.flow-arrow{color:var(--dim);font-size:1.1rem;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(220,38,38,.3);}.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--accent);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}.fb.show{display:block;}.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style></head><body><div class="layout">
+<aside class="sidebar"><div class="sidebar-logo"><span>[ ] PHP 20 &mdash; Auth</span><p>Inscription, connexion, securite</p></div><div class="nav-section"><div class="nav-label">Ce support</div><a href="#plan" class="nav-link"><span class="nav-num">00</span>Schema complet</a><a href="#e1" class="nav-link"><span class="nav-num">01</span>Table utilisateurs</a><a href="#e2" class="nav-link"><span class="nav-num">02</span>Inscription</a><a href="#e3" class="nav-link"><span class="nav-num">03</span>Connexion</a><a href="#e4" class="nav-link"><span class="nav-num">04</span>Session et garde</a><a href="#e5" class="nav-link"><span class="nav-num">05</span>Deconnexion</a><a href="#e6" class="nav-link"><span class="nav-num">06</span>Roles et autorisation</a><a href="#e7" class="nav-link"><span class="nav-num">07</span>Remember me</a><a href="#e8" class="nav-link"><span class="nav-num">08</span>Protection CSRF</a><a href="#e9" class="nav-link"><span class="nav-num">09</span>Synthese complete</a><a href="#quiz" class="nav-link"><span class="nav-num">10</span>Quiz</a></div></aside><main class="content">
+<div class="page-header"><div class="serie-badge">Support 20</div><h1>Authentification<br><span class="hl">complete</span></h1><p>Inscription, connexion, protection des pages, roles et deconnexion. On construit un systeme d'authentification complet en PHP pur &mdash; en appliquant toutes les bonnes pratiques de securite.</p><div class="objectifs"><span class="obj r">password_hash</span><span class="obj g">Session</span><span class="obj b">CSRF</span><span class="obj y">Roles</span><span class="obj p">Remember me</span></div></div>
+<section class="etape" id="plan"><div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Schema</div><h2>Flux complet d'authentification</h2></div></div><p class="prose">Voici le flux complet de l'authentification. Chaque etape sera implementee dans ce support.</p><div class="flow"><div class="flow-box b">Inscription<div class="flow-sub">POST /register</div></div><span class="flow-arrow">&rarr;</span><div class="flow-box r">password_hash<div class="flow-sub">bcrypt</div></div><span class="flow-arrow">&rarr;</span><div class="flow-box g">INSERT BDD<div class="flow-sub">utilisateurs</div></div></div><div class="flow" style="margin-top:8px;"><div class="flow-box b">Connexion<div class="flow-sub">POST /login</div></div><span class="flow-arrow">&rarr;</span><div class="flow-box r">password_verify<div class="flow-sub">compare hash</div></div><span class="flow-arrow">&rarr;</span><div class="flow-box g">$_SESSION<div class="flow-sub">user_id, role</div></div><span class="flow-arrow">&rarr;</span><div class="flow-box b">Redirect<div class="flow-sub">/dashboard</div></div></div><div class="schema" style="margin-top:14px;"><span style="color:var(--accent);font-weight:700">Regles de securite fondamentales</span>
+  1. Jamais stocker le mot de passe en clair  &rarr; password_hash() bcrypt
+  2. Toujours comparer avec password_verify()  &rarr; protection timing attack
+  3. Regenerer l'ID de session apres connexion  &rarr; fixation de session
+  4. Token CSRF sur tous les formulaires POST   &rarr; protection CSRF
+  5. HTTPS uniquement en production             &rarr; cookies Secure</div><div class="callout warn"><span class="ci">!</span><div><strong>Ne jamais stocker un mot de passe en clair ou en MD5/SHA1.</strong> Ces fonctions sont reversibles ou craqueables par brute-force. <code>password_hash()</code> avec <code>PASSWORD_BCRYPT</code> genere un hash salte et couteux a calculer. C'est la seule methode acceptable.</div></div></section><div class="divider"></div>
+<section class="etape" id="e1"><div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1</div><h2>Table utilisateurs</h2></div></div><p class="prose">La table <code>utilisateurs</code> stocke l'email (unique), le hash bcrypt du mot de passe (jamais le mot de passe lui-meme), le role et les champs pour le "Se souvenir de moi".</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">SQL &mdash; table utilisateurs</span><span class="cb-badge ">SQL</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="sql-kw">CREATE TABLE IF NOT EXISTS</span> <span class="fn">utilisateurs</span> (
+    <span class="vr">id</span>           <span class="sql-type">INT UNSIGNED</span> <span class="sql-kw">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="vr">nom</span>          <span class="sql-type">VARCHAR</span>(<span class="num">100</span>)  <span class="sql-kw">NOT NULL</span>,
+    <span class="vr">email</span>        <span class="sql-type">VARCHAR</span>(<span class="num">180</span>)  <span class="sql-kw">NOT NULL UNIQUE</span>,
+    <span class="vr">mot_de_passe</span> <span class="sql-type">VARCHAR</span>(<span class="num">255</span>)  <span class="sql-kw">NOT NULL</span>,
+    <span class="cmt">-- VARCHAR(255) obligatoire : bcrypt genere 60 chars</span>
+    <span class="cmt">-- mais la longueur peut changer avec futurs algos</span>
+    <span class="vr">role</span>         <span class="sql-type">ENUM</span>(<span class="sql-str">'user'</span>, <span class="sql-str">'admin'</span>) <span class="sql-kw">NOT NULL DEFAULT</span> <span class="sql-str">'user'</span>,
+    <span class="vr">remember_token</span>  <span class="sql-type">VARCHAR</span>(<span class="num">100</span>) <span class="sql-kw">NULL DEFAULT NULL</span>,
+    <span class="vr">token_expire_le</span> <span class="sql-type">DATETIME</span>       <span class="sql-kw">NULL DEFAULT NULL</span>,
+    <span class="vr">cree_le</span>      <span class="sql-type">TIMESTAMP</span> <span class="sql-kw">DEFAULT CURRENT_TIMESTAMP</span>
+) <span class="sql-kw">ENGINE</span>=InnoDB <span class="sql-kw">DEFAULT CHARSET</span>=utf8mb4 <span class="sql-kw">COLLATE</span>=utf8mb4_unicode_ci;</code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>VARCHAR(255) pour le hash.</strong> <code>password_hash()</code> avec bcrypt genere actuellement un hash de 60 caracteres. On reserve 255 pour etre compatible avec les futurs algorithmes (Argon2, etc.) qui peuvent etre plus longs. Ne jamais mettre VARCHAR(60).</div></div></section><div class="divider"></div>
+<section class="etape" id="e2"><div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2</div><h2>Inscription</h2></div></div><p class="prose">L'inscription valide les donnees, hache le mot de passe avec <code>PASSWORD_BCRYPT</code>, insere en BDD et gere le cas d'un email deja utilise via le code SQLSTATE <code>23000</code>.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">AuthController.php &mdash; methode register()</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// AuthController.php &mdash; methode register()</span>
+
+<span class="vis">public</span> <span class="kw">function</span> <span class="fn">register</span>(): void {
+
+    <span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+
+        <span class="cmt">// 1. Valider le token CSRF</span>
+        <span class="vr">$this</span>-><span class="fn">verifyCsrf</span>(<span class="vr">$_POST</span>[<span class="str">'csrf_token'</span>] ?? <span class="str">''</span>);
+
+        <span class="cmt">// 2. Valider les donnees</span>
+        <span class="vr">$nom</span>   = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>] ?? <span class="str">''</span>);
+        <span class="vr">$email</span> = <span class="fn">trim</span>(<span class="fn">strtolower</span>(<span class="vr">$_POST</span>[<span class="str">'email'</span>] ?? <span class="str">''</span>));
+        <span class="vr">$pass</span>  = <span class="vr">$_POST</span>[<span class="str">'mot_de_passe'</span>] ?? <span class="str">''</span>;
+        <span class="vr">$pass2</span> = <span class="vr">$_POST</span>[<span class="str">'confirmation'</span>] ?? <span class="str">''</span>;
+
+        <span class="vr">$errors</span> = [];
+        <span class="kw">if</span> (<span class="fn">strlen</span>(<span class="vr">$nom</span>) < <span class="num">2</span>)                          <span class="vr">$errors</span>[] = <span class="str">'Nom trop court'</span>;
+        <span class="kw">if</span> (!<span class="fn">filter_var</span>(<span class="vr">$email</span>, <span class="fn">FILTER_VALIDATE_EMAIL</span>))   <span class="vr">$errors</span>[] = <span class="str">'Email invalide'</span>;
+        <span class="kw">if</span> (<span class="fn">strlen</span>(<span class="vr">$pass</span>) < <span class="num">8</span>)                           <span class="vr">$errors</span>[] = <span class="str">'8 caracteres minimum'</span>;
+        <span class="kw">if</span> (<span class="vr">$pass</span> !== <span class="vr">$pass2</span>)                            <span class="vr">$errors</span>[] = <span class="str">'Mots de passe differents'</span>;
+
+        <span class="kw">if</span> (empty(<span class="vr">$errors</span>)) {
+            <span class="kw">try</span> {
+                <span class="cmt">// 3. Hasher le mot de passe avec bcrypt</span>
+                <span class="vr">$hash</span> = <span class="fn">password_hash</span>(<span class="vr">$pass</span>, <span class="fn">PASSWORD_BCRYPT</span>);
+
+                <span class="cmt">// 4. Inserer en BDD</span>
+                <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(
+                    <span class="str">'INSERT INTO utilisateurs (nom, email, mot_de_passe) VALUES (?, ?, ?)'</span>
+                );
+                <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="vr">$nom</span>, <span class="vr">$email</span>, <span class="vr">$hash</span>]);
+
+                <span class="cmt">// 5. Rediriger vers la connexion</span>
+                <span class="fn">header</span>(<span class="str">'Location: /login?registered=1'</span>);
+                <span class="kw">exit</span>;
+
+            } <span class="kw">catch</span> (<span class="cls">PDOException</span> <span class="vr">$e</span>) {
+                <span class="cmt">// Email deja utilise (contrainte UNIQUE)</span>
+                <span class="kw">if</span> (<span class="vr">$e</span>-><span class="fn">getCode</span>() === <span class="str">'23000'</span>) {
+                    <span class="vr">$errors</span>[] = <span class="str">'Cet email est deja utilise'</span>;
+                } <span class="kw">else</span> {
+                    <span class="kw">throw</span> <span class="vr">$e</span>;
+                }
+            }
+        }
+    }
+
+    <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'auth/register'</span>, [<span class="str">'errors'</span> => <span class="vr">$errors</span> ?? [], <span class="str">'old'</span> => <span class="vr">$_POST</span>]);
+}</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">views/auth/register.php &mdash; formulaire</span><span class="cb-badge html">HTML</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">&lt;!-- views/auth/register.php --&gt;</span>
+<span class="html-tag">&lt;form</span> <span class="html-attr">method</span>=<span class="html-val">"post"</span> <span class="html-attr">action</span>=<span class="html-val">"/register"</span><span class="html-tag">&gt;</span>
+    <span class="cmt">&lt;!-- Token CSRF : obligatoire --&gt;</span>
+    <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-val">"hidden"</span> <span class="html-attr">name</span>=<span class="html-val">"csrf_token"</span>
+           <span class="html-attr">value</span>=<span class="html-val">"&lt;?= htmlspecialchars($_SESSION['csrf_token']) ?&gt;"</span><span class="html-tag">&gt;</span>
+
+    <span class="html-tag">&lt;label&gt;</span>Nom
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-val">"text"</span> <span class="html-attr">name</span>=<span class="html-val">"nom"</span>
+               <span class="html-attr">value</span>=<span class="html-val">"&lt;?= htmlspecialchars($old['nom'] ?? '') ?&gt;"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;/label&gt;</span>
+
+    <span class="html-tag">&lt;label&gt;</span>Email
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-val">"email"</span> <span class="html-attr">name</span>=<span class="html-val">"email"</span>
+               <span class="html-attr">value</span>=<span class="html-val">"&lt;?= htmlspecialchars($old['email'] ?? '') ?&gt;"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;/label&gt;</span>
+
+    <span class="html-tag">&lt;label&gt;</span>Mot de passe (8 min)
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-val">"password"</span> <span class="html-attr">name</span>=<span class="html-val">"mot_de_passe"</span> <span class="html-attr">minlength</span>=<span class="html-val">"8"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;/label&gt;</span>
+
+    <span class="html-tag">&lt;label&gt;</span>Confirmer
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-val">"password"</span> <span class="html-attr">name</span>=<span class="html-val">"confirmation"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;/label&gt;</span>
+
+    <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-val">"submit"</span><span class="html-tag">&gt;</span>Creer mon compte<span class="html-tag">&lt;/button&gt;</span>
+<span class="html-tag">&lt;/form&gt;</span></code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>password_hash() avec PASSWORD_BCRYPT.</strong> Bcrypt est lent intentionnellement (facteur de cout par defaut = 10, soit ~100ms). Cela rend les attaques par brute-force extremement couteuses. Le hash genere contient le sel et le facteur de cout : <code>$2y$10$...</code>. On n'a pas besoin de stocker le sel separement.</div></div></section><div class="divider"></div>
+<section class="etape" id="e3"><div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3</div><h2>Connexion</h2></div></div><p class="prose">La connexion recupere l'utilisateur par email, compare le mot de passe avec <code>password_verify()</code>, regenere l'ID de session pour se proteger contre la fixation de session, puis remplit <code>$_SESSION</code>.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">AuthController.php &mdash; methode login()</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="vis">public</span> <span class="kw">function</span> <span class="fn">login</span>(): void {
+
+    <span class="kw">if</span> (<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+
+        <span class="vr">$this</span>-><span class="fn">verifyCsrf</span>(<span class="vr">$_POST</span>[<span class="str">'csrf_token'</span>] ?? <span class="str">''</span>);
+
+        <span class="vr">$email</span> = <span class="fn">trim</span>(<span class="fn">strtolower</span>(<span class="vr">$_POST</span>[<span class="str">'email'</span>] ?? <span class="str">''</span>));
+        <span class="vr">$pass</span>  = <span class="vr">$_POST</span>[<span class="str">'mot_de_passe'</span>] ?? <span class="str">''</span>;
+
+        <span class="cmt">// 1. Chercher l'utilisateur par email</span>
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT * FROM utilisateurs WHERE email = ?'</span>);
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="vr">$email</span>]);
+        <span class="vr">$user</span> = <span class="vr">$stmt</span>-><span class="fn">fetch</span>();
+
+        <span class="cmt">// 2. Verifier le mot de passe</span>
+        <span class="cmt">// password_verify() est lent expres &rarr; protection timing attack</span>
+        <span class="kw">if</span> (<span class="vr">$user</span> && <span class="fn">password_verify</span>(<span class="vr">$pass</span>, <span class="vr">$user</span>[<span class="str">'mot_de_passe'</span>])) {
+
+            <span class="cmt">// 3. Regenerer l'ID de session (protection session fixation)</span>
+            <span class="fn">session_regenerate_id</span>(<span class="kw">true</span>);
+
+            <span class="cmt">// 4. Stocker les infos de l'utilisateur en session</span>
+            <span class="vr">$_SESSION</span>[<span class="str">'user_id'</span>]    = <span class="vr">$user</span>[<span class="str">'id'</span>];
+            <span class="vr">$_SESSION</span>[<span class="str">'user_nom'</span>]   = <span class="vr">$user</span>[<span class="str">'nom'</span>];
+            <span class="vr">$_SESSION</span>[<span class="str">'user_role'</span>]  = <span class="vr">$user</span>[<span class="str">'role'</span>];
+            <span class="vr">$_SESSION</span>[<span class="str">'user_email'</span>] = <span class="vr">$user</span>[<span class="str">'email'</span>];
+
+            <span class="cmt">// 5. Rehash si necessaire (mise a jour algo)</span>
+            <span class="kw">if</span> (<span class="fn">password_needs_rehash</span>(<span class="vr">$user</span>[<span class="str">'mot_de_passe'</span>], <span class="fn">PASSWORD_BCRYPT</span>)) {
+                <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'UPDATE utilisateurs SET mot_de_passe = ? WHERE id = ?'</span>);
+                <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="fn">password_hash</span>(<span class="vr">$pass</span>, <span class="fn">PASSWORD_BCRYPT</span>), <span class="vr">$user</span>[<span class="str">'id'</span>]]);
+            }
+
+            <span class="fn">header</span>(<span class="str">'Location: /dashboard'</span>);
+            <span class="kw">exit</span>;
+
+        } <span class="kw">else</span> {
+            <span class="cmt">// Message identique : ne pas indiquer si c'est l'email ou le MDP</span>
+            <span class="vr">$error</span> = <span class="str">'Email ou mot de passe incorrect'</span>;
+        }
+    }
+
+    <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'auth/login'</span>, [<span class="str">'error'</span> => <span class="vr">$error</span> ?? <span class="kw">null</span>]);
+}</code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Message d'erreur volontairement ambigu.</strong> "Email ou mot de passe incorrect" ne precise pas lequel est faux. Si on disait "Email inconnu", un attaquant pourrait enumerer les comptes existants (user enumeration). Un message unique pour les deux cas bloque cette attaque.</div></div><div class="callout tip"><span class="ci">!</span><div><strong>password_needs_rehash().</strong> Si le facteur de cout bcrypt est augmente dans le futur, cette fonction detecte que le hash existant utilise un facteur inferieur et le recalcule automatiquement a la prochaine connexion. Migration transparente pour les utilisateurs.</div></div></section><div class="divider"></div>
+<section class="etape" id="e4"><div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4</div><h2>Session securisee et gardes</h2></div></div><p class="prose">La session doit etre configuree avec les bonnes options de securite avant <code>session_start()</code>. Les fonctions de garde centralisent la logique de protection des pages.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">config/session.php &mdash; demarrage securise</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// config/session.php &mdash; a inclure des le debut de chaque page</span>
+
+<span class="fn">ini_set</span>(<span class="str">'session.cookie_httponly'</span>, <span class="str">'1'</span>);   <span class="cmt">// JS ne peut pas lire le cookie</span>
+<span class="fn">ini_set</span>(<span class="str">'session.cookie_samesite'</span>, <span class="str">'Strict'</span>); <span class="cmt">// protection CSRF</span>
+<span class="fn">ini_set</span>(<span class="str">'session.cookie_secure'</span>,   <span class="str">'1'</span>);   <span class="cmt">// HTTPS uniquement</span>
+<span class="fn">ini_set</span>(<span class="str">'session.use_strict_mode'</span>, <span class="str">'1'</span>);   <span class="cmt">// session ID non devinable</span>
+
+<span class="fn">session_start</span>();
+
+<span class="cmt">// Generer le token CSRF si pas encore fait</span>
+<span class="kw">if</span> (empty(<span class="vr">$_SESSION</span>[<span class="str">'csrf_token'</span>])) {
+    <span class="vr">$_SESSION</span>[<span class="str">'csrf_token'</span>] = <span class="fn">bin2hex</span>(<span class="fn">random_bytes</span>(<span class="num">32</span>));
+}
+</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">app/Helpers/auth.php &mdash; gardes requireAuth() et requireRole()</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// app/Helpers/auth.php &mdash; fonctions de garde</span>
+
+<span class="cmt">// Verifier si l'utilisateur est connecte</span>
+<span class="kw">function</span> <span class="fn">isLoggedIn</span>(): bool {
+    <span class="kw">return</span> !empty(<span class="vr">$_SESSION</span>[<span class="str">'user_id'</span>]);
+}
+
+<span class="cmt">// Forcer la connexion &mdash; redirige si pas connecte</span>
+<span class="kw">function</span> <span class="fn">requireAuth</span>(): void {
+    <span class="kw">if</span> (!<span class="fn">isLoggedIn</span>()) {
+        <span class="cmt">// Sauvegarder l'URL demandee pour y revenir apres connexion</span>
+        <span class="vr">$_SESSION</span>[<span class="str">'redirect_after_login'</span>] = <span class="vr">$_SERVER</span>[<span class="str">'REQUEST_URI'</span>];
+        <span class="fn">header</span>(<span class="str">'Location: /login'</span>);
+        <span class="kw">exit</span>;
+    }
+}
+
+<span class="cmt">// Forcer un role specifique</span>
+<span class="kw">function</span> <span class="fn">requireRole</span>(string <span class="vr">$role</span>): void {
+    <span class="fn">requireAuth</span>();
+    <span class="kw">if</span> (<span class="vr">$_SESSION</span>[<span class="str">'user_role'</span>] !== <span class="vr">$role</span>) {
+        <span class="fn">http_response_code</span>(<span class="num">403</span>);
+        <span class="kw">echo</span> <span class="str">'&lt;h1&gt;403 Acces interdit&lt;/h1&gt;'</span>;
+        <span class="kw">exit</span>;
+    }
+}
+
+<span class="cmt">// Recuperer l'utilisateur connecte</span>
+<span class="kw">function</span> <span class="fn">currentUser</span>(): ?array {
+    <span class="kw">return</span> <span class="fn">isLoggedIn</span>() ? [
+        <span class="str">'id'</span>    => <span class="vr">$_SESSION</span>[<span class="str">'user_id'</span>],
+        <span class="str">'nom'</span>   => <span class="vr">$_SESSION</span>[<span class="str">'user_nom'</span>],
+        <span class="str">'role'</span>  => <span class="vr">$_SESSION</span>[<span class="str">'user_role'</span>],
+        <span class="str">'email'</span> => <span class="vr">$_SESSION</span>[<span class="str">'user_email'</span>],
+    ] : <span class="kw">null</span>;
+}
+
+<span class="cmt">// Utilisation en debut de page protegee</span>
+<span class="fn">requireAuth</span>();              <span class="cmt">// redirige si non connecte</span>
+<span class="fn">requireRole</span>(<span class="str">'admin'</span>);    <span class="cmt">// redirige 403 si pas admin</span>
+<span class="vr">$user</span> = <span class="fn">currentUser</span>();    <span class="cmt">// tableau infos user connecte</span></code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>HttpOnly bloque le vol de session par XSS.</strong> L'option <code>cookie_httponly</code> rend le cookie de session inaccessible au JavaScript. Meme si une XSS passe, le cookie ne peut pas etre vole. <code>SameSite=Strict</code> bloque l'envoi du cookie depuis d'autres sites (CSRF).</div></div></section><div class="divider"></div>
+<section class="etape" id="e5"><div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5</div><h2>Deconnexion</h2></div></div><p class="prose">Une deconnexion complete efface les donnees de session cote serveur, detruit le fichier de session et supprime le cookie du navigateur. La deconnexion doit etre un <strong>POST</strong>, jamais un GET.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">AuthController.php &mdash; logout() complet</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="vis">public</span> <span class="kw">function</span> <span class="fn">logout</span>(): void {
+
+    <span class="cmt">// Verifier CSRF meme pour la deconnexion (prevent logout CSRF)</span>
+    <span class="vr">$this</span>-><span class="fn">verifyCsrf</span>(<span class="vr">$_POST</span>[<span class="str">'csrf_token'</span>] ?? <span class="str">''</span>);
+
+    <span class="cmt">// 1. Vider les donnees de session</span>
+    <span class="fn">session_unset</span>();
+
+    <span class="cmt">// 2. Detruire le fichier de session cote serveur</span>
+    <span class="fn">session_destroy</span>();
+
+    <span class="cmt">// 3. Supprimer le cookie de session dans le navigateur</span>
+    <span class="kw">if</span> (<span class="fn">ini_get</span>(<span class="str">'session.use_cookies'</span>)) {
+        <span class="vr">$params</span> = <span class="fn">session_get_cookie_params</span>();
+        <span class="fn">setcookie</span>(<span class="fn">session_name</span>(), <span class="str">''</span>, <span class="fn">time</span>() - <span class="num">42000</span>,
+            <span class="vr">$params</span>[<span class="str">'path'</span>], <span class="vr">$params</span>[<span class="str">'domain'</span>],
+            <span class="vr">$params</span>[<span class="str">'secure'</span>], <span class="vr">$params</span>[<span class="str">'httponly'</span>]
+        );
+    }
+
+    <span class="cmt">// 4. Supprimer le cookie remember me si present</span>
+    <span class="kw">if</span> (isset(<span class="vr">$_COOKIE</span>[<span class="str">'remember_me'</span>])) {
+        <span class="fn">setcookie</span>(<span class="str">'remember_me'</span>, <span class="str">''</span>, <span class="fn">time</span>() - <span class="num">3600</span>, <span class="str">'/'</span>);
+        <span class="cmt">// Supprimer aussi le token en BDD</span>
+        <span class="kw">if</span> (!empty(<span class="vr">$_SESSION</span>[<span class="str">'user_id'</span>])) {
+            <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'UPDATE utilisateurs SET remember_token = NULL WHERE id = ?'</span>)
+                -><span class="fn">execute</span>([<span class="vr">$_SESSION</span>[<span class="str">'user_id'</span>]]);
+        }
+    }
+
+    <span class="fn">header</span>(<span class="str">'Location: /login'</span>); <span class="kw">exit</span>;
+}
+
+<span class="cmt">// Dans la vue &mdash; bouton de deconnexion via formulaire POST</span>
+<span class="cmt">// Ne pas utiliser un lien &lt;a href="/logout"&gt; (GET) !</span>
+<span class="html-tag">&lt;form</span> method="post" action="/logout"<span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;input</span> type="hidden" name="csrf_token" value="..."<span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;button</span> type="submit"<span class="html-tag">&gt;</span>Se deconnecter<span class="html-tag">&lt;/button&gt;</span>
+<span class="html-tag">&lt;/form&gt;</span></code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>La deconnexion par lien GET est dangereuse.</strong> Un attaquant peut forger un lien <code>&lt;img src="/logout"&gt;</code> dans un email ou une page. Si la victime ouvre ce lien, elle est deconnectee. Utiliser un formulaire POST avec token CSRF protege contre ce "logout CSRF".</div></div></section><div class="divider"></div>
+<section class="etape" id="e6"><div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6</div><h2>Roles et autorisation</h2></div></div><p class="prose">Un systeme de roles hierarchiques permet de definir des niveaux d'acces. Un admin peut tout faire, un moderateur un sous-ensemble, un user simple encore moins. Plus souple que des roles binaires.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Roles hierarchiques &mdash; hasRole() et requireRoleMin()</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Systeme de roles hierarchiques</span>
+
+<span class="kw">const</span> <span class="fn">ROLES</span> = [<span class="str">'user'</span> => <span class="num">1</span>, <span class="str">'moderateur'</span> => <span class="num">2</span>, <span class="str">'admin'</span> => <span class="num">3</span>];
+
+<span class="cmt">// Verifier si l'user a au moins le role demande</span>
+<span class="kw">function</span> <span class="fn">hasRole</span>(string <span class="vr">$roleMin</span>): bool {
+    <span class="kw">if</span> (!<span class="fn">isLoggedIn</span>()) <span class="kw">return</span> <span class="kw">false</span>;
+    <span class="vr">$userLevel</span> = <span class="fn">ROLES</span>[<span class="vr">$_SESSION</span>[<span class="str">'user_role'</span>]] ?? <span class="num">0</span>;
+    <span class="vr">$minLevel</span>  = <span class="fn">ROLES</span>[<span class="vr">$roleMin</span>] ?? <span class="num">99</span>;
+    <span class="kw">return</span> <span class="vr">$userLevel</span> >= <span class="vr">$minLevel</span>;
+}
+
+<span class="cmt">// Proteger une page avec un niveau minimum</span>
+<span class="kw">function</span> <span class="fn">requireRoleMin</span>(string <span class="vr">$role</span>): void {
+    <span class="fn">requireAuth</span>();
+    <span class="kw">if</span> (!<span class="fn">hasRole</span>(<span class="vr">$role</span>)) {
+        <span class="fn">http_response_code</span>(<span class="num">403</span>);
+        <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'errors/403'</span>);
+        <span class="kw">exit</span>;
+    }
+}
+
+<span class="cmt">// Dans les vues : affichage conditionnel</span>
+<span class="ptag">&lt;?php if (hasRole('admin')): ?&gt;</span>
+    <span class="html-tag">&lt;a</span> href="/admin"<span class="html-tag">&gt;</span>Administration<span class="html-tag">&lt;/a&gt;</span>
+<span class="ptag">&lt;?php endif; ?&gt;</span>
+
+<span class="cmt">// Dans le controller admin</span>
+<span class="fn">requireRoleMin</span>(<span class="str">'moderateur'</span>);  <span class="cmt">// moderateur ET admin peuvent acceder</span>
+<span class="fn">requireRoleMin</span>(<span class="str">'admin'</span>);        <span class="cmt">// admin uniquement</span></code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>Toujours verifier les droits cote serveur.</strong> Masquer un bouton dans la vue ne suffit pas. Un utilisateur peut appeler directement <code>/admin/supprimer/42</code>. Chaque action sensible doit commencer par <code>requireRole()</code> ou <code>requireRoleMin()</code>.</div></div></section><div class="divider"></div>
+<section class="etape" id="e7"><div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Etape 7</div><h2>Remember me</h2></div></div><p class="prose">Le "Se souvenir de moi" utilise un token aleatoire stocke dans un cookie et en BDD. On ne stocke jamais le token brut en BDD &mdash; seulement son hash SHA-256, pour limiter les dommages en cas de fuite de la BDD.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Remember me &mdash; generation et verification du token</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Dans login() &mdash; apres connexion reussie</span>
+
+<span class="kw">if</span> (!empty(<span class="vr">$_POST</span>[<span class="str">'remember_me'</span>])) {
+
+    <span class="cmt">// Token aleatoire securise (64 chars hex)</span>
+    <span class="vr">$token</span>  = <span class="fn">bin2hex</span>(<span class="fn">random_bytes</span>(<span class="num">32</span>));
+    <span class="vr">$expire</span> = <span class="kw">new</span> <span class="cls">DateTime</span>(<span class="str">'+30 days'</span>);
+
+    <span class="cmt">// Stocker le hash du token en BDD (pas le token brut)</span>
+    <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(
+        <span class="str">'UPDATE utilisateurs SET remember_token = ?, token_expire_le = ? WHERE id = ?'</span>
+    );
+    <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="fn">hash</span>(<span class="str">'sha256'</span>, <span class="vr">$token</span>), <span class="vr">$expire</span>-><span class="fn">format</span>(<span class="str">'Y-m-d H:i:s'</span>), <span class="vr">$user</span>[<span class="str">'id'</span>]]);
+
+    <span class="cmt">// Cookie avec le token brut + l'user_id</span>
+    <span class="fn">setcookie</span>(<span class="str">'remember_me'</span>, <span class="vr">$user</span>[<span class="str">'id'</span>] . <span class="str">'|'</span> . <span class="vr">$token</span>,
+        <span class="fn">time</span>() + <span class="num">30</span> * <span class="num">24</span> * <span class="num">3600</span>,  <span class="cmt">// 30 jours</span>
+        <span class="str">'/'</span>, <span class="str">''</span>, <span class="kw">true</span>, <span class="kw">true</span>   <span class="cmt">// secure, httponly</span>
+    );
+}
+
+<span class="cmt">// Au debut de chaque page &mdash; verifier le cookie remember me</span>
+<span class="kw">if</span> (!<span class="fn">isLoggedIn</span>() && isset(<span class="vr">$_COOKIE</span>[<span class="str">'remember_me'</span>])) {
+    [<span class="vr">$userId</span>, <span class="vr">$token</span>] = <span class="fn">explode</span>(<span class="str">'|'</span>, <span class="vr">$_COOKIE</span>[<span class="str">'remember_me'</span>], <span class="num">2</span>);
+
+    <span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+        <span class="str">'SELECT * FROM utilisateurs WHERE id = ? AND remember_token = ? AND token_expire_le > NOW()'</span>
+    );
+    <span class="vr">$stmt</span>-><span class="fn">execute</span>([(int)<span class="vr">$userId</span>, <span class="fn">hash</span>(<span class="str">'sha256'</span>, <span class="vr">$token</span>)]);
+    <span class="vr">$user</span> = <span class="vr">$stmt</span>-><span class="fn">fetch</span>();
+
+    <span class="kw">if</span> (<span class="vr">$user</span>) {
+        <span class="fn">session_regenerate_id</span>(<span class="kw">true</span>);
+        <span class="vr">$_SESSION</span>[<span class="str">'user_id'</span>]   = <span class="vr">$user</span>[<span class="str">'id'</span>];
+        <span class="vr">$_SESSION</span>[<span class="str">'user_role'</span>] = <span class="vr">$user</span>[<span class="str">'role'</span>];
+        <span class="cmt">// etc.</span>
+    }
+}</code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Token brut dans le cookie, hash en BDD.</strong> Si la BDD est compromise, l'attaquant obtient le hash SHA-256 mais pas le token original. Sans le token brut, il ne peut pas forger le cookie. Le cookie contient <code>userId|tokenBrut</code>. On recompute le hash au moment de la verification.</div></div></section><div class="divider"></div>
+<section class="etape" id="e8"><div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Etape 8</div><h2>Protection CSRF</h2></div></div><p class="prose">Une attaque CSRF (Cross-Site Request Forgery) force le navigateur de la victime connectee a envoyer une requete a votre site. Le token CSRF, genere par le serveur et inconnu de l'attaquant, empeche ca.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Protection CSRF &mdash; generation, verification, formulaire</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Protection CSRF &mdash; dans le Controller de base</span>
+
+<span class="cmt">// Generation du token (dans config/session.php au demarrage)</span>
+<span class="kw">if</span> (empty(<span class="vr">$_SESSION</span>[<span class="str">'csrf_token'</span>])) {
+    <span class="vr">$_SESSION</span>[<span class="str">'csrf_token'</span>] = <span class="fn">bin2hex</span>(<span class="fn">random_bytes</span>(<span class="num">32</span>));
+}
+
+<span class="cmt">// Verification dans le Controller de base</span>
+<span class="vis">protected</span> <span class="kw">function</span> <span class="fn">verifyCsrf</span>(string <span class="vr">$token</span>): void {
+    <span class="cmt">// hash_equals : comparaison en temps constant (anti-timing)</span>
+    <span class="kw">if</span> (!<span class="fn">hash_equals</span>(<span class="vr">$_SESSION</span>[<span class="str">'csrf_token'</span>] ?? <span class="str">''</span>, <span class="vr">$token</span>)) {
+        <span class="fn">http_response_code</span>(<span class="num">419</span>);
+        <span class="kw">exit</span>(<span class="str">'Token CSRF invalide'</span>);
+    }
+}
+
+<span class="cmt">// Dans chaque formulaire HTML :</span>
+<span class="html-tag">&lt;input</span> type="hidden" name="csrf_token"
+       value="&lt;?= htmlspecialchars($_SESSION['csrf_token']) ?&gt;"<span class="html-tag">&gt;</span>
+
+<span class="cmt">// En debut de chaque methode POST :</span>
+<span class="vr">$this</span>-><span class="fn">verifyCsrf</span>(<span class="vr">$_POST</span>[<span class="str">'csrf_token'</span>] ?? <span class="str">''</span>);
+
+<span class="cmt">// Ce que ca protege :</span>
+<span class="cmt">// - Un site malveillant ne peut pas forger une requete POST</span>
+<span class="cmt">// - Car il ne connait pas le token stocke en session</span>
+<span class="cmt">// - Meme si l'utilisateur est connecte sur votre site</span></code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Utiliser hash_equals() pour comparer les tokens.</strong> Une comparaison classique <code>$a === $b</code> peut reveler la longueur du token par analyse du temps d'execution (timing attack). <code>hash_equals()</code> met toujours le meme temps independamment de la position de la difference.</div></div></section><div class="divider"></div>
+<section class="etape" id="e9"><div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Synthese</div><h2>Assemblage complet</h2></div></div><p class="prose">Recapitulatif de tout le systeme d'authentification en place.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Assemblage complet &mdash; routes, controller, gardes</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Controllers</span>;
+
+<span class="kw">class</span> <span class="cls">AuthController</span> <span class="kw">extends</span> <span class="cls">Controller</span> {
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(<span class="kw">private</span> <span class="cls">PDO</span> <span class="vr">$pdo</span>) {}
+
+    <span class="cmt">// GET /login  &mdash; formulaire</span>
+    <span class="cmt">// POST /login &mdash; traitement</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">login</span>(): void { <span class="cmt">/* voir section 03 */</span> }
+
+    <span class="cmt">// GET /register  &mdash; formulaire</span>
+    <span class="cmt">// POST /register &mdash; traitement</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">register</span>(): void { <span class="cmt">/* voir section 02 */</span> }
+
+    <span class="cmt">// POST /logout</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">logout</span>(): void { <span class="cmt">/* voir section 05 */</span> }
+}
+
+<span class="cmt">// Routes dans index.php</span>
+<span class="vr">$router</span>-><span class="fn">get</span>(<span class="str">'/login'</span>,     <span class="str">'AuthController@login'</span>);
+<span class="vr">$router</span>-><span class="fn">post</span>(<span class="str">'/login'</span>,    <span class="str">'AuthController@login'</span>);
+<span class="vr">$router</span>-><span class="fn">get</span>(<span class="str">'/register'</span>,  <span class="str">'AuthController@register'</span>);
+<span class="vr">$router</span>-><span class="fn">post</span>(<span class="str">'/register'</span>, <span class="str">'AuthController@register'</span>);
+<span class="vr">$router</span>-><span class="fn">post</span>(<span class="str">'/logout'</span>,   <span class="str">'AuthController@logout'</span>);
+
+<span class="cmt">// Page protegee</span>
+<span class="fn">requireAuth</span>();
+<span class="kw">echo</span> <span class="str">'Bienvenue '</span> . <span class="fn">currentUser</span>()[<span class="str">'nom'</span>];
+
+<span class="cmt">// Page admin uniquement</span>
+<span class="fn">requireRoleMin</span>(<span class="str">'admin'</span>);
+</code></pre></div><div class="table-wrap"><table><thead><tr><th>Fonction / concept</th><th>Usage</th></tr></thead><tbody><tr><td>session_start()</td><td>Toujours avec les options HttpOnly + SameSite + Strict</td></tr><tr><td>password_hash($pass, PASSWORD_BCRYPT)</td><td>Inscription : hasher avant INSERT</td></tr><tr><td>password_verify($pass, $hash)</td><td>Connexion : comparer le mdp au hash</td></tr><tr><td>session_regenerate_id(true)</td><td>Apres connexion : eviter la fixation de session</td></tr><tr><td>$_SESSION['user_id']</td><td>Stocker l'ID user (pas le mdp, pas d'infos sensibles)</td></tr><tr><td>requireAuth()</td><td>En debut de toute page protegee</td></tr><tr><td>requireRoleMin('admin')</td><td>En debut de toute page admin</td></tr><tr><td>hash_equals($a, $b)</td><td>Comparer tokens CSRF et remember me</td></tr><tr><td>bin2hex(random_bytes(32))</td><td>Generer un token aleatoire cryptographiquement sur</td></tr></tbody></table></div><div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Securite = defense en profondeur.</strong> Aucune mesure seule ne suffit. bcrypt + session regeneration + CSRF tokens + HttpOnly + roles cote serveur : chaque couche protege contre une attaque differente. Toutes doivent etre en place.</div></div></section><div class="divider"></div>
+<section class="etape" id="quiz"><div class="etape-header"><div class="etape-num">10</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; Authentification</h2></div></div><div class="quiz-card"><div class="q"><span class="qn">Q1.</span> Pourquoi utiliser password_hash() avec PASSWORD_BCRYPT plutot que MD5 ou SHA1 ?</div><div class="opts"><button class="opt" onclick="ans(this,'q1',false)">Bcrypt genere un hash plus court, donc plus rapide a stocker</button><button class="opt" onclick="ans(this,'q1',true)">Bcrypt est intentionnellement lent (facteur de cout) et salte automatiquement. MD5/SHA1 sont rapides : craquer 1 milliard de hashs/seconde est possible. Bcrypt rend le brute-force des milliers de fois plus couteux.</button><button class="opt" onclick="ans(this,'q1',false)">MD5 et SHA1 ne sont plus supportes par PHP</button></div><div class="fb" id="fb-q1"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q2.</span> Pourquoi appeler session_regenerate_id(true) apres une connexion reussie ?</div><div class="opts"><button class="opt" onclick="ans(this,'q2',false)">Pour vider la session et repartir de zero</button><button class="opt" onclick="ans(this,'q2',true)">Protection contre la fixation de session. Un attaquant peut avoir fixe un ID de session connu avant la connexion. En regenerant l'ID apres l'authentification, l'ancien ID devient inutilisable.</button><button class="opt" onclick="ans(this,'q2',false)">Pour ameliorer les performances de la session</button></div><div class="fb" id="fb-q2"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q3.</span> Pourquoi le message d'erreur de connexion doit-il etre "Email ou mot de passe incorrect" plutot que "Email inconnu" ?</div><div class="opts"><button class="opt" onclick="ans(this,'q3',false)">Pour des raisons de longueur de message uniquement</button><button class="opt" onclick="ans(this,'q3',true)">Si on precise lequel est faux, un attaquant peut tester des emails un par un pour savoir lesquels existent dans la base (user enumeration). Un message identique pour les deux cas bloque cette attaque.</button><button class="opt" onclick="ans(this,'q3',false)">La loi RGPD oblige a utiliser un message ambigu</button></div><div class="fb" id="fb-q3"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q4.</span> Pourquoi stocker le hash SHA-256 du token "remember me" en BDD plutot que le token brut ?</div><div class="opts"><button class="opt" onclick="ans(this,'q4',false)">SHA-256 compresse mieux que les tokens bruts</button><button class="opt" onclick="ans(this,'q4',true)">Si la BDD est compromise, l'attaquant obtient seulement le hash, pas le token brut. Sans le token brut, il ne peut pas forger le cookie. Le cookie contient le token brut, la BDD son hash.</button><button class="opt" onclick="ans(this,'q4',false)">Pour reduire la taille de la colonne en BDD</button></div><div class="fb" id="fb-q4"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q5.</span> Pourquoi utiliser hash_equals() pour comparer les tokens CSRF ?</div><div class="opts"><button class="opt" onclick="ans(this,'q5',false)">hash_equals() est plus rapide que l'operateur ===</button><button class="opt" onclick="ans(this,'q5',true)">=== peut reveler la longueur du token par timing attack (s'arrete au premier caractere different). hash_equals() prend toujours le meme temps independamment de la position de la difference, empechant cette attaque.</button><button class="opt" onclick="ans(this,'q5',false)">hash_equals() gere automatiquement le hashage du token</button></div><div class="fb" id="fb-q5"></div></div><div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;"><div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div><div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div></div></section></main></div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copie';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+const fbs={
+  q1:{ok:'Exact. Bcrypt a un facteur de cout configurable qui le rend intentionnellement lent. Cracker un hash bcrypt de facteur 10 prend environ 100ms. Avec MD5 ou SHA1, on peut tester des milliards de mots de passe par seconde. Bcrypt rend le brute-force economiquement irrealisable.',ko:'Non. Bcrypt est lent expres (facteur de cout) et salte automatiquement. MD5/SHA1 sont tres rapides : une carte GPU peut tester des milliards de hashs/seconde. Bcrypt rend cette attaque des milliers de fois plus couteuse.'},
+  q2:{ok:'Exact. La fixation de session : un attaquant peut creer une session avant que la victime se connecte, puis attendre que la victime s'authentifie avec cet ID connu. Regenerer l'ID apres connexion invalide l'ancien ID et coupe ce vecteur d'attaque.',ko:'Non. session_regenerate_id() protege contre la fixation de session. Un attaquant peut avoir plante un session ID connu avant la connexion. En creant un nouvel ID apres l'auth, l'ancien devient inutile.'},
+  q3:{ok:'Exact. User enumeration : si on dit email inconnu, un attaquant sait quels emails existent dans la BDD. Il peut cibler ces comptes avec des attaques de phishing ou du brute-force. Un message ambigu identical pour les deux cas empeche de savoir lequel est faux.',ko:'Non. User enumeration : distinguer email inconnu de mauvais mot de passe permet a un attaquant de tester systematiquement des emails pour savoir lesquels existent. Un message unique pour les deux cas bloque ca.'},
+  q4:{ok:'Exact. Si la BDD fuit, l'attaquant obtient le hash SHA-256 mais pas le token brut. Il ne peut pas forger le cookie car il lui manque le token original. C'est la meme logique que stocker un hash de mot de passe : on ne garde jamais les secrets en clair.',ko:'Non. On stocke le hash en BDD pour limiter les dommages en cas de compromission de la BDD. L'attaquant obtient le hash SHA-256, pas le token brut. Sans le token brut, impossible de forger le cookie.'},
+  q5:{ok:'Exact. Timing attack : === s'arrete au premier caractere different. En mesurant le temps de reponse, un attaquant peut deviner le token caractere par caractere (attaque oracle). hash_equals() compare la totalite en temps constant, rendant cette attaque impossible.',ko:'Non. hash_equals() empeche les timing attacks. === peut s'arreter des le premier caractere different, revelant des infos par la duree de comparaison. hash_equals() prend toujours le meme temps, independamment de la position de la difference.'}
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').innerHTML=g===5?'Parfait &mdash; securite maitrisee !':g>=4?'Tres bien.':g>=3?'Revoir session_regenerate_id et le CSRF.':'Reprendre depuis password_hash.';box.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+</script></body></html>

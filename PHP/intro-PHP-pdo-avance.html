@@ -1,0 +1,497 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PHP 19 &mdash; PDO avance</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--accent:#0f766e;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--purple:#7c3aed;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(15,118,110,.07);}.nav-link.active{background:rgba(15,118,110,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(15,118,110,.08);border:1px solid rgba(15,118,110,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#14b8a6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(15,118,110,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}.prose strong{color:var(--text);}.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(15,118,110,.07);border:1px solid rgba(15,118,110,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(15,118,110,.15);border:1px solid rgba(15,118,110,.3);color:#5eead4;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.sql{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(15,118,110,.2);color:#5eead4;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}.vis{color:#cba6f7;font-weight:600;}.ns{color:#94e2d5;}.ptag{color:#f38ba8;font-weight:700;}.sql-kw{color:#cba6f7;font-weight:600;}.sql-type{color:#fab387;}.sql-str{color:#a6e3a1;}.sql-cmt{color:#6c7086;font-style:italic;}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(15,118,110,.3);}.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}.fb.show{display:block;}.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style></head><body><div class="layout">
+<aside class="sidebar"><div class="sidebar-logo"><span>[ ] PHP 19 &mdash; PDO</span><p>Requetes avancees et patterns</p></div><div class="nav-section"><div class="nav-label">Ce support</div><a href="#plan" class="nav-link"><span class="nav-num">00</span>Rappel PDO</a><a href="#e1" class="nav-link"><span class="nav-num">01</span>Requetes preparees</a><a href="#e2" class="nav-link"><span class="nav-num">02</span>JOIN et relations</a><a href="#e3" class="nav-link"><span class="nav-num">03</span>Recherche et filtres</a><a href="#e4" class="nav-link"><span class="nav-num">04</span>Pagination</a><a href="#e5" class="nav-link"><span class="nav-num">05</span>Transactions</a><a href="#e6" class="nav-link"><span class="nav-num">06</span>Pattern Repository</a><a href="#e7" class="nav-link"><span class="nav-num">07</span>Singleton connexion</a><a href="#e8" class="nav-link"><span class="nav-num">08</span>Gestion des erreurs PDO</a><a href="#e9" class="nav-link"><span class="nav-num">09</span>Synthese Repository</a><a href="#quiz" class="nav-link"><span class="nav-num">10</span>Quiz</a></div></aside><main class="content">
+<div class="page-header"><div class="serie-badge">Support 19</div><h1>PDO<br><span class="hl">avance</span></h1><p>Au-dela du SELECT basique : jointures, recherche avec filtres dynamiques, pagination, transactions, et le patron Repository pour organiser proprement l'acces aux donnees.</p><div class="objectifs"><span class="obj t">JOIN</span><span class="obj g">Pagination</span><span class="obj b">Transactions</span><span class="obj y">Repository</span><span class="obj p">Singleton</span></div></div>
+<section class="etape" id="plan"><div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Rappel</div><h2>PDO &mdash; connexion et bases</h2></div></div><p class="prose">PDO (PHP Data Objects) est l'abstraction BDD de PHP. On rappelle les bases avant d'aller plus loin.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Rappel &mdash; connexion et requetes preparees de base</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Connexion avec options recommandees</span>
+<span class="vr">$pdo</span> = <span class="kw">new</span> <span class="cls">PDO</span>(
+    <span class="str">'mysql:host=localhost;port=3306;dbname=boutique;charset=utf8mb4'</span>,
+    <span class="str">'root'</span>, <span class="str">''</span>,
+    [
+        <span class="cls">PDO</span>::<span class="fn">ATTR_ERRMODE</span>            => <span class="cls">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>,
+        <span class="cls">PDO</span>::<span class="fn">ATTR_DEFAULT_FETCH_MODE</span>  => <span class="cls">PDO</span>::<span class="fn">FETCH_ASSOC</span>,
+        <span class="cls">PDO</span>::<span class="fn">ATTR_EMULATE_PREPARES</span>   => <span class="kw">false</span>,
+    ]
+);
+
+<span class="cmt">// Requete simple (sans parametre)</span>
+<span class="vr">$rows</span> = <span class="vr">$pdo</span>-><span class="fn">query</span>(<span class="str">'SELECT * FROM produits'</span>)-><span class="fn">fetchAll</span>();
+
+<span class="cmt">// Requete preparee (avec parametre) &mdash; TOUJOURS pour les valeurs externes</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT * FROM produits WHERE id = :id AND actif = :actif'</span>);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'id'</span> => <span class="num">42</span>, <span class="str">'actif'</span> => <span class="num">1</span>]);
+<span class="vr">$produit</span> = <span class="vr">$stmt</span>-><span class="fn">fetch</span>();
+
+<span class="cmt">// Modes de fetch</span>
+<span class="vr">$stmt</span>-><span class="fn">fetch</span>(<span class="cls">PDO</span>::<span class="fn">FETCH_ASSOC</span>);    <span class="cmt">// tableau associatif (defaut)</span>
+<span class="vr">$stmt</span>-><span class="fn">fetch</span>(<span class="cls">PDO</span>::<span class="fn">FETCH_OBJ</span>);       <span class="cmt">// objet stdClass</span>
+<span class="vr">$stmt</span>-><span class="fn">fetchAll</span>(<span class="cls">PDO</span>::<span class="fn">FETCH_ASSOC</span>); <span class="cmt">// toutes les lignes</span>
+<span class="vr">$stmt</span>-><span class="fn">fetchColumn</span>();                <span class="cmt">// une seule valeur (ex: COUNT)</span></code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Jamais de concatenation avec des valeurs externes.</strong> <code>"SELECT * FROM produits WHERE id = " . $_GET["id"]</code> est une injection SQL. Toujours utiliser des requetes preparees avec <code>:parametre</code> ou <code>?</code> pour toute valeur venant de l'utilisateur ou de la BDD.</div></div></section><div class="divider"></div>
+<section class="etape" id="e1"><div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1</div><h2>Requetes preparees avancees</h2></div></div><p class="prose">Les requetes preparees acceptent plusieurs syntaxes de parametre et peuvent etre executees plusieurs fois avec des valeurs differentes, ce qui est tres efficace pour les INSERT en lot.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Parametres nommes vs positionnels &mdash; bindValue et bindParam</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Parametres nommes (recommande : plus lisible)</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+    <span class="str">'INSERT INTO produits (nom, prix, stock) VALUES (:nom, :prix, :stock)'</span>
+);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'nom'</span> => <span class="str">'T-shirt'</span>, <span class="str">'prix'</span> => <span class="num">19.99</span>, <span class="str">'stock'</span> => <span class="num">50</span>]);
+
+<span class="cmt">// Parametres positionnels (?) &mdash; ordre important</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'INSERT INTO produits (nom, prix) VALUES (?, ?)'</span>);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'Jean'</span>, <span class="num">49.99</span>]);
+
+<span class="cmt">// bindValue : lie une valeur avec son type explicite</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT * FROM produits WHERE prix &lt; :max AND stock &gt; :min'</span>);
+<span class="vr">$stmt</span>-><span class="fn">bindValue</span>(<span class="str">':max'</span>,  <span class="num">50.00</span>, <span class="cls">PDO</span>::<span class="fn">PARAM_STR</span>);  <span class="cmt">// PARAM_STR pour les decimaux</span>
+<span class="vr">$stmt</span>-><span class="fn">bindValue</span>(<span class="str">':min'</span>,  <span class="num">0</span>,     <span class="cls">PDO</span>::<span class="fn">PARAM_INT</span>);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>();
+
+<span class="cmt">// Reutiliser une requete preparee en boucle &mdash; tres efficace</span>
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'INSERT INTO produits (nom, prix) VALUES (:nom, :prix)'</span>);
+<span class="vr">$produits</span> = [
+    [<span class="str">'nom'</span> => <span class="str">'Veste'</span>,   <span class="str">'prix'</span> => <span class="num">89.90</span>],
+    [<span class="str">'nom'</span> => <span class="str">'Ceinture'</span>, <span class="str">'prix'</span> => <span class="num">25.00</span>],
+    [<span class="str">'nom'</span> => <span class="str">'Casquette'</span>, <span class="str">'prix'</span> => <span class="num">15.00</span>],
+];
+<span class="kw">foreach</span> (<span class="vr">$produits</span> <span class="kw">as</span> <span class="vr">$p</span>) {
+    <span class="vr">$stmt</span>-><span class="fn">execute</span>(<span class="vr">$p</span>);  <span class="cmt">// prepare une fois, execute N fois</span>
+}
+<span class="kw">echo</span> <span class="vr">$pdo</span>-><span class="fn">lastInsertId</span>();  <span class="cmt">// id du dernier INSERT</span></code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>PARAM_STR pour les DECIMAL/FLOAT.</strong> MySQL attend les nombres decimaux sous forme de chaine dans PDO. Utiliser <code>PDO::PARAM_STR</code> (ou laisser PDO deduire) pour les prix. <code>PARAM_INT</code> pour les entiers, <code>PARAM_BOOL</code> pour les booleens.</div></div></section><div class="divider"></div>
+<section class="etape" id="e2"><div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2</div><h2>JOIN &mdash; requetes multi-tables</h2></div></div><p class="prose">Les jointures SQL permettent de ramener en une seule requete des donnees issues de plusieurs tables liees. PDO recupere le tout sous forme de tableau associatif plat.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">JOIN &mdash; recuperer produits avec categorie et stats</span><span class="cb-badge sql">SQL + PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="sql-cmt">-- INNER JOIN : seulement les produits avec categorie</span>
+<span class="sql-kw">SELECT</span>
+    p.id, p.nom, p.prix, p.stock,
+    c.nom <span class="sql-kw">AS</span> categorie,
+    c.slug <span class="sql-kw">AS</span> categorie_slug
+<span class="sql-kw">FROM</span> produits p
+<span class="sql-kw">INNER JOIN</span> categories c <span class="sql-kw">ON</span> p.categorie_id = c.id
+<span class="sql-kw">WHERE</span> p.actif = 1
+<span class="sql-kw">ORDER BY</span> c.nom, p.nom;
+
+<span class="sql-cmt">-- LEFT JOIN : tous les produits, meme sans categorie</span>
+<span class="sql-kw">SELECT</span> p.*, c.nom <span class="sql-kw">AS</span> categorie
+<span class="sql-kw">FROM</span> produits p
+<span class="sql-kw">LEFT JOIN</span> categories c <span class="sql-kw">ON</span> p.categorie_id = c.id;
+
+<span class="sql-cmt">-- Agregats : nombre de produits par categorie</span>
+<span class="sql-kw">SELECT</span>
+    c.nom <span class="sql-kw">AS</span> categorie,
+    <span class="sql-kw">COUNT</span>(p.id)   <span class="sql-kw">AS</span> nb_produits,
+    <span class="sql-kw">AVG</span>(p.prix)   <span class="sql-kw">AS</span> prix_moyen,
+    <span class="sql-kw">SUM</span>(p.stock)  <span class="sql-kw">AS</span> stock_total
+<span class="sql-kw">FROM</span> categories c
+<span class="sql-kw">LEFT JOIN</span> produits p <span class="sql-kw">ON</span> p.categorie_id = c.id
+<span class="sql-kw">GROUP BY</span> c.id, c.nom
+<span class="sql-kw">HAVING</span> nb_produits > 0
+<span class="sql-kw">ORDER BY</span> nb_produits <span class="sql-kw">DESC</span>;</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Executer un JOIN avec PDO &mdash; resultat plat</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="vr">$sql</span> = <span class="str">'</span>
+<span class="str">    SELECT p.id, p.nom, p.prix, p.stock,</span>
+<span class="str">           c.nom AS categorie, c.slug</span>
+<span class="str">    FROM produits p</span>
+<span class="str">    LEFT JOIN categories c ON p.categorie_id = c.id</span>
+<span class="str">    WHERE p.actif = :actif</span>
+<span class="str">    ORDER BY p.nom</span>
+<span class="str">'</span>;
+
+<span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="vr">$sql</span>);
+<span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'actif'</span> => <span class="num">1</span>]);
+<span class="vr">$produits</span> = <span class="vr">$stmt</span>-><span class="fn">fetchAll</span>();
+
+<span class="cmt">// Chaque element contient les colonnes des deux tables</span>
+<span class="kw">foreach</span> (<span class="vr">$produits</span> <span class="kw">as</span> <span class="vr">$p</span>) {
+    <span class="kw">echo</span> <span class="vr">$p</span>[<span class="str">'nom'</span>] . <span class="str">' &mdash; '</span> . <span class="vr">$p</span>[<span class="str">'categorie'</span>];
+    <span class="cmt">// $p['categorie'] vient du JOIN grace a l'alias AS</span>
+}</code></pre></div></section><div class="divider"></div>
+<section class="etape" id="e3"><div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3</div><h2>Recherche et filtres dynamiques</h2></div></div><p class="prose">La difficulte des filtres dynamiques est que le nombre et la nature des conditions SQL varient selon les parametres recus. On construit la requete par concatenation controllee &mdash; en gardant les valeurs dans un tableau de parametres.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Recherche avec filtres dynamiques &mdash; methode propre</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">function</span> <span class="fn">rechercherProduits</span>(
+    <span class="cls">PDO</span>     <span class="vr">$pdo</span>,
+    string  <span class="vr">$terme</span>       = <span class="str">''</span>,
+    ?int    <span class="vr">$categorieId</span> = <span class="kw">null</span>,
+    ?float  <span class="vr">$prixMax</span>     = <span class="kw">null</span>,
+    bool    <span class="vr">$enStockSeul</span> = <span class="kw">false</span>
+): array {
+
+    <span class="vr">$conditions</span> = [<span class="str">'p.actif = 1'</span>];
+    <span class="vr">$params</span>     = [];
+
+    <span class="cmt">// Ajouter les conditions dynamiquement</span>
+    <span class="kw">if</span> (!<span class="fn">empty</span>(<span class="vr">$terme</span>)) {
+        <span class="vr">$conditions</span>[] = <span class="str">'p.nom LIKE :terme'</span>;
+        <span class="vr">$params</span>[<span class="str">'terme'</span>] = <span class="str">'%'</span> . <span class="vr">$terme</span> . <span class="str">'%'</span>;
+    }
+    <span class="kw">if</span> (<span class="vr">$categorieId</span> !== <span class="kw">null</span>) {
+        <span class="vr">$conditions</span>[] = <span class="str">'p.categorie_id = :cat'</span>;
+        <span class="vr">$params</span>[<span class="str">'cat'</span>] = <span class="vr">$categorieId</span>;
+    }
+    <span class="kw">if</span> (<span class="vr">$prixMax</span> !== <span class="kw">null</span>) {
+        <span class="vr">$conditions</span>[] = <span class="str">'p.prix &lt;= :pmax'</span>;
+        <span class="vr">$params</span>[<span class="str">'pmax'</span>] = <span class="vr">$prixMax</span>;
+    }
+    <span class="kw">if</span> (<span class="vr">$enStockSeul</span>) {
+        <span class="vr">$conditions</span>[] = <span class="str">'p.stock > 0'</span>;
+    }
+
+    <span class="vr">$where</span> = <span class="fn">implode</span>(<span class="str">' AND '</span>, <span class="vr">$conditions</span>);
+    <span class="vr">$sql</span>   = <span class="str">'SELECT p.*, c.nom AS categorie'</span>
+           . <span class="str">' FROM produits p'</span>
+           . <span class="str">' LEFT JOIN categories c ON p.categorie_id = c.id'</span>
+           . <span class="str">' WHERE '</span> . <span class="vr">$where</span>
+           . <span class="str">' ORDER BY p.nom'</span>;
+
+    <span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="vr">$sql</span>);
+    <span class="vr">$stmt</span>-><span class="fn">execute</span>(<span class="vr">$params</span>);
+    <span class="kw">return</span> <span class="vr">$stmt</span>-><span class="fn">fetchAll</span>();
+}
+
+<span class="cmt">// Appel depuis un formulaire GET</span>
+<span class="vr">$resultats</span> = <span class="fn">rechercherProduits</span>(
+    pdo:         <span class="vr">$pdo</span>,
+    terme:       <span class="vr">$_GET</span>[<span class="str">'q'</span>]   ?? <span class="str">''</span>,
+    categorieId: <span class="vr">$_GET</span>[<span class="str">'cat'</span>] ? (int)<span class="vr">$_GET</span>[<span class="str">'cat'</span>] : <span class="kw">null</span>,
+    prixMax:     <span class="vr">$_GET</span>[<span class="str">'max'</span>] ? (float)<span class="vr">$_GET</span>[<span class="str">'max'</span>] : <span class="kw">null</span>,
+    enStockSeul: isset(<span class="vr">$_GET</span>[<span class="str">'stock'</span>]),
+);</code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Ne jamais concatener directement $_GET dans le SQL.</strong> Le LIKE utilise <code>:terme</code> comme parametre, et les <code>%</code> sont ajoutes en PHP avant de les mettre dans <code>$params</code>. Les conditions SQL elles-memes (noms de colonnes, mots-cles SQL) peuvent etre concatenees car elles sont ecrites par le developpeur, pas par l'utilisateur.</div></div></section><div class="divider"></div>
+<section class="etape" id="e4"><div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4</div><h2>Pagination</h2></div></div><p class="prose">La pagination limite le nombre de lignes retournees et permet de naviguer par pages. Elle utilise <code>LIMIT</code> et <code>OFFSET</code> en SQL, avec un COUNT pour connaitre le nombre total de pages.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Pagination &mdash; LIMIT / OFFSET et calcul de pages</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">function</span> <span class="fn">paginer</span>(<span class="cls">PDO</span> <span class="vr">$pdo</span>, int <span class="vr">$page</span> = <span class="num">1</span>, int <span class="vr">$parPage</span> = <span class="num">10</span>): array {
+
+    <span class="cmt">// Securiser les valeurs</span>
+    <span class="vr">$page</span>   = <span class="fn">max</span>(<span class="num">1</span>, (int)<span class="vr">$page</span>);
+    <span class="vr">$parPage</span> = <span class="fn">max</span>(<span class="num">1</span>, <span class="fn">min</span>(<span class="num">100</span>, (int)<span class="vr">$parPage</span>));
+
+    <span class="cmt">// 1. Compter le total (sans LIMIT)</span>
+    <span class="vr">$total</span> = (int)<span class="vr">$pdo</span>-><span class="fn">query</span>(
+        <span class="str">'SELECT COUNT(*) FROM produits WHERE actif = 1'</span>
+    )-><span class="fn">fetchColumn</span>();
+
+    <span class="cmt">// 2. Calculer le nombre de pages</span>
+    <span class="vr">$nbPages</span> = (int)<span class="fn">ceil</span>(<span class="vr">$total</span> / <span class="vr">$parPage</span>);
+    <span class="vr">$page</span>    = <span class="fn">min</span>(<span class="vr">$page</span>, <span class="vr">$nbPages</span>);  <span class="cmt">// eviter de depasser</span>
+
+    <span class="cmt">// 3. OFFSET = (page - 1) * parPage</span>
+    <span class="vr">$offset</span> = (<span class="vr">$page</span> - <span class="num">1</span>) * <span class="vr">$parPage</span>;
+
+    <span class="cmt">// 4. Requete avec LIMIT et OFFSET</span>
+    <span class="cmt">// IMPORTANT : LIMIT et OFFSET ne peuvent pas etre des parametres PDO</span>
+    <span class="cmt">// On les caste en int (securise) et on les concatene</span>
+    <span class="vr">$sql</span> = <span class="str">'SELECT p.*, c.nom AS categorie'</span>
+         . <span class="str">' FROM produits p'</span>
+         . <span class="str">' LEFT JOIN categories c ON p.categorie_id = c.id'</span>
+         . <span class="str">' WHERE p.actif = 1 ORDER BY p.nom'</span>
+         . <span class="str">' LIMIT '</span>  . <span class="vr">$parPage</span>
+         . <span class="str">' OFFSET '</span> . <span class="vr">$offset</span>;
+
+    <span class="vr">$produits</span> = <span class="vr">$pdo</span>-><span class="fn">query</span>(<span class="vr">$sql</span>)-><span class="fn">fetchAll</span>();
+
+    <span class="kw">return</span> [
+        <span class="str">'produits'</span>  => <span class="vr">$produits</span>,
+        <span class="str">'total'</span>     => <span class="vr">$total</span>,
+        <span class="str">'page'</span>      => <span class="vr">$page</span>,
+        <span class="str">'nbPages'</span>   => <span class="vr">$nbPages</span>,
+        <span class="str">'parPage'</span>   => <span class="vr">$parPage</span>,
+        <span class="str">'suivante'</span>  => <span class="vr">$page</span> < <span class="vr">$nbPages</span> ? <span class="vr">$page</span> + <span class="num">1</span> : <span class="kw">null</span>,
+        <span class="str">'precedente'</span> => <span class="vr">$page</span> > <span class="num">1</span>    ? <span class="vr">$page</span> - <span class="num">1</span> : <span class="kw">null</span>,
+    ];
+}
+
+<span class="cmt">// Utilisation</span>
+<span class="vr">$data</span> = <span class="fn">paginer</span>(<span class="vr">$pdo</span>, page: (int)(<span class="vr">$_GET</span>[<span class="str">'page'</span>] ?? <span class="num">1</span>), parPage: <span class="num">10</span>);
+<span class="cmt">// $data['produits'] : tableau de la page courante</span>
+<span class="cmt">// $data['nbPages']  : nombre total de pages</span>
+<span class="cmt">// $data['suivante'] : numero page suivante ou null</span></code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>LIMIT/OFFSET ne sont pas parametrables avec PDO.</strong> MySQL n'accepte pas <code>:limit</code> comme parametre pour LIMIT et OFFSET. On les caste en <code>(int)</code> avant de les concatener — le cast garantit qu'il s'agit d'entiers et empeche les injections.</div></div></section><div class="divider"></div>
+<section class="etape" id="e5"><div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5</div><h2>Transactions</h2></div></div><p class="prose">Une transaction groupe plusieurs operations SQL en une seule unite atomique. Soit toutes reussissent (<code>COMMIT</code>), soit toutes sont annulees (<code>ROLLBACK</code>). Indispensable pour les operations critiques : transfert d'argent, commande e-commerce, etc.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Transactions PDO &mdash; beginTransaction / commit / rollBack</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">/**</span>
+<span class="cmt"> * Creer une commande : decremente le stock et insere la commande.</span>
+<span class="cmt"> * Les deux operations doivent reussir ou echouer ensemble.</span>
+<span class="cmt"> */
+<span class="kw">function</span> <span class="fn">passerCommande</span>(<span class="cls">PDO</span> <span class="vr">$pdo</span>, int <span class="vr">$userId</span>, int <span class="vr">$produitId</span>, int <span class="vr">$qte</span>): int {
+
+    <span class="kw">try</span> {
+        <span class="vr">$pdo</span>-><span class="fn">beginTransaction</span>();
+
+        <span class="cmt">// 1. Verifier et decremente le stock (avec verrouillage FOR UPDATE)</span>
+        <span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT stock FROM produits WHERE id = :id FOR UPDATE'</span>);
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'id'</span> => <span class="vr">$produitId</span>]);
+        <span class="vr">$stock</span> = (int)<span class="vr">$stmt</span>-><span class="fn">fetchColumn</span>();
+
+        <span class="kw">if</span> (<span class="vr">$stock</span> < <span class="vr">$qte</span>) {
+            <span class="kw">throw new</span> <span class="cls">RuntimeException</span>(<span class="str">'Stock insuffisant ('</span> . <span class="vr">$stock</span> . <span class="str">' dispo)'</span>);
+        }
+
+        <span class="cmt">// 2. Decrementer le stock</span>
+        <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'UPDATE produits SET stock = stock - :qte WHERE id = :id'</span>)
+            -><span class="fn">execute</span>([<span class="str">'qte'</span> => <span class="vr">$qte</span>, <span class="str">'id'</span> => <span class="vr">$produitId</span>]);
+
+        <span class="cmt">// 3. Creer la commande</span>
+        <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'INSERT INTO commandes (user_id, produit_id, quantite, total)'</span>
+            . <span class="str">' SELECT :uid, :pid, :qte, prix * :qte FROM produits WHERE id = :pid2'</span>)
+            -><span class="fn">execute</span>([<span class="str">'uid'</span> => <span class="vr">$userId</span>, <span class="str">'pid'</span> => <span class="vr">$produitId</span>, <span class="str">'qte'</span> => <span class="vr">$qte</span>, <span class="str">'pid2'</span> => <span class="vr">$produitId</span>]);
+
+        <span class="vr">$commandeId</span> = (int)<span class="vr">$pdo</span>-><span class="fn">lastInsertId</span>();
+
+        <span class="cmt">// Tout a reussi : valider</span>
+        <span class="vr">$pdo</span>-><span class="fn">commit</span>();
+        <span class="kw">return</span> <span class="vr">$commandeId</span>;
+
+    } <span class="kw">catch</span> (<span class="cls">Exception</span> <span class="vr">$e</span>) {
+        <span class="cmt">// Une erreur : annuler tout</span>
+        <span class="vr">$pdo</span>-><span class="fn">rollBack</span>();
+        <span class="kw">throw</span> <span class="vr">$e</span>;  <span class="cmt">// relancer pour gestion en amont</span>
+    }
+}</code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>FOR UPDATE verrouille la ligne.</strong> Dans une transaction, <code>SELECT ... FOR UPDATE</code> pose un verrou sur la ligne lue. Si deux commandes arrivent en meme temps pour le dernier article en stock, la seconde attendra que la premiere committe ou rollbacke avant de lire le stock. Indispensable pour eviter la survente.</div></div></section><div class="divider"></div>
+<section class="etape" id="e6"><div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6</div><h2>Pattern Repository</h2></div></div><p class="prose">Le patron Repository isole tout le code d'acces aux donnees derriere une interface. Le reste de l'application ne sait pas si les donnees viennent de MySQL, d'un fichier JSON, d'une API ou d'un cache. C'est la separation des preoccupations appliquee a la persistance.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Interface et implementation Repository</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Repositories</span>;
+
+<span class="cmt">// Contrat : ce que toute source de donnees doit savoir faire</span>
+<span class="kw">interface</span> <span class="cls">ProduitRepositoryInterface</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findAll</span>(): array;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findById</span>(int <span class="vr">$id</span>): ?array;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findByCategorie</span>(int <span class="vr">$categorieId</span>): array;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">search</span>(string <span class="vr">$terme</span>, array <span class="vr">$filtres</span> = []): array;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">create</span>(array <span class="vr">$data</span>): int;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">update</span>(int <span class="vr">$id</span>, array <span class="vr">$data</span>): bool;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">delete</span>(int <span class="vr">$id</span>): bool;
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">paginate</span>(int <span class="vr">$page</span>, int <span class="vr">$perPage</span>): array;
+}
+
+<span class="cmt">// Implementation MySQL avec PDO</span>
+<span class="kw">class</span> <span class="cls">ProduitRepository</span> <span class="kw">implements</span> <span class="cls">ProduitRepositoryInterface</span> {
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(<span class="kw">private</span> <span class="cls">PDO</span> <span class="vr">$pdo</span>) {}
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findAll</span>(): array {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">query</span>(
+            <span class="str">'SELECT p.*, c.nom AS categorie FROM produits p'</span>
+            . <span class="str">' LEFT JOIN categories c ON p.categorie_id = c.id'</span>
+            . <span class="str">' WHERE p.actif = 1 ORDER BY p.nom'</span>
+        )-><span class="fn">fetchAll</span>();
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findById</span>(int <span class="vr">$id</span>): ?array {
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT * FROM produits WHERE id = ?'</span>);
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="vr">$id</span>]);
+        <span class="kw">return</span> <span class="vr">$stmt</span>-><span class="fn">fetch</span>() ?: <span class="kw">null</span>;
+    }
+
+    <span class="cmt">// findByCategorie, search, create, update, delete, paginate...</span>
+    <span class="cmt">// Chaque methode = une seule responsabilite SQL</span>
+}
+
+<span class="cmt">// Utilisation dans le Controller</span>
+<span class="vr">$repo</span> = <span class="kw">new</span> <span class="cls">ProduitRepository</span>(<span class="vr">$pdo</span>);
+<span class="vr">$produits</span> = <span class="vr">$repo</span>-><span class="fn">findAll</span>();
+<span class="vr">$produit</span>  = <span class="vr">$repo</span>-><span class="fn">findById</span>(<span class="num">42</span>);
+<span class="vr">$resultats</span> = <span class="vr">$repo</span>-><span class="fn">search</span>(<span class="str">'t-shirt'</span>, [<span class="str">'prix_max'</span> => <span class="num">30</span>]);</code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>Le Controller ne connait pas PDO.</strong> Il ne manipule que le Repository via son interface. Si demain on veut stocker les produits dans une API REST ou un fichier JSON, on cree une nouvelle implementation de <code>ProduitRepositoryInterface</code> sans toucher au Controller. C'est le principe d'inversion de dependance.</div></div></section><div class="divider"></div>
+<section class="etape" id="e7"><div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Etape 7</div><h2>Singleton de connexion</h2></div></div><p class="prose">Creer une nouvelle instance PDO a chaque instantiation de Repository est couteux. Le patron Singleton garantit qu'une seule connexion est creee par requete HTTP et reutilisee partout.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Database &mdash; Singleton de connexion PDO</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">Core</span>;
+
+<span class="kw">use</span> \PDO;
+
+<span class="kw">class</span> <span class="cls">Database</span> {
+
+    <span class="vis">private</span> <span class="kw">static</span> ?<span class="cls">PDO</span> <span class="vr">$instance</span> = <span class="kw">null</span>;
+
+    <span class="cmt">// Empecher l'instanciation directe</span>
+    <span class="vis">private</span> <span class="kw">function</span> <span class="fn">__construct</span>() {}
+
+    <span class="vis">public</span> <span class="kw">static</span> <span class="kw">function</span> <span class="fn">getConnection</span>(): <span class="cls">PDO</span> {
+        <span class="kw">if</span> (<span class="kw">self</span>::<span class="vr">$instance</span> === <span class="kw">null</span>) {
+            <span class="vr">$dsn</span> = <span class="str">'mysql:host='</span>   . <span class="fn">getenv</span>(<span class="str">'DB_HOST'</span>)
+                 . <span class="str">';port='</span>    . <span class="fn">getenv</span>(<span class="str">'DB_PORT'</span>)
+                 . <span class="str">';dbname='</span>  . <span class="fn">getenv</span>(<span class="str">'DB_NAME'</span>)
+                 . <span class="str">';charset=utf8mb4'</span>;
+
+            <span class="kw">self</span>::<span class="vr">$instance</span> = <span class="kw">new</span> <span class="cls">PDO</span>(<span class="vr">$dsn</span>,
+                <span class="fn">getenv</span>(<span class="str">'DB_USER'</span>),
+                <span class="fn">getenv</span>(<span class="str">'DB_PASS'</span>),
+                [
+                    <span class="cls">PDO</span>::<span class="fn">ATTR_ERRMODE</span>           => <span class="cls">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>,
+                    <span class="cls">PDO</span>::<span class="fn">ATTR_DEFAULT_FETCH_MODE</span> => <span class="cls">PDO</span>::<span class="fn">FETCH_ASSOC</span>,
+                    <span class="cls">PDO</span>::<span class="fn">ATTR_EMULATE_PREPARES</span>  => <span class="kw">false</span>,
+                ]
+            );
+        }
+        <span class="kw">return</span> <span class="kw">self</span>::<span class="vr">$instance</span>;
+    }
+}
+
+<span class="cmt">// Utilisation depuis les repositories</span>
+<span class="vr">$pdo</span>  = <span class="cls">Database</span>::<span class="fn">getConnection</span>();
+<span class="vr">$repo</span> = <span class="kw">new</span> <span class="cls">ProduitRepository</span>(<span class="vr">$pdo</span>);
+
+<span class="cmt">// Appel multiple : toujours la meme instance PDO</span>
+<span class="vr">$pdo2</span> = <span class="cls">Database</span>::<span class="fn">getConnection</span>();  <span class="cmt">// retourne $instance existante</span>
+<span class="fn">var_dump</span>(<span class="vr">$pdo</span> === <span class="vr">$pdo2</span>);  <span class="cmt">// true : meme objet</span></code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Une seule connexion par requete HTTP.</strong> PHP est sans etat entre les requetes. Dans une meme requete, le Singleton garantit que tous les repositories partagent la meme connexion PDO, evitant l'overhead d'ouvrir plusieurs connexions MySQL en parallele.</div></div></section><div class="divider"></div>
+<section class="etape" id="e8"><div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Etape 8</div><h2>Gestion des erreurs PDO</h2></div></div><p class="prose">Avec <code>ERRMODE_EXCEPTION</code>, PDO lance une <code>PDOException</code> en cas d'erreur SQL. Il faut la capturer au bon niveau et distinguer les erreurs attendues (doublons, contraintes) des erreurs techniques.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Gerer les erreurs PDO &mdash; contraintes et erreurs techniques</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">try</span> {
+    <span class="vr">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(
+        <span class="str">'INSERT INTO utilisateurs (email, nom, mot_de_passe) VALUES (?, ?, ?)'</span>
+    );
+    <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="str">'alice@ex.com'</span>, <span class="str">'Alice'</span>, <span class="fn">password_hash</span>(<span class="str">'secret'</span>, <span class="fn">PASSWORD_BCRYPT</span>)]);
+
+} <span class="kw">catch</span> (<span class="cls">PDOException</span> <span class="vr">$e</span>) {
+
+    <span class="cmt">// SQLSTATE[23000] : violation de contrainte (doublon UNIQUE)</span>
+    <span class="kw">if</span> (<span class="vr">$e</span>-><span class="fn">getCode</span>() === <span class="str">'23000'</span>) {
+        <span class="kw">throw new</span> <span class="cls">RuntimeException</span>(<span class="str">'Cet email est deja utilise'</span>, <span class="num">409</span>, <span class="vr">$e</span>);
+    }
+
+    <span class="cmt">// Autre erreur technique : logguer et relancer</span>
+    <span class="fn">error_log</span>(<span class="str">'PDO Error: '</span> . <span class="vr">$e</span>-><span class="fn">getMessage</span>());
+    <span class="kw">throw new</span> <span class="cls">RuntimeException</span>(<span class="str">'Erreur base de donnees'</span>, <span class="num">500</span>, <span class="vr">$e</span>);
+}
+
+<span class="cmt">// Codes SQLSTATE utiles</span>
+<span class="cmt">// 23000 : contrainte d'integrite (UNIQUE, FK)</span>
+<span class="cmt">// 42S02 : table inexistante</span>
+<span class="cmt">// HY000 : erreur generale</span>
+<span class="cmt">// 08006 : echec de connexion</span>
+
+<span class="cmt">// Afficher des infos debug en dev</span>
+<span class="kw">if</span> (<span class="fn">getenv</span>(<span class="str">'APP_ENV'</span>) === <span class="str">'development'</span>) {
+    <span class="kw">echo</span> <span class="str">'SQLSTATE: '</span> . <span class="vr">$e</span>-><span class="fn">getCode</span>() . <span class="str">'&lt;br&gt;'</span>;
+    <span class="kw">echo</span> <span class="str">'Message: '</span>  . <span class="vr">$e</span>-><span class="fn">getMessage</span>();
+}</code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Ne jamais afficher les erreurs PDO brutes en production.</strong> Le message d'erreur peut contenir le nom de la base, la structure des tables, et des infos sensibles. En production : logguer dans un fichier, afficher un message generique. En dev : afficher le SQLSTATE et le message.</div></div></section><div class="divider"></div>
+<section class="etape" id="e9"><div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Synthese</div><h2>Repository complet</h2></div></div><p class="prose">Voici un <code>ProduitRepository</code> complet integrant la pagination, la recherche, les transactions et la gestion des erreurs. C'est le pattern que vous utiliserez dans vos projets.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">ProduitRepository.php &mdash; implementation complete</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Repositories</span>;
+
+<span class="kw">use</span> \PDO;
+<span class="kw">use</span> \PDOException;
+<span class="kw">use</span> \RuntimeException;
+
+<span class="kw">class</span> <span class="cls">ProduitRepository</span> <span class="kw">implements</span> <span class="cls">ProduitRepositoryInterface</span> {
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(<span class="kw">private</span> <span class="cls">PDO</span> <span class="vr">$pdo</span>) {}
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findAll</span>(): array {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">query</span>(<span class="str">'SELECT p.*, c.nom AS categorie'</span>
+            . <span class="str">' FROM produits p LEFT JOIN categories c ON p.categorie_id = c.id'</span>
+            . <span class="str">' WHERE p.actif = 1 ORDER BY p.nom'</span>
+        )-><span class="fn">fetchAll</span>();
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findById</span>(int <span class="vr">$id</span>): ?array {
+        <span class="vr">$s</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT * FROM produits WHERE id = ? AND actif = 1'</span>);
+        <span class="vr">$s</span>-><span class="fn">execute</span>([<span class="vr">$id</span>]); <span class="kw">return</span> <span class="vr">$s</span>-><span class="fn">fetch</span>() ?: <span class="kw">null</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">search</span>(string <span class="vr">$terme</span>, array <span class="vr">$filtres</span> = []): array {
+        <span class="vr">$conditions</span> = [<span class="str">'p.actif = 1'</span>]; <span class="vr">$params</span> = [];
+        <span class="kw">if</span> (<span class="vr">$terme</span>) { <span class="vr">$conditions</span>[] = <span class="str">'p.nom LIKE :t'</span>; <span class="vr">$params</span>[<span class="str">'t'</span>] = <span class="str">'%'</span>.<span class="vr">$terme</span>.<span class="str">'%'</span>; }
+        <span class="kw">if</span> (isset(<span class="vr">$filtres</span>[<span class="str">'prix_max'</span>])) { <span class="vr">$conditions</span>[] = <span class="str">'p.prix &lt;= :pm'</span>; <span class="vr">$params</span>[<span class="str">'pm'</span>] = <span class="vr">$filtres</span>[<span class="str">'prix_max'</span>]; }
+        <span class="vr">$s</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT p.*, c.nom AS categorie FROM produits p'</span>
+            . <span class="str">' LEFT JOIN categories c ON p.categorie_id = c.id'</span>
+            . <span class="str">' WHERE '</span> . <span class="fn">implode</span>(<span class="str">' AND '</span>, <span class="vr">$conditions</span>) . <span class="str">' ORDER BY p.nom'</span>);
+        <span class="vr">$s</span>-><span class="fn">execute</span>(<span class="vr">$params</span>); <span class="kw">return</span> <span class="vr">$s</span>-><span class="fn">fetchAll</span>();
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">paginate</span>(int <span class="vr">$page</span>, int <span class="vr">$perPage</span> = <span class="num">10</span>): array {
+        <span class="vr">$page</span>    = <span class="fn">max</span>(<span class="num">1</span>, <span class="vr">$page</span>);
+        <span class="vr">$total</span>   = (int)<span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">query</span>(<span class="str">'SELECT COUNT(*) FROM produits WHERE actif=1'</span>)-><span class="fn">fetchColumn</span>();
+        <span class="vr">$nbPages</span> = (int)<span class="fn">ceil</span>(<span class="vr">$total</span> / <span class="vr">$perPage</span>);
+        <span class="vr">$offset</span>  = (<span class="fn">min</span>(<span class="vr">$page</span>,<span class="vr">$nbPages</span>) - <span class="num">1</span>) * <span class="vr">$perPage</span>;
+        <span class="vr">$rows</span>    = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">query</span>(<span class="str">'SELECT * FROM produits WHERE actif=1 ORDER BY nom'</span>
+            . <span class="str">' LIMIT '</span> . (int)<span class="vr">$perPage</span> . <span class="str">' OFFSET '</span> . (int)<span class="vr">$offset</span>)-><span class="fn">fetchAll</span>();
+        <span class="kw">return</span> [<span class="str">'data'</span>=><span class="vr">$rows</span>,<span class="str">'total'</span>=><span class="vr">$total</span>,<span class="str">'pages'</span>=><span class="vr">$nbPages</span>,<span class="str">'page'</span>=><span class="vr">$page</span>];
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">create</span>(array <span class="vr">$data</span>): int {
+        <span class="kw">try</span> {
+            <span class="vr">$s</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'INSERT INTO produits (nom,prix,stock,categorie_id) VALUES (:nom,:prix,:stock,:cat)'</span>);
+            <span class="vr">$s</span>-><span class="fn">execute</span>(<span class="vr">$data</span>);
+            <span class="kw">return</span> (int)<span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">lastInsertId</span>();
+        } <span class="kw">catch</span> (<span class="cls">PDOException</span> <span class="vr">$e</span>) {
+            <span class="fn">error_log</span>(<span class="vr">$e</span>-><span class="fn">getMessage</span>());
+            <span class="kw">throw new</span> <span class="cls">RuntimeException</span>(<span class="str">'Erreur creation produit'</span>, <span class="num">0</span>, <span class="vr">$e</span>);
+        }
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">update</span>(int <span class="vr">$id</span>, array <span class="vr">$data</span>): bool {
+        <span class="vr">$data</span>[<span class="str">'id'</span>] = <span class="vr">$id</span>;
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'UPDATE produits SET nom=:nom,prix=:prix,stock=:stock WHERE id=:id'</span>)-><span class="fn">execute</span>(<span class="vr">$data</span>);
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">delete</span>(int <span class="vr">$id</span>): bool {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'DELETE FROM produits WHERE id = ?'</span>)-><span class="fn">execute</span>([<span class="vr">$id</span>]);
+    }
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findByCategorie</span>(int <span class="vr">$id</span>): array {
+        <span class="vr">$s</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT * FROM produits WHERE categorie_id = ? AND actif = 1'</span>);
+        <span class="vr">$s</span>-><span class="fn">execute</span>([<span class="vr">$id</span>]); <span class="kw">return</span> <span class="vr">$s</span>-><span class="fn">fetchAll</span>();
+    }
+}
+</code></pre></div><div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Pattern complet :</strong> Database Singleton fournit le PDO, ProduitRepository l'encapsule, le Controller ne fait que <code>$repo->findAll()</code>. Chaque couche a une seule responsabilite. Pour changer de BDD, seul le Repository change.</div></div></section><div class="divider"></div>
+<section class="etape" id="quiz"><div class="etape-header"><div class="etape-num">10</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; PDO avance</h2></div></div><div class="quiz-card"><div class="q"><span class="qn">Q1.</span> Pourquoi LIMIT et OFFSET ne peuvent pas etre des parametres PDO (comme :limit) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q1',false)">Ce sont des mots reserves qui ne peuvent jamais apparaitre dans une requete preparee</button><button class="opt" onclick="ans(this,'q1',true)">MySQL n'accepte pas de parametres pour LIMIT et OFFSET. On les caste en (int) avant de les concatener, ce qui est sur car le cast interdit les injections.</button><button class="opt" onclick="ans(this,'q1',false)">Cela ralentirait les performances de la requete</button></div><div class="fb" id="fb-q1"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q2.</span> Quelle est la difference entre INNER JOIN et LEFT JOIN ?</div><div class="opts"><button class="opt" onclick="ans(this,'q2',false)">INNER JOIN est plus rapide que LEFT JOIN</button><button class="opt" onclick="ans(this,'q2',true)">INNER JOIN retourne seulement les lignes ayant une correspondance dans les deux tables. LEFT JOIN retourne toutes les lignes de la table gauche, meme sans correspondance (NULL pour les colonnes de la table droite).</button><button class="opt" onclick="ans(this,'q2',false)">LEFT JOIN ne fonctionne que sur des cles etrangeres</button></div><div class="fb" id="fb-q2"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q3.</span> Pourquoi utiliser une transaction pour passer une commande (decrement stock + insert commande) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q3',false)">Les transactions ameliorent les performances des INSERT</button><button class="opt" onclick="ans(this,'q3',true)">Les deux operations doivent reussir ensemble ou echouer ensemble. Sans transaction, si le INSERT commande echoue apres le UPDATE stock, le stock est decremente sans commande creee. La transaction garantit la coherence.</button><button class="opt" onclick="ans(this,'q3',false)">MySQL exige une transaction pour les UPDATE et INSERT dans la meme requete</button></div><div class="fb" id="fb-q3"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q4.</span> Quel code SQLSTATE indique une violation de contrainte UNIQUE (email deja pris) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q4',false)">42S02</button><button class="opt" onclick="ans(this,'q4',true)">23000 &mdash; "Integrity constraint violation". On peut le recuperer avec $e->getCode() dans le catch (PDOException) pour distinguer un doublon d'email d'une vraie erreur technique.</button><button class="opt" onclick="ans(this,'q4',false)">HY000</button></div><div class="fb" id="fb-q4"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q5.</span> Quel est l'avantage principal du patron Repository par rapport a l'acces PDO direct dans le Controller ?</div><div class="opts"><button class="opt" onclick="ans(this,'q5',false)">Le Repository est plus rapide car il met les requetes en cache</button><button class="opt" onclick="ans(this,'q5',true)">Le Controller ne connait pas PDO. Toute la logique SQL est isolee dans le Repository. On peut changer l'implementation (MySQL, API, fichier) sans toucher au Controller. Chaque classe a une seule responsabilite.</button><button class="opt" onclick="ans(this,'q5',false)">Le Repository permet d'utiliser plusieurs bases de donnees en meme temps</button></div><div class="fb" id="fb-q5"></div></div><div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;"><div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div><div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div></div></section></main></div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copie';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+const fbs={
+  q1:{ok:'Exact. MySQL n accepte pas de marqueurs lies (:limit, ?) pour LIMIT et OFFSET. Le cast (int) est la solution securisee : (int)$perPage ne peut jamais etre autre chose qu un entier, rendant l injection impossible.',ko:'Non. MySQL refuse les parametres PDO pour LIMIT et OFFSET. La solution est de caster en (int) avant de concatener. Le cast garantit un entier pur, sans risque d injection.'},
+  q2:{ok:'Exact. INNER JOIN = intersection : seulement les enregistrements qui ont une correspondance dans les deux tables. LEFT JOIN = tous les enregistrements de la table gauche, la table droite peut avoir NULL si pas de correspondance.',ko:'Non. INNER JOIN retourne uniquement les lignes avec correspondance dans les deux tables. LEFT JOIN retourne toutes les lignes de la table gauche, meme sans correspondance (colonnes droite = NULL).'},
+  q3:{ok:'Exact. Sans transaction, une erreur entre le UPDATE stock et le INSERT commande laisse la BDD dans un etat incohérent : stock decremente, commande non creee. La transaction garantit que les deux reussissent ou que les deux sont annulees.',ko:'Non. La transaction garantit l atomicite : soit les deux operations reussissent (COMMIT), soit les deux sont annulees (ROLLBACK). Sans transaction, une panne entre les deux laisserait la BDD incohérente.'},
+  q4:{ok:'Exact. SQLSTATE 23000 signifie violation de contrainte d integrite. On le recupere avec $e->getCode(). Cela permet de distinguer un email deja utilise (erreur metier, montrer a l utilisateur) d une vraie panne technique.',ko:'Non. Le code SQLSTATE 23000 indique une violation de contrainte d integrite (UNIQUE, FK). 42S02 = table inexistante, HY000 = erreur generale MySQL.'},
+  q5:{ok:'Exact. Le Repository isole tout le SQL. Le Controller appelle $repo->findAll() sans savoir qu il y a PDO derriere. Si on change de stockage (API, cache, autre BDD), seul le Repository change. Separation des responsabilites.',ko:'Non. L avantage principal est la separation des responsabilites. Le Controller ne connait pas PDO. Toute la logique d acces aux donnees est dans le Repository. Changer l implementation ne touche pas le Controller.'}
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').innerHTML=g===5?'Parfait &mdash; PDO avance maitrise !':g>=4?'Tres bien.':g>=3?'Revoir les transactions et le Repository.':'Reprendre depuis les JOIN et la pagination.';box.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+</script></body></html>

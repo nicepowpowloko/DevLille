@@ -1,0 +1,496 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PHP 18 &mdash; MVC from scratch</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--accent:#b45309;--green:#16a34a;--blue:#2563eb;--red:#dc2626;--teal:#0f766e;--purple:#7c3aed;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(180,83,9,.07);}.nav-link.active{background:rgba(180,83,9,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(180,83,9,.08);border:1px solid rgba(180,83,9,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.a{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--teal);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(180,83,9,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}.prose strong{color:var(--text);}.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--accent);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(180,83,9,.15);border:1px solid rgba(180,83,9,.3);color:#fcd34d;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.html{background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.3);color:#93c5fd;}
+.cb-badge.sql{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(180,83,9,.2);color:#fcd34d;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}.vis{color:#cba6f7;font-weight:600;}.ns{color:#94e2d5;}.ptag{color:#f38ba8;font-weight:700;}.html-tag{color:#f38ba8;}.html-attr{color:#89b4fa;}.html-val{color:#a6e3a1;}.sql-kw{color:#cba6f7;font-weight:600;}.sql-type{color:#fab387;}.sql-str{color:#a6e3a1;}
+.schema{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:2.2;}
+.flow{display:flex;align-items:center;gap:0;margin-bottom:14px;flex-wrap:wrap;}
+.flow-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:var(--mono);font-size:.78rem;text-align:center;min-width:90px;}
+.flow-box.r{border-color:rgba(220,38,38,.3);background:rgba(220,38,38,.04);color:var(--red);}
+.flow-box.b{border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.04);color:var(--blue);}
+.flow-box.g{border-color:rgba(22,163,74,.3);background:rgba(22,163,74,.04);color:var(--green);}
+.flow-box.a{border-color:rgba(180,83,9,.3);background:rgba(180,83,9,.04);color:var(--accent);}
+.flow-box.p{border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.04);color:var(--purple);}
+.flow-arrow{color:var(--dim);font-size:1.1rem;margin:0 6px;}
+.flow-sub{font-size:.62rem;color:var(--dim);margin-top:3px;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(180,83,9,.3);}.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}.fb.show{display:block;}.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style></head><body><div class="layout">
+<aside class="sidebar"><div class="sidebar-logo"><span>[ ] PHP &mdash; MVC</span><p>Architecture Model View Controller</p></div><div class="nav-section"><div class="nav-label">Ce support</div><a href="#plan" class="nav-link"><span class="nav-num">00</span>Le patron MVC</a><a href="#e1" class="nav-link"><span class="nav-num">01</span>Structure de projet</a><a href="#e2" class="nav-link"><span class="nav-num">02</span>Front controller</a><a href="#e3" class="nav-link"><span class="nav-num">03</span>Router</a><a href="#e4" class="nav-link"><span class="nav-num">04</span>Controller</a><a href="#e5" class="nav-link"><span class="nav-num">05</span>Model / PDO</a><a href="#e6" class="nav-link"><span class="nav-num">06</span>Vues PHP</a><a href="#e7" class="nav-link"><span class="nav-num">07</span>CRUD complet</a><a href="#e8" class="nav-link"><span class="nav-num">08</span>Formulaire POST</a><a href="#e9" class="nav-link"><span class="nav-num">09</span>Synthese finale</a><a href="#quiz" class="nav-link"><span class="nav-num">10</span>Quiz</a></div></aside><main class="content">
+<div class="page-header"><div class="serie-badge">Support 18</div><h1>MVC<br><span class="hl">from scratch</span></h1><p>Le patron MVC (Model View Controller) separe les donnees, l'affichage et la logique. On va construire un mini-framework MVC maison en PHP pur — sans Symfony ni Laravel — pour comprendre comment ca fonctionne vraiment.</p><div class="objectifs"><span class="obj a">Router</span><span class="obj g">Controller</span><span class="obj b">Model</span><span class="obj t">View</span><span class="obj p">Front controller</span></div></div>
+<section class="etape" id="plan"><div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Architecture</div><h2>Le patron MVC</h2></div></div><p class="prose">MVC divise l'application en trois couches independantes. Chaque couche a une responsabilite unique et ne connait pas les details internes des autres.</p><div class="flow"><div class="flow-box r">Navigateur<div class="flow-sub">GET /produits</div></div><span class="flow-arrow">&rarr;</span><div class="flow-box p">Router<div class="flow-sub">dispatche</div></div><span class="flow-arrow">&rarr;</span><div class="flow-box g">Controller<div class="flow-sub">logique</div></div><span class="flow-arrow">&harr;</span><div class="flow-box b">Model<div class="flow-sub">BDD</div></div></div><div class="flow" style="margin-top:-4px;"><div style="width:120px"></div><div style="width:36px"></div><div class="flow-box g" style="visibility:hidden">x</div><span class="flow-arrow">&darr;</span><div class="flow-box a">View<div class="flow-sub">HTML rendu</div></div><span class="flow-arrow">&rarr;</span><div class="flow-box r">Navigateur<div class="flow-sub">affiche</div></div></div><div class="schema" style="margin-top:16px;"><span style="color:var(--green);font-weight:700">M &mdash; Model</span>       Acces aux donnees (PDO, BDD). Ne sait rien de l'affichage.
+<span style="color:var(--accent);font-weight:700">V &mdash; View</span>        Templates HTML/PHP. Ne sait rien de la BDD.
+<span style="color:var(--purple);font-weight:700">C &mdash; Controller</span>  Chef d'orchestre : recoit la requete, appelle le Model,
+                 transmet les donnees a la View, renvoie la reponse.</div><div class="callout info"><span class="ci">i</span><div><strong>Pourquoi MVC ?</strong> Sans separation, un fichier PHP melange requetes SQL, HTML et logique. On ne peut rien tester, rien reutiliser, rien changer sans tout casser. MVC rend chaque partie independante, testable et modifiable sans impacter les autres.</div></div></section><div class="divider"></div>
+<section class="etape" id="e1"><div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1</div><h2>Structure de projet</h2></div></div><p class="prose">On va construire un projet avec cette structure. Chaque dossier a un role strict. Le dossier <code>public/</code> est le seul accessible depuis le navigateur — tous les autres sont proteges.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Structure du projet MVC</span><span class="cb-badge ">Dossiers</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code>mini-mvc/
+  app/                     <span class="cmt">&lt;-- code de l'application</span>
+    Controllers/
+      Controller.php        <span class="cmt">classe de base</span>
+      ProduitController.php
+    Models/
+      Model.php             <span class="cmt">classe de base PDO</span>
+      ProduitModel.php
+    Views/
+      layout.php            <span class="cmt">template principal</span>
+      produits/
+        index.php           <span class="cmt">liste</span>
+        create.php          <span class="cmt">formulaire ajout</span>
+        show.php            <span class="cmt">detail</span>
+  core/                     <span class="cmt">&lt;-- moteur du framework</span>
+    Router.php
+    Request.php
+  public/                   <span class="cmt">&lt;-- SEUL dossier web</span>
+    index.php               <span class="cmt">front controller</span>
+    .htaccess               <span class="cmt">rewrite toutes les URLs</span>
+    assets/css/  assets/js/
+  config/
+    database.php
+  .env
+  composer.json</code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>public/ est la seule racine web.</strong> Configurer Apache (WAMP/MAMP/Laragon) pour que le <code>DocumentRoot</code> pointe sur <code>public/</code>. Ainsi <code>app/</code>, <code>core/</code> et <code>config/</code> ne sont jamais accessibles directement depuis le navigateur.</div></div></section><div class="divider"></div>
+<section class="etape" id="e2"><div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2</div><h2>Front controller + .htaccess</h2></div></div><p class="prose">Le front controller est le point d'entree unique. <strong>Toutes les requetes</strong> arrivent sur <code>public/index.php</code> grace au fichier <code>.htaccess</code> qui redirige tout. Puis le routeur analyse l'URL et decide quel controller appeler.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">public/.htaccess &mdash; redirection URL Rewriting</span><span class="cb-badge ">Config</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># public/.htaccess &mdash; redirige tout vers index.php</span>
+Options -Indexes
+RewriteEngine On
+
+<span class="cmt"># Laisser passer les fichiers physiques (CSS, JS, images)</span>
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+<span class="cmt"># Tout le reste vers index.php</span>
+RewriteRule ^(.*)$ index.php [QSA,L]</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">public/index.php &mdash; front controller</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// public/index.php &mdash; FRONT CONTROLLER</span>
+<span class="cmt">// Tout passe par ici. Il orchestre le demarrage.</span>
+
+<span class="kw">define</span>(<span class="str">'ROOT'</span>, <span class="fn">dirname</span>(<span class="fn">__DIR__</span>));
+
+<span class="cmt">// Autoloader Composer</span>
+<span class="kw">require_once</span> ROOT . <span class="str">'/vendor/autoload.php'</span>;
+
+<span class="cmt">// Variables d'environnement</span>
+<span class="kw">use</span> <span class="ns">Dotenv\Dotenv</span>;
+<span class="cls">Dotenv</span>::<span class="fn">createImmutable</span>(ROOT)-><span class="fn">load</span>();
+
+<span class="cmt">// Demarrer le routeur</span>
+<span class="kw">use</span> <span class="ns">Core\Router</span>;
+
+<span class="vr">$router</span> = <span class="kw">new</span> <span class="cls">Router</span>();
+
+<span class="cmt">// Declaration des routes</span>
+<span class="vr">$router</span>-><span class="fn">get</span>(<span class="str">'/'</span>,                      <span class="str">'ProduitController@index'</span>);
+<span class="vr">$router</span>-><span class="fn">get</span>(<span class="str">'/produits'</span>,             <span class="str">'ProduitController@index'</span>);
+<span class="vr">$router</span>-><span class="fn">get</span>(<span class="str">'/produits/create'</span>,      <span class="str">'ProduitController@create'</span>);
+<span class="vr">$router</span>-><span class="fn">post</span>(<span class="str">'/produits/store'</span>,      <span class="str">'ProduitController@store'</span>);
+<span class="vr">$router</span>-><span class="fn">get</span>(<span class="str">'/produits/{id}'</span>,        <span class="str">'ProduitController@show'</span>);
+<span class="vr">$router</span>-><span class="fn">get</span>(<span class="str">'/produits/{id}/edit'</span>,   <span class="str">'ProduitController@edit'</span>);
+<span class="vr">$router</span>-><span class="fn">post</span>(<span class="str">'/produits/{id}/update'</span>, <span class="str">'ProduitController@update'</span>);
+<span class="vr">$router</span>-><span class="fn">post</span>(<span class="str">'/produits/{id}/delete'</span>, <span class="str">'ProduitController@delete'</span>);
+
+<span class="vr">$router</span>-><span class="fn">dispatch</span>(<span class="vr">$_SERVER</span>[<span class="str">'REQUEST_URI'</span>], <span class="vr">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>]);</code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Convention "Controller@methode".</strong> La chaine <code>ProduitController@index</code> indique : classe <code>ProduitController</code>, methode <code>index</code>. Le routeur va splitter cette chaine pour instancier la classe et appeler la methode.</div></div></section><div class="divider"></div>
+<section class="etape" id="e3"><div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3</div><h2>Router</h2></div></div><p class="prose">Le Router analyse l'URL et le verbe HTTP (GET/POST). Il compare l'URL aux routes enregistrees, extrait les parametres dynamiques <code>{id}</code>, puis instancie le controller et appelle la methode.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">core/Router.php &mdash; routeur avec parametres</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">Core</span>;
+
+<span class="kw">class</span> <span class="cls">Router</span> {
+
+    <span class="vis">private</span> array <span class="vr">$routes</span> = [];
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">get</span>(string <span class="vr">$uri</span>, string <span class="vr">$action</span>): void {
+        <span class="vr">$this</span>-><span class="vr">routes</span>[<span class="str">'GET'</span>][<span class="vr">$uri</span>] = <span class="vr">$action</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">post</span>(string <span class="vr">$uri</span>, string <span class="vr">$action</span>): void {
+        <span class="vr">$this</span>-><span class="vr">routes</span>[<span class="str">'POST'</span>][<span class="vr">$uri</span>] = <span class="vr">$action</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">dispatch</span>(string <span class="vr">$uri</span>, string <span class="vr">$method</span>): void {
+        <span class="cmt">// Nettoyer l'URI (enlever query string et slash final)</span>
+        <span class="vr">$uri</span> = <span class="fn">strtok</span>(<span class="vr">$uri</span>, <span class="str">'?'</span>);
+        <span class="vr">$uri</span> = <span class="fn">rtrim</span>(<span class="vr">$uri</span>, <span class="str">'/'</span>) ?: <span class="str">'/'</span>;
+
+        <span class="kw">foreach</span> (<span class="vr">$this</span>-><span class="vr">routes</span>[<span class="vr">$method</span>] ?? [] <span class="kw">as</span> <span class="vr">$pattern</span> => <span class="vr">$action</span>) {
+            <span class="vr">$regex</span> = <span class="fn">preg_replace</span>(<span class="str">'#\{[a-z]+\}#'</span>, <span class="str">'([^/]+)'</span>, <span class="vr">$pattern</span>);
+            <span class="kw">if</span> (<span class="fn">preg_match</span>(<span class="str">'#^'</span> . <span class="vr">$regex</span> . <span class="str">'$#'</span>, <span class="vr">$uri</span>, <span class="vr">$matches</span>)) {
+                <span class="fn">array_shift</span>(<span class="vr">$matches</span>);  <span class="cmt">// enlever le match complet</span>
+                <span class="vr">$this</span>-><span class="fn">call</span>(<span class="vr">$action</span>, <span class="vr">$matches</span>);
+                <span class="kw">return</span>;
+            }
+        }
+
+        <span class="cmt">// Aucune route trouvee : 404</span>
+        <span class="fn">http_response_code</span>(<span class="num">404</span>);
+        <span class="kw">echo</span> <span class="str">'&lt;h1&gt;404 &mdash; Page introuvable&lt;/h1&gt;'</span>;
+    }
+
+    <span class="vis">private</span> <span class="kw">function</span> <span class="fn">call</span>(string <span class="vr">$action</span>, array <span class="vr">$params</span>): void {
+        [<span class="vr">$class</span>, <span class="vr">$method</span>] = <span class="fn">explode</span>(<span class="str">'@'</span>, <span class="vr">$action</span>);
+        <span class="vr">$fqcn</span> = <span class="str">'App\\Controllers\\'</span> . <span class="vr">$class</span>;
+        <span class="vr">$controller</span> = <span class="kw">new</span> <span class="vr">$fqcn</span>();
+        <span class="vr">$controller</span>->{<span class="vr">$method</span>}(...<span class="vr">$params</span>);
+    }
+}
+
+<span class="cmt">// Routes avec parametres dynamiques :</span>
+<span class="cmt">// /produits/{id} =&gt; regex /produits/([^/]+)</span>
+<span class="cmt">// /produits/42    =&gt; $matches[0] = "42"</span></code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>Parametres dynamiques.</strong> La route <code>/produits/{id}</code> est convertie en regex <code>/produits/([^/]+)</code>. Si l'URL est <code>/produits/42</code>, le match donne <code>$matches = ['42']</code>. Ces valeurs sont passees comme arguments a la methode du controller.</div></div></section><div class="divider"></div>
+<section class="etape" id="e4"><div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4</div><h2>Controller</h2></div></div><p class="prose">Le controller de base fournit les methodes <code>render()</code> et <code>redirect()</code>. Les controllers concrets l'etendent et definissent les actions. Chaque action = une methode publique.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">app/Controllers/Controller.php &mdash; classe de base</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Controllers</span>;
+
+<span class="kw">abstract class</span> <span class="cls">Controller</span> {
+
+    <span class="cmt">/**
+     * Rendre une vue en lui passant des donnees.
+     */
+    <span class="vis">protected</span> <span class="kw">function</span> <span class="fn">render</span>(string <span class="vr">$view</span>, array <span class="vr">$data</span> = []): void {
+        <span class="cmt">// extract(data) transforme les cles en variables PHP</span>
+        <span class="fn">extract</span>(<span class="vr">$data</span>);
+
+        <span class="cmt">// Chemin vers le fichier de vue</span>
+        <span class="vr">$viewPath</span> = ROOT . <span class="str">'/app/Views/'</span> . <span class="vr">$view</span> . <span class="str">'.php'</span>;
+
+        <span class="kw">if</span> (!<span class="fn">file_exists</span>(<span class="vr">$viewPath</span>)) {
+            <span class="kw">throw new</span> <span class="cls">\RuntimeException</span>(<span class="str">'Vue introuvable : '</span> . <span class="vr">$view</span>);
+        }
+
+        <span class="cmt">// Inclure le layout qui lui-meme inclura la vue</span>
+        <span class="vr">$content</span> = <span class="vr">$viewPath</span>;
+        <span class="kw">require</span> ROOT . <span class="str">'/app/Views/layout.php'</span>;
+    }
+
+    <span class="vis">protected</span> <span class="kw">function</span> <span class="fn">redirect</span>(string <span class="vr">$url</span>): void {
+        <span class="fn">header</span>(<span class="str">'Location: '</span> . <span class="vr">$url</span>);
+        <span class="kw">exit</span>;
+    }
+}
+</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">app/Controllers/ProduitController.php</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Controllers</span>;
+
+<span class="kw">use</span> <span class="ns">App\Models\ProduitModel</span>;
+
+<span class="kw">class</span> <span class="cls">ProduitController</span> <span class="kw">extends</span> <span class="cls">Controller</span> {
+
+    <span class="vis">private</span> <span class="cls">ProduitModel</span> <span class="vr">$model</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>() {
+        <span class="vr">$this</span>-><span class="vr">model</span> = <span class="kw">new</span> <span class="cls">ProduitModel</span>();
+    }
+
+    <span class="cmt">// GET /produits</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">index</span>(): void {
+        <span class="vr">$produits</span> = <span class="vr">$this</span>-><span class="vr">model</span>-><span class="fn">findAll</span>();
+        <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'produits/index'</span>, [
+            <span class="str">'titre'</span>    => <span class="str">'Catalogue'</span>,
+            <span class="str">'produits'</span> => <span class="vr">$produits</span>,
+        ]);
+    }
+
+    <span class="cmt">// GET /produits/{id}</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">show</span>(string <span class="vr">$id</span>): void {
+        <span class="vr">$produit</span> = <span class="vr">$this</span>-><span class="vr">model</span>-><span class="fn">findById</span>((int)<span class="vr">$id</span>);
+        <span class="kw">if</span> (!<span class="vr">$produit</span>) { <span class="fn">http_response_code</span>(<span class="num">404</span>); <span class="kw">return</span>; }
+        <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'produits/show'</span>, [
+            <span class="str">'titre'</span>   => <span class="vr">$produit</span>[<span class="str">'nom'</span>],
+            <span class="str">'produit'</span> => <span class="vr">$produit</span>,
+        ]);
+    }
+
+    <span class="cmt">// GET /produits/create</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">create</span>(): void {
+        <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'produits/create'</span>, [<span class="str">'titre'</span> => <span class="str">'Nouveau produit'</span>]);
+    }
+}
+</code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>extract($data) est cle.</strong> La methode <code>render()</code> appelle <code>extract(['titre' => 'Catalogue', 'produits' => [...]])</code>. Cela cree les variables <code>$titre</code> et <code>$produits</code> disponibles dans le fichier de vue inclus juste apres.</div></div></section><div class="divider"></div>
+<section class="etape" id="e5"><div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5</div><h2>Model</h2></div></div><p class="prose">Le Model de base fournit les methodes CRUD generiques via la propriete <code>$table</code>. Chaque Model concret etend cette base et ajoute ses requetes metier specifiques.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">app/Models/Model.php &mdash; base CRUD</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Models</span>;
+
+<span class="kw">use</span> \PDO;
+<span class="kw">use</span> \PDOException;
+
+<span class="kw">abstract class</span> <span class="cls">Model</span> {
+
+    <span class="vis">protected</span> <span class="cls">PDO</span> <span class="vr">$pdo</span>;
+    <span class="vis">protected</span> string <span class="vr">$table</span> = <span class="str">''</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>() {
+        <span class="vr">$this</span>-><span class="vr">pdo</span> = <span class="vr">$this</span>-><span class="fn">connect</span>();
+    }
+
+    <span class="vis">private</span> <span class="kw">function</span> <span class="fn">connect</span>(): <span class="cls">PDO</span> {
+        <span class="vr">$dsn</span> = <span class="str">'mysql:host='</span> . <span class="fn">getenv</span>(<span class="str">'DB_HOST'</span>)
+             . <span class="str">';port='</span>   . <span class="fn">getenv</span>(<span class="str">'DB_PORT'</span>)
+             . <span class="str">';dbname='</span> . <span class="fn">getenv</span>(<span class="str">'DB_NAME'</span>)
+             . <span class="str">';charset=utf8mb4'</span>;
+        <span class="kw">return</span> <span class="kw">new</span> <span class="cls">PDO</span>(<span class="vr">$dsn</span>, <span class="fn">getenv</span>(<span class="str">'DB_USER'</span>), <span class="fn">getenv</span>(<span class="str">'DB_PASS'</span>), [
+            <span class="cls">PDO</span>::<span class="fn">ATTR_ERRMODE</span>           => <span class="cls">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>,
+            <span class="cls">PDO</span>::<span class="fn">ATTR_DEFAULT_FETCH_MODE</span> => <span class="cls">PDO</span>::<span class="fn">FETCH_ASSOC</span>,
+        ]);
+    }
+
+    <span class="cmt">// Methodes CRUD generiques</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findAll</span>(): array {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">query</span>(<span class="str">'SELECT * FROM '</span> . <span class="vr">$this</span>-><span class="vr">table</span>)-><span class="fn">fetchAll</span>();
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findById</span>(int <span class="vr">$id</span>): ?array {
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT * FROM '</span> . <span class="vr">$this</span>-><span class="vr">table</span> . <span class="str">' WHERE id = ?'</span>);
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="vr">$id</span>]);
+        <span class="kw">return</span> <span class="vr">$stmt</span>-><span class="fn">fetch</span>() ?: <span class="kw">null</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">delete</span>(int <span class="vr">$id</span>): bool {
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(<span class="str">'DELETE FROM '</span> . <span class="vr">$this</span>-><span class="vr">table</span> . <span class="str">' WHERE id = ?'</span>);
+        <span class="kw">return</span> <span class="vr">$stmt</span>-><span class="fn">execute</span>([<span class="vr">$id</span>]);
+    }
+}
+</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">app/Models/ProduitModel.php</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">namespace</span> <span class="ns">App\Models</span>;
+
+<span class="kw">class</span> <span class="cls">ProduitModel</span> <span class="kw">extends</span> <span class="cls">Model</span> {
+
+    <span class="vis">protected</span> string <span class="vr">$table</span> = <span class="str">'produits'</span>;
+
+    <span class="cmt">// Requete metier specifique aux produits</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">findAllWithCategorie</span>(): array {
+        <span class="vr">$sql</span> = <span class="str">'SELECT p.*, c.nom AS categorie</span>
+               <span class="str">FROM produits p</span>
+               <span class="str">LEFT JOIN categories c ON p.categorie_id = c.id</span>
+               <span class="str">ORDER BY p.nom'</span>;
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">query</span>(<span class="vr">$sql</span>)-><span class="fn">fetchAll</span>();
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">create</span>(array <span class="vr">$data</span>): int {
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(
+            <span class="str">'INSERT INTO produits (nom, prix, stock, categorie_id)</span>
+             <span class="str">VALUES (:nom, :prix, :stock, :categorie_id)'</span>
+        );
+        <span class="vr">$stmt</span>-><span class="fn">execute</span>(<span class="vr">$data</span>);
+        <span class="kw">return</span> (int)<span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">lastInsertId</span>();
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">update</span>(int <span class="vr">$id</span>, array <span class="vr">$data</span>): bool {
+        <span class="vr">$data</span>[<span class="str">'id'</span>] = <span class="vr">$id</span>;
+        <span class="vr">$stmt</span> = <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">prepare</span>(
+            <span class="str">'UPDATE produits SET nom=:nom, prix=:prix, stock=:stock WHERE id=:id'</span>
+        );
+        <span class="kw">return</span> <span class="vr">$stmt</span>-><span class="fn">execute</span>(<span class="vr">$data</span>);
+    }
+}
+</code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>La propriete $table est la seule chose a definir.</strong> Grace a la classe de base, un <code>ProduitModel</code> obtient <code>findAll()</code>, <code>findById()</code> et <code>delete()</code> gratuitement. Il n'ajoute que les requetes specifiques aux produits.</div></div></section><div class="divider"></div>
+<section class="etape" id="e6"><div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6</div><h2>Vues PHP</h2></div></div><p class="prose">Les vues sont de simples fichiers PHP/HTML. Le layout est le gabarit principal (nav, head, body). La vue partielle est injectee dans le layout via la variable <code>$content</code>. <code>htmlspecialchars()</code> protege contre les XSS.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">app/Views/layout.php &mdash; gabarit principal</span><span class="cb-badge html">HTML</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="html-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="html-tag">&lt;html</span> <span class="html-attr">lang</span>=<span class="html-val">"fr"</span><span class="html-tag">&gt;</span>
+<span class="html-tag">&lt;head&gt;</span>
+    <span class="html-tag">&lt;meta</span> <span class="html-attr">charset</span>=<span class="html-val">"UTF-8"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;title&gt;</span><span class="ptag">&lt;?= htmlspecialchars($titre ?? 'App') ?&gt;</span><span class="html-tag">&lt;/title&gt;</span>
+    <span class="html-tag">&lt;link</span> <span class="html-attr">rel</span>=<span class="html-val">"stylesheet"</span> <span class="html-attr">href</span>=<span class="html-val">"/assets/css/style.css"</span><span class="html-tag">&gt;</span>
+<span class="html-tag">&lt;/head&gt;</span>
+<span class="html-tag">&lt;body&gt;</span>
+<span class="html-tag">&lt;nav&gt;</span>
+    <span class="html-tag">&lt;a</span> <span class="html-attr">href</span>=<span class="html-val">"/"</span><span class="html-tag">&gt;</span>Accueil<span class="html-tag">&lt;/a&gt;</span>
+    <span class="html-tag">&lt;a</span> <span class="html-attr">href</span>=<span class="html-val">"/produits"</span><span class="html-tag">&gt;</span>Produits<span class="html-tag">&lt;/a&gt;</span>
+<span class="html-tag">&lt;/nav&gt;</span>
+<span class="html-tag">&lt;main&gt;</span>
+    <span class="ptag">&lt;?php require $content; ?&gt;</span>  <span class="cmt">&lt;!-- vue injectee ici --&gt;</span>
+<span class="html-tag">&lt;/main&gt;</span>
+<span class="html-tag">&lt;/body&gt;&lt;/html&gt;</span></code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">app/Views/produits/index.php &mdash; liste</span><span class="cb-badge html">HTML</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">&lt;!-- app/Views/produits/index.php --&gt;</span>
+<span class="html-tag">&lt;h1&gt;</span><span class="ptag">&lt;?= htmlspecialchars($titre) ?&gt;</span><span class="html-tag">&lt;/h1&gt;</span>
+
+<span class="html-tag">&lt;a</span> <span class="html-attr">href</span>=<span class="html-val">"/produits/create"</span><span class="html-tag">&gt;</span>+ Nouveau produit<span class="html-tag">&lt;/a&gt;</span>
+
+<span class="html-tag">&lt;table&gt;</span>
+    <span class="html-tag">&lt;thead&gt;&lt;tr&gt;</span>
+        <span class="html-tag">&lt;th&gt;</span>Nom<span class="html-tag">&lt;/th&gt;&lt;th&gt;</span>Prix<span class="html-tag">&lt;/th&gt;&lt;th&gt;</span>Stock<span class="html-tag">&lt;/th&gt;&lt;th&gt;</span>Actions<span class="html-tag">&lt;/th&gt;</span>
+    <span class="html-tag">&lt;/tr&gt;&lt;/thead&gt;</span>
+    <span class="html-tag">&lt;tbody&gt;</span>
+    <span class="ptag">&lt;?php foreach ($produits as $p): ?&gt;</span>
+        <span class="html-tag">&lt;tr&gt;</span>
+            <span class="html-tag">&lt;td&gt;</span><span class="ptag">&lt;?= htmlspecialchars($p['nom']) ?&gt;</span><span class="html-tag">&lt;/td&gt;</span>
+            <span class="html-tag">&lt;td&gt;</span><span class="ptag">&lt;?= number_format($p['prix'], 2) ?&gt;</span> EUR<span class="html-tag">&lt;/td&gt;</span>
+            <span class="html-tag">&lt;td&gt;</span><span class="ptag">&lt;?= $p['stock'] ?&gt;</span><span class="html-tag">&lt;/td&gt;</span>
+            <span class="html-tag">&lt;td&gt;</span>
+                <span class="html-tag">&lt;a</span> <span class="html-attr">href</span>=<span class="html-val">"/produits/&lt;?= $p['id'] ?&gt;"</span><span class="html-tag">&gt;</span>Voir<span class="html-tag">&lt;/a&gt;</span>
+                <span class="html-tag">&lt;a</span> <span class="html-attr">href</span>=<span class="html-val">"/produits/&lt;?= $p['id'] ?&gt;/edit"</span><span class="html-tag">&gt;</span>Editer<span class="html-tag">&lt;/a&gt;</span>
+            <span class="html-tag">&lt;/td&gt;</span>
+        <span class="html-tag">&lt;/tr&gt;</span>
+    <span class="ptag">&lt;?php endforeach; ?&gt;</span>
+    <span class="html-tag">&lt;/tbody&gt;</span>
+<span class="html-tag">&lt;/table&gt;</span></code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Toujours echapper les donnees affichees.</strong> <code>htmlspecialchars($var)</code> transforme <code>&lt;script&gt;</code> en texte inoffensif. Sans ca, si un nom de produit contient du JS, il s'executera dans le navigateur (XSS). Regles : echapper toute donnee venant de la BDD ou de l'utilisateur avant de l'afficher.</div></div></section><div class="divider"></div>
+<section class="etape" id="e7"><div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Etape 7</div><h2>CRUD complet dans le Controller</h2></div></div><p class="prose">Voici les actions CRUD completes du controller : store (creation), edit (formulaire edition), update (traitement edition) et delete. On applique le <strong>PRG pattern</strong> (Post/Redirect/Get) pour eviter la resoumission du formulaire au rafraichissement.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">ProduitController.php &mdash; actions store / edit / update / delete</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Suite de ProduitController.php</span>
+
+    <span class="cmt">// POST /produits/store &mdash; traiter le formulaire</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">store</span>(): void {
+        <span class="cmt">// Valider les donnees</span>
+        <span class="vr">$nom</span>   = <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>] ?? <span class="str">''</span>);
+        <span class="vr">$prix</span>  = (float)(<span class="vr">$_POST</span>[<span class="str">'prix'</span>] ?? <span class="num">0</span>);
+        <span class="vr">$stock</span> = (int)(<span class="vr">$_POST</span>[<span class="str">'stock'</span>] ?? <span class="num">0</span>);
+
+        <span class="kw">if</span> (<span class="fn">empty</span>(<span class="vr">$nom</span>) || <span class="vr">$prix</span> <= <span class="num">0</span>) {
+            <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'produits/create'</span>, [
+                <span class="str">'titre'</span>  => <span class="str">'Nouveau produit'</span>,
+                <span class="str">'errors'</span> => [<span class="str">'Nom et prix requis'</span>],
+                <span class="str">'old'</span>    => <span class="vr">$_POST</span>,
+            ]);
+            <span class="kw">return</span>;
+        }
+
+        <span class="cmt">// Creer en BDD</span>
+        <span class="vr">$id</span> = <span class="vr">$this</span>-><span class="vr">model</span>-><span class="fn">create</span>([
+            <span class="str">'nom'</span>          => <span class="vr">$nom</span>,
+            <span class="str">'prix'</span>         => <span class="vr">$prix</span>,
+            <span class="str">'stock'</span>        => <span class="vr">$stock</span>,
+            <span class="str">'categorie_id'</span> => <span class="vr">$_POST</span>[<span class="str">'categorie_id'</span>] ?? <span class="kw">null</span>,
+        ]);
+
+        <span class="cmt">// Rediriger apres succes (PRG pattern)</span>
+        <span class="vr">$this</span>-><span class="fn">redirect</span>(<span class="str">'/produits/'</span> . <span class="vr">$id</span>);
+    }
+
+    <span class="cmt">// GET /produits/{id}/edit</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">edit</span>(string <span class="vr">$id</span>): void {
+        <span class="vr">$produit</span> = <span class="vr">$this</span>-><span class="vr">model</span>-><span class="fn">findById</span>((int)<span class="vr">$id</span>);
+        <span class="kw">if</span> (!<span class="vr">$produit</span>) { <span class="fn">http_response_code</span>(<span class="num">404</span>); <span class="kw">return</span>; }
+        <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'produits/edit'</span>, [
+            <span class="str">'titre'</span>   => <span class="str">'Modifier : '</span> . <span class="vr">$produit</span>[<span class="str">'nom'</span>],
+            <span class="str">'produit'</span> => <span class="vr">$produit</span>,
+        ]);
+    }
+
+    <span class="cmt">// POST /produits/{id}/update</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">update</span>(string <span class="vr">$id</span>): void {
+        <span class="vr">$this</span>-><span class="vr">model</span>-><span class="fn">update</span>((int)<span class="vr">$id</span>, [
+            <span class="str">'nom'</span>  => <span class="fn">trim</span>(<span class="vr">$_POST</span>[<span class="str">'nom'</span>]),
+            <span class="str">'prix'</span> => (float)<span class="vr">$_POST</span>[<span class="str">'prix'</span>],
+            <span class="str">'stock'</span>=> (int)<span class="vr">$_POST</span>[<span class="str">'stock'</span>],
+        ]);
+        <span class="vr">$this</span>-><span class="fn">redirect</span>(<span class="str">'/produits/'</span> . <span class="vr">$id</span>);
+    }
+
+    <span class="cmt">// POST /produits/{id}/delete</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">delete</span>(string <span class="vr">$id</span>): void {
+        <span class="vr">$this</span>-><span class="vr">model</span>-><span class="fn">delete</span>((int)<span class="vr">$id</span>);
+        <span class="vr">$this</span>-><span class="fn">redirect</span>(<span class="str">'/produits'</span>);
+    }
+</code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>PRG Pattern &mdash; Post Redirect Get.</strong> Apres un POST reussi, on ne rend pas directement une vue : on fait un redirect(). Ainsi si l'utilisateur rafraichit la page, il recharge un GET et non le POST. Sans ca, le formulaire est resoumis et le produit cree deux fois.</div></div></section><div class="divider"></div>
+<section class="etape" id="e8"><div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Etape 8</div><h2>Formulaire avec validation</h2></div></div><p class="prose">Le formulaire de creation illustre deux bonnes pratiques : afficher les <strong>erreurs de validation</strong> au-dessus du formulaire, et repeupler les champs avec les valeurs precedentes (<strong>old input</strong>) pour que l'utilisateur ne ressaisisse pas tout.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">app/Views/produits/create.php &mdash; formulaire avec validation</span><span class="cb-badge html">HTML</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">&lt;!-- app/Views/produits/create.php --&gt;</span>
+<span class="html-tag">&lt;h1&gt;</span><span class="ptag">&lt;?= htmlspecialchars($titre) ?&gt;</span><span class="html-tag">&lt;/h1&gt;</span>
+
+<span class="cmt">&lt;!-- Afficher les erreurs de validation --&gt;</span>
+<span class="ptag">&lt;?php if (!empty($errors)): ?&gt;</span>
+    <span class="html-tag">&lt;ul</span> <span class="html-attr">class</span>=<span class="html-val">"errors"</span><span class="html-tag">&gt;</span>
+    <span class="ptag">&lt;?php foreach ($errors as $err): ?&gt;</span>
+        <span class="html-tag">&lt;li&gt;</span><span class="ptag">&lt;?= htmlspecialchars($err) ?&gt;</span><span class="html-tag">&lt;/li&gt;</span>
+    <span class="ptag">&lt;?php endforeach; ?&gt;</span>
+    <span class="html-tag">&lt;/ul&gt;</span>
+<span class="ptag">&lt;?php endif; ?&gt;</span>
+
+<span class="html-tag">&lt;form</span> <span class="html-attr">method</span>=<span class="html-val">"post"</span> <span class="html-attr">action</span>=<span class="html-val">"/produits/store"</span><span class="html-tag">&gt;</span>
+
+    <span class="html-tag">&lt;label&gt;</span>Nom
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-val">"text"</span> <span class="html-attr">name</span>=<span class="html-val">"nom"</span>
+               <span class="html-attr">value</span>=<span class="html-val">"&lt;?= htmlspecialchars($old['nom'] ?? '') ?&gt;"</span>
+               <span class="html-attr">required</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;/label&gt;</span>
+
+    <span class="html-tag">&lt;label&gt;</span>Prix (EUR)
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-val">"number"</span> <span class="html-attr">name</span>=<span class="html-val">"prix"</span> <span class="html-attr">step</span>=<span class="html-val">"0.01"</span> <span class="html-attr">min</span>=<span class="html-val">"0"</span>
+               <span class="html-attr">value</span>=<span class="html-val">"&lt;?= $old['prix'] ?? '' ?&gt;"</span> <span class="html-attr">required</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;/label&gt;</span>
+
+    <span class="html-tag">&lt;label&gt;</span>Stock
+        <span class="html-tag">&lt;input</span> <span class="html-attr">type</span>=<span class="html-val">"number"</span> <span class="html-attr">name</span>=<span class="html-val">"stock"</span> <span class="html-attr">min</span>=<span class="html-val">"0"</span>
+               <span class="html-attr">value</span>=<span class="html-val">"&lt;?= $old['stock'] ?? 0 ?&gt;"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;/label&gt;</span>
+
+    <span class="html-tag">&lt;button</span> <span class="html-attr">type</span>=<span class="html-val">"submit"</span><span class="html-tag">&gt;</span>Creer<span class="html-tag">&lt;/button&gt;</span>
+    <span class="html-tag">&lt;a</span> <span class="html-attr">href</span>=<span class="html-val">"/produits"</span><span class="html-tag">&gt;</span>Annuler<span class="html-tag">&lt;/a&gt;</span>
+
+<span class="html-tag">&lt;/form&gt;</span></code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>Old input ($old).</strong> Quand la validation echoue, le controller renvoie la vue avec <code>'old' => $_POST</code>. La vue peut ainsi repopuler les champs avec <code>$old['nom'] ?? ''</code>. L'utilisateur retrouve ses saisies et ne doit corriger que les champs en erreur.</div></div></section><div class="divider"></div>
+<section class="etape" id="e9"><div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Synthese</div><h2>Flux complet et recapitulatif</h2></div></div><p class="prose">Recapitulatif du flux complet pour les deux scenarios les plus courants : lecture (GET) et creation (POST avec PRG).</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Flux complet GET et POST &mdash; trace d'execution</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">// Flux complet : GET /produits</span>
+
+<span class="num">1.</span> <span class="cmt">Navigateur &rarr; GET /produits</span>
+<span class="num">2.</span> <span class="cmt">.htaccess &rarr; public/index.php</span>
+<span class="num">3.</span> <span class="cmt">Router: match /produits &rarr; ProduitController@index</span>
+<span class="num">4.</span> <span class="cls">ProduitController</span>::<span class="fn">index</span>()
+      <span class="vr">$produits</span> = <span class="vr">$this</span>-><span class="vr">model</span>-><span class="fn">findAll</span>();
+      <span class="vr">$this</span>-><span class="fn">render</span>(<span class="str">'produits/index'</span>, [<span class="str">'produits'</span> => <span class="vr">$produits</span>])
+<span class="num">5.</span> <span class="cls">ProduitModel</span>::<span class="fn">findAll</span>()
+      <span class="fn">SELECT</span> * FROM produits &rarr; tableau d'arrays
+<span class="num">6.</span> <span class="cls">Controller</span>::<span class="fn">render</span>()
+      <span class="fn">extract</span>([<span class="str">'produits'</span> => [...]]) &rarr; <span class="vr">$produits</span> disponible
+      <span class="kw">require</span> layout.php &rarr; require produits/index.php
+<span class="num">7.</span> <span class="cmt">HTML rendu &rarr; navigateur</span>
+
+<span class="cmt">// Flux POST : POST /produits/store</span>
+
+<span class="num">1.</span> <span class="cmt">Formulaire soumis &rarr; POST /produits/store</span>
+<span class="num">2.</span> <span class="cls">ProduitController</span>::<span class="fn">store</span>()
+      Validation &rarr; si erreur : render(create, errors)
+      Sinon : model->create($data) &rarr; INSERT BDD
+<span class="num">3.</span> <span class="fn">redirect</span>(<span class="str">'/produits/'</span> . <span class="vr">$id</span>) &rarr; GET /produits/42
+<span class="num">4.</span> <span class="cmt">Controller::show(42) &rarr; rendu detail</span></code></pre></div><div class="table-wrap"><table><thead><tr><th>Fichier</th><th>Role</th><th>Ce qu'il contient</th></tr></thead><tbody><tr><td>public/.htaccess</td><td>Entree web</td><td>Redirige tout vers index.php</td></tr><tr><td>public/index.php</td><td>Front controller</td><td>Autoloader + routes + dispatch</td></tr><tr><td>core/Router.php</td><td>Routage</td><td>Match URL &rarr; Controller@action</td></tr><tr><td>app/Controllers/Controller.php</td><td>Base C</td><td>render() et redirect()</td></tr><tr><td>app/Controllers/ProduitController.php</td><td>Controller</td><td>Actions index/show/create/store/edit/update/delete</td></tr><tr><td>app/Models/Model.php</td><td>Base M</td><td>findAll() findById() delete() + connexion PDO</td></tr><tr><td>app/Models/ProduitModel.php</td><td>Model</td><td>Requetes SQL specifiques produits</td></tr><tr><td>app/Views/layout.php</td><td>Layout</td><td>HTML global + inclusion $content</td></tr><tr><td>app/Views/produits/index.php</td><td>Vue</td><td>Tableau HTML des produits</td></tr></tbody></table></div><div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Ce mini-framework est la base de tous les frameworks PHP.</strong> Laravel, Symfony, CodeIgniter reposent tous sur ces memes principes : front controller, routeur, controllers, models, vues. En comprenant cette version from scratch, on comprend n'importe quel framework.</div></div></section><div class="divider"></div>
+<section class="etape" id="quiz"><div class="etape-header"><div class="etape-num">10</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; MVC PHP</h2></div></div><div class="quiz-card"><div class="q"><span class="qn">Q1.</span> Quel est le role du Controller dans le patron MVC ?</div><div class="opts"><button class="opt" onclick="ans(this,'q1',false)">Stocker les donnees en base et faire les requetes SQL</button><button class="opt" onclick="ans(this,'q1',true)">Chef d'orchestre : recoit la requete HTTP, appelle le Model pour obtenir les donnees, les transmet a la View, et renvoie la reponse.</button><button class="opt" onclick="ans(this,'q1',false)">Generer le HTML et afficher les donnees</button></div><div class="fb" id="fb-q1"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q2.</span> Pourquoi utiliser le PRG Pattern (Post/Redirect/Get) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q2',false)">Pour ameliorer les performances des requetes POST</button><button class="opt" onclick="ans(this,'q2',true)">Apres un POST reussi, on redirige vers un GET. Ainsi si l'utilisateur rafraichit la page, il recharge le GET (inoffensif) et non le POST qui soumettrait le formulaire une deuxieme fois.</button><button class="opt" onclick="ans(this,'q2',false)">Pour securiser les donnees du formulaire contre les injections</button></div><div class="fb" id="fb-q2"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q3.</span> Quel est le role du front controller (public/index.php) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q3',false)">Il sert uniquement a charger les fichiers CSS et JS</button><button class="opt" onclick="ans(this,'q3',true)">Point d'entree unique de l'application. Toutes les requetes y arrivent (grace au .htaccess). Il charge l'autoloader, les variables d'environnement, declare les routes et demarre le routeur.</button><button class="opt" onclick="ans(this,'q3',false)">Il est le seul fichier qui peut acceder a la base de donnees</button></div><div class="fb" id="fb-q3"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q4.</span> Pourquoi la methode render() appelle extract($data) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q4',false)">Pour securiser les donnees avant de les afficher</button><button class="opt" onclick="ans(this,'q4',true)">extract() transforme les cles du tableau en variables PHP. ['produits' => [...]] cree $produits disponible dans le fichier de vue inclus ensuite. Sans ca, la vue n'aurait pas acces aux donnees.</button><button class="opt" onclick="ans(this,'q4',false)">Pour encoder les donnees en JSON avant l'affichage</button></div><div class="fb" id="fb-q4"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q5.</span> Pourquoi le dossier public/ doit etre le seul accessible depuis le navigateur ?</div><div class="opts"><button class="opt" onclick="ans(this,'q5',false)">Pour des raisons de performances du serveur Apache</button><button class="opt" onclick="ans(this,'q5',true)">Les dossiers app/, core/ et config/ contiennent le code source et les configurations sensibles (mots de passe). Les rendre inaccessibles web empeche qu'un visiteur puisse les lire directement.</button><button class="opt" onclick="ans(this,'q5',false)">C'est une convention optionnelle sans impact sur la securite</button></div><div class="fb" id="fb-q5"></div></div><div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;"><div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div><div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div></div></section></main></div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copie';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+const fbs={
+  q1:{ok:'Exact. Le Controller est le chef d orchestre. Il ne stocke pas de donnees (c est le Model) et ne genere pas de HTML (c est la View). Il coordonne : recoit la requete, dit au Model quoi chercher, passe le resultat a la View.',ko:'Non. Le Controller coordonne. Le Model gere les donnees/BDD. La View affiche le HTML. Le Controller orchestre les deux.'},
+  q2:{ok:'Exact. Sans PRG, rafraichir la page apres un POST resoumet le formulaire. Avec PRG, le POST cree la ressource puis redirige vers un GET. Le rafraichissement recharge juste le GET affichant le resultat.',ko:'Non. Le PRG (Post/Redirect/Get) empeche la resoumission du formulaire au rafraichissement. Apres le POST, on redirige vers un GET. Rafraichir la page recharge le GET, pas le POST.'},
+  q3:{ok:'Exact. Le front controller est l unique point d entree. Le .htaccess redirige toutes les URLs vers public/index.php. Celui-ci initialise l application (autoloader, .env) puis passe la main au routeur.',ko:'Non. Le front controller est le point d entree unique de toute l application. Toutes les requetes y passent grace au .htaccess. Il charge l autoloader, les variables d environnement, declare les routes.'},
+  q4:{ok:'Exact. extract(['titre' => 'Catalogue', 'produits' => [...]]) cree $titre et $produits en variables PHP. Le fichier de vue inclus juste apres a alors directement acces a ces variables comme si elles avaient ete declarees localement.',ko:'Non. extract($data) transforme les cles du tableau en variables PHP accessibles dans la portee courante. Sans ca, le fichier de vue inclus n aurait pas acces aux donnees passees par le controller.'},
+  q5:{ok:'Exact. app/ contient le code source, core/ le framework, config/ les configurations avec les mots de passe. Si ces dossiers etaient accessibles web, un visiteur pourrait lire directement ces fichiers. public/ ne contient que l index.php et les assets publics.',ko:'Non. C est une question de securite. app/, core/ et config/ contiennent le code source et les identifiants BDD. Seul public/ doit etre la racine web pour que ces fichiers sensibles ne soient pas accessibles directement.'}
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').innerHTML=g===5?'Parfait &mdash; MVC maitrise !':g>=4?'Tres bien.':g>=3?'Revoir le flux Controller et PRG.':'Reprendre depuis le concept MVC.';box.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+</script></body></html>
