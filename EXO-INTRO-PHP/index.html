@@ -50,20 +50,19 @@
     .header-meta span strong { color: #fff; }
 
     .pedagogy {
-      background: var(--dark); border-left: 4px solid var(--gold);
+      background: var(--dark);
       padding: 1.2rem 2rem; font-size: .85rem; color: #8899bb;
     }
     .pedagogy strong { color: var(--gold); }
     .pedagogy code {
       background: var(--code-bg); color: #79c0ff;
-      padding: .1rem .4rem; border-radius: 3px;
+      padding: .1rem .4rem; 
       font-family: 'JetBrains Mono', monospace; font-size: .82rem;
     }
 
     /* ALERTE PÉDAGOGIQUE */
     .alerte-prochaine {
       background: rgba(251,146,60,.07); border: 1px solid rgba(251,146,60,.25);
-      border-left: 4px solid var(--orange);
       padding: .8rem 1.5rem; margin: 1.5rem 0;
       font-size: .88rem; color: #f4c07a; border-radius: 0 6px 6px 0;
     }
@@ -114,20 +113,20 @@
 
     .exo {
       background: var(--card); border: 1px solid var(--border);
-      border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; transition: border-color .2s;
+       margin-bottom: 1.5rem; overflow: hidden; transition: border-color .2s;
     }
-    .exo:hover { border-color: var(--navy); }
+    
 
     .exo-header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
       cursor: pointer; user-select: none;
     }
-    .exo-header:hover { background: rgba(255,255,255,.02); }
+
     .exo-title { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
     .exo-num {
       font-family: 'JetBrains Mono', monospace; font-size: .75rem;
-      color: var(--muted); background: var(--dark); padding: .2rem .6rem; border-radius: 4px;
+      color: var(--muted); background: var(--dark); padding: .2rem .6rem; 
     }
     .exo-name { font-size: 1rem; font-weight: 600; color: var(--text); }
     .exo-theme {
@@ -304,22 +303,8 @@
             <li>Concaténer avec <code>.</code></li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo01.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$prenom</span> = <span class="php-cmt">// ton prénom</span>
-<span class="php-var">$age</span>    = <span class="php-cmt">// ton âge</span>
-<span class="php-var">$ville</span>  = <span class="php-cmt">// ta ville</span>
-
-<span class="php-kw">echo</span> <span class="php-cmt">// ta phrase ici</span>;</pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>Je m'appelle Thomas, j'ai 30 ans et j'habite à Abbeville.</pre>
-        </div>
+       
+    
         <div class="solution-wrapper" id="sol-d1">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -328,7 +313,6 @@
 <span class="php-var">$age</span>    = <span class="php-num">30</span>;
 <span class="php-var">$ville</span>  = <span class="php-str">"Abbeville"</span>;
 
-<span class="php-kw">echo</span> <span class="php-str">"Je m'appelle "</span> . <span class="php-var">$prenom</span> . <span class="php-str">", j'ai "</span> . <span class="php-var">$age</span> . <span class="php-str">" ans et j'habite à "</span> . <span class="php-var">$ville</span> . <span class="php-str">"."</span>;</pre>
           </div>
         </div>
         <div class="notions">
@@ -365,36 +349,8 @@
             <li>Utiliser <code>var_dump()</code> pour tout voir d'un coup</li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo02.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$entier</span>   = <span class="php-cmt">// ?</span>
-<span class="php-var">$flottant</span> = <span class="php-cmt">// ?</span>
-<span class="php-var">$chaine</span>   = <span class="php-cmt">// ?</span>
-<span class="php-var">$booleen</span>  = <span class="php-cmt">// ?</span>
-<span class="php-var">$rien</span>     = <span class="php-cmt">// ?</span>
-
-<span class="php-kw">echo</span> <span class="php-fn">gettype</span>(<span class="php-var">$entier</span>) . <span class="php-str">"\n"</span>;
-<span class="php-cmt">// ... fais pareil pour les autres</span>
-
-<span class="php-fn">var_dump</span>(<span class="php-var">$entier</span>, <span class="php-var">$flottant</span>, <span class="php-var">$chaine</span>, <span class="php-var">$booleen</span>, <span class="php-var">$rien</span>);</pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>integer
-double
-string
-boolean
-NULL
-int(42)
-float(3.14)
-string(7) "Bonjour"
-bool(true)
-NULL</pre>
-        </div>
+    
+        
         <div class="solution-wrapper" id="sol-d2">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -450,29 +406,8 @@ NULL</pre>
             <li>Utiliser <code>number_format()</code></li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo03.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$prix_ttc</span> = <span class="php-num">49.90</span>;
-<span class="php-var">$taux_tva</span> = <span class="php-num">0.20</span>;
-
-<span class="php-cmt">// Calcule le prix HT</span>
-<span class="php-var">$prix_ht</span> = <span class="php-cmt">// ?</span>
-
-<span class="php-cmt">// Calcule le montant de la TVA</span>
-<span class="php-var">$montant_tva</span> = <span class="php-cmt">// ?</span>
-
-<span class="php-cmt">// Affiche les 3 lignes</span></pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>Prix HT  : 41,58 €
-TVA      : 8,32 €
-Prix TTC : 49,90 €</pre>
-        </div>
+  
+ 
         <div class="solution-wrapper" id="sol-d3">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -523,7 +458,7 @@ Prix TTC : 49,90 €</pre>
         </div>
         <button class="toggle-btn" id="btn-i1">Voir la solution</button>
       </div>
-      <div class="exo-body">
+      < class="exo-body">
         <p class="consigne">
           Crée un fichier <strong>exo04.php</strong>. Déclare un tableau <code>$fruits</code> contenant
           3 fruits. Affiche le premier, le dernier, le nombre d'éléments.
@@ -540,44 +475,7 @@ Prix TTC : 49,90 €</pre>
             <li>Afficher un tableau avec <code>print_r()</code></li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo04.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$fruits</span> = [<span class="php-str">"pomme"</span>, <span class="php-str">"banane"</span>, <span class="php-str">"orange"</span>];
 
-<span class="php-cmt">// 1. Affiche le premier fruit</span>
-<span class="php-kw">echo</span> <span class="php-cmt">// ?</span>
-
-<span class="php-cmt">// 2. Affiche le dernier fruit</span>
-<span class="php-kw">echo</span> <span class="php-cmt">// ?</span>
-
-<span class="php-cmt">// 3. Affiche le nombre de fruits</span>
-<span class="php-kw">echo</span> <span class="php-cmt">// ?</span>
-
-<span class="php-cmt">// 4. Ajoute "kiwi"</span>
-
-<span class="php-cmt">// 5. Affiche le nouveau nombre</span>
-
-<span class="php-cmt">// 6. Affiche tout le tableau</span>
-<span class="php-fn">print_r</span>(<span class="php-cmt">// ?</span>);</pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>Premier fruit : pomme
-Dernier fruit : orange
-Nombre de fruits : 3
-Après ajout : 4
-Array
-(
-    [0] => pomme
-    [1] => banane
-    [2] => orange
-    [3] => kiwi
-)</pre>
-        </div>
         <div class="solution-wrapper" id="sol-i1">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -631,30 +529,7 @@ Array
             <li>Extraire une partie avec <code>substr()</code></li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo05.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$email</span> = <span class="php-str">"  Thomas.Darras@Real-Conseil.FR  "</span>;
-
-<span class="php-cmt">// 1. Nettoie l'email (trim + strtolower)</span>
-<span class="php-var">$email_propre</span> = <span class="php-cmt">// ?</span>
-
-<span class="php-cmt">// 2. Compte les caractères</span>
-<span class="php-cmt">// 3. Trouve la position du @</span>
-<span class="php-cmt">// 4. Extrait la partie avant le @</span>
-<span class="php-cmt">// 5. Extrait le domaine (après le @)</span></pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>Email nettoyé : thomas.darras@real-conseil.fr
-Longueur      : 32 caractères
-Position du @ : 14
-Nom           : thomas.darras
-Domaine       : real-conseil.fr</pre>
-        </div>
+  
         <div class="solution-wrapper" id="sol-i2">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -711,32 +586,7 @@ Domaine       : real-conseil.fr</pre>
             <li>Combiner calcul et affichage</li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo06.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$produit</span> = [
-    <span class="php-str">'nom'</span>        => <span class="php-str">'Clavier mécanique'</span>,
-    <span class="php-str">'prix'</span>       => <span class="php-num">89.90</span>,
-    <span class="php-str">'stock'</span>      => <span class="php-num">12</span>,
-    <span class="php-str">'disponible'</span> => <span class="php-kw">true</span>,
-];
-
-<span class="php-cmt">// 1. Affiche le nom</span>
-<span class="php-cmt">// 2. Calcule et affiche le prix TTC (TVA 20%)</span>
-<span class="php-cmt">// 3. Affiche le stock</span>
-<span class="php-cmt">// 4. Affiche "Disponible" ou "Indisponible" selon la valeur du bool</span>
-<span class="php-cmt">// Astuce : utilise l'opérateur ternaire  ? :</span></pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>Produit     : Clavier mécanique
-Prix TTC    : 107,88 €
-Stock       : 12 unités
-Disponible  : Oui</pre>
-        </div>
+    
         <div class="solution-wrapper" id="sol-i3">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -805,37 +655,7 @@ Disponible  : Oui</pre>
             <li>Afficher un booléen via opérateur ternaire</li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo07.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$produit</span> = [
-    <span class="php-str">'nom'</span>         => <span class="php-str">'Clavier Mécanique Pro'</span>,
-    <span class="php-str">'description'</span> => <span class="php-str">'Switches Cherry MX, rétroéclairage RGB'</span>,
-    <span class="php-str">'prix_ht'</span>     => <span class="php-num">89.90</span>,
-    <span class="php-str">'tva'</span>         => <span class="php-num">20</span>,
-    <span class="php-str">'stock'</span>       => <span class="php-num">7</span>,
-    <span class="php-str">'actif'</span>       => <span class="php-kw">true</span>,
-];
 
-<span class="php-cmt">// 1. Calcule le montant TVA et le prix TTC</span>
-<span class="php-cmt">// 2. Génère le slug URL depuis le nom</span>
-<span class="php-cmt">// 3. Affiche la fiche complète</span></pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>=== FICHE PRODUIT ===
-Nom         : Clavier Mécanique Pro
-Slug URL    : clavier-mécanique-pro
-Description : Switches Cherry MX, rétroéclairage RGB
-Prix HT     : 89,90 €
-TVA (20%)   : 17,98 €
-Prix TTC    : 107,88 €
-Stock       : 7 unités
-Statut      : Actif</pre>
-        </div>
         <div class="solution-wrapper" id="sol-h1">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -900,39 +720,7 @@ Statut      : Actif</pre>
             <li>Accéder aux clés d'un tableau dans une fonction</li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo08.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$commande</span> = [
-    [<span class="php-str">'produit'</span> => <span class="php-str">'Clavier'</span>, <span class="php-str">'prix'</span> => <span class="php-num">49.90</span>,  <span class="php-str">'qte'</span> => <span class="php-num">2</span>],
-    [<span class="php-str">'produit'</span> => <span class="php-str">'Souris'</span>,  <span class="php-str">'prix'</span> => <span class="php-num">29.90</span>,  <span class="php-str">'qte'</span> => <span class="php-num">1</span>],
-    [<span class="php-str">'produit'</span> => <span class="php-str">'Écran'</span>,   <span class="php-str">'prix'</span> => <span class="php-num">299.00</span>, <span class="php-str">'qte'</span> => <span class="php-num">1</span>],
-    [<span class="php-str">'produit'</span> => <span class="php-str">'Casque'</span>,  <span class="php-str">'prix'</span> => <span class="php-num">89.90</span>,  <span class="php-str">'qte'</span> => <span class="php-num">3</span>],
-];
 
-<span class="php-cmt">// Calcule les sous-totaux avec array_map</span>
-<span class="php-var">$sous_totaux</span> = <span class="php-fn">array_map</span>(<span class="php-kw">fn</span>(<span class="php-var">$l</span>) => <span class="php-cmt">/* ? */</span>, <span class="php-var">$commande</span>);
-
-<span class="php-cmt">// Calcule total HT avec array_sum</span>
-<span class="php-var">$total_ht</span> = <span class="php-cmt">// ?</span>
-
-<span class="php-cmt">// Calcule TVA et TTC</span>
-<span class="php-cmt">// Affiche le récapitulatif</span></pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>Clavier  x2  =   99,90 €
-Souris   x1  =   29,90 €
-Écran    x1  =  299,00 €
-Casque   x3  =  269,70 €
-----------------------------
-Total HT     =  698,50 €
-TVA 20%      =  139,70 €
-Total TTC    =  838,20 €</pre>
-        </div>
         <div class="solution-wrapper" id="sol-h2">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -954,7 +742,7 @@ Total TTC    =  838,20 €</pre>
        . <span class="php-str">"  = "</span> . <span class="php-fn">str_pad</span>(<span class="php-fn">number_format</span>(<span class="php-var">$sous_totaux</span>[<span class="php-var">$i</span>], <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>), <span class="php-num">9</span>, <span class="php-str">' '</span>, <span class="php-num">STR_PAD_LEFT</span>)
        . <span class="php-str">" €\n"</span>;
 }
-<span class="php-kw">echo</span> <span class="php-str">"----------------------------\n"</span>;
+<span class="php-kw">echo</span> <span class="php-str">"\n"</span>;
 <span class="php-kw">echo</span> <span class="php-str">"Total HT     = "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$total_ht</span>,  <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
 <span class="php-kw">echo</span> <span class="php-str">"TVA 20%      = "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$tva</span>,       <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
 <span class="php-kw">echo</span> <span class="php-str">"Total TTC    = "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$total_ttc</span>, <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;</pre>
@@ -997,28 +785,7 @@ Total TTC    =  838,20 €</pre>
             <li>Reconstruire une chaîne avec <code>implode()</code></li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo09.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$minuscules</span> = <span class="php-fn">str_split</span>(<span class="php-str">'abcdefghijklmnopqrstuvwxyz'</span>);
-<span class="php-var">$majuscules</span> = <span class="php-fn">str_split</span>(<span class="php-str">'ABCDEFGHIJKLMNOPQRSTUVWXYZ'</span>);
-<span class="php-var">$chiffres</span>   = <span class="php-fn">str_split</span>(<span class="php-str">'0123456789'</span>);
-<span class="php-var">$speciaux</span>   = <span class="php-fn">str_split</span>(<span class="php-str">'!@#$%&*?'</span>);
-
-<span class="php-cmt">// 1. Fusionne tous les tableaux en un seul</span>
-<span class="php-cmt">// 2. Mélange aléatoirement</span>
-<span class="php-cmt">// 3. Garde seulement les 12 premiers</span>
-<span class="php-cmt">// 4. Reconstitue la chaîne</span>
-<span class="php-cmt">// 5. Affiche le mot de passe et sa longueur</span></pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu (aléatoire à chaque exécution)</h4>
-          <pre>Mot de passe : K7!mZqP#2xRt
-Longueur     : 12 caractères</pre>
-        </div>
+     
         <div class="solution-wrapper" id="sol-h3">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -1050,10 +817,7 @@ Longueur     : 12 caractères</pre>
 
 </main>
 
-<footer>
-  <strong>Real Conseil Formation</strong> — DWWM — PHP Variables &amp; Types de données<br>
-  Prochaine séance : <strong>Structures de contrôle</strong> — if / else / switch / while / for / foreach
-</footer>
+
 
 <script>
 function showSection(niveau, btn) {
