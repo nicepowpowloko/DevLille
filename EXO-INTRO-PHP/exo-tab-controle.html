@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercices PHP — Structures de contrôle & Tableaux</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+    :root {
+      --navy: #2C3F77;
+      --gold: #A0896A;
+      --dark: #0f1420;
+      --darker: #080d17;
+      --card: #151d2e;
+      --border: #1e2d47;
+      --text: #c8d0e0;
+      --muted: #5a6a88;
+      --green: #4ade80;
+      --orange: #fb923c;
+      --red: #f87171;
+      --code-bg: #0d1117;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Syne', sans-serif; background: var(--darker); color: var(--text); min-height: 100vh; }
+
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a2a55 50%, var(--gold) 100%);
+      padding: 3rem 2rem 2rem; text-align: center; position: relative; overflow: hidden;
+    }
+    header::before {
+      content: 'if() {}';
+      position: absolute; font-family: 'JetBrains Mono', monospace;
+      font-size: 8rem; color: rgba(255,255,255,.04);
+      top: -1rem; right: -1rem; pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block; background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2); color: #fff;
+      font-size: .75rem; letter-spacing: 2px; text-transform: uppercase;
+      padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1rem;
+    }
+    header h1 { font-size: 2.4rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+    header p { color: rgba(255,255,255,.7); font-size: 1rem; }
+    .header-meta {
+      display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .header-meta span { color: rgba(255,255,255,.6); font-size: .85rem; }
+    .header-meta span strong { color: #fff; }
+
+    .pedagogy {
+      background: var(--dark); border-left: 4px solid var(--gold);
+      padding: 1.2rem 2rem; font-size: .85rem; color: #8899bb;
+    }
+    .pedagogy strong { color: var(--gold); }
+    .pedagogy code {
+      background: var(--code-bg); color: #79c0ff;
+      padding: .1rem .4rem; border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace; font-size: .82rem;
+    }
+
+    .alerte-prochaine {
+      background: rgba(251,146,60,.07); border: 1px solid rgba(251,146,60,.25);
+      border-left: 4px solid var(--orange);
+      padding: .8rem 1.5rem; margin: 1.5rem 0;
+      font-size: .88rem; color: #f4c07a; border-radius: 0 6px 6px 0;
+    }
+    .alerte-prochaine strong { color: var(--orange); }
+
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+    .tabs {
+      display: flex; gap: .5rem; margin-bottom: 2.5rem;
+      border-bottom: 2px solid var(--border); padding-bottom: .5rem;
+    }
+    .tab {
+      padding: .6rem 1.6rem; border: 2px solid transparent;
+      background: transparent; color: var(--muted);
+      font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 600;
+      cursor: pointer; border-radius: 6px 6px 0 0; transition: all .2s;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active-debutant      { color: var(--green);  border-color: var(--green);  background: rgba(74,222,128,.06); }
+    .tab.active-intermediaire { color: var(--orange); border-color: var(--orange); background: rgba(251,146,60,.06); }
+    .tab.active-difficile     { color: var(--red);    border-color: var(--red);    background: rgba(248,113,113,.06); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-green  { background: var(--green); }
+    .dot-orange { background: var(--orange); }
+    .dot-red    { background: var(--red); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .niveau-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem; padding: 1.2rem 1.5rem; border-radius: 8px;
+    }
+    .niveau-header.debutant      { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.2); }
+    .niveau-header.intermediaire { background: rgba(251,146,60,.07);  border: 1px solid rgba(251,146,60,.2); }
+    .niveau-header.difficile     { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.2); }
+
+    .niveau-label {
+      font-size: .7rem; letter-spacing: 2px; text-transform: uppercase;
+      font-weight: 700; padding: .3rem .8rem; border-radius: 4px; white-space: nowrap;
+    }
+    .debutant      .niveau-label { background: rgba(74,222,128,.15);  color: var(--green); }
+    .intermediaire .niveau-label { background: rgba(251,146,60,.15);  color: var(--orange); }
+    .difficile     .niveau-label { background: rgba(248,113,113,.15); color: var(--red); }
+    .niveau-desc { font-size: .9rem; color: var(--muted); }
+    .niveau-desc strong { color: var(--text); }
+
+    .exo {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; transition: border-color .2s;
+    }
+    .exo:hover { border-color: var(--navy); }
+
+    .exo-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .exo-header:hover { background: rgba(255,255,255,.02); }
+    .exo-title { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .exo-num {
+      font-family: 'JetBrains Mono', monospace; font-size: .75rem;
+      color: var(--muted); background: var(--dark); padding: .2rem .6rem; border-radius: 4px;
+    }
+    .exo-name { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .exo-theme {
+      font-size: .75rem; color: var(--muted); background: var(--dark);
+      padding: .2rem .7rem; border-radius: 10px;
+    }
+    .toggle-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      font-size: .8rem; padding: .3rem .8rem; border-radius: 4px; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace; transition: all .2s; white-space: nowrap;
+    }
+    .toggle-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .exo-body { padding: 1.5rem; }
+    .consigne { font-size: .95rem; line-height: 1.7; color: var(--text); margin-bottom: 1.2rem; }
+    .consigne strong { color: #fff; }
+
+    .objectifs {
+      background: var(--dark); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .objectifs h4 {
+      font-size: .75rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .6rem;
+    }
+    .objectifs li {
+      list-style: none; font-size: .88rem; color: #8899bb;
+      padding: .2rem 0 .2rem 1rem; position: relative;
+    }
+    .objectifs li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+
+    .code-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-radius: 8px; margin-bottom: 1.2rem; overflow: hidden;
+    }
+    .code-header {
+      background: #161b22; padding: .5rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #21262d;
+    }
+    .code-filename { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #8b949e; }
+    .code-lang { font-size: .7rem; color: #58a6ff; background: rgba(88,166,255,.1); padding: .1rem .5rem; border-radius: 3px; }
+    .code-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+    .php-tag { color: #ff7b72; }
+    .php-var { color: #79c0ff; }
+    .php-str { color: #a5d6ff; }
+    .php-num { color: #f2cc60; }
+    .php-kw  { color: #ff7b72; }
+    .php-fn  { color: #d2a8ff; }
+    .php-cmt { color: #6e7681; font-style: italic; }
+
+    .expected {
+      background: #0d1117; border: 1px solid #21262d;
+      border-left: 3px solid var(--green); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .expected h4 {
+      font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--green); margin-bottom: .6rem;
+    }
+    .expected pre { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: #7ee787; line-height: 1.8; }
+
+    .solution-wrapper { display: none; }
+    .solution-wrapper.open { display: block; }
+    .solution-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-left: 3px solid var(--gold); border-radius: 6px; overflow: hidden;
+    }
+    .solution-header {
+      background: #161b22; padding: .5rem 1rem; font-size: .75rem;
+      color: var(--gold); letter-spacing: 1px; text-transform: uppercase;
+      border-bottom: 1px solid #21262d;
+    }
+    .solution-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+
+    .notions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+    .notion-tag {
+      font-size: .72rem; padding: .2rem .7rem; border-radius: 10px;
+      background: rgba(44,63,119,.3); color: #79a4f5;
+      border: 1px solid rgba(44,63,119,.5);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .bonus-tag {
+      display: inline-block; font-size: .7rem; padding: .2rem .7rem;
+      background: rgba(248,113,113,.1); color: var(--red);
+      border: 1px solid rgba(248,113,113,.3); border-radius: 10px;
+      margin-left: .5rem; vertical-align: middle;
+    }
+
+    footer {
+      text-align: center; padding: 2rem; color: var(--muted);
+      font-size: .82rem; border-top: 1px solid var(--border);
+    }
+    footer strong { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">DWWM — Formation PHP</div>
+  <h1>Exercices PHP</h1>
+  <p>Structures de contrôle &amp; Tableaux</p>
+  <div class="header-meta">
+    <span><strong>3</strong> niveaux</span>
+    <span><strong>9</strong> exercices</span>
+    <span>Notions vues : <strong>if / else / switch / for / while / foreach / array</strong></span>
+  </div>
+</header>
+
+<div class="pedagogy">
+  <strong>Notions travaillées :</strong>
+  <code>if</code> / <code>elseif</code> / <code>else</code> →
+  <code>switch</code> →
+  boucles <code>for</code>, <code>while</code>, <code>foreach</code> →
+  tableaux indexés &amp; associatifs →
+  <code>count()</code>, <code>array_push()</code>, <code>array_pop()</code>, <code>in_array()</code>, <code>array_search()</code>
+</div>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab active-debutant" onclick="showSection('debutant', this)">
+      <span class="dot dot-green"></span> Débutant
+    </button>
+    <button class="tab" onclick="showSection('intermediaire', this)">
+      <span class="dot dot-orange"></span> Intermédiaire
+    </button>
+    <button class="tab" onclick="showSection('difficile', this)">
+      <span class="dot dot-red"></span> Difficile
+    </button>
+  </div>
+
+  <!-- ===== DÉBUTANT ===== -->
+  <div class="section active" id="section-debutant">
+
+    <div class="niveau-header debutant">
+      <span class="niveau-label">Débutant</span>
+      <div class="niveau-desc">
+        <strong>Objectif :</strong> Utiliser les structures de contrôle de base et parcourir un tableau simple.
+      </div>
+    </div>
+
+    <!-- EXO D1 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-01</span>
+          <span class="exo-name">Bulletin de notes</span>
+          <span class="exo-theme">if / elseif / else</span>
+        </div>
+        <button class="toggle-btn" id="btn-d1">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo01.php</strong>. Déclare une variable <code>$note</code> avec une valeur entre 0 et 20.
+          Affiche la mention correspondante selon le barème suivant :
+          <strong>18-20</strong> → Très Bien, <strong>14-17</strong> → Bien, <strong>10-13</strong> → Passable,
+          <strong>0-9</strong> → Insuffisant. Teste avec plusieurs valeurs différentes.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Utiliser <code>if</code>, <code>elseif</code> et <code>else</code></li>
+            <li>Utiliser les opérateurs de comparaison <code>&gt;=</code> et <code>&lt;=</code></li>
+            <li>Enchaîner plusieurs conditions</li>
+          </ul>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">exo01.php</span>
+            <span class="code-lang">PHP</span>
+          </div>
+          <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$note</span> = <span class="php-num">15</span>;
+
+<span class="php-kw">if</span> (<span class="php-cmt">// condition Très Bien</span>) {
+    <span class="php-kw">echo</span> <span class="php-cmt">// ?</span>
+} <span class="php-kw">elseif</span> (<span class="php-cmt">// condition Bien</span>) {
+    <span class="php-cmt">// ...</span>
+} <span class="php-cmt">// continue...</span></pre>
+        </div>
+        <div class="expected">
+          <h4>Résultat attendu (avec $note = 15)</h4>
+          <pre>Note : 15/20 — Mention : Bien</pre>
+        </div>
+        <div class="solution-wrapper" id="sol-d1">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$note</span> = <span class="php-num">15</span>;
+
+<span class="php-kw">if</span> (<span class="php-var">$note</span> >= <span class="php-num">18</span>) {
+    <span class="php-var">$mention</span> = <span class="php-str">"Très Bien"</span>;
+} <span class="php-kw">elseif</span> (<span class="php-var">$note</span> >= <span class="php-num">14</span>) {
+    <span class="php-var">$mention</span> = <span class="php-str">"Bien"</span>;
+} <span class="php-kw">elseif</span> (<span class="php-var">$note</span> >= <span class="php-num">10</span>) {
+    <span class="php-var">$mention</span> = <span class="php-str">"Passable"</span>;
+} <span class="php-kw">else</span> {
+    <span class="php-var">$mention</span> = <span class="php-str">"Insuffisant"</span>;
+}
+
+<span class="php-kw">echo</span> <span class="php-str">"Note : {$note}/20 — Mention : {$mention}"</span>;</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">if</span>
+          <span class="notion-tag">elseif</span>
+          <span class="notion-tag">else</span>
+          <span class="notion-tag">opérateurs >= <=</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO D2 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-02</span>
+          <span class="exo-name">Table de multiplication</span>
+          <span class="exo-theme">for</span>
+        </div>
+        <button class="toggle-btn" id="btn-d2">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo02.php</strong>. Déclare une variable <code>$nombre</code> et affiche
+          sa table de multiplication de 1 à 10 grâce à une boucle <code>for</code>.
+          Chaque ligne doit afficher le calcul complet avec le résultat.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Écrire une boucle <code>for</code> avec initialisation, condition et incrément</li>
+            <li>Utiliser la variable de boucle dans le calcul</li>
+            <li>Afficher un résultat formaté à chaque itération</li>
+          </ul>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">exo02.php</span>
+            <span class="code-lang">PHP</span>
+          </div>
+          <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$nombre</span> = <span class="php-num">7</span>;
+
+<span class="php-kw">for</span> (<span class="php-var">$i</span> = <span class="php-num">1</span>; <span class="php-cmt">/* condition */</span>; <span class="php-cmt">/* incrément */</span>) {
+    <span class="php-kw">echo</span> <span class="php-cmt">// ligne de calcul</span>
+}</pre>
+        </div>
+        <div class="expected">
+          <h4>Résultat attendu (avec $nombre = 7)</h4>
+          <pre>7 x 1  = 7
+7 x 2  = 14
+7 x 3  = 21
+...
+7 x 10 = 70</pre>
+        </div>
+        <div class="solution-wrapper" id="sol-d2">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$nombre</span> = <span class="php-num">7</span>;
+
+<span class="php-kw">for</span> (<span class="php-var">$i</span> = <span class="php-num">1</span>; <span class="php-var">$i</span> <= <span class="php-num">10</span>; <span class="php-var">$i</span>++) {
+    <span class="php-kw">echo</span> <span class="php-str">"{$nombre} x {$i} = "</span> . (<span class="php-var">$nombre</span> * <span class="php-var">$i</span>) . <span class="php-str">"\n"</span>;
+}</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">for</span>
+          <span class="notion-tag">$i++</span>
+          <span class="notion-tag">opérateur *</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO D3 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-03</span>
+          <span class="exo-name">Parcourir une liste de prénoms</span>
+          <span class="exo-theme">foreach / array</span>
+        </div>
+        <button class="toggle-btn" id="btn-d3">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo03.php</strong>. Déclare un tableau <code>$apprenants</code> contenant
+          5 prénoms. Parcours-le avec <code>foreach</code> et affiche pour chaque apprenant
+          son numéro (en partant de 1) et son prénom en majuscules.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Déclarer un tableau indexé</li>
+            <li>Parcourir avec <code>foreach</code></li>
+            <li>Utiliser une variable compteur externe</li>
+            <li>Utiliser <code>strtoupper()</code></li>
+          </ul>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">exo03.php</span>
+            <span class="code-lang">PHP</span>
+          </div>
+          <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$apprenants</span> = [<span class="php-str">"Alice"</span>, <span class="php-str">"Bob"</span>, <span class="php-str">"Clara"</span>, <span class="php-str">"David"</span>, <span class="php-str">"Eva"</span>];
+<span class="php-var">$numero</span> = <span class="php-num">1</span>;
+
+<span class="php-kw">foreach</span> (<span class="php-var">$apprenants</span> <span class="php-kw">as</span> <span class="php-var">$prenom</span>) {
+    <span class="php-kw">echo</span> <span class="php-cmt">// affiche numéro + prénom en majuscules</span>
+    <span class="php-cmt">// n'oublie pas d'incrémenter $numero</span>
+}</pre>
+        </div>
+        <div class="expected">
+          <h4>Résultat attendu</h4>
+          <pre>1. ALICE
+2. BOB
+3. CLARA
+4. DAVID
+5. EVA</pre>
+        </div>
+        <div class="solution-wrapper" id="sol-d3">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$apprenants</span> = [<span class="php-str">"Alice"</span>, <span class="php-str">"Bob"</span>, <span class="php-str">"Clara"</span>, <span class="php-str">"David"</span>, <span class="php-str">"Eva"</span>];
+<span class="php-var">$numero</span> = <span class="php-num">1</span>;
+
+<span class="php-kw">foreach</span> (<span class="php-var">$apprenants</span> <span class="php-kw">as</span> <span class="php-var">$prenom</span>) {
+    <span class="php-kw">echo</span> <span class="php-var">$numero</span> . <span class="php-str">". "</span> . <span class="php-fn">strtoupper</span>(<span class="php-var">$prenom</span>) . <span class="php-str">"\n"</span>;
+    <span class="php-var">$numero</span>++;
+}</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">array []</span>
+          <span class="notion-tag">foreach</span>
+          <span class="notion-tag">strtoupper()</span>
+          <span class="notion-tag">$i++</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /débutant -->
+
+  <!-- ===== INTERMÉDIAIRE ===== -->
+  <div class="section" id="section-intermediaire">
+
+    <div class="niveau-header intermediaire">
+      <span class="niveau-label">Intermédiaire</span>
+      <div class="niveau-desc">
+        <strong>Objectif :</strong> Combiner structures de contrôle et tableaux associatifs, utiliser switch, while et les fonctions de tableau.
+      </div>
+    </div>
+
+    <!-- EXO I1 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-04</span>
+          <span class="exo-name">Jours de la semaine</span>
+          <span class="exo-theme">switch / array</span>
+        </div>
+        <button class="toggle-btn" id="btn-i1">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo04.php</strong>. Déclare une variable <code>$jour</code>
+          avec un numéro de 1 à 7. Utilise un <code>switch</code> pour afficher le nom du jour
+          et si c'est un jour de week-end ou de semaine. Teste aussi avec une valeur invalide (ex: 9).
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Écrire un <code>switch</code> avec <code>case</code> et <code>break</code></li>
+            <li>Utiliser <code>default</code> pour gérer les cas non prévus</li>
+            <li>Regrouper plusieurs <code>case</code> pour une même action</li>
+          </ul>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">exo04.php</span>
+            <span class="code-lang">PHP</span>
+          </div>
+          <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$jour</span> = <span class="php-num">6</span>;
+
+<span class="php-kw">switch</span> (<span class="php-var">$jour</span>) {
+    <span class="php-kw">case</span> <span class="php-num">1</span>:
+        <span class="php-cmt">// Lundi — semaine</span>
+        <span class="php-kw">break</span>;
+    <span class="php-cmt">// ... continue</span>
+    <span class="php-kw">default</span>:
+        <span class="php-cmt">// jour invalide</span>
+}</pre>
+        </div>
+        <div class="expected">
+          <h4>Résultat attendu (avec $jour = 6)</h4>
+          <pre>Jour n°6 : Samedi — Week-end 🎉</pre>
+        </div>
+        <div class="solution-wrapper" id="sol-i1">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$jour</span> = <span class="php-num">6</span>;
+
+<span class="php-kw">switch</span> (<span class="php-var">$jour</span>) {
+    <span class="php-kw">case</span> <span class="php-num">1</span>:
+        <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Lundi — Semaine\n"</span>;
+        <span class="php-kw">break</span>;
+    <span class="php-kw">case</span> <span class="php-num">2</span>:
+        <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Mardi — Semaine\n"</span>;
+        <span class="php-kw">break</span>;
+    <span class="php-kw">case</span> <span class="php-num">3</span>:
+        <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Mercredi — Semaine\n"</span>;
+        <span class="php-kw">break</span>;
+    <span class="php-kw">case</span> <span class="php-num">4</span>:
+        <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Jeudi — Semaine\n"</span>;
+        <span class="php-kw">break</span>;
+    <span class="php-kw">case</span> <span class="php-num">5</span>:
+        <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Vendredi — Semaine\n"</span>;
+        <span class="php-kw">break</span>;
+    <span class="php-kw">case</span> <span class="php-num">6</span>:
+        <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Samedi — Week-end 🎉\n"</span>;
+        <span class="php-kw">break</span>;
+    <span class="php-kw">case</span> <span class="php-num">7</span>:
+        <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Dimanche — Week-end 🎉\n"</span>;
+        <span class="php-kw">break</span>;
+    <span class="php-kw">default</span>:
+        <span class="php-kw">echo</span> <span class="php-str">"Numéro de jour invalide (doit être entre 1 et 7)\n"</span>;
+}</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">switch</span>
+          <span class="notion-tag">case</span>
+          <span class="notion-tag">break</span>
+          <span class="notion-tag">default</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO I2 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-05</span>
+          <span class="exo-name">Stock de produits</span>
+          <span class="exo-theme">foreach / if / tableau associatif</span>
+        </div>
+        <button class="toggle-btn" id="btn-i2">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo05.php</strong>. Tu as un tableau de produits (tableaux associatifs
+          avec <code>nom</code>, <code>prix</code> et <code>stock</code>). Parcours-le avec <code>foreach</code>
+          et affiche chaque produit avec son statut : <strong>stock &gt; 10</strong> → "En stock",
+          <strong>1 à 10</strong> → "Stock faible ⚠️", <strong>0</strong> → "Rupture ❌".
+          Affiche aussi le total des articles en stock à la fin.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Parcourir un tableau de tableaux associatifs</li>
+            <li>Imbriquer un <code>if/elseif/else</code> dans un <code>foreach</code></li>
+            <li>Accumuler une somme dans une variable</li>
+            <li>Accéder aux clés d'un tableau associatif</li>
+          </ul>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">exo05.php</span>
+            <span class="code-lang">PHP</span>
+          </div>
+          <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$produits</span> = [
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Clavier'</span>,  <span class="php-str">'prix'</span> => <span class="php-num">49.90</span>, <span class="php-str">'stock'</span> => <span class="php-num">15</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Souris'</span>,   <span class="php-str">'prix'</span> => <span class="php-num">29.90</span>, <span class="php-str">'stock'</span> => <span class="php-num">4</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Écran'</span>,    <span class="php-str">'prix'</span> => <span class="php-num">299.00</span>, <span class="php-str">'stock'</span> => <span class="php-num">0</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Casque'</span>,   <span class="php-str">'prix'</span> => <span class="php-num">89.90</span>, <span class="php-str">'stock'</span> => <span class="php-num">22</span>],
+];
+<span class="php-var">$total_stock</span> = <span class="php-num">0</span>;
+
+<span class="php-kw">foreach</span> (<span class="php-var">$produits</span> <span class="php-kw">as</span> <span class="php-var">$p</span>) {
+    <span class="php-cmt">// détermine le statut avec if/elseif/else</span>
+    <span class="php-cmt">// affiche la ligne</span>
+    <span class="php-cmt">// accumule le stock total</span>
+}
+
+<span class="php-kw">echo</span> <span class="php-str">"Total en stock : {$total_stock} articles"</span>;</pre>
+        </div>
+        <div class="expected">
+          <h4>Résultat attendu</h4>
+          <pre>Clavier   49,90 € — En stock (15)
+Souris    29,90 € — Stock faible ⚠️ (4)
+Écran    299,00 € — Rupture ❌ (0)
+Casque    89,90 € — En stock (22)
+Total en stock : 41 articles</pre>
+        </div>
+        <div class="solution-wrapper" id="sol-i2">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$produits</span> = [
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Clavier'</span>,  <span class="php-str">'prix'</span> => <span class="php-num">49.90</span>,  <span class="php-str">'stock'</span> => <span class="php-num">15</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Souris'</span>,   <span class="php-str">'prix'</span> => <span class="php-num">29.90</span>,  <span class="php-str">'stock'</span> => <span class="php-num">4</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Écran'</span>,    <span class="php-str">'prix'</span> => <span class="php-num">299.00</span>, <span class="php-str">'stock'</span> => <span class="php-num">0</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Casque'</span>,   <span class="php-str">'prix'</span> => <span class="php-num">89.90</span>,  <span class="php-str">'stock'</span> => <span class="php-num">22</span>],
+];
+<span class="php-var">$total_stock</span> = <span class="php-num">0</span>;
+
+<span class="php-kw">foreach</span> (<span class="php-var">$produits</span> <span class="php-kw">as</span> <span class="php-var">$p</span>) {
+    <span class="php-kw">if</span> (<span class="php-var">$p</span>[<span class="php-str">'stock'</span>] > <span class="php-num">10</span>) {
+        <span class="php-var">$statut</span> = <span class="php-str">"En stock"</span>;
+    } <span class="php-kw">elseif</span> (<span class="php-var">$p</span>[<span class="php-str">'stock'</span>] > <span class="php-num">0</span>) {
+        <span class="php-var">$statut</span> = <span class="php-str">"Stock faible ⚠️"</span>;
+    } <span class="php-kw">else</span> {
+        <span class="php-var">$statut</span> = <span class="php-str">"Rupture ❌"</span>;
+    }
+
+    <span class="php-kw">echo</span> <span class="php-fn">str_pad</span>(<span class="php-var">$p</span>[<span class="php-str">'nom'</span>], <span class="php-num">9</span>)
+       . <span class="php-fn">number_format</span>(<span class="php-var">$p</span>[<span class="php-str">'prix'</span>], <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>)
+       . <span class="php-str">" € — {$statut} ({$p['stock']})\n"</span>;
+
+    <span class="php-var">$total_stock</span> += <span class="php-var">$p</span>[<span class="php-str">'stock'</span>];
+}
+
+<span class="php-kw">echo</span> <span class="php-str">"Total en stock : {$total_stock} articles"</span>;</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">foreach</span>
+          <span class="notion-tag">if / elseif / else</span>
+          <span class="notion-tag">tableau associatif</span>
+          <span class="notion-tag">$total += $val</span>
+          <span class="notion-tag">str_pad()</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO I3 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-06</span>
+          <span class="exo-name">Compte à rebours</span>
+          <span class="exo-theme">while / if</span>
+        </div>
+        <button class="toggle-btn" id="btn-i3">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo06.php</strong>. Utilise une boucle <code>while</code> pour faire
+          un compte à rebours de <strong>10 à 0</strong>. À chaque tour, si le nombre est pair affiche-le
+          en majuscules "PAIR", s'il est impair affiche "impair". Quand tu atteins 0 affiche "Décollage ! 🚀".
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Utiliser une boucle <code>while</code> avec une condition de sortie</li>
+            <li>Utiliser l'opérateur modulo <code>%</code> pour tester pair/impair</li>
+            <li>Décrémenter une variable <code>$i--</code></li>
+            <li>Imbriquer un <code>if</code> dans le <code>while</code></li>
+          </ul>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">exo06.php</span>
+            <span class="code-lang">PHP</span>
+          </div>
+          <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$i</span> = <span class="php-num">10</span>;
+
+<span class="php-kw">while</span> (<span class="php-cmt">/* condition */</span>) {
+    <span class="php-kw">if</span> (<span class="php-var">$i</span> == <span class="php-num">0</span>) {
+        <span class="php-cmt">// décollage</span>
+    } <span class="php-kw">elseif</span> (<span class="php-cmt">/* pair ? */</span>) {
+        <span class="php-cmt">// PAIR</span>
+    } <span class="php-kw">else</span> {
+        <span class="php-cmt">// impair</span>
+    }
+    <span class="php-cmt">// décrémente $i</span>
+}</pre>
+        </div>
+        <div class="expected">
+          <h4>Résultat attendu</h4>
+          <pre>10 → PAIR
+9  → impair
+8  → PAIR
+7  → impair
+...
+1  → impair
+0  → Décollage ! 🚀</pre>
+        </div>
+        <div class="solution-wrapper" id="sol-i3">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$i</span> = <span class="php-num">10</span>;
+
+<span class="php-kw">while</span> (<span class="php-var">$i</span> >= <span class="php-num">0</span>) {
+    <span class="php-kw">if</span> (<span class="php-var">$i</span> == <span class="php-num">0</span>) {
+        <span class="php-kw">echo</span> <span class="php-str">"0  → Décollage ! 🚀\n"</span>;
+    } <span class="php-kw">elseif</span> (<span class="php-var">$i</span> % <span class="php-num">2</span> == <span class="php-num">0</span>) {
+        <span class="php-kw">echo</span> <span class="php-str">"{$i}  → PAIR\n"</span>;
+    } <span class="php-kw">else</span> {
+        <span class="php-kw">echo</span> <span class="php-str">"{$i}  → impair\n"</span>;
+    }
+    <span class="php-var">$i</span>--;
+}</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">while</span>
+          <span class="notion-tag">modulo %</span>
+          <span class="notion-tag">$i--</span>
+          <span class="notion-tag">if imbriqué</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /intermédiaire -->
+
+  <!-- ===== DIFFICILE ===== -->
+  <div class="section" id="section-difficile">
+
+    <div class="niveau-header difficile">
+      <span class="niveau-label">Difficile</span>
+      <div class="niveau-desc">
+        <strong>Objectif :</strong> Résoudre des problèmes concrets en combinant boucles, conditions, tableaux et fonctions.
+      </div>
+    </div>
+
+    <!-- EXO H1 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-07</span>
+          <span class="exo-name">Analyse de ventes</span>
+          <span class="exo-theme">foreach / if / accumulation</span>
+        </div>
+        <button class="toggle-btn" id="btn-h1">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo07.php</strong>. Tu as un tableau de ventes mensuelles.
+          Parcours-le et calcule : le total des ventes, la meilleure vente, la moins bonne vente,
+          la moyenne, et affiche le mois correspondant à chaque extrême.
+          Affiche enfin si chaque mois est au-dessus ou en-dessous de la moyenne.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Parcourir un tableau associatif avec <code>foreach ($t as $k => $v)</code></li>
+            <li>Trouver un max/min en comparant au fur et à mesure</li>
+            <li>Calculer une moyenne après la boucle</li>
+            <li>Faire un deuxième passage pour comparer à la moyenne</li>
+          </ul>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">exo07.php</span>
+            <span class="code-lang">PHP</span>
+          </div>
+          <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$ventes</span> = [
+    <span class="php-str">'Janvier'</span>  => <span class="php-num">12500</span>,
+    <span class="php-str">'Février'</span>  => <span class="php-num">9800</span>,
+    <span class="php-str">'Mars'</span>     => <span class="php-num">15200</span>,
+    <span class="php-str">'Avril'</span>    => <span class="php-num">11300</span>,
+    <span class="php-str">'Mai'</span>      => <span class="php-num">18900</span>,
+    <span class="php-str">'Juin'</span>     => <span class="php-num">14700</span>,
+];
+
+<span class="php-cmt">// 1. Calcule total, max, min, moyenne</span>
+<span class="php-cmt">// 2. Affiche le récap</span>
+<span class="php-cmt">// 3. Deuxième foreach : au-dessus ou sous la moyenne ?</span></pre>
+        </div>
+        <div class="expected">
+          <h4>Résultat attendu</h4>
+          <pre>=== ANALYSE DES VENTES ===
+Total    : 82 400 €
+Moyenne  : 13 733 €
+Meilleur : Mai (18 900 €)
+Moins bon: Février (9 800 €)
+
+Janvier  : 12 500 € — sous la moyenne
+Février  :  9 800 € — sous la moyenne
+Mars     : 15 200 € — au-dessus
+Avril    : 11 300 € — sous la moyenne
+Mai      : 18 900 € — au-dessus
+Juin     : 14 700 € — au-dessus</pre>
+        </div>
+        <div class="solution-wrapper" id="sol-h1">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$ventes</span> = [
+    <span class="php-str">'Janvier'</span> => <span class="php-num">12500</span>, <span class="php-str">'Février'</span> => <span class="php-num">9800</span>,
+    <span class="php-str">'Mars'</span>    => <span class="php-num">15200</span>, <span class="php-str">'Avril'</span>   => <span class="php-num">11300</span>,
+    <span class="php-str">'Mai'</span>     => <span class="php-num">18900</span>, <span class="php-str">'Juin'</span>    => <span class="php-num">14700</span>,
+];
+
+<span class="php-var">$total</span>      = <span class="php-num">0</span>;
+<span class="php-var">$max</span>        = <span class="php-kw">null</span>;
+<span class="php-var">$min</span>        = <span class="php-kw">null</span>;
+<span class="php-var">$mois_max</span>   = <span class="php-str">''</span>;
+<span class="php-var">$mois_min</span>   = <span class="php-str">''</span>;
+
+<span class="php-kw">foreach</span> (<span class="php-var">$ventes</span> <span class="php-kw">as</span> <span class="php-var">$mois</span> => <span class="php-var">$montant</span>) {
+    <span class="php-var">$total</span> += <span class="php-var">$montant</span>;
+    <span class="php-kw">if</span> (<span class="php-var">$max</span> === <span class="php-kw">null</span> || <span class="php-var">$montant</span> > <span class="php-var">$max</span>) {
+        <span class="php-var">$max</span> = <span class="php-var">$montant</span>; <span class="php-var">$mois_max</span> = <span class="php-var">$mois</span>;
+    }
+    <span class="php-kw">if</span> (<span class="php-var">$min</span> === <span class="php-kw">null</span> || <span class="php-var">$montant</span> < <span class="php-var">$min</span>) {
+        <span class="php-var">$min</span> = <span class="php-var">$montant</span>; <span class="php-var">$mois_min</span> = <span class="php-var">$mois</span>;
+    }
+}
+<span class="php-var">$moyenne</span> = <span class="php-var">$total</span> / <span class="php-fn">count</span>(<span class="php-var">$ventes</span>);
+
+<span class="php-fn">echo</span> <span class="php-str">"=== ANALYSE DES VENTES ===\n"</span>;
+<span class="php-fn">echo</span> <span class="php-str">"Total    : "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$total</span>, <span class="php-num">0</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
+<span class="php-fn">echo</span> <span class="php-str">"Moyenne  : "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$moyenne</span>, <span class="php-num">0</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
+<span class="php-fn">echo</span> <span class="php-str">"Meilleur : {$mois_max} ("</span> . <span class="php-fn">number_format</span>(<span class="php-var">$max</span>, <span class="php-num">0</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €)\n"</span>;
+<span class="php-fn">echo</span> <span class="php-str">"Moins bon: {$mois_min} ("</span> . <span class="php-fn">number_format</span>(<span class="php-var">$min</span>, <span class="php-num">0</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €)\n\n"</span>;
+
+<span class="php-kw">foreach</span> (<span class="php-var">$ventes</span> <span class="php-kw">as</span> <span class="php-var">$mois</span> => <span class="php-var">$montant</span>) {
+    <span class="php-var">$statut</span> = <span class="php-var">$montant</span> >= <span class="php-var">$moyenne</span> ? <span class="php-str">"au-dessus"</span> : <span class="php-str">"sous la moyenne"</span>;
+    <span class="php-fn">echo</span> <span class="php-fn">str_pad</span>(<span class="php-var">$mois</span>, <span class="php-num">9</span>) . <span class="php-str">": "</span>
+       . <span class="php-fn">str_pad</span>(<span class="php-fn">number_format</span>(<span class="php-var">$montant</span>, <span class="php-num">0</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>), <span class="php-num">8</span>, <span class="php-str">' '</span>, <span class="php-kw">STR_PAD_LEFT</span>)
+       . <span class="php-str">" € — {$statut}\n"</span>;
+}</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">foreach $k => $v</span>
+          <span class="notion-tag">max / min dynamiques</span>
+          <span class="notion-tag">accumulation +=</span>
+          <span class="notion-tag">count()</span>
+          <span class="notion-tag">double boucle</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO H2 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-08</span>
+          <span class="exo-name">Gestion d'une liste de tâches</span>
+          <span class="exo-theme">array / foreach / in_array / array_search</span>
+        </div>
+        <button class="toggle-btn" id="btn-h2">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo08.php</strong>. Gère une liste de tâches avec un tableau associatif
+          où la clé est le nom de la tâche et la valeur est <code>true</code> (faite) ou <code>false</code> (en cours).
+          Affiche la liste complète avec le statut de chaque tâche, le nombre de tâches faites,
+          et vérifie si une tâche spécifique existe dans la liste avec <code>array_key_exists()</code>.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Parcourir un tableau associatif avec <code>foreach ($t as $k => $v)</code></li>
+            <li>Compter les éléments selon une condition</li>
+            <li>Utiliser <code>array_key_exists()</code></li>
+            <li>Utiliser <code>array_filter()</code> pour filtrer</li>
+          </ul>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">exo08.php</span>
+            <span class="code-lang">PHP</span>
+          </div>
+          <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$taches</span> = [
+    <span class="php-str">'Créer la base de données'</span>  => <span class="php-kw">true</span>,
+    <span class="php-str">'Concevoir les maquettes'</span>   => <span class="php-kw">true</span>,
+    <span class="php-str">'Coder le back-end'</span>         => <span class="php-kw">false</span>,
+    <span class="php-str">'Intégrer le front-end'</span>     => <span class="php-kw">false</span>,
+    <span class="php-str">'Rédiger la documentation'</span> => <span class="php-kw">false</span>,
+];
+
+<span class="php-cmt">// 1. Affiche chaque tâche avec ✅ ou ⏳</span>
+<span class="php-cmt">// 2. Affiche le nombre de tâches faites / total</span>
+<span class="php-cmt">// 3. Vérifie si 'Coder le back-end' existe</span></pre>
+        </div>
+        <div class="expected">
+          <h4>Résultat attendu</h4>
+          <pre>✅ Créer la base de données
+✅ Concevoir les maquettes
+⏳ Coder le back-end
+⏳ Intégrer le front-end
+⏳ Rédiger la documentation
+
+Progression : 2 / 5 tâches terminées
+'Coder le back-end' existe dans la liste : OUI</pre>
+        </div>
+        <div class="solution-wrapper" id="sol-h2">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$taches</span> = [
+    <span class="php-str">'Créer la base de données'</span>  => <span class="php-kw">true</span>,
+    <span class="php-str">'Concevoir les maquettes'</span>   => <span class="php-kw">true</span>,
+    <span class="php-str">'Coder le back-end'</span>         => <span class="php-kw">false</span>,
+    <span class="php-str">'Intégrer le front-end'</span>     => <span class="php-kw">false</span>,
+    <span class="php-str">'Rédiger la documentation'</span> => <span class="php-kw">false</span>,
+];
+
+<span class="php-var">$faites</span> = <span class="php-num">0</span>;
+
+<span class="php-kw">foreach</span> (<span class="php-var">$taches</span> <span class="php-kw">as</span> <span class="php-var">$nom</span> => <span class="php-var">$faite</span>) {
+    <span class="php-var">$icone</span> = <span class="php-var">$faite</span> ? <span class="php-str">'✅'</span> : <span class="php-str">'⏳'</span>;
+    <span class="php-kw">echo</span> <span class="php-str">"{$icone} {$nom}\n"</span>;
+    <span class="php-kw">if</span> (<span class="php-var">$faite</span>) <span class="php-var">$faites</span>++;
+}
+
+<span class="php-var">$total</span> = <span class="php-fn">count</span>(<span class="php-var">$taches</span>);
+<span class="php-kw">echo</span> <span class="php-str">"\nProgression : {$faites} / {$total} tâches terminées\n"</span>;
+
+<span class="php-var">$recherche</span> = <span class="php-str">'Coder le back-end'</span>;
+<span class="php-var">$existe</span>    = <span class="php-fn">array_key_exists</span>(<span class="php-var">$recherche</span>, <span class="php-var">$taches</span>) ? <span class="php-str">'OUI'</span> : <span class="php-str">'NON'</span>;
+<span class="php-kw">echo</span> <span class="php-str">"'{$recherche}' existe dans la liste : {$existe}\n"</span>;</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">foreach $k => $v</span>
+          <span class="notion-tag">bool comme condition</span>
+          <span class="notion-tag">compteur conditionnel</span>
+          <span class="notion-tag">array_key_exists()</span>
+          <span class="notion-tag">opérateur ternaire ?:</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO H3 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-09</span>
+          <span class="exo-name">Tri de tableau & recherche</span>
+          <span class="exo-theme">sort / usort / in_array</span>
+          <span class="bonus-tag">Bonus</span>
+        </div>
+        <button class="toggle-btn" id="btn-h3">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Exercice bonus. Tu as un tableau de joueurs avec un nom et un score.
+          Utilise <code>usort()</code> pour trier les joueurs du meilleur au moins bon score.
+          Affiche le classement avec le rang, le nom et le score.
+          Cherche ensuite si un joueur spécifique est dans le top 3 avec une boucle <code>for</code>
+          et affiche son rang s'il est trouvé.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Utiliser <code>usort()</code> avec une fonction de comparaison</li>
+            <li>Afficher un classement numéroté avec <code>foreach</code></li>
+            <li>Rechercher dans un tableau trié avec <code>for</code></li>
+            <li>Utiliser <code>break</code> pour sortir d'une boucle dès qu'on a trouvé</li>
+          </ul>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-filename">exo09.php</span>
+            <span class="code-lang">PHP</span>
+          </div>
+          <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$joueurs</span> = [
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Alice'</span>,   <span class="php-str">'score'</span> => <span class="php-num">4200</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Bob'</span>,     <span class="php-str">'score'</span> => <span class="php-num">7800</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Clara'</span>,   <span class="php-str">'score'</span> => <span class="php-num">6100</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'David'</span>,   <span class="php-str">'score'</span> => <span class="php-num">9500</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Eva'</span>,     <span class="php-str">'score'</span> => <span class="php-num">3300</span>],
+];
+
+<span class="php-cmt">// 1. Trie par score décroissant avec usort()</span>
+<span class="php-cmt">// 2. Affiche le classement</span>
+<span class="php-cmt">// 3. Cherche "Clara" et affiche son rang</span></pre>
+        </div>
+        <div class="expected">
+          <h4>Résultat attendu</h4>
+          <pre>=== CLASSEMENT ===
+#1  David   — 9 500 pts
+#2  Bob     — 7 800 pts
+#3  Clara   — 6 100 pts
+#4  Alice   — 4 200 pts
+#5  Eva     — 3 300 pts
+
+Clara est classée #3</pre>
+        </div>
+        <div class="solution-wrapper" id="sol-h3">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$joueurs</span> = [
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Alice'</span>,  <span class="php-str">'score'</span> => <span class="php-num">4200</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Bob'</span>,    <span class="php-str">'score'</span> => <span class="php-num">7800</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Clara'</span>,  <span class="php-str">'score'</span> => <span class="php-num">6100</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'David'</span>,  <span class="php-str">'score'</span> => <span class="php-num">9500</span>],
+    [<span class="php-str">'nom'</span> => <span class="php-str">'Eva'</span>,    <span class="php-str">'score'</span> => <span class="php-num">3300</span>],
+];
+
+<span class="php-cmt">// Tri décroissant par score</span>
+<span class="php-fn">usort</span>(<span class="php-var">$joueurs</span>, <span class="php-kw">fn</span>(<span class="php-var">$a</span>, <span class="php-var">$b</span>) => <span class="php-var">$b</span>[<span class="php-str">'score'</span>] - <span class="php-var">$a</span>[<span class="php-str">'score'</span>]);
+
+<span class="php-kw">echo</span> <span class="php-str">"=== CLASSEMENT ===\n"</span>;
+<span class="php-var">$rang</span> = <span class="php-num">1</span>;
+<span class="php-kw">foreach</span> (<span class="php-var">$joueurs</span> <span class="php-kw">as</span> <span class="php-var">$j</span>) {
+    <span class="php-kw">echo</span> <span class="php-str">"#{$rang}  "</span>
+       . <span class="php-fn">str_pad</span>(<span class="php-var">$j</span>[<span class="php-str">'nom'</span>], <span class="php-num">8</span>)
+       . <span class="php-str">" — "</span>
+       . <span class="php-fn">number_format</span>(<span class="php-var">$j</span>[<span class="php-str">'score'</span>], <span class="php-num">0</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>)
+       . <span class="php-str">" pts\n"</span>;
+    <span class="php-var">$rang</span>++;
+}
+
+<span class="php-cmt">// Recherche Clara</span>
+<span class="php-var">$recherche</span> = <span class="php-str">'Clara'</span>;
+<span class="php-kw">for</span> (<span class="php-var">$i</span> = <span class="php-num">0</span>; <span class="php-var">$i</span> < <span class="php-fn">count</span>(<span class="php-var">$joueurs</span>); <span class="php-var">$i</span>++) {
+    <span class="php-kw">if</span> (<span class="php-var">$joueurs</span>[<span class="php-var">$i</span>][<span class="php-str">'nom'</span>] === <span class="php-var">$recherche</span>) {
+        <span class="php-kw">echo</span> <span class="php-str">"\n{$recherche} est classée #"</span> . (<span class="php-var">$i</span> + <span class="php-num">1</span>) . <span class="php-str">"\n"</span>;
+        <span class="php-kw">break</span>;
+    }
+}</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">usort()</span>
+          <span class="notion-tag">fn() comparaison</span>
+          <span class="notion-tag">for avec index</span>
+          <span class="notion-tag">break</span>
+          <span class="notion-tag">str_pad()</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /difficile -->
+
+</main>
+
+<footer>
+  <strong>Real Conseil Formation</strong> — DWWM — PHP Structures de contrôle &amp; Tableaux<br>
+  Prochaine séance : <strong>Fonctions</strong> — déclaration, paramètres, retour, portée des variables
+</footer>
+
+<script>
+function showSection(niveau, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.remove('active-debutant', 'active-intermediaire', 'active-difficile');
+  });
+  document.getElementById('section-' + niveau).classList.add('active');
+  btn.classList.add('active-' + niveau);
+}
+
+function toggleSolution(id) {
+  const sol = document.getElementById('sol-' + id);
+  const btn = document.getElementById('btn-' + id);
+  sol.classList.add('open');
+  btn.textContent = 'Solution affichée ✓';
+  btn.style.borderColor = 'var(--gold)';
+  btn.style.color = 'var(--gold)';
+  btn.disabled = true;
+}
+</script>
+
+</body>
+</html>

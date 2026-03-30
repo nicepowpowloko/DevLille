@@ -1,840 +1,751 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exercices PHP — Variables & Types</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../favicon-32x32.png" type="image/png">
+    <title>PHP - Exercices, Projets - Formation DWWM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --bg:          #07060c;
+            --surface:     #0e0c18;
+            --surface2:    #13101f;
+            --surface3:    #181428;
+            --border:      #1e1a30;
+            --border2:     #28224a;
+            --purple:      #8b5cf6;
+            --purple-dim:  #4c2d8a;
+            --purple-glow: rgba(139,92,246,0.14);
+            --purple-glow2:rgba(139,92,246,0.05);
+            --purple-light:#b48bff;
+            --php-blue:    #4f5b93;
+            --php-purple:  #8993be;
+            --text:        #d0cce8;
+            --muted:       #3a3060;
+            --muted2:      #7868a8;
+            --code-bg:     #060508;
+            --green:       #00d97e;
+            --cyan:        #22d3ee;
+        }
 
-    :root {
-      --navy: #2C3F77;
-      --gold: #A0896A;
-      --dark: #0f1420;
-      --darker: #080d17;
-      --card: #151d2e;
-      --border: #1e2d47;
-      --text: #c8d0e0;
-      --muted: #5a6a88;
-      --green: #4ade80;
-      --orange: #fb923c;
-      --red: #f87171;
-      --code-bg: #0d1117;
-    }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Syne', sans-serif; background: var(--darker); color: var(--text); min-height: 100vh; }
+        body {
+            font-family: 'Exo 2', sans-serif;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            position: relative;
+        }
 
-    header {
-      background: linear-gradient(135deg, var(--navy) 0%, #1a2a55 50%, var(--gold) 100%);
-      padding: 3rem 2rem 2rem; text-align: center; position: relative; overflow: hidden;
-    }
-    header::before {
-      content: '<?php ?>';
-      position: absolute; font-family: 'JetBrains Mono', monospace;
-      font-size: 8rem; color: rgba(255,255,255,.04);
-      top: -1rem; right: -1rem; pointer-events: none;
-    }
-    .header-badge {
-      display: inline-block; background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.2); color: #fff;
-      font-size: .75rem; letter-spacing: 2px; text-transform: uppercase;
-      padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1rem;
-    }
-    header h1 { font-size: 2.4rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
-    header p { color: rgba(255,255,255,.7); font-size: 1rem; }
-    .header-meta {
-      display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap;
-    }
-    .header-meta span { color: rgba(255,255,255,.6); font-size: .85rem; }
-    .header-meta span strong { color: #fff; }
+        /* ═══ BACKGROUND GRID ═══ */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(139,92,246,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139,92,246,0.025) 1px, transparent 1px);
+            background-size: 44px 44px;
+            pointer-events: none;
+            z-index: 0;
+        }
 
-    .pedagogy {
-      background: var(--dark);
-      padding: 1.2rem 2rem; font-size: .85rem; color: #8899bb;
-    }
-    .pedagogy strong { color: var(--gold); }
-    .pedagogy code {
-      background: var(--code-bg); color: #79c0ff;
-      padding: .1rem .4rem; 
-      font-family: 'JetBrains Mono', monospace; font-size: .82rem;
-    }
+        /* ═══ AMBIENT GLOW ═══ */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 45% at 50% -5%,  rgba(139,92,246,0.12) 0%, transparent 65%),
+                radial-gradient(ellipse 30% 35% at 5%  50%,  rgba(79,91,147,0.10)  0%, transparent 60%),
+                radial-gradient(ellipse 25% 35% at 95% 70%,  rgba(139,92,246,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 30% at 50% 100%, rgba(79,91,147,0.06)  0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
-    /* ALERTE PÉDAGOGIQUE */
-    .alerte-prochaine {
-      background: rgba(251,146,60,.07); border: 1px solid rgba(251,146,60,.25);
-      padding: .8rem 1.5rem; margin: 1.5rem 0;
-      font-size: .88rem; color: #f4c07a; border-radius: 0 6px 6px 0;
-    }
-    .alerte-prochaine strong { color: var(--orange); }
+        /* ═══ FLOATING ICONS ═══ */
+        .floating-icons {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
 
-    main { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+        .tech-icon {
+            position: absolute;
+            opacity: 0;
+            animation: floatIn 1s forwards, floatLoop var(--dur, 24s) infinite ease-in-out;
+        }
 
-    .tabs {
-      display: flex; gap: .5rem; margin-bottom: 2.5rem;
-      border-bottom: 2px solid var(--border); padding-bottom: .5rem;
-    }
-    .tab {
-      padding: .6rem 1.6rem; border: 2px solid transparent;
-      background: transparent; color: var(--muted);
-      font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 600;
-      cursor: pointer; border-radius: 6px 6px 0 0; transition: all .2s;
-      display: flex; align-items: center; gap: .5rem;
-    }
-    .tab:hover { color: var(--text); }
-    .tab.active-debutant { color: var(--green); border-color: var(--green); background: rgba(74,222,128,.06); }
-    .tab.active-intermediaire { color: var(--orange); border-color: var(--orange); background: rgba(251,146,60,.06); }
-    .tab.active-difficile { color: var(--red); border-color: var(--red); background: rgba(248,113,113,.06); }
+        .tech-icon:nth-child(1) { top: 8%;  left: 4%;   --dur: 25s; animation-delay: 0.2s, 0.2s; }
+        .tech-icon:nth-child(2) { top: 18%; right: 6%;  --dur: 20s; animation-delay: 0.5s, 0.5s; }
+        .tech-icon:nth-child(3) { top: 58%; left: 8%;   --dur: 30s; animation-delay: 0.8s, 0.8s; }
+        .tech-icon:nth-child(4) { top: 68%; right: 12%; --dur: 22s; animation-delay: 1.0s, 1.0s; }
+        .tech-icon:nth-child(5) { top: 38%; left: 13%;  --dur: 28s; animation-delay: 1.2s, 1.2s; }
+        .tech-icon:nth-child(6) { top: 48%; right: 4%;  --dur: 26s; animation-delay: 1.4s, 1.4s; }
+        .tech-icon:nth-child(7) { top: 82%; left: 18%;  --dur: 24s; animation-delay: 1.6s, 1.6s; }
+        .tech-icon:nth-child(8) { top: 28%; right: 18%; --dur: 27s; animation-delay: 1.8s, 1.8s; }
 
-    .dot { width: 8px; height: 8px; border-radius: 50%; }
-    .dot-green  { background: var(--green); }
-    .dot-orange { background: var(--orange); }
-    .dot-red    { background: var(--red); }
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; }
+        }
 
-    .section { display: none; }
-    .section.active { display: block; }
+        @keyframes floatLoop {
+            0%, 100% { transform: translateY(0)    rotate(0deg); }
+            25%       { transform: translateY(-18px) rotate(4deg); }
+            50%       { transform: translateY(0)    rotate(0deg); }
+            75%       { transform: translateY(18px)  rotate(-4deg); }
+        }
 
-    .niveau-header {
-      display: flex; align-items: center; gap: 1rem;
-      margin-bottom: 2rem; padding: 1.2rem 1.5rem; border-radius: 8px;
-    }
-    .niveau-header.debutant { background: rgba(74,222,128,.07); border: 1px solid rgba(74,222,128,.2); }
-    .niveau-header.intermediaire { background: rgba(251,146,60,.07); border: 1px solid rgba(251,146,60,.2); }
-    .niveau-header.difficile { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.2); }
-    .niveau-label {
-      font-size: .7rem; letter-spacing: 2px; text-transform: uppercase;
-      font-weight: 700; padding: .3rem .8rem; border-radius: 4px; white-space: nowrap;
-    }
-    .debutant      .niveau-label { background: rgba(74,222,128,.15);  color: var(--green); }
-    .intermediaire .niveau-label { background: rgba(251,146,60,.15);  color: var(--orange); }
-    .difficile     .niveau-label { background: rgba(248,113,113,.15); color: var(--red); }
-    .niveau-desc { font-size: .9rem; color: var(--muted); }
-    .niveau-desc strong { color: var(--text); }
+        .tech-icon svg {
+            width: 72px; height: 72px;
+            fill: var(--purple);
+            opacity: 0.09;
+            filter: drop-shadow(0 0 10px rgba(139,92,246,0.25));
+        }
 
-    .exo {
-      background: var(--card); border: 1px solid var(--border);
-       margin-bottom: 1.5rem; overflow: hidden; transition: border-color .2s;
-    }
-    
+        /* ═══ TOP LINE ═══ */
+        .top-line {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent,
+                var(--php-blue),
+                var(--purple),
+                var(--php-purple),
+                var(--purple),
+                var(--php-blue),
+                transparent);
+            z-index: 100;
+            animation: shimmerLine 5s ease-in-out infinite;
+        }
 
-    .exo-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
-      cursor: pointer; user-select: none;
-    }
+        @keyframes shimmerLine {
+            0%, 100% { opacity: 0.55; }
+            50%       { opacity: 1; }
+        }
 
-    .exo-title { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-    .exo-num {
-      font-family: 'JetBrains Mono', monospace; font-size: .75rem;
-      color: var(--muted); background: var(--dark); padding: .2rem .6rem; 
-    }
-    .exo-name { font-size: 1rem; font-weight: 600; color: var(--text); }
-    .exo-theme {
-      font-size: .75rem; color: var(--muted); background: var(--dark);
-      padding: .2rem .7rem; border-radius: 10px;
-    }
-    .toggle-btn {
-      background: none; border: 1px solid var(--border); color: var(--muted);
-      font-size: .8rem; padding: .3rem .8rem; border-radius: 4px; cursor: pointer;
-      font-family: 'JetBrains Mono', monospace; transition: all .2s; white-space: nowrap;
-    }
-    .toggle-btn:hover { border-color: var(--gold); color: var(--gold); }
+        /* ═══ CONTAINER ═══ */
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 62px 20px 52px;
+        }
 
-    .exo-body { padding: 1.5rem; }
-    .consigne { font-size: .95rem; line-height: 1.7; color: var(--text); margin-bottom: 1.2rem; }
-    .consigne strong { color: #fff; }
+        /* ═══ LOGO ═══ */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1.75rem;
+            animation: fadeDown 0.6s ease both;
+        }
 
-    .objectifs {
-      background: var(--dark); border-radius: 6px;
-      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
-    }
-    .objectifs h4 {
-      font-size: .75rem; letter-spacing: 1.5px; text-transform: uppercase;
-      color: var(--muted); margin-bottom: .6rem;
-    }
-    .objectifs li {
-      list-style: none; font-size: .88rem; color: #8899bb;
-      padding: .2rem 0 .2rem 1rem; position: relative;
-    }
-    .objectifs li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
 
-    .code-block {
-      background: var(--code-bg); border: 1px solid #21262d;
-      border-radius: 8px; margin-bottom: 1.2rem; overflow: hidden;
-    }
-    .code-header {
-      background: #161b22; padding: .5rem 1rem;
-      display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid #21262d;
-    }
-    .code-filename { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #8b949e; }
-    .code-lang { font-size: .7rem; color: #58a6ff; background: rgba(88,166,255,.1); padding: .1rem .5rem; border-radius: 3px; }
-    .code-block pre {
-      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
-      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
-    }
-    .php-tag { color: #ff7b72; }
-    .php-var { color: #79c0ff; }
-    .php-str { color: #a5d6ff; }
-    .php-num { color: #f2cc60; }
-    .php-kw  { color: #ff7b72; }
-    .php-fn  { color: #d2a8ff; }
-    .php-cmt { color: #6e7681; font-style: italic; }
+        .logo-wrap {
+            display: inline-block;
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            padding: 16px 20px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(139,92,246,0.08),
+                0 8px 32px rgba(0,0,0,0.55);
+            animation: logoPulse 5s ease-in-out infinite;
+        }
 
-    .expected {
-      background: #0d1117; border: 1px solid #21262d;
-      border-left: 3px solid var(--green); border-radius: 6px;
-      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
-    }
-    .expected h4 {
-      font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase;
-      color: var(--green); margin-bottom: .6rem;
-    }
-    .expected pre { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: #7ee787; line-height: 1.8; }
+        .logo-wrap::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--purple), transparent);
+            opacity: 0.5;
+        }
 
-    .solution-wrapper { display: none; }
-    .solution-wrapper.open { display: block; }
-    .solution-block {
-      background: var(--code-bg); border: 1px solid #21262d;
-      border-left: 3px solid var(--gold); border-radius: 6px; overflow: hidden;
-    }
-    .solution-header {
-      background: #161b22; padding: .5rem 1rem; font-size: .75rem;
-      color: var(--gold); letter-spacing: 1px; text-transform: uppercase;
-      border-bottom: 1px solid #21262d;
-    }
-    .solution-block pre {
-      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
-      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
-    }
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 0 0 1px rgba(139,92,246,0.06), 0 8px 32px rgba(0,0,0,0.55); }
+            50%       { box-shadow: 0 0 0 1px rgba(139,92,246,0.18), 0 0 60px rgba(139,92,246,0.14), 0 0 100px rgba(79,91,147,0.10), 0 8px 32px rgba(0,0,0,0.55); }
+        }
 
-    .notions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
-    .notion-tag {
-      font-size: .72rem; padding: .2rem .7rem; border-radius: 10px;
-      background: rgba(44,63,119,.3); color: #79a4f5;
-      border: 1px solid rgba(44,63,119,.5);
-      font-family: 'JetBrains Mono', monospace;
-    }
+        .logo-wrap img {
+            width: 100px;
+            display: block;
+            filter: brightness(1.05);
+        }
 
-    /* BONUS TAG */
-    .bonus-tag {
-      display: inline-block; font-size: .7rem; padding: .2rem .7rem;
-      background: rgba(248,113,113,.1); color: var(--red);
-      border: 1px solid rgba(248,113,113,.3); border-radius: 10px;
-      margin-left: .5rem; vertical-align: middle;
-    }
+        /* ═══ TITLE ═══ */
+        .title-block {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeDown 0.7s 0.1s ease both;
+        }
 
-    footer {
-      text-align: center; padding: 2rem; color: var(--muted);
-      font-size: .82rem; border-top: 1px solid var(--border);
-    }
-    footer strong { color: var(--gold); }
-  </style>
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--php-purple);
+            border: 1px solid rgba(137,147,190,0.28);
+            padding: 0.32rem 1.1rem;
+            margin-bottom: 1.2rem;
+            background: rgba(79,91,147,0.08);
+            border-radius: 2px;
+        }
+
+        .eyebrow::before, .eyebrow::after {
+            content: '';
+            width: 14px; height: 1px;
+            background: var(--php-purple);
+            opacity: 0.5;
+        }
+
+        h1 {
+            font-family: 'Exo 2', sans-serif;
+            font-size: clamp(2rem, 6vw, 3.8rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            line-height: 1.05;
+            color: #fff;
+            cursor: default;
+            transition: transform 0.35s ease;
+        }
+
+        h1 .acc {
+            color: var(--purple);
+            text-shadow: 0 0 45px rgba(139,92,246,0.55);
+        }
+
+        h1:hover { transform: translateY(-5px); }
+
+        .title-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--muted2);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-top: 0.75rem;
+        }
+
+        /* ═══ SECTIONS ═══ */
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            padding: 1.75rem 1.75rem 1.25rem;
+            margin: 1.25rem 0;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.2s; }
+        .section:nth-child(2) { animation-delay: 0.35s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* top accent */
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--purple), var(--php-blue), transparent);
+            opacity: 0.45;
+            transition: opacity 0.3s;
+        }
+
+        /* left bar */
+        .section::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: linear-gradient(180deg, var(--purple), var(--php-blue));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .section:hover {
+            transform: translateY(-6px);
+            box-shadow:
+                0 14px 44px rgba(0,0,0,0.55),
+                0 0 55px rgba(139,92,246,0.09),
+                0 0 0 1px rgba(139,92,246,0.18);
+            border-color: rgba(139,92,246,0.22);
+        }
+
+        .section:hover::before { opacity: 1; }
+        .section:hover::after  { opacity: 1; }
+
+        /* scan line effect */
+        .scan {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--purple), transparent);
+            pointer-events: none;
+        }
+
+        .section:hover .scan {
+            animation: scanLine 1.2s linear;
+        }
+
+        @keyframes scanLine {
+            from { transform: translateY(-2px); opacity: 0.5; }
+            to   { transform: translateY(600%); opacity: 0; }
+        }
+
+        /* ═══ SECTION TITLES ═══ */
+        h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--purple);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        h3::before {
+            content: '//';
+            color: var(--purple-dim);
+            font-size: 0.68rem;
+        }
+
+        h3::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border2), transparent);
+            margin-left: 0.4rem;
+        }
+
+        /* ═══ LINKS ═══ */
+        a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.94rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--surface2);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        a::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 0;
+            background: linear-gradient(90deg, var(--purple-glow), transparent);
+            transition: width 0.3s ease;
+            border-radius: inherit;
+        }
+
+        a::after {
+            content: '→';
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--purple);
+            margin-left: auto;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: opacity 0.25s, transform 0.25s;
+        }
+
+        a:hover {
+            border-color: rgba(139,92,246,0.28);
+            color: #fff;
+            background: var(--surface3);
+            padding-left: 1.25rem;
+        }
+
+        a:hover::before { width: 100%; }
+        a:hover::after  { opacity: 1; transform: translateX(0); }
+
+        .link-icon {
+            width: 28px; height: 28px;
+            background: var(--surface3);
+            border: 1px solid var(--border2);
+            border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--php-purple);
+            transition: background 0.25s, border-color 0.25s, color 0.25s;
+            position: relative;
+            z-index: 1;
+        }
+
+        a:hover .link-icon {
+            background: rgba(79,91,147,0.22);
+            border-color: var(--purple);
+            color: var(--purple-light);
+        }
+
+        /* ═══ BACK BUTTON ═══ */
+        .btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.6rem !important;
+            background: var(--surface) !important;
+            border: 1px solid var(--border2) !important;
+            color: var(--muted2) !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 0.73rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.1em !important;
+            text-transform: uppercase !important;
+            padding: 0.8rem 1.5rem !important;
+            border-radius: 4px !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        .btn::before {
+            content: '' !important;
+            position: absolute !important;
+            inset: 0 !important;
+            background: linear-gradient(135deg, var(--purple-glow), transparent) !important;
+            opacity: 0 !important;
+            transition: opacity 0.25s !important;
+            z-index: 0 !important;
+        }
+
+        .btn:hover {
+            border-color: rgba(139,92,246,0.35) !important;
+            color: var(--purple-light) !important;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 6px 22px rgba(139,92,246,0.12) !important;
+            padding-left: 1.5rem !important;
+        }
+
+        .btn:hover::before { opacity: 1 !important; }
+
+        .btn::after { display: none !important; }
+
+        .btn span { position: relative; z-index: 1; }
+
+        .btn-wrapper {
+            text-align: center;
+            margin-top: 2rem;
+            animation: fadeUp 0.5s 0.5s ease both;
+        }
+
+        /* ═══ FOOTER ═══ */
+        footer {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            margin-top: 3rem;
+            padding: 2.25rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp 0.5s 0.6s ease both;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent,
+                var(--php-blue),
+                var(--purple),
+                var(--php-purple),
+                var(--php-blue),
+                transparent);
+            opacity: 0.5;
+        }
+
+        .footer-logo-wrap {
+            display: inline-block;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-logo-wrap img {
+            width: 80px;
+            display: block;
+            filter: brightness(1.05);
+        }
+
+        .footer-title {
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 800;
+            font-size: 0.92rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #fff;
+            margin-bottom: 0.4rem;
+        }
+
+        footer p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--muted2);
+            margin: 0.3rem 0;
+            letter-spacing: 0.04em;
+        }
+
+        footer a {
+            display: inline !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: none !important;
+            color: var(--purple-light) !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 0.7rem !important;
+            position: static !important;
+            overflow: visible !important;
+            transform: none !important;
+        }
+
+        footer a::before,
+        footer a::after { display: none !important; }
+
+        footer a:hover {
+            text-decoration: underline !important;
+            color: #fff !important;
+            transform: none !important;
+            padding-left: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        .footer-divider {
+            width: 50px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border2), transparent);
+            margin: 0.9rem auto;
+        }
+
+        /* ═══ PHP BADGE ═══ */
+        .php-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--php-purple);
+            border: 1px solid rgba(137,147,190,0.2);
+            padding: 0.2rem 0.7rem;
+            background: rgba(79,91,147,0.06);
+            border-radius: 2px;
+            margin-bottom: 0.75rem;
+        }
+
+        .php-badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--purple);
+            box-shadow: 0 0 8px var(--purple);
+            animation: blinkDot 2.5s ease-in-out infinite;
+        }
+
+        @keyframes blinkDot {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+
+        /* ═══ RESPONSIVE ═══ */
+        @media (max-width: 640px) {
+            .container { padding: 50px 14px 40px; }
+            h1 { font-size: 2rem; }
+            .tech-icon svg { width: 54px; height: 54px; }
+            .section { padding: 1.25rem; }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <div class="header-badge">DWWM — Formation PHP</div>
-  <h1>Exercices PHP</h1>
-  <p>Variables &amp; Types de données</p>
-  <div class="header-meta">
-    <span><strong>3</strong> niveaux</span>
-    <span><strong>9</strong> exercices</span>
-    <span>Prochaine séance : <strong>Structures de contrôle</strong></span>
-  </div>
-</header>
+    <!-- Top accent line -->
+    <div class="top-line"></div>
 
-<div class="pedagogy">
-  <strong>Notions travaillées :</strong>
-  déclaration <code>$variable</code> →
-  types <code>string</code>, <code>int</code>, <code>float</code>, <code>bool</code>, <code>array</code> →
-  <code>echo</code>, <code>var_dump()</code>, <code>gettype()</code> →
-  concaténation <code>.</code> →
-  interpolation <code>"$var"</code> →
-  fonctions de chaînes et de tableaux
-</div>
-
-<main>
-
-  <div class="tabs">
-    <button class="tab active-debutant" onclick="showSection('debutant', this)">
-      <span class="dot dot-green"></span> Débutant
-    </button>
-    <button class="tab" onclick="showSection('intermediaire', this)">
-      <span class="dot dot-orange"></span> Intermédiaire
-    </button>
-    <button class="tab" onclick="showSection('difficile', this)">
-      <span class="dot dot-red"></span> Difficile
-    </button>
-  </div>
-
-  <!-- ===== DÉBUTANT ===== -->
-  <div class="section active" id="section-debutant">
-
-    <div class="niveau-header debutant">
-      <span class="niveau-label">Débutant</span>
-      <div class="niveau-desc">
-        <strong>Objectif :</strong> Déclarer des variables, afficher des données, manipuler des types simples. Aucun prérequis.
-      </div>
+    <!-- Floating tech icons -->
+    <div class="floating-icons">
+        <!-- PHP ellipse -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="40" cy="40" rx="38" ry="22" fill="none" stroke="currentColor" stroke-width="3"/>
+                <text x="40" y="48" font-size="18" text-anchor="middle" fill="currentColor" font-family="Arial" font-weight="bold">PHP</text>
+            </svg>
+        </div>
+        <!-- HTML5 -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 5L15 70L40 78L65 70L70 5H10ZM57 22H28L29 32H56L53 58L40 62L27 58L26 48H34L35 52L40 54L45 52L46 44H26L23 16H57V22Z"/>
+            </svg>
+        </div>
+        <!-- JS -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <rect x="5" y="5" width="70" height="70" rx="6"/>
+                <text x="40" y="58" font-size="42" text-anchor="middle" fill="var(--bg)" font-family="Arial" font-weight="bold">JS</text>
+            </svg>
+        </div>
+        <!-- React -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="currentColor" stroke-width="3"/>
+                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="currentColor" stroke-width="3" transform="rotate(60 40 40)"/>
+                <ellipse cx="40" cy="40" rx="35" ry="13" fill="none" stroke="currentColor" stroke-width="3" transform="rotate(120 40 40)"/>
+                <circle cx="40" cy="40" r="5"/>
+            </svg>
+        </div>
+        <!-- Database -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="40" cy="20" rx="30" ry="10"/>
+                <path d="M10 20V60C10 65.5 23.4 70 40 70C56.6 70 70 65.5 70 60V20"/>
+                <ellipse cx="40" cy="40" rx="30" ry="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            </svg>
+        </div>
+        <!-- Code brackets -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M25 15L10 40L25 65" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                <path d="M55 15L70 40L55 65" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                <line x1="45" y1="20" x2="35" y2="60" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <!-- Git -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M75 35L45 5L40 10L35 5L5 35L10 40L5 45L35 75L40 70L45 75L75 45L70 40Z"/>
+                <circle cx="25" cy="40" r="6"/>
+                <circle cx="55" cy="40" r="6"/>
+                <line x1="31" y1="40" x2="49" y2="40" stroke="var(--bg)" stroke-width="4"/>
+            </svg>
+        </div>
+        <!-- Node -->
+        <div class="tech-icon">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M40 5L70 22.5V57.5L40 75L10 57.5V22.5L40 5Z" fill="none" stroke="currentColor" stroke-width="4"/>
+                <text x="40" y="48" font-size="13" text-anchor="middle" fill="currentColor" font-family="monospace" font-weight="bold">NODE</text>
+            </svg>
+        </div>
     </div>
 
-    <!-- EXO D1 -->
-    <div class="exo">
-      <div class="exo-header" onclick="toggleSolution('d1')">
-        <div class="exo-title">
-          <span class="exo-num">EXO-01</span>
-          <span class="exo-name">Ma première variable</span>
-          <span class="exo-theme">string / echo / concaténation</span>
-        </div>
-        <button class="toggle-btn" id="btn-d1">Voir la solution</button>
-      </div>
-      <div class="exo-body">
-        <p class="consigne">
-          Crée un fichier <strong>exo01.php</strong> dans <code>htdocs</code>.
-          Déclare une variable <code>$prenom</code>, une variable <code>$age</code> et une variable <code>$ville</code>.
-          Affiche une phrase complète en utilisant ces trois variables avec l'opérateur de concaténation <code>.</code>
-        </p>
-        <div class="objectifs">
-          <h4>Objectifs</h4>
-          <ul>
-            <li>Déclarer une variable <code>string</code></li>
-            <li>Déclarer une variable <code>int</code></li>
-            <li>Utiliser <code>echo</code> pour afficher</li>
-            <li>Concaténer avec <code>.</code></li>
-          </ul>
-        </div>
-       
-    
-        <div class="solution-wrapper" id="sol-d1">
-          <div class="solution-block">
-            <div class="solution-header">Solution</div>
-            <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$prenom</span> = <span class="php-str">"Thomas"</span>;
-<span class="php-var">$age</span>    = <span class="php-num">30</span>;
-<span class="php-var">$ville</span>  = <span class="php-str">"Abbeville"</span>;
+    <!-- Contenu principal -->
+    <div class="container">
 
-          </div>
-        </div>
-        <div class="notions">
-          <span class="notion-tag">$variable</span>
-          <span class="notion-tag">string</span>
-          <span class="notion-tag">int</span>
-          <span class="notion-tag">echo</span>
-          <span class="notion-tag">concaténation .</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- EXO D2 -->
-    <div class="exo">
-      <div class="exo-header" onclick="toggleSolution('d2')">
-        <div class="exo-title">
-          <span class="exo-num">EXO-02</span>
-          <span class="exo-name">Inspecter les types</span>
-          <span class="exo-theme">var_dump / gettype</span>
-        </div>
-        <button class="toggle-btn" id="btn-d2">Voir la solution</button>
-      </div>
-      <div class="exo-body">
-        <p class="consigne">
-          Crée un fichier <strong>exo02.php</strong>. Déclare <strong>5 variables</strong> de types différents :
-          un entier, un flottant, une chaîne de caractères, un booléen, et <code>null</code>.
-          Affiche le type de chacune avec <code>gettype()</code> puis inspecte-les toutes avec <code>var_dump()</code>.
-        </p>
-        <div class="objectifs">
-          <h4>Objectifs</h4>
-          <ul>
-            <li>Connaître les 5 types de base en PHP</li>
-            <li>Utiliser <code>gettype()</code> pour lire le type</li>
-            <li>Utiliser <code>var_dump()</code> pour tout voir d'un coup</li>
-          </ul>
-        </div>
-    
-        
-        <div class="solution-wrapper" id="sol-d2">
-          <div class="solution-block">
-            <div class="solution-header">Solution</div>
-            <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$entier</span>   = <span class="php-num">42</span>;
-<span class="php-var">$flottant</span> = <span class="php-num">3.14</span>;
-<span class="php-var">$chaine</span>   = <span class="php-str">"Bonjour"</span>;
-<span class="php-var">$booleen</span>  = <span class="php-kw">true</span>;
-<span class="php-var">$rien</span>     = <span class="php-kw">null</span>;
-
-<span class="php-kw">echo</span> <span class="php-fn">gettype</span>(<span class="php-var">$entier</span>)   . <span class="php-str">"\n"</span>;
-<span class="php-kw">echo</span> <span class="php-fn">gettype</span>(<span class="php-var">$flottant</span>) . <span class="php-str">"\n"</span>;
-<span class="php-kw">echo</span> <span class="php-fn">gettype</span>(<span class="php-var">$chaine</span>)   . <span class="php-str">"\n"</span>;
-<span class="php-kw">echo</span> <span class="php-fn">gettype</span>(<span class="php-var">$booleen</span>)  . <span class="php-str">"\n"</span>;
-<span class="php-kw">echo</span> <span class="php-fn">gettype</span>(<span class="php-var">$rien</span>)     . <span class="php-str">"\n"</span>;
-
-<span class="php-fn">var_dump</span>(<span class="php-var">$entier</span>, <span class="php-var">$flottant</span>, <span class="php-var">$chaine</span>, <span class="php-var">$booleen</span>, <span class="php-var">$rien</span>);</pre>
-          </div>
-        </div>
-        <div class="notions">
-          <span class="notion-tag">int</span>
-          <span class="notion-tag">float</span>
-          <span class="notion-tag">string</span>
-          <span class="notion-tag">bool</span>
-          <span class="notion-tag">null</span>
-          <span class="notion-tag">gettype()</span>
-          <span class="notion-tag">var_dump()</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- EXO D3 -->
-    <div class="exo">
-      <div class="exo-header" onclick="toggleSolution('d3')">
-        <div class="exo-title">
-          <span class="exo-num">EXO-03</span>
-          <span class="exo-name">Calcul de prix TTC</span>
-          <span class="exo-theme">float / opérateurs arithmétiques</span>
-        </div>
-        <button class="toggle-btn" id="btn-d3">Voir la solution</button>
-      </div>
-      <div class="exo-body">
-        <p class="consigne">
-          Crée un fichier <strong>exo03.php</strong>. Un produit coûte <strong>49.90 €</strong> TTC avec une TVA de <strong>20%</strong>.
-          Calcule et affiche le prix HT, le montant de la TVA et le prix TTC.
-          Utilise <code>number_format()</code> pour afficher 2 décimales avec une virgule.
-        </p>
-        <div class="objectifs">
-          <h4>Objectifs</h4>
-          <ul>
-            <li>Manipuler les <code>float</code></li>
-            <li>Utiliser les opérateurs <code>* / + -</code></li>
-            <li>Utiliser <code>number_format()</code></li>
-          </ul>
-        </div>
-  
- 
-        <div class="solution-wrapper" id="sol-d3">
-          <div class="solution-block">
-            <div class="solution-header">Solution</div>
-            <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$prix_ttc</span> = <span class="php-num">49.90</span>;
-<span class="php-var">$taux_tva</span> = <span class="php-num">0.20</span>;
-
-<span class="php-var">$prix_ht</span>     = <span class="php-var">$prix_ttc</span> / (<span class="php-num">1</span> + <span class="php-var">$taux_tva</span>);
-<span class="php-var">$montant_tva</span> = <span class="php-var">$prix_ttc</span> - <span class="php-var">$prix_ht</span>;
-
-<span class="php-kw">echo</span> <span class="php-str">"Prix HT  : "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$prix_ht</span>, <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"TVA      : "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$montant_tva</span>, <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Prix TTC : "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$prix_ttc</span>, <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;</pre>
-          </div>
-        </div>
-        <div class="notions">
-          <span class="notion-tag">float</span>
-          <span class="notion-tag">opérateurs * / + -</span>
-          <span class="notion-tag">number_format()</span>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /débutant -->
-
-  <!-- ===== INTERMÉDIAIRE ===== -->
-  <div class="section" id="section-intermediaire">
-
-    <div class="niveau-header intermediaire">
-      <span class="niveau-label">Intermédiaire</span>
-      <div class="niveau-desc">
-        <strong>Objectif :</strong> Manipuler les tableaux sans boucle, travailler les fonctions de chaînes, combiner plusieurs types.
-      </div>
-    </div>
-
-    <div class="alerte-prochaine">
-      <strong>Note :</strong> Les tableaux ici sont manipulés <strong>sans boucle</strong> (accès par index, count, array_push...).
-      Les boucles <code>foreach</code> / <code>for</code> arrivent dans le prochain cours sur les structures de contrôle.
-    </div>
-
-    <!-- EXO I1 -->
-    <div class="exo">
-      <div class="exo-header" onclick="toggleSolution('i1')">
-        <div class="exo-title">
-          <span class="exo-num">EXO-04</span>
-          <span class="exo-name">Mon premier tableau</span>
-          <span class="exo-theme">array / count / array_push</span>
-        </div>
-        <button class="toggle-btn" id="btn-i1">Voir la solution</button>
-      </div>
-      < class="exo-body">
-        <p class="consigne">
-          Crée un fichier <strong>exo04.php</strong>. Déclare un tableau <code>$fruits</code> contenant
-          3 fruits. Affiche le premier, le dernier, le nombre d'éléments.
-          Ajoute un 4ème fruit avec <code>array_push()</code> puis affiche le nouveau nombre.
-          Affiche aussi le tableau entier avec <code>print_r()</code>.
-        </p>
-        <div class="objectifs">
-          <h4>Objectifs</h4>
-          <ul>
-            <li>Déclarer un tableau indexé <code>[]</code></li>
-            <li>Accéder à un élément par son index <code>$t[0]</code></li>
-            <li>Compter les éléments avec <code>count()</code></li>
-            <li>Ajouter un élément avec <code>array_push()</code></li>
-            <li>Afficher un tableau avec <code>print_r()</code></li>
-          </ul>
+        <!-- Logo -->
+        <div class="logo-container">
+            <div class="logo-wrap">
+                <img src="../JAVASCRIPT/Supports/IMG/realconseil_logo-removebg-preview.png" alt="Real Conseil Logo">
+            </div>
         </div>
 
-        <div class="solution-wrapper" id="sol-i1">
-          <div class="solution-block">
-            <div class="solution-header">Solution</div>
-            <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$fruits</span> = [<span class="php-str">"pomme"</span>, <span class="php-str">"banane"</span>, <span class="php-str">"orange"</span>];
-
-<span class="php-kw">echo</span> <span class="php-str">"Premier fruit : "</span> . <span class="php-var">$fruits</span>[<span class="php-num">0</span>] . <span class="php-str">"\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Dernier fruit : "</span> . <span class="php-var">$fruits</span>[<span class="php-fn">count</span>(<span class="php-var">$fruits</span>) - <span class="php-num">1</span>] . <span class="php-str">"\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Nombre de fruits : "</span> . <span class="php-fn">count</span>(<span class="php-var">$fruits</span>) . <span class="php-str">"\n"</span>;
-
-<span class="php-fn">array_push</span>(<span class="php-var">$fruits</span>, <span class="php-str">"kiwi"</span>);
-
-<span class="php-kw">echo</span> <span class="php-str">"Après ajout : "</span> . <span class="php-fn">count</span>(<span class="php-var">$fruits</span>) . <span class="php-str">"\n"</span>;
-
-<span class="php-fn">print_r</span>(<span class="php-var">$fruits</span>);</pre>
-          </div>
-        </div>
-        <div class="notions">
-          <span class="notion-tag">array []</span>
-          <span class="notion-tag">$t[0] index</span>
-          <span class="notion-tag">count()</span>
-          <span class="notion-tag">array_push()</span>
-          <span class="notion-tag">print_r()</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- EXO I2 -->
-    <div class="exo">
-      <div class="exo-header" onclick="toggleSolution('i2')">
-        <div class="exo-title">
-          <span class="exo-num">EXO-05</span>
-          <span class="exo-name">Manipulation de chaînes</span>
-          <span class="exo-theme">string functions</span>
-        </div>
-        <button class="toggle-btn" id="btn-i2">Voir la solution</button>
-      </div>
-      <div class="exo-body">
-        <p class="consigne">
-          Crée un fichier <strong>exo05.php</strong>. À partir de la variable
-          <code>$email = "  Thomas.Darras@Real-Conseil.FR  "</code> (avec des espaces et une casse mixte),
-          utilise les fonctions de chaîne pour la nettoyer et en extraire des informations.
-        </p>
-        <div class="objectifs">
-          <h4>Objectifs</h4>
-          <ul>
-            <li>Supprimer les espaces avec <code>trim()</code></li>
-            <li>Mettre en minuscules avec <code>strtolower()</code></li>
-            <li>Compter les caractères avec <code>strlen()</code></li>
-            <li>Trouver la position du @ avec <code>strpos()</code></li>
-            <li>Extraire une partie avec <code>substr()</code></li>
-          </ul>
-        </div>
-  
-        <div class="solution-wrapper" id="sol-i2">
-          <div class="solution-block">
-            <div class="solution-header">Solution</div>
-            <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$email</span> = <span class="php-str">"  Thomas.Darras@Real-Conseil.FR  "</span>;
-
-<span class="php-var">$email_propre</span> = <span class="php-fn">strtolower</span>(<span class="php-fn">trim</span>(<span class="php-var">$email</span>));
-<span class="php-var">$longueur</span>     = <span class="php-fn">strlen</span>(<span class="php-var">$email_propre</span>);
-<span class="php-var">$pos_at</span>       = <span class="php-fn">strpos</span>(<span class="php-var">$email_propre</span>, <span class="php-str">'@'</span>);
-<span class="php-var">$nom</span>          = <span class="php-fn">substr</span>(<span class="php-var">$email_propre</span>, <span class="php-num">0</span>, <span class="php-var">$pos_at</span>);
-<span class="php-var">$domaine</span>      = <span class="php-fn">substr</span>(<span class="php-var">$email_propre</span>, <span class="php-var">$pos_at</span> + <span class="php-num">1</span>);
-
-<span class="php-kw">echo</span> <span class="php-str">"Email nettoyé : {$email_propre}\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Longueur      : {$longueur} caractères\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Position du @ : {$pos_at}\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Nom           : {$nom}\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Domaine       : {$domaine}\n"</span>;</pre>
-          </div>
-        </div>
-        <div class="notions">
-          <span class="notion-tag">trim()</span>
-          <span class="notion-tag">strtolower()</span>
-          <span class="notion-tag">strlen()</span>
-          <span class="notion-tag">strpos()</span>
-          <span class="notion-tag">substr()</span>
-          <span class="notion-tag">interpolation "{}"</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- EXO I3 -->
-    <div class="exo">
-      <div class="exo-header" onclick="toggleSolution('i3')">
-        <div class="exo-title">
-          <span class="exo-num">EXO-06</span>
-          <span class="exo-name">Tableau associatif produit</span>
-          <span class="exo-theme">array associatif / accès par clé</span>
-        </div>
-        <button class="toggle-btn" id="btn-i3">Voir la solution</button>
-      </div>
-      <div class="exo-body">
-        <p class="consigne">
-          Crée un fichier <strong>exo06.php</strong>. Déclare un tableau associatif <code>$produit</code>
-          avec les clés <code>nom</code>, <code>prix</code>, <code>stock</code> et <code>disponible</code> (bool).
-          Accède à chaque clé et affiche une fiche produit.
-          Calcule aussi le prix TTC et affiche si le produit est disponible ou non.
-        </p>
-        <div class="objectifs">
-          <h4>Objectifs</h4>
-          <ul>
-            <li>Créer un tableau associatif avec des types mixtes</li>
-            <li>Accéder à une clé <code>$p['nom']</code></li>
-            <li>Afficher un booléen lisiblement</li>
-            <li>Combiner calcul et affichage</li>
-          </ul>
-        </div>
-    
-        <div class="solution-wrapper" id="sol-i3">
-          <div class="solution-block">
-            <div class="solution-header">Solution</div>
-            <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$produit</span> = [
-    <span class="php-str">'nom'</span>        => <span class="php-str">'Clavier mécanique'</span>,
-    <span class="php-str">'prix'</span>       => <span class="php-num">89.90</span>,
-    <span class="php-str">'stock'</span>      => <span class="php-num">12</span>,
-    <span class="php-str">'disponible'</span> => <span class="php-kw">true</span>,
-];
-
-<span class="php-var">$prix_ttc</span> = <span class="php-var">$produit</span>[<span class="php-str">'prix'</span>] * <span class="php-num">1.20</span>;
-<span class="php-var">$dispo</span>    = <span class="php-var">$produit</span>[<span class="php-str">'disponible'</span>] ? <span class="php-str">'Oui'</span> : <span class="php-str">'Non'</span>;
-
-<span class="php-kw">echo</span> <span class="php-str">"Produit     : {$produit['nom']}\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Prix TTC    : "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$prix_ttc</span>, <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Stock       : {$produit['stock']} unités\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Disponible  : {$dispo}\n"</span>;</pre>
-          </div>
-        </div>
-        <div class="notions">
-          <span class="notion-tag">array associatif</span>
-          <span class="notion-tag">$t['clé']</span>
-          <span class="notion-tag">bool</span>
-          <span class="notion-tag">opérateur ternaire ?:</span>
-          <span class="notion-tag">number_format()</span>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /intermédiaire -->
-
-  <!-- ===== DIFFICILE ===== -->
-  <div class="section" id="section-difficile">
-
-    <div class="niveau-header difficile">
-      <span class="niveau-label">Difficile</span>
-      <div class="niveau-desc">
-        <strong>Objectif :</strong> Combiner variables, tableaux, fonctions et logique pour résoudre des problèmes concrets plus proches du vrai code.
-      </div>
-    </div>
-
-    <!-- EXO H1 -->
-    <div class="exo">
-      <div class="exo-header" onclick="toggleSolution('h1')">
-        <div class="exo-title">
-          <span class="exo-num">EXO-07</span>
-          <span class="exo-name">Fiche produit complète</span>
-          <span class="exo-theme">array / string / calcul / slug</span>
-        </div>
-        <button class="toggle-btn" id="btn-h1">Voir la solution</button>
-      </div>
-      <div class="exo-body">
-        <p class="consigne">
-          Crée un fichier <strong>exo07.php</strong>. Déclare un tableau associatif <code>$produit</code> avec les clés
-          <code>nom</code>, <code>description</code>, <code>prix_ht</code>, <code>tva</code> (en %), <code>stock</code>, <code>actif</code> (bool).
-          Calcule le prix TTC, génère un <strong>slug URL</strong> à partir du nom
-          (minuscules + espaces remplacés par <code>-</code>) et affiche une fiche complète.
-        </p>
-        <div class="objectifs">
-          <h4>Objectifs</h4>
-          <ul>
-            <li>Tableau associatif multi-types</li>
-            <li>Calcul TVA et prix TTC depuis un prix HT</li>
-            <li>Générer un slug avec <code>strtolower()</code> + <code>str_replace()</code></li>
-            <li>Afficher un booléen via opérateur ternaire</li>
-          </ul>
-        </div>
-
-        <div class="solution-wrapper" id="sol-h1">
-          <div class="solution-block">
-            <div class="solution-header">Solution</div>
-            <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$produit</span> = [
-    <span class="php-str">'nom'</span>         => <span class="php-str">'Clavier Mécanique Pro'</span>,
-    <span class="php-str">'description'</span> => <span class="php-str">'Switches Cherry MX, rétroéclairage RGB'</span>,
-    <span class="php-str">'prix_ht'</span>     => <span class="php-num">89.90</span>,
-    <span class="php-str">'tva'</span>         => <span class="php-num">20</span>,
-    <span class="php-str">'stock'</span>       => <span class="php-num">7</span>,
-    <span class="php-str">'actif'</span>       => <span class="php-kw">true</span>,
-];
-
-<span class="php-var">$montant_tva</span> = <span class="php-var">$produit</span>[<span class="php-str">'prix_ht'</span>] * (<span class="php-var">$produit</span>[<span class="php-str">'tva'</span>] / <span class="php-num">100</span>);
-<span class="php-var">$prix_ttc</span>    = <span class="php-var">$produit</span>[<span class="php-str">'prix_ht'</span>] + <span class="php-var">$montant_tva</span>;
-<span class="php-var">$slug</span>        = <span class="php-fn">str_replace</span>(<span class="php-str">' '</span>, <span class="php-str">'-'</span>, <span class="php-fn">strtolower</span>(<span class="php-var">$produit</span>[<span class="php-str">'nom'</span>]));
-<span class="php-var">$statut</span>      = <span class="php-var">$produit</span>[<span class="php-str">'actif'</span>] ? <span class="php-str">'Actif'</span> : <span class="php-str">'Inactif'</span>;
-
-<span class="php-kw">echo</span> <span class="php-str">"=== FICHE PRODUIT ===\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Nom         : {$produit['nom']}\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Slug URL    : {$slug}\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Description : {$produit['description']}\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Prix HT     : "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$produit</span>[<span class="php-str">'prix_ht'</span>], <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"TVA ({$produit['tva']}%)   : "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$montant_tva</span>, <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Prix TTC    : "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$prix_ttc</span>, <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Stock       : {$produit['stock']} unités\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Statut      : {$statut}\n"</span>;</pre>
-          </div>
-        </div>
-        <div class="notions">
-          <span class="notion-tag">array associatif</span>
-          <span class="notion-tag">calcul TVA</span>
-          <span class="notion-tag">str_replace()</span>
-          <span class="notion-tag">strtolower()</span>
-          <span class="notion-tag">opérateur ternaire ?:</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- EXO H2 -->
-    <div class="exo">
-      <div class="exo-header" onclick="toggleSolution('h2')">
-        <div class="exo-title">
-          <span class="exo-num">EXO-08</span>
-          <span class="exo-name">Résumé de commande</span>
-          <span class="exo-theme">array_map / array_sum</span>
-        </div>
-        <button class="toggle-btn" id="btn-h2">Voir la solution</button>
-      </div>
-      <div class="exo-body">
-        <p class="consigne">
-          Crée un fichier <strong>exo08.php</strong>. Tu as un tableau de 4 lignes de commande.
-          Utilise <code>array_map()</code> pour calculer le sous-total de chaque ligne,
-          puis <code>array_sum()</code> pour obtenir le total HT.
-          Calcule la TVA et le TTC, et affiche un récapitulatif.
-        </p>
-        <div class="objectifs">
-          <h4>Objectifs</h4>
-          <ul>
-            <li>Utiliser <code>array_map()</code> avec une arrow function <code>fn()</code></li>
-            <li>Utiliser <code>array_sum()</code></li>
-            <li>Accéder aux clés d'un tableau dans une fonction</li>
-          </ul>
-        </div>
-
-        <div class="solution-wrapper" id="sol-h2">
-          <div class="solution-block">
-            <div class="solution-header">Solution</div>
-            <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$commande</span> = [
-    [<span class="php-str">'produit'</span> => <span class="php-str">'Clavier'</span>, <span class="php-str">'prix'</span> => <span class="php-num">49.90</span>,  <span class="php-str">'qte'</span> => <span class="php-num">2</span>],
-    [<span class="php-str">'produit'</span> => <span class="php-str">'Souris'</span>,  <span class="php-str">'prix'</span> => <span class="php-num">29.90</span>,  <span class="php-str">'qte'</span> => <span class="php-num">1</span>],
-    [<span class="php-str">'produit'</span> => <span class="php-str">'Écran'</span>,   <span class="php-str">'prix'</span> => <span class="php-num">299.00</span>, <span class="php-str">'qte'</span> => <span class="php-num">1</span>],
-    [<span class="php-str">'produit'</span> => <span class="php-str">'Casque'</span>,  <span class="php-str">'prix'</span> => <span class="php-num">89.90</span>,  <span class="php-str">'qte'</span> => <span class="php-num">3</span>],
-];
-
-<span class="php-var">$sous_totaux</span> = <span class="php-fn">array_map</span>(<span class="php-kw">fn</span>(<span class="php-var">$l</span>) => <span class="php-var">$l</span>[<span class="php-str">'prix'</span>] * <span class="php-var">$l</span>[<span class="php-str">'qte'</span>], <span class="php-var">$commande</span>);
-<span class="php-var">$total_ht</span>    = <span class="php-fn">array_sum</span>(<span class="php-var">$sous_totaux</span>);
-<span class="php-var">$tva</span>         = <span class="php-var">$total_ht</span> * <span class="php-num">0.20</span>;
-<span class="php-var">$total_ttc</span>   = <span class="php-var">$total_ht</span> + <span class="php-var">$tva</span>;
-
-<span class="php-kw">foreach</span> (<span class="php-var">$commande</span> <span class="php-kw">as</span> <span class="php-var">$i</span> => <span class="php-var">$l</span>) {
-    <span class="php-kw">echo</span> <span class="php-fn">str_pad</span>(<span class="php-var">$l</span>[<span class="php-str">'produit'</span>], <span class="php-num">8</span>) . <span class="php-str">" x"</span> . <span class="php-var">$l</span>[<span class="php-str">'qte'</span>]
-       . <span class="php-str">"  = "</span> . <span class="php-fn">str_pad</span>(<span class="php-fn">number_format</span>(<span class="php-var">$sous_totaux</span>[<span class="php-var">$i</span>], <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>), <span class="php-num">9</span>, <span class="php-str">' '</span>, <span class="php-num">STR_PAD_LEFT</span>)
-       . <span class="php-str">" €\n"</span>;
-}
-<span class="php-kw">echo</span> <span class="php-str">"\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Total HT     = "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$total_ht</span>,  <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"TVA 20%      = "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$tva</span>,       <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Total TTC    = "</span> . <span class="php-fn">number_format</span>(<span class="php-var">$total_ttc</span>, <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">" €\n"</span>;</pre>
-          </div>
-        </div>
-        <div class="notions">
-          <span class="notion-tag">array_map()</span>
-          <span class="notion-tag">array_sum()</span>
-          <span class="notion-tag">fn() arrow function</span>
-          <span class="notion-tag">foreach (bonus)</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- EXO H3 -->
-    <div class="exo">
-      <div class="exo-header" onclick="toggleSolution('h3')">
-        <div class="exo-title">
-          <span class="exo-num">EXO-09</span>
-          <span class="exo-name">Générateur de mot de passe</span>
-          <span class="exo-theme">str_split / shuffle / implode</span>
-          <span class="bonus-tag">Bonus</span>
-        </div>
-        <button class="toggle-btn" id="btn-h3">Voir la solution</button>
-      </div>
-      <div class="exo-body">
-        <p class="consigne">
-          Exercice bonus. Génère un mot de passe aléatoire de <strong>12 caractères</strong>
-          contenant minuscules, majuscules, chiffres et caractères spéciaux.
-          La difficulté ici est de comprendre comment transformer une chaîne en tableau de caractères,
-          mélanger ce tableau, en prendre une partie et le reconstruire en chaîne.
-        </p>
-        <div class="objectifs">
-          <h4>Objectifs</h4>
-          <ul>
-            <li>Transformer une chaîne en tableau avec <code>str_split()</code></li>
-            <li>Fusionner des tableaux avec <code>array_merge()</code></li>
-            <li>Mélanger un tableau avec <code>shuffle()</code></li>
-            <li>Extraire une portion avec <code>array_slice()</code></li>
-            <li>Reconstruire une chaîne avec <code>implode()</code></li>
-          </ul>
-        </div>
      
-        <div class="solution-wrapper" id="sol-h3">
-          <div class="solution-block">
-            <div class="solution-header">Solution</div>
-            <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$minuscules</span> = <span class="php-fn">str_split</span>(<span class="php-str">'abcdefghijklmnopqrstuvwxyz'</span>);
-<span class="php-var">$majuscules</span> = <span class="php-fn">str_split</span>(<span class="php-str">'ABCDEFGHIJKLMNOPQRSTUVWXYZ'</span>);
-<span class="php-var">$chiffres</span>   = <span class="php-fn">str_split</span>(<span class="php-str">'0123456789'</span>);
-<span class="php-var">$speciaux</span>   = <span class="php-fn">str_split</span>(<span class="php-str">'!@#$%&*?'</span>);
 
-<span class="php-var">$tous</span> = <span class="php-fn">array_merge</span>(<span class="php-var">$minuscules</span>, <span class="php-var">$majuscules</span>, <span class="php-var">$chiffres</span>, <span class="php-var">$speciaux</span>);
-<span class="php-fn">shuffle</span>(<span class="php-var">$tous</span>);
-<span class="php-var">$mdp</span> = <span class="php-fn">implode</span>(<span class="php-str">''</span>, <span class="php-fn">array_slice</span>(<span class="php-var">$tous</span>, <span class="php-num">0</span>, <span class="php-num">12</span>));
+         <!-- Section 1 -->
+        <div class="section">
+            <div class="scan"></div>
+            <h3>Exo Introduction</h3>
+            <a href="./exo-intro.html">
+                <span class="link-icon">P1</span>
+                Exercices PHP — Introduction
+            </a>
+        </div>
 
-<span class="php-kw">echo</span> <span class="php-str">"Mot de passe : {$mdp}\n"</span>;
-<span class="php-kw">echo</span> <span class="php-str">"Longueur     : "</span> . <span class="php-fn">strlen</span>(<span class="php-var">$mdp</span>) . <span class="php-str">" caractères\n"</span>;</pre>
-          </div>
+          <!-- Section 1 -->
+        <div class="section">
+            <div class="scan"></div>
+            <h3>Exo Tableaux et structures</h3>
+            <a href="./exo-intro.html">
+                <span class="link-icon">P2</span>
+                Exercices PHP — Tableaux et structures
+            </a>
         </div>
-        <div class="notions">
-          <span class="notion-tag">str_split()</span>
-          <span class="notion-tag">array_merge()</span>
-          <span class="notion-tag">shuffle()</span>
-          <span class="notion-tag">array_slice()</span>
-          <span class="notion-tag">implode()</span>
+
+
+
+
+       
+
+
+        <!-- Bouton retour -->
+        <div class="btn-wrapper">
+            <a href="../PHP/index.html" class="btn"><span>← Retour supports PHP</span></a>
         </div>
-      </div>
+
+        <!-- Footer -->
+        <footer>
+            
+            <div class="php-badge">PHP</div>
+            <div class="footer-title">Formation Real Conseil</div>
+            <p>DWWM 2025–2026</p>
+            <div class="footer-divider"></div>
+            <p>&copy; DARRAS Thomas</p>
+            <p><a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a></p>
+            <p style="margin-top:0.75rem; font-size:0.62rem; color:var(--muted);">
+                Les supports sont mis a jour regulierement via GitHub
+            </p>
+            <p style="margin-top:0.6rem;">
+                <a href="https://github.com/nicepowpowloko/Devlille" target="_blank">Voir le repo GitHub</a>
+            </p>
+        </footer>
+
     </div>
 
-  </div><!-- /difficile -->
+    <script>
+        // Re-trigger scan animation on each hover
+        document.querySelectorAll('.section').forEach(section => {
+            section.addEventListener('mouseenter', () => {
+                const scan = section.querySelector('.scan');
+                scan.style.animation = 'none';
+                scan.offsetHeight; // force reflow
+                scan.style.animation = 'scanLine 1.2s linear';
+            });
+        });
+    </script>
 
-</main>
+    <script src="../cursor.js"></script>
 
-
-
-<script>
-function showSection(niveau, btn) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => {
-    t.classList.remove('active-debutant', 'active-intermediaire', 'active-difficile');
-  });
-  document.getElementById('section-' + niveau).classList.add('active');
-  btn.classList.add('active-' + niveau);
-}
-
-function toggleSolution(id) {
-  const sol = document.getElementById('sol-' + id);
-  const btn = document.getElementById('btn-' + id);
-  const open = sol.classList.toggle('open');
-  btn.textContent = open ? 'Cacher la solution' : 'Voir la solution';
-}
-</script>
 </body>
 </html>
