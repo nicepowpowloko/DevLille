@@ -169,12 +169,12 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:rgba(124,58,237,.02)
   </div>
   <p class="prose">PHP est un langage <strong>côté serveur</strong>. Quand un visiteur demande une page <code>.php</code>, le serveur exécute le code PHP, génère du HTML, et envoie uniquement ce HTML au navigateur. Le navigateur ne voit jamais une ligne de PHP.</p>
   <div class="schema" style="font-size:.8rem;line-height:1.9;">
-<span style="color:var(--blue);font-weight:700">1. Navigateur</span>  <span style="color:var(--dim)">→ demande</span>  <span style="color:var(--accent)">GET /index.php</span>
+<span style="color:var(--blue);font-weight:700">1. Navigateur</span><span style="color:var(--dim)">→ demande</span><span style="color:var(--accent)">GET /index.php</span>
          <span style="color:var(--dim)">↓</span>
-<span style="color:var(--orange);font-weight:700">2. Serveur</span>     <span style="color:var(--dim)">→ lit le fichier, exécute PHP</span>
+<span style="color:var(--orange);font-weight:700">2. Serveur</span><span style="color:var(--dim)">→ lit le fichier, exécute PHP</span>
          <span style="color:var(--dim)">↓</span>
-<span style="color:var(--orange);font-weight:700">3. PHP</span>         <span style="color:var(--dim)">→ remplace le code par du HTML</span>
-<span style="color:var(--dim)">               &lt;?php echo "Bonjour"; ?&gt;  devient  <span style="color:var(--green)">Bonjour</span></span>
+<span style="color:var(--orange);font-weight:700">3. PHP</span><span style="color:var(--dim)">→ remplace le code par du HTML</span>
+<span style="color:var(--dim)"> &lt;?php echo "Bonjour"; ?&gt;  devient  <span style="color:var(--green)">Bonjour</span></span>
          <span style="color:var(--dim)">↓</span>
 <span style="color:var(--blue);font-weight:700">4. Navigateur</span>  <span style="color:var(--dim)">← reçoit du HTML pur, pas de PHP</span>
   </div>
@@ -291,7 +291,7 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:rgba(124,58,237,.02)
 
 <span class="cmt">// Guillemets doubles : les variables sont interprétées</span>
 <span class="vr">$prenom</span> = <span class="str">"Alice"</span>;
-<span class="kw">echo</span> <span class="str">"Bonjour <span class="vr">$prenom</span>"</span>;    <span class="cmt">// affiche : Bonjour Alice</span>
+<span class="kw">echo</span> <span class="str">"Bonjour <span class="vr">$prenom</span>"</span>;<span class="cmt">// affiche : Bonjour Alice</span>
 
 <span class="cmt">// Guillemets simples : texte brut, variables NON interprétées</span>
 <span class="kw">echo</span> <span class="str">'Bonjour $prenom'</span>;   <span class="cmt">// affiche : Bonjour $prenom</span>

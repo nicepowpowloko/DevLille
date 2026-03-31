@@ -1,0 +1,447 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PHP 23 &mdash; PHP 8 moderne</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--accent:#c2410c;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--teal:#0f766e;--purple:#7c3aed;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(194,65,12,.07);}.nav-link.active{background:rgba(194,65,12,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.nav-ver{font-family:var(--mono);font-size:.58rem;padding:1px 5px;border-radius:3px;margin-left:auto;flex-shrink:0;}
+.nav-ver.v8{background:rgba(194,65,12,.1);color:var(--accent);}
+.nav-ver.v81{background:rgba(22,163,74,.1);color:var(--green);}
+.nav-ver.v82{background:rgba(37,99,235,.1);color:var(--blue);}
+.nav-ver.v83{background:rgba(124,58,237,.1);color:var(--purple);}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(194,65,12,.08);border:1px solid rgba(194,65,12,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.o{background:rgba(194,65,12,.07);border-color:rgba(194,65,12,.25);color:var(--accent);}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--teal);}
+.ver-badge{display:inline-flex;font-family:var(--mono);font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:10px;margin-right:6px;}
+.ver-badge.v8{background:rgba(194,65,12,.1);color:var(--accent);border:1px solid rgba(194,65,12,.3);}
+.ver-badge.v81{background:rgba(22,163,74,.1);color:var(--green);border:1px solid rgba(22,163,74,.3);}
+.ver-badge.v82{background:rgba(37,99,235,.1);color:var(--blue);border:1px solid rgba(37,99,235,.3);}
+.ver-badge.v83{background:rgba(124,58,237,.1);color:var(--purple);border:1px solid rgba(124,58,237,.3);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(194,65,12,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}.prose strong{color:var(--text);}.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(194,65,12,.07);border:1px solid rgba(194,65,12,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(194,65,12,.15);border:1px solid rgba(194,65,12,.3);color:#fb923c;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(194,65,12,.2);color:#fb923c;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}.vis{color:#cba6f7;font-weight:600;}.ns{color:#94e2d5;}.ptag{color:#f38ba8;font-weight:700;}.new8{color:#fb923c;font-weight:600;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(194,65,12,.3);}.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}.fb.show{display:block;}.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style></head><body><div class="layout">
+<aside class="sidebar"><div class="sidebar-logo"><span>[ ] PHP 23 &mdash; PHP 8</span><p>Fonctionnalites modernes</p></div><div class="nav-section"><div class="nav-label">Ce support</div><a href="#plan" class="nav-link"><span class="nav-num">00</span>Vue d'ensemble</a><a href="#e1" class="nav-link"><span class="nav-num">01</span>match expression<span class="nav-ver v8">8</span></a><a href="#e2" class="nav-link"><span class="nav-num">02</span>Named arguments<span class="nav-ver v8">8</span></a><a href="#e3" class="nav-link"><span class="nav-num">03</span>Nullsafe operator<span class="nav-ver v8">8</span></a><a href="#e4" class="nav-link"><span class="nav-num">04</span>Union types + mixed<span class="nav-ver v8">8</span></a><a href="#e5" class="nav-link"><span class="nav-num">05</span>Promotion de proprietes<span class="nav-ver v8">8</span></a><a href="#e6" class="nav-link"><span class="nav-num">06</span>Fibers<span class="nav-ver v8">8</span></a><a href="#e7" class="nav-link"><span class="nav-num">07</span>Enums<span class="nav-ver v81">81</span></a><a href="#e8" class="nav-link"><span class="nav-num">08</span>readonly<span class="nav-ver v81">81</span></a><a href="#e9" class="nav-link"><span class="nav-num">09</span>Intersection types<span class="nav-ver v81">81</span></a><a href="#ea" class="nav-link"><span class="nav-num">10</span>readonly class<span class="nav-ver v82">82</span></a><a href="#eb" class="nav-link"><span class="nav-num">11</span>Constantes de classe typees<span class="nav-ver v83">83</span></a><a href="#quiz" class="nav-link"><span class="nav-num">12</span>Quiz</a></div></aside><main class="content">
+<div class="page-header"><div class="serie-badge">Support 23</div><h1>PHP 8<br><span class="hl">moderne</span></h1><p>PHP 8 a apporte les changements les plus significatifs en une decennie. Match, enums, readonly, fibers, types puissants : ce support couvre tout ce qui change vraiment la facon d'ecrire du PHP.</p><div class="objectifs"><span class="obj o">match</span><span class="obj g">enum</span><span class="obj b">readonly</span><span class="obj p">Fibers</span><span class="obj t">named args</span></div></div>
+<section class="etape" id="plan"><div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Vue d'ensemble</div><h2>PHP 8.0 &rarr; 8.3 &mdash; les nouveautes cles</h2></div></div><p class="prose">Chaque version de PHP 8.x a apporte des fonctionnalites importantes. Voici les plus utiles au quotidien.</p><div class="table-wrap"><table><thead><tr><th>Version</th><th>Fonctionnalite</th><th>Utilite pratique</th></tr></thead><tbody><tr><td style="color:var(--accent)">8.0</td><td style="font-weight:600;color:var(--text)">match expression</td><td>Remplace switch, retourne une valeur, strict, exhaustif</td></tr><tr><td style="color:var(--accent)">8.0</td><td style="font-weight:600;color:var(--text)">Named arguments</td><td>Nommer les parametres lors de l'appel, ordre libre</td></tr><tr><td style="color:var(--accent)">8.0</td><td style="font-weight:600;color:var(--text)">Nullsafe operator ?.</td><td>Chainer les appels sur des valeurs potentiellement null</td></tr><tr><td style="color:var(--accent)">8.0</td><td style="font-weight:600;color:var(--text)">Union types</td><td>string|int, float|null en signature de methode</td></tr><tr><td style="color:var(--accent)">8.0</td><td style="font-weight:600;color:var(--text)">Promotion de proprietes</td><td>public function __construct(private string $nom)</td></tr><tr><td style="color:var(--accent)">8.0</td><td style="font-weight:600;color:var(--text)">Fibers</td><td>Coroutines pour la programmation asynchrone</td></tr><tr><td style="color:var(--accent)">8.0</td><td style="font-weight:600;color:var(--text)">mixed type</td><td>Type explicite pour "peut etre tout"</td></tr><tr><td style="color:var(--green)">8.1</td><td style="font-weight:600;color:var(--text)">Enums</td><td>Enumeration de valeurs finies et typees</td></tr><tr><td style="color:var(--green)">8.1</td><td style="font-weight:600;color:var(--text)">readonly properties</td><td>Propriete assignable une seule fois</td></tr><tr><td style="color:var(--green)">8.1</td><td style="font-weight:600;color:var(--text)">Intersection types</td><td>A&B : doit implementer les deux</td></tr><tr><td style="color:var(--green)">8.1</td><td style="font-weight:600;color:var(--text)">never return type</td><td>Fonction qui ne retourne jamais (exception ou exit)</td></tr><tr><td style="color:var(--blue)">8.2</td><td style="font-weight:600;color:var(--text)">readonly classes</td><td>Toutes les proprietes readonly en un mot</td></tr><tr><td style="color:var(--blue)">8.2</td><td style="font-weight:600;color:var(--text)">Disjunctive Normal Form types</td><td>(A&B)|C dans les signatures</td></tr><tr><td style="color:var(--purple)">8.3</td><td style="font-weight:600;color:var(--text)">Constantes de classe typees</td><td>const string VERSION = "1.0"</td></tr><tr><td style="color:var(--purple)">8.3</td><td style="font-weight:600;color:var(--text)">json_validate()</td><td>Valider JSON sans decoder</td></tr><tr><td style="color:var(--purple)">8.3</td><td style="font-weight:600;color:var(--text)">#[Override]</td><td>Attribut pour signaler qu'une methode surcharge le parent</td></tr></tbody></table></div></section><div class="divider"></div>
+<section class="etape" id="e1"><div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">PHP 8.0</div><h2>match &mdash; remplacant de switch</h2></div></div><span class="ver-badge v8">PHP 8.0</span><p class="prose"><code>match</code> est la version moderne de <code>switch</code>. Il retourne une valeur, utilise la comparaison stricte (<code>===</code>), et lance une <code>UnhandledMatchError</code> si aucun cas ne correspond.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">match &mdash; remplacant moderne de switch</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// switch &mdash; problemes : loose comparison, break oublie, pas de valeur</span>
+<span class="kw">switch</span> (<span class="vr">$status</span>) {
+    <span class="kw">case</span> <span class="str">'active'</span>:
+        <span class="vr">$label</span> = <span class="str">'Actif'</span>; <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="str">'pending'</span>:
+        <span class="vr">$label</span> = <span class="str">'En attente'</span>; <span class="kw">break</span>;
+    <span class="kw">default</span>:
+        <span class="vr">$label</span> = <span class="str">'Inconnu'</span>;
+}
+
+<span class="cmt">// match &mdash; retourne une valeur, comparaison stricte, exhaustif</span>
+<span class="vr">$label</span> = <span class="new8">match</span>(<span class="vr">$status</span>) {
+    <span class="str">'active'</span>  => <span class="str">'Actif'</span>,
+    <span class="str">'pending'</span> => <span class="str">'En attente'</span>,
+    <span class="kw">default</span>  => <span class="str">'Inconnu'</span>,
+};
+
+<span class="cmt">// Plusieurs conditions pour un meme bras</span>
+<span class="vr">$type</span> = <span class="new8">match</span>(<span class="kw">true</span>) {
+    <span class="vr">$age</span> < <span class="num">18</span>              => <span class="str">'mineur'</span>,
+    <span class="vr">$age</span> >= <span class="num">18</span> && <span class="vr">$age</span> < <span class="num">65</span> => <span class="str">'adulte'</span>,
+    <span class="vr">$age</span> >= <span class="num">65</span>             => <span class="str">'senior'</span>,
+};
+
+<span class="cmt">// Plusieurs valeurs pour un meme bras (virgule)</span>
+<span class="vr">$estFerie</span> = <span class="new8">match</span>(<span class="vr">$jour</span>) {
+    <span class="str">'samedi'</span>, <span class="str">'dimanche'</span> => <span class="kw">true</span>,
+    <span class="kw">default</span>              => <span class="kw">false</span>,
+};
+
+<span class="cmt">// Sans default : UnhandledMatchError si aucun cas ne correspond</span>
+<span class="cmt">// switch aurait silencieusement retourne null</span>
+<span class="vr">$tva</span> = <span class="new8">match</span>(<span class="vr">$categorie</span>) {
+    <span class="str">'alimentaire'</span> => <span class="num">0.055</span>,
+    <span class="str">'livre'</span>        => <span class="num">0.055</span>,
+    <span class="str">'standard'</span>     => <span class="num">0.20</span>,
+};  <span class="cmt">// UnhandledMatchError si $categorie est invalide</span></code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>match est exhaustif par defaut.</strong> Sans <code>default</code>, si aucun cas ne correspond, PHP lance une <code>UnhandledMatchError</code>. Avec <code>switch</code>, aucune erreur n'est levee : le bug reste silencieux. <code>match</code> force a gerer tous les cas.</div></div></section><div class="divider"></div>
+<section class="etape" id="e2"><div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">PHP 8.0</div><h2>Named arguments</h2></div></div><span class="ver-badge v8">PHP 8.0</span><p class="prose">Les arguments nommes permettent de passer les parametres par leur nom plutot que par position. L'ordre n'a plus d'importance et les valeurs par defaut peuvent etre sautees.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Named arguments &mdash; appels lisibles</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Avant : ordre obligatoire, impossible de sauter des params</span>
+<span class="fn">array_slice</span>(<span class="vr">$arr</span>, <span class="num">0</span>, <span class="num">3</span>, <span class="kw">true</span>);  <span class="cmt">// que fait "true" ici ?</span>
+<span class="fn">htmlspecialchars</span>(<span class="vr">$str</span>, <span class="fn">ENT_QUOTES</span>, <span class="str">'UTF-8'</span>, <span class="kw">false</span>);
+
+<span class="cmt">// Avec named arguments : lisible, ordre libre</span>
+<span class="fn">array_slice</span>(array: <span class="vr">$arr</span>, offset: <span class="num">0</span>, length: <span class="num">3</span>, preserve_keys: <span class="kw">true</span>);
+
+<span class="cmt">// Sauter les params avec valeur par defaut</span>
+<span class="fn">htmlspecialchars</span>(string: <span class="vr">$str</span>, double_encode: <span class="kw">false</span>);
+<span class="cmt">// ENT_COMPAT et UTF-8 ont des valeurs par defaut : on peut les sauter</span>
+
+<span class="cmt">// Dans ses propres fonctions</span>
+<span class="kw">function</span> <span class="fn">creerProduit</span>(
+    string <span class="vr">$nom</span>,
+    float  <span class="vr">$prix</span>,
+    int    <span class="vr">$stock</span>   = <span class="num">0</span>,
+    bool   <span class="vr">$actif</span>   = <span class="kw">true</span>,
+    ?int   <span class="vr">$categId</span> = <span class="kw">null</span>,
+): array { <span class="kw">return</span> <span class="fn">compact</span>(<span class="str">'nom'</span>, <span class="str">'prix'</span>, <span class="str">'stock'</span>, <span class="str">'actif'</span>, <span class="str">'categId'</span>); }
+
+<span class="cmt">// Appel clair, ordre libre, params optionnels sautes</span>
+<span class="fn">creerProduit</span>(nom: <span class="str">'T-shirt'</span>, prix: <span class="num">19.99</span>, categId: <span class="num">3</span>);
+<span class="cmt">// stock et actif gardent leurs valeurs par defaut</span></code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Tres utile avec les fonctions PHP natives.</strong> Des fonctions comme <code>setcookie()</code>, <code>array_slice()</code>, <code>str_contains()</code> ont de nombreux parametres. Les named arguments permettent de ne passer que ceux qui nous interessent, rendant l'appel auto-documenté.</div></div></section><div class="divider"></div>
+<section class="etape" id="e3"><div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">PHP 8.0</div><h2>Nullsafe operator ?-></h2></div></div><span class="ver-badge v8">PHP 8.0</span><p class="prose">L'operateur <code>?-></code> court-circuite la chaine d'appels si une valeur est <code>null</code>. Plus besoin d'imbriquer des <code>if ($x !== null)</code>.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Nullsafe operator ?-> &mdash; chaines sans null-check</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Avant : code defensif verbeux</span>
+<span class="vr">$ville</span> = <span class="kw">null</span>;
+<span class="kw">if</span> (<span class="vr">$user</span> !== <span class="kw">null</span>) {
+    <span class="kw">if</span> (<span class="vr">$user</span>-><span class="fn">getAdresse</span>() !== <span class="kw">null</span>) {
+        <span class="vr">$ville</span> = <span class="vr">$user</span>-><span class="fn">getAdresse</span>()-><span class="fn">getVille</span>();
+    }
+}
+
+<span class="cmt">// Avec ?-> : court-circuite sur null, retourne null</span>
+<span class="vr">$ville</span> = <span class="vr">$user</span><span class="new8">?-></span><span class="fn">getAdresse</span>()<span class="new8">?-></span><span class="fn">getVille</span>();
+
+<span class="cmt">// Chaine complete : si un maillon est null, tout retourne null</span>
+<span class="vr">$pays</span> = <span class="vr">$commande</span><span class="new8">?-></span><span class="fn">getClient</span>()<span class="new8">?-></span><span class="fn">getAdresse</span>()<span class="new8">?-></span><span class="fn">getPays</span>();
+
+<span class="cmt">// Combiner avec operateur null coalescing ??</span>
+<span class="vr">$pays</span> = <span class="vr">$commande</span><span class="new8">?-></span><span class="fn">getClient</span>()<span class="new8">?-></span><span class="fn">getAdresse</span>()<span class="new8">?-></span><span class="fn">getPays</span>() ?? <span class="str">'France'</span>;
+
+<span class="cmt">// Avec l'ORM dans un controller</span>
+<span class="vr">$nomCategorie</span> = <span class="vr">$produit</span><span class="new8">?-></span><span class="fn">getCategorie</span>()<span class="new8">?-></span><span class="fn">getNom</span>() ?? <span class="str">'Sans categorie'</span>;</code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>?-> ne modifie rien si la valeur est non-null.</strong> Si <code>$user</code> existe, <code>$user?->getAdresse()</code> se comporte exactement comme <code>$user->getAdresse()</code>. Le <code>?</code> n'a un effet que si la valeur de gauche est <code>null</code>, auquel cas toute la chaine retourne <code>null</code>.</div></div></section><div class="divider"></div>
+<section class="etape" id="e4"><div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">PHP 8.0</div><h2>Union types et types avances</h2></div></div><span class="ver-badge v8">PHP 8.0</span><p class="prose">Les union types permettent de declarer qu'un parametre ou un retour peut avoir plusieurs types. Plus besoin de commentaires PHPDoc pour ca.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Union types, mixed, never, intersection types</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Union types : string|int, float|null, etc.</span>
+<span class="kw">function</span> <span class="fn">traiterIdentifiant</span>(string|int <span class="vr">$id</span>): string {
+    <span class="kw">return</span> <span class="str">'ID: '</span> . <span class="vr">$id</span>;
+}
+
+<span class="cmt">// Equivalent de ?string = string|null</span>
+<span class="kw">function</span> <span class="fn">trouver</span>(int <span class="vr">$id</span>): string|<span class="kw">null</span> { ... }
+<span class="kw">function</span> <span class="fn">trouver</span>(int <span class="vr">$id</span>): ?string { ... }  <span class="cmt">// identique</span>
+
+<span class="cmt">// mixed &mdash; peut etre n'importe quel type (explicite)</span>
+<span class="kw">function</span> <span class="fn">jsonDecode</span>(string <span class="vr">$json</span>): <span class="new8">mixed</span> {
+    <span class="kw">return</span> <span class="fn">json_decode</span>(<span class="vr">$json</span>, <span class="kw">true</span>);
+}
+
+<span class="cmt">// never &mdash; la fonction ne retourne jamais (PHP 8.1)</span>
+<span class="kw">function</span> <span class="fn">abort</span>(int <span class="vr">$code</span>): <span class="new8">never</span> {
+    <span class="fn">http_response_code</span>(<span class="vr">$code</span>);
+    <span class="kw">exit</span>;  <span class="cmt">// ou throw, ou une boucle infinie</span>
+}
+
+<span class="cmt">// Intersection types &mdash; doit implementer les deux (PHP 8.1)</span>
+<span class="kw">function</span> <span class="fn">sauvegarder</span>(<span class="cls">Serializable</span>&<span class="cls">Countable</span> <span class="vr">$obj</span>): void { ... }
+
+<span class="cmt">// DNF types &mdash; combinaison (PHP 8.2)</span>
+<span class="kw">function</span> <span class="fn">traiter</span>((<span class="cls">Serializable</span>&<span class="cls">Countable</span>)|<span class="kw">null</span> <span class="vr">$obj</span>): void { ... }</code></pre></div></section><div class="divider"></div>
+<section class="etape" id="e5"><div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">PHP 8.0</div><h2>Promotion de proprietes</h2></div></div><span class="ver-badge v8">PHP 8.0</span><p class="prose">La promotion de proprietes dans le constructeur elimine le code repetitif de declaration + assignation. C'est l'une des ameliorations les plus appreciees de PHP 8.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Promotion de proprietes dans le constructeur</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Avant PHP 8 : beaucoup de repetition</span>
+<span class="kw">class</span> <span class="cls">Produit</span> {
+    <span class="vis">private</span> string <span class="vr">$nom</span>;
+    <span class="vis">private</span> float  <span class="vr">$prix</span>;
+    <span class="vis">private</span> int    <span class="vr">$stock</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(string <span class="vr">$nom</span>, float <span class="vr">$prix</span>, int <span class="vr">$stock</span>) {
+        <span class="vr">$this</span>-><span class="vr">nom</span>   = <span class="vr">$nom</span>;
+        <span class="vr">$this</span>-><span class="vr">prix</span>  = <span class="vr">$prix</span>;
+        <span class="vr">$this</span>-><span class="vr">stock</span> = <span class="vr">$stock</span>;
+    }
+}
+
+<span class="cmt">// PHP 8 : promotion des proprietes &mdash; meme resultat, 3x moins de code</span>
+<span class="kw">class</span> <span class="cls">Produit</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="new8">private</span> string <span class="vr">$nom</span>,
+        <span class="new8">private</span> float  <span class="vr">$prix</span>,
+        <span class="new8">private</span> int    <span class="vr">$stock</span> = <span class="num">0</span>,
+    ) {}
+}
+
+<span class="cmt">// Combinaison avec readonly (PHP 8.1)</span>
+<span class="kw">class</span> <span class="cls">Point</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">public</span> <span class="new8">readonly</span> float <span class="vr">$x</span>,
+        <span class="vis">public</span> <span class="new8">readonly</span> float <span class="vr">$y</span>,
+    ) {}
+}
+
+<span class="vr">$p</span> = <span class="kw">new</span> <span class="cls">Point</span>(<span class="num">3.0</span>, <span class="num">4.0</span>);
+<span class="kw">echo</span> <span class="vr">$p</span>-><span class="vr">x</span>;  <span class="cmt">// 3.0</span>
+<span class="cmt">// $p->x = 5.0;  &larr; Fatal error : readonly</span></code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>C'est la syntaxe recommandee en PHP 8+.</strong> La promotion de proprietes n'est pas seulement plus courte : elle elimine les bugs de copy-paste entre la declaration et l'assignation. Elle est utilisee par defaut dans Symfony (make:entity) et tous les frameworks modernes.</div></div></section><div class="divider"></div>
+<section class="etape" id="e6"><div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">PHP 8.0</div><h2>Fibers &mdash; coroutines</h2></div></div><span class="ver-badge v8">PHP 8.0</span><p class="prose">Les Fibers sont des coroutines legeres : des blocs de code qui peuvent etre suspendus et repris. Elles servent de base aux frameworks asynchrones PHP (ReactPHP, Revolt).</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Fibers &mdash; coroutines PHP</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Une Fiber = un bloc de code suspendable</span>
+<span class="vr">$fiber</span> = <span class="kw">new</span> <span class="cls">Fiber</span>(<span class="kw">function</span>(): void {
+    <span class="kw">echo</span> <span class="str">'Debut de la fiber'</span> . <span class="fn">PHP_EOL</span>;
+
+    <span class="cmt">// Suspendre la fiber et retourner une valeur a l'appelant</span>
+    <span class="vr">$recu</span> = <span class="cls">Fiber</span>::<span class="fn">suspend</span>(<span class="str">'valeur depuis la fiber'</span>);
+    <span class="kw">echo</span> <span class="str">'Reprise avec : '</span> . <span class="vr">$recu</span> . <span class="fn">PHP_EOL</span>;
+
+    <span class="kw">echo</span> <span class="str">'Fin de la fiber'</span> . <span class="fn">PHP_EOL</span>;
+});
+
+<span class="cmt">// Demarrer la fiber (s'execute jusqu'au premier suspend)</span>
+<span class="vr">$suspend</span> = <span class="vr">$fiber</span>-><span class="fn">start</span>();
+<span class="kw">echo</span> <span class="str">'Fiber suspendue avec : '</span> . <span class="vr">$suspend</span> . <span class="fn">PHP_EOL</span>;
+
+<span class="cmt">// Reprendre la fiber en lui passant une valeur</span>
+<span class="vr">$fiber</span>-><span class="fn">resume</span>(<span class="str">'bonjour depuis l''exterieur'</span>);
+
+<span class="cmt">// Sortie :</span>
+<span class="cmt">// Debut de la fiber</span>
+<span class="cmt">// Fiber suspendue avec : valeur depuis la fiber</span>
+<span class="cmt">// Reprise avec : bonjour depuis l'exterieur</span>
+<span class="cmt">// Fin de la fiber</span></code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>Les Fibers ne font pas de vrai parallélisme.</strong> PHP reste mono-thread. Les Fibers permettent la concurrence cooperative : une fiber se suspend volontairement pour laisser d'autres tourner. C'est le meme principe que async/await en JavaScript. Les frameworks comme ReactPHP utilisent les Fibers pour les I/O non-bloquants.</div></div></section><div class="divider"></div>
+<section class="etape" id="e7"><div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">PHP 8.1</div><h2>Enums</h2></div></div><span class="ver-badge v81">PHP 8.1</span><p class="prose">Les Enums remplacent les constantes "magic values". Ils definissent un ensemble fini de valeurs valides et sont des types a part entiere : un parametre typee <code>Statut</code> ne peut recevoir que les valeurs de l'enum.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Enums &mdash; valeurs finies et typees</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Enum pur (sans valeur scalaire)</span>
+<span class="kw">enum</span> <span class="cls">Direction</span> {
+    case <span class="cls">Nord</span>;
+    case <span class="cls">Sud</span>;
+    case <span class="cls">Est</span>;
+    case <span class="cls">Ouest</span>;
+}
+
+<span class="cmt">// Backed enum : valeur scalaire associee (string ou int)</span>
+<span class="kw">enum</span> <span class="cls">Statut</span>: string {
+    case <span class="cls">Actif</span>    = <span class="str">'active'</span>;
+    case <span class="cls">Inactif</span>  = <span class="str">'inactive'</span>;
+    case <span class="cls">Suspendu</span> = <span class="str">'suspended'</span>;
+
+    <span class="cmt">// Methodes possibles dans les enums</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">label</span>(): string {
+        <span class="kw">return</span> <span class="new8">match</span>(<span class="vr">$this</span>) {
+            <span class="cls">Statut</span>::<span class="cls">Actif</span>    => <span class="str">'Actif'</span>,
+            <span class="cls">Statut</span>::<span class="cls">Inactif</span>  => <span class="str">'Inactif'</span>,
+            <span class="cls">Statut</span>::<span class="cls">Suspendu</span> => <span class="str">'Suspendu'</span>,
+        };
+    }
+}
+
+<span class="cmt">// Utilisation</span>
+<span class="vr">$statut</span> = <span class="cls">Statut</span>::<span class="cls">Actif</span>;
+<span class="kw">echo</span> <span class="vr">$statut</span>-><span class="vr">value</span>;       <span class="cmt">// "active"</span>
+<span class="kw">echo</span> <span class="vr">$statut</span>-><span class="fn">label</span>();       <span class="cmt">// "Actif"</span>
+<span class="kw">echo</span> <span class="vr">$statut</span>-><span class="vr">name</span>;        <span class="cmt">// "Actif" (nom du case)</span>
+
+<span class="cmt">// Creer depuis la valeur scalaire</span>
+<span class="vr">$s</span> = <span class="cls">Statut</span>::<span class="fn">from</span>(<span class="str">'active'</span>);     <span class="cmt">// ValueError si invalide</span>
+<span class="vr">$s</span> = <span class="cls">Statut</span>::<span class="fn">tryFrom</span>(<span class="str">'actif'</span>);  <span class="cmt">// null si invalide (safe)</span>
+
+<span class="cmt">// Typage dans une fonction</span>
+<span class="kw">function</span> <span class="fn">changerStatut</span>(<span class="cls">Statut</span> <span class="vr">$statut</span>): void {
+    <span class="cmt">// Impossible de passer "active" en string : doit etre Statut::Actif</span>
+}
+
+<span class="cmt">// Lister toutes les valeurs</span>
+<span class="cls">Statut</span>::<span class="fn">cases</span>();  <span class="cmt">// [Statut::Actif, Statut::Inactif, Statut::Suspendu]</span></code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>Enum vs constante de classe.</strong> Avant les enums, on utilisait <code>const ACTIF = "active"</code>. Probleme : <code>changerStatut("n'importe quoi")</code> est accepte. Avec un enum, PHP refuse tout ce qui n'est pas <code>Statut::Actif</code> etc. Les bugs de valeur invalide sont detects a la compilation.</div></div></section><div class="divider"></div>
+<section class="etape" id="e8"><div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">PHP 8.1 / 8.2</div><h2>readonly properties et readonly class</h2></div></div><span class="ver-badge v81">PHP 8.1</span><p class="prose">Une propriete <code>readonly</code> ne peut etre assignee qu'une seule fois, lors de l'initialisation. Toute tentative de modification ulterieure genere une erreur fatale.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">readonly properties et readonly class</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Propriete readonly : assignable une seule fois</span>
+<span class="kw">class</span> <span class="cls">User</span> {
+    <span class="vis">public</span> <span class="new8">readonly</span> string <span class="vr">$nom</span>;
+    <span class="vis">public</span> <span class="new8">readonly</span> string <span class="vr">$email</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(string <span class="vr">$nom</span>, string <span class="vr">$email</span>) {
+        <span class="vr">$this</span>-><span class="vr">nom</span>   = <span class="vr">$nom</span>;    <span class="cmt">// OK : premiere assignation</span>
+        <span class="vr">$this</span>-><span class="vr">email</span> = <span class="vr">$email</span>;  <span class="cmt">// OK</span>
+    }
+}
+
+<span class="vr">$u</span> = <span class="kw">new</span> <span class="cls">User</span>(<span class="str">'Alice'</span>, <span class="str">'<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5e3f32373d3b1e3b26703d3133">[email&#160;protected]</a>'</span>);
+<span class="kw">echo</span> <span class="vr">$u</span>-><span class="vr">nom</span>;        <span class="cmt">// "Alice"</span>
+<span class="cmt">// $u->nom = "Bob";  &larr; Fatal error : Cannot modify readonly property</span>
+
+<span class="cmt">// Avec promotion de proprietes (PHP 8.0 + readonly PHP 8.1)</span>
+<span class="kw">class</span> <span class="cls">Commande</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">public</span> <span class="new8">readonly</span> int    <span class="vr">$id</span>,
+        <span class="vis">public</span> <span class="new8">readonly</span> string <span class="vr">$reference</span>,
+        <span class="vis">public</span> <span class="new8">readonly</span> float  <span class="vr">$total</span>,
+    ) {}
+}
+
+<span class="cmt">// readonly class (PHP 8.2) : toutes les proprietes readonly</span>
+<span class="new8">readonly</span> <span class="kw">class</span> <span class="cls">Point</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">public</span> float <span class="vr">$x</span>,
+        <span class="vis">public</span> float <span class="vr">$y</span>,
+    ) {}
+    <span class="cmt">// Cloner avec modification (pattern immuable)</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">withX</span>(float <span class="vr">$x</span>): static {
+        <span class="kw">return</span> <span class="kw">new</span> static(<span class="vr">$x</span>, <span class="vr">$this</span>-><span class="vr">y</span>);
+    }
+}</code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>readonly pour les Value Objects et DTOs.</strong> Les objets de valeur (Money, Point, Email...) ne devraient jamais changer apres creation. <code>readonly</code> garantit cette immutabilite au niveau du langage, sans ecrire de setters qui lancent des exceptions.</div></div></section><div class="divider"></div>
+<section class="etape" id="e9"><div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">PHP 8.1 / 8.3</div><h2>Intersection types et PHP 8.3</h2></div></div><span class="ver-badge v81">PHP 8.1</span><p class="prose">Les intersection types permettent de contraindre un parametre a implementer plusieurs interfaces simultanement.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Intersection types, never, constantes typees, json_validate</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Intersection types : doit implementer les DEUX</span>
+<span class="kw">interface</span> <span class="cls">Serializable</span> { <span class="vis">public</span> <span class="kw">function</span> <span class="fn">serialize</span>(): string; }
+<span class="kw">interface</span> <span class="cls">Countable</span>    { <span class="vis">public</span> <span class="kw">function</span> <span class="fn">count</span>(): int; }
+
+<span class="kw">function</span> <span class="fn">traiter</span>(<span class="cls">Serializable</span>&<span class="cls">Countable</span> <span class="vr">$obj</span>): void {
+    <span class="kw">echo</span> <span class="vr">$obj</span>-><span class="fn">count</span>() . <span class="str">' elements : '</span> . <span class="vr">$obj</span>-><span class="fn">serialize</span>();
+}
+
+<span class="cmt">// never return type (PHP 8.1)</span>
+<span class="kw">function</span> <span class="fn">redirectEtExit</span>(string <span class="vr">$url</span>): <span class="new8">never</span> {
+    <span class="fn">header</span>(<span class="str">'Location: '</span> . <span class="vr">$url</span>);
+    <span class="kw">exit</span>;
+}
+
+<span class="cmt">// Constantes de classe typees (PHP 8.3)</span>
+<span class="kw">class</span> <span class="cls">Config</span> {
+    <span class="kw">const</span> string <span class="fn">VERSION</span>   = <span class="str">'1.0.0'</span>;
+    <span class="kw">const</span> int    <span class="fn">MAX_RETRY</span> = <span class="num">3</span>;
+    <span class="kw">const</span> array  <span class="fn">ROLES</span>     = [<span class="str">'user'</span>, <span class="str">'admin'</span>];
+}
+
+<span class="cmt">// json_validate() (PHP 8.3) &mdash; valider sans decoder</span>
+<span class="kw">if</span> (<span class="fn">json_validate</span>(<span class="vr">$input</span>)) {
+    <span class="vr">$data</span> = <span class="fn">json_decode</span>(<span class="vr">$input</span>, <span class="kw">true</span>);
+}
+
+<span class="cmt">// #[Override] (PHP 8.3) &mdash; signale une surcharge</span>
+<span class="kw">class</span> <span class="cls">Enfant</span> <span class="kw">extends</span> <span class="cls">Parent</span> {
+    <span class="kw">#[Override]</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">methode</span>(): void { ... }
+    <span class="cmt">// Erreur si methode() n'existe pas dans le parent</span>
+}</code></pre></div></section><div class="divider"></div>
+<section class="etape" id="ea"><div class="etape-header"><div class="etape-num">10</div><div><div class="etape-tag">PHP 8.2</div><h2>readonly class et DNF types</h2></div></div><span class="ver-badge v82">PHP 8.2</span><p class="prose">PHP 8.2 a apporte les classes <code>readonly</code>, les types DNF et la depreciation de <code>null</code> et <code>false</code> comme types autonomes (il faut utiliser les union types).</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">readonly class &mdash; objets immuables</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// readonly class : toutes les proprietes sont readonly</span>
+<span class="new8">readonly</span> <span class="kw">class</span> <span class="cls">Adresse</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">public</span> string <span class="vr">$rue</span>,
+        <span class="vis">public</span> string <span class="vr">$ville</span>,
+        <span class="vis">public</span> string <span class="vr">$codePostal</span>,
+        <span class="vis">public</span> string <span class="vr">$pays</span> = <span class="str">'France'</span>,
+    ) {}
+}
+
+<span class="vr">$a</span> = <span class="kw">new</span> <span class="cls">Adresse</span>(<span class="str">'12 rue de la Paix'</span>, <span class="str">'Paris'</span>, <span class="str">'75001'</span>);
+<span class="cmt">// Toutes les proprietes sont readonly : immuable par nature</span>
+
+<span class="cmt">// DNF types (Disjunctive Normal Form) PHP 8.2</span>
+<span class="cmt">// Combinaison d'intersection et d'union</span>
+<span class="kw">function</span> <span class="fn">traiter</span>((<span class="cls">Serializable</span>&<span class="cls">Countable</span>)|<span class="cls">Iterator</span>|<span class="kw">null</span> <span class="vr">$obj</span>): void { ... }
+
+<span class="cmt">// Proprietes non typees dans readonly class : non autorisees</span>
+<span class="cmt">// Toutes les proprietes doivent avoir un type declare</span>
+
+<span class="cmt">// Cloner avec modifications (pattern immutabilite)</span>
+<span class="new8">readonly</span> <span class="kw">class</span> <span class="cls">Money</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">public</span> float  <span class="vr">$montant</span>,
+        <span class="vis">public</span> string <span class="vr">$devise</span>,
+    ) {}
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">add</span>(float <span class="vr">$montant</span>): static {
+        <span class="kw">return</span> <span class="kw">new</span> static(<span class="vr">$this</span>-><span class="vr">montant</span> + <span class="vr">$montant</span>, <span class="vr">$this</span>-><span class="vr">devise</span>);
+    }
+}
+
+<span class="vr">$prix</span>  = <span class="kw">new</span> <span class="cls">Money</span>(<span class="num">10.00</span>, <span class="str">'EUR'</span>);
+<span class="vr">$total</span> = <span class="vr">$prix</span>-><span class="fn">add</span>(<span class="num">5.00</span>);  <span class="cmt">// nouveau Money(15.00, "EUR")</span>
+<span class="cmt">// $prix est inchange : readonly</span></code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Value Objects = readonly class.</strong> Un Value Object (Money, Email, Point...) represente une valeur, pas une entite. Il ne change jamais : toute "modification" cree un nouvel objet. <code>readonly class</code> garantit cette semantique au niveau du langage.</div></div></section><div class="divider"></div>
+<section class="etape" id="eb"><div class="etape-header"><div class="etape-num">11</div><div><div class="etape-tag">Synthese</div><h2>PHP 8 moderne au quotidien</h2></div></div><p class="prose">Voici comment toutes ces nouveautes se combinent dans du vrai code moderne.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Synthese &mdash; PHP 8.3 au quotidien</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Code PHP 8.3 : toutes les nouveautes combinées</span>
+
+<span class="cmt">// Enum backed string</span>
+<span class="kw">enum</span> <span class="cls">Statut</span>: string {
+    case <span class="cls">Actif</span>    = <span class="str">'active'</span>;
+    case <span class="cls">Inactif</span>  = <span class="str">'inactive'</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">label</span>(): string => <span class="new8">match</span>(<span class="vr">$this</span>) {
+        <span class="cls">self</span>::<span class="cls">Actif</span>   => <span class="str">'Actif'</span>,
+        <span class="cls">self</span>::<span class="cls">Inactif</span> => <span class="str">'Inactif'</span>,
+    };
+}
+
+<span class="cmt">// readonly class avec constantes typees</span>
+<span class="new8">readonly</span> <span class="kw">class</span> <span class="cls">Produit</span> {
+    <span class="kw">const</span> int <span class="fn">STOCK_MIN</span> = <span class="num">0</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">__construct</span>(
+        <span class="vis">public</span> string <span class="vr">$nom</span>,
+        <span class="vis">public</span> float  <span class="vr">$prix</span>,
+        <span class="vis">public</span> int    <span class="vr">$stock</span>,
+        <span class="vis">public</span> <span class="cls">Statut</span> <span class="vr">$statut</span> = <span class="cls">Statut</span>::<span class="cls">Actif</span>,
+    ) {}
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">estDisponible</span>(): bool {
+        <span class="kw">return</span> <span class="vr">$this</span>-><span class="vr">stock</span> > self::<span class="fn">STOCK_MIN</span>
+            && <span class="vr">$this</span>-><span class="vr">statut</span> === <span class="cls">Statut</span>::<span class="cls">Actif</span>;
+    }
+}
+
+<span class="cmt">// Factory avec named arguments</span>
+<span class="kw">function</span> <span class="fn">creerProduit</span>(array <span class="vr">$data</span>): <span class="cls">Produit</span> {
+    <span class="kw">return</span> <span class="kw">new</span> <span class="cls">Produit</span>(
+        nom:    <span class="vr">$data</span>[<span class="str">'nom'</span>],
+        prix:   (float)<span class="vr">$data</span>[<span class="str">'prix'</span>],
+        stock:  (int)(<span class="vr">$data</span>[<span class="str">'stock'</span>] ?? <span class="num">0</span>),
+        statut: <span class="cls">Statut</span>::<span class="fn">tryFrom</span>(<span class="vr">$data</span>[<span class="str">'statut'</span>] ?? <span class="str">''</span>) ?? <span class="cls">Statut</span>::<span class="cls">Inactif</span>,
+    );
+}
+
+<span class="cmt">// Nullsafe + named args + match dans la vie reelle</span>
+<span class="vr">$label</span> = <span class="vr">$user</span>?-><span class="fn">getProduit</span>()?-><span class="vr">statut</span>-><span class="fn">label</span>() ?? <span class="str">'Inconnu'</span>;</code></pre></div><div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>PHP 8 en resume :</strong> <code>match</code> remplace switch, <code>enum</code> remplace les constantes, <code>readonly</code> garantit l'immutabilite, les named arguments rendent le code lisible, le nullsafe operator elimine les if-null-check. Toutes ces fonctionnalites rendent PHP aussi expressif que les langages modernes.</div></div></section><div class="divider"></div>
+<section class="etape" id="quiz"><div class="etape-header"><div class="etape-num">12</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; PHP 8 moderne</h2></div></div><div class="quiz-card"><div class="q"><span class="qn">Q1.</span> Quelle est la difference principale entre match et switch ?</div><div class="opts"><button class="opt" onclick="ans(this,'q1',false)">match est plus rapide que switch en termes de performances</button><button class="opt" onclick="ans(this,'q1',true)">match utilise la comparaison stricte (===), retourne une valeur, et lance une UnhandledMatchError si aucun cas ne correspond. switch utilise == (loose), ne retourne pas de valeur, et ignore silencieusement les cas manquants.</button><button class="opt" onclick="ans(this,'q1',false)">match ne supporte pas le mot-cle default</button></div><div class="fb" id="fb-q1"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q2.</span> A quoi sert l'operateur ?-> (nullsafe) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q2',false)">Il verifie si une methode existe avant de l'appeler</button><button class="opt" onclick="ans(this,'q2',true)">Il court-circuite la chaine d'appels si la valeur de gauche est null, retournant null immediatement. $a?->b()?->c() retourne null si $a ou b() est null, sans generer d'erreur.</button><button class="opt" onclick="ans(this,'q2',false)">Il est equivalent a l'operateur ?? (null coalescing)</button></div><div class="fb" id="fb-q2"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q3.</span> Qu'est-ce qu'une enum backed en PHP 8.1 ?</div><div class="opts"><button class="opt" onclick="ans(this,'q3',false)">Un enum qui peut avoir n'importe quel nombre de cases</button><button class="opt" onclick="ans(this,'q3',true)">Un enum avec une valeur scalaire (string ou int) associee a chaque case. On peut aller de la valeur vers le case avec from() ou tryFrom(), et lire la valeur avec ->value.</button><button class="opt" onclick="ans(this,'q3',false)">Un enum qui etend une classe parente</button></div><div class="fb" id="fb-q3"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q4.</span> Qu'est-ce que la promotion de proprietes dans le constructeur ?</div><div class="opts"><button class="opt" onclick="ans(this,'q4',false)">Une facon d'appeler automatiquement parent::__construct()</button><button class="opt" onclick="ans(this,'q4',true)">En ajoutant une visibilite (public/private/protected) devant un parametre du constructeur, PHP cree automatiquement la propriete et l'assigne. Elimine la triple repetition : declaration, parametre, assignation.</button><button class="opt" onclick="ans(this,'q4',false)">Une facon de rendre les proprietes publiques depuis une sous-classe</button></div><div class="fb" id="fb-q4"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q5.</span> Quelle propriete ne peut plus etre modifiee apres assignation initiale ?</div><div class="opts"><button class="opt" onclick="ans(this,'q5',false)">Une propriete private</button><button class="opt" onclick="ans(this,'q5',true)">Une propriete readonly. Elle ne peut etre assignee qu'une seule fois (dans le constructeur ou lors de la declaration). Toute modification ulterieure genere un Fatal error. PHP 8.2 etend ca aux readonly class.</button><button class="opt" onclick="ans(this,'q5',false)">Une propriete protected</button></div><div class="fb" id="fb-q5"></div></div><div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;"><div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div><div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div></div></section></main></div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copie';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+const fbs={
+  q1:{ok:'Exact. match utilise === donc 0 ne correspond pas a false. Sans default, une UnhandledMatchError est lancee si aucun cas ne correspond. switch utilise == (0 == false est true), ne retourne pas de valeur directement, et ignore silencieusement les cas non traites.',ko:'Non. match differe de switch sur trois points : comparaison stricte (===), retourne une valeur directement, et lance UnhandledMatchError si aucun cas ne correspond sans default.'},
+  q2:{ok:'Exact. ?-> court-circuite sur null. Si $a est null, $a?->b() retourne null sans appeler b(). Toute la chaine $a?->b()?->c() retourne null sans erreur. Sans ?->, on aurait une erreur Call to member function on null.',ko:'Non. ?-> court-circuite la chaine si la valeur est null. Si une etape est null, tout retourne null sans erreur. Il differe de ?? qui retourne la valeur de droite, pas null.'},
+  q3:{ok:'Exact. Un backed enum associe une valeur string ou int a chaque case. Ex : Statut::Actif->value retourne active. Statut::from(active) retourne Statut::Actif. tryFrom() retourne null si la valeur est inconnue au lieu de lancer une exception.',ko:'Non. Un backed enum a une valeur scalaire (string ou int) associee a chaque case. On peut convertir entre la valeur et le case avec from() et tryFrom(), et acceder a la valeur avec ->value.'},
+  q4:{ok:'Exact. Sans promotion : declarer la propriete, la mettre en parametre du constructeur, puis assigner dans le corps. Avec promotion : juste private string $nom dans la signature du constructeur. PHP fait les trois automatiquement.',ko:'Non. La promotion de proprietes ajoute une visibilite devant un parametre du constructeur. PHP cree automatiquement la propriete et assigne la valeur. Elimine la repetition declaration + parametre + assignation.'},
+  q5:{ok:'Exact. readonly permet une seule assignation (dans le constructeur ou a la declaration). Toute modification ulterieure genere un Fatal error. private ne restreint que la portee, pas la modification. PHP 8.2 etend ca aux readonly class.',ko:'Non. readonly empeche la modification apres assignation initiale. private restreint seulement la portee depuis le code exterieur a la classe, pas la capacite de modification interne.'}
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').i

@@ -301,24 +301,7 @@
             <li>Enchaîner plusieurs conditions</li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo01.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$note</span> = <span class="php-num">15</span>;
-
-<span class="php-kw">if</span> (<span class="php-cmt">// condition Très Bien</span>) {
-    <span class="php-kw">echo</span> <span class="php-cmt">// ?</span>
-} <span class="php-kw">elseif</span> (<span class="php-cmt">// condition Bien</span>) {
-    <span class="php-cmt">// ...</span>
-} <span class="php-cmt">// continue...</span></pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu (avec $note = 15)</h4>
-          <pre>Note : 15/20 — Mention : Bien</pre>
-        </div>
+     
         <div class="solution-wrapper" id="sol-d1">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -371,26 +354,7 @@
             <li>Afficher un résultat formaté à chaque itération</li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo02.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$nombre</span> = <span class="php-num">7</span>;
-
-<span class="php-kw">for</span> (<span class="php-var">$i</span> = <span class="php-num">1</span>; <span class="php-cmt">/* condition */</span>; <span class="php-cmt">/* incrément */</span>) {
-    <span class="php-kw">echo</span> <span class="php-cmt">// ligne de calcul</span>
-}</pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu (avec $nombre = 7)</h4>
-          <pre>7 x 1  = 7
-7 x 2  = 14
-7 x 3  = 21
-...
-7 x 10 = 70</pre>
-        </div>
+    
         <div class="solution-wrapper" id="sol-d2">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -435,28 +399,8 @@
             <li>Utiliser <code>strtoupper()</code></li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo03.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$apprenants</span> = [<span class="php-str">"Alice"</span>, <span class="php-str">"Bob"</span>, <span class="php-str">"Clara"</span>, <span class="php-str">"David"</span>, <span class="php-str">"Eva"</span>];
-<span class="php-var">$numero</span> = <span class="php-num">1</span>;
+   
 
-<span class="php-kw">foreach</span> (<span class="php-var">$apprenants</span> <span class="php-kw">as</span> <span class="php-var">$prenom</span>) {
-    <span class="php-kw">echo</span> <span class="php-cmt">// affiche numéro + prénom en majuscules</span>
-    <span class="php-cmt">// n'oublie pas d'incrémenter $numero</span>
-}</pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>1. ALICE
-2. BOB
-3. CLARA
-4. DAVID
-5. EVA</pre>
-        </div>
         <div class="solution-wrapper" id="sol-d3">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -515,27 +459,8 @@
             <li>Regrouper plusieurs <code>case</code> pour une même action</li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo04.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$jour</span> = <span class="php-num">6</span>;
 
-<span class="php-kw">switch</span> (<span class="php-var">$jour</span>) {
-    <span class="php-kw">case</span> <span class="php-num">1</span>:
-        <span class="php-cmt">// Lundi — semaine</span>
-        <span class="php-kw">break</span>;
-    <span class="php-cmt">// ... continue</span>
-    <span class="php-kw">default</span>:
-        <span class="php-cmt">// jour invalide</span>
-}</pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu (avec $jour = 6)</h4>
-          <pre>Jour n°6 : Samedi — Week-end 🎉</pre>
-        </div>
+     
         <div class="solution-wrapper" id="sol-i1">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -559,10 +484,10 @@
         <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Vendredi — Semaine\n"</span>;
         <span class="php-kw">break</span>;
     <span class="php-kw">case</span> <span class="php-num">6</span>:
-        <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Samedi — Week-end 🎉\n"</span>;
+        <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Samedi — Week-end \n"</span>;
         <span class="php-kw">break</span>;
     <span class="php-kw">case</span> <span class="php-num">7</span>:
-        <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Dimanche — Week-end 🎉\n"</span>;
+        <span class="php-kw">echo</span> <span class="php-str">"Jour n°{$jour} : Dimanche — Week-end \n"</span>;
         <span class="php-kw">break</span>;
     <span class="php-kw">default</span>:
         <span class="php-kw">echo</span> <span class="php-str">"Numéro de jour invalide (doit être entre 1 et 7)\n"</span>;
@@ -593,7 +518,7 @@
           Crée un fichier <strong>exo05.php</strong>. Tu as un tableau de produits (tableaux associatifs
           avec <code>nom</code>, <code>prix</code> et <code>stock</code>). Parcours-le avec <code>foreach</code>
           et affiche chaque produit avec son statut : <strong>stock &gt; 10</strong> → "En stock",
-          <strong>1 à 10</strong> → "Stock faible ⚠️", <strong>0</strong> → "Rupture ❌".
+          <strong>1 à 10</strong> → "Stock faible ", <strong>0</strong> → "Rupture ".
           Affiche aussi le total des articles en stock à la fin.
         </p>
         <div class="objectifs">
@@ -605,36 +530,8 @@
             <li>Accéder aux clés d'un tableau associatif</li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo05.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$produits</span> = [
-    [<span class="php-str">'nom'</span> => <span class="php-str">'Clavier'</span>,  <span class="php-str">'prix'</span> => <span class="php-num">49.90</span>, <span class="php-str">'stock'</span> => <span class="php-num">15</span>],
-    [<span class="php-str">'nom'</span> => <span class="php-str">'Souris'</span>,   <span class="php-str">'prix'</span> => <span class="php-num">29.90</span>, <span class="php-str">'stock'</span> => <span class="php-num">4</span>],
-    [<span class="php-str">'nom'</span> => <span class="php-str">'Écran'</span>,    <span class="php-str">'prix'</span> => <span class="php-num">299.00</span>, <span class="php-str">'stock'</span> => <span class="php-num">0</span>],
-    [<span class="php-str">'nom'</span> => <span class="php-str">'Casque'</span>,   <span class="php-str">'prix'</span> => <span class="php-num">89.90</span>, <span class="php-str">'stock'</span> => <span class="php-num">22</span>],
-];
-<span class="php-var">$total_stock</span> = <span class="php-num">0</span>;
 
-<span class="php-kw">foreach</span> (<span class="php-var">$produits</span> <span class="php-kw">as</span> <span class="php-var">$p</span>) {
-    <span class="php-cmt">// détermine le statut avec if/elseif/else</span>
-    <span class="php-cmt">// affiche la ligne</span>
-    <span class="php-cmt">// accumule le stock total</span>
-}
 
-<span class="php-kw">echo</span> <span class="php-str">"Total en stock : {$total_stock} articles"</span>;</pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>Clavier   49,90 € — En stock (15)
-Souris    29,90 € — Stock faible ⚠️ (4)
-Écran    299,00 € — Rupture ❌ (0)
-Casque    89,90 € — En stock (22)
-Total en stock : 41 articles</pre>
-        </div>
         <div class="solution-wrapper" id="sol-i2">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -651,9 +548,9 @@ Total en stock : 41 articles</pre>
     <span class="php-kw">if</span> (<span class="php-var">$p</span>[<span class="php-str">'stock'</span>] > <span class="php-num">10</span>) {
         <span class="php-var">$statut</span> = <span class="php-str">"En stock"</span>;
     } <span class="php-kw">elseif</span> (<span class="php-var">$p</span>[<span class="php-str">'stock'</span>] > <span class="php-num">0</span>) {
-        <span class="php-var">$statut</span> = <span class="php-str">"Stock faible ⚠️"</span>;
+        <span class="php-var">$statut</span> = <span class="php-str">"Stock faible "</span>;
     } <span class="php-kw">else</span> {
-        <span class="php-var">$statut</span> = <span class="php-str">"Rupture ❌"</span>;
+        <span class="php-var">$statut</span> = <span class="php-str">"Rupture "</span>;
     }
 
     <span class="php-kw">echo</span> <span class="php-fn">str_pad</span>(<span class="php-var">$p</span>[<span class="php-str">'nom'</span>], <span class="php-num">9</span>)
@@ -701,35 +598,7 @@ Total en stock : 41 articles</pre>
             <li>Imbriquer un <code>if</code> dans le <code>while</code></li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo06.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$i</span> = <span class="php-num">10</span>;
-
-<span class="php-kw">while</span> (<span class="php-cmt">/* condition */</span>) {
-    <span class="php-kw">if</span> (<span class="php-var">$i</span> == <span class="php-num">0</span>) {
-        <span class="php-cmt">// décollage</span>
-    } <span class="php-kw">elseif</span> (<span class="php-cmt">/* pair ? */</span>) {
-        <span class="php-cmt">// PAIR</span>
-    } <span class="php-kw">else</span> {
-        <span class="php-cmt">// impair</span>
-    }
-    <span class="php-cmt">// décrémente $i</span>
-}</pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>10 → PAIR
-9  → impair
-8  → PAIR
-7  → impair
-...
-1  → impair
-0  → Décollage ! 🚀</pre>
-        </div>
+    
         <div class="solution-wrapper" id="sol-i3">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -738,7 +607,7 @@ Total en stock : 41 articles</pre>
 
 <span class="php-kw">while</span> (<span class="php-var">$i</span> >= <span class="php-num">0</span>) {
     <span class="php-kw">if</span> (<span class="php-var">$i</span> == <span class="php-num">0</span>) {
-        <span class="php-kw">echo</span> <span class="php-str">"0  → Décollage ! 🚀\n"</span>;
+        <span class="php-kw">echo</span> <span class="php-str">"0  → Décollage ! \n"</span>;
     } <span class="php-kw">elseif</span> (<span class="php-var">$i</span> % <span class="php-num">2</span> == <span class="php-num">0</span>) {
         <span class="php-kw">echo</span> <span class="php-str">"{$i}  → PAIR\n"</span>;
     } <span class="php-kw">else</span> {
@@ -795,40 +664,7 @@ Total en stock : 41 articles</pre>
             <li>Faire un deuxième passage pour comparer à la moyenne</li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo07.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$ventes</span> = [
-    <span class="php-str">'Janvier'</span>  => <span class="php-num">12500</span>,
-    <span class="php-str">'Février'</span>  => <span class="php-num">9800</span>,
-    <span class="php-str">'Mars'</span>     => <span class="php-num">15200</span>,
-    <span class="php-str">'Avril'</span>    => <span class="php-num">11300</span>,
-    <span class="php-str">'Mai'</span>      => <span class="php-num">18900</span>,
-    <span class="php-str">'Juin'</span>     => <span class="php-num">14700</span>,
-];
-
-<span class="php-cmt">// 1. Calcule total, max, min, moyenne</span>
-<span class="php-cmt">// 2. Affiche le récap</span>
-<span class="php-cmt">// 3. Deuxième foreach : au-dessus ou sous la moyenne ?</span></pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>=== ANALYSE DES VENTES ===
-Total    : 82 400 €
-Moyenne  : 13 733 €
-Meilleur : Mai (18 900 €)
-Moins bon: Février (9 800 €)
-
-Janvier  : 12 500 € — sous la moyenne
-Février  :  9 800 € — sous la moyenne
-Mars     : 15 200 € — au-dessus
-Avril    : 11 300 € — sous la moyenne
-Mai      : 18 900 € — au-dessus
-Juin     : 14 700 € — au-dessus</pre>
-        </div>
+ 
         <div class="solution-wrapper" id="sol-h1">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -906,35 +742,7 @@ Juin     : 14 700 € — au-dessus</pre>
             <li>Utiliser <code>array_filter()</code> pour filtrer</li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo08.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$taches</span> = [
-    <span class="php-str">'Créer la base de données'</span>  => <span class="php-kw">true</span>,
-    <span class="php-str">'Concevoir les maquettes'</span>   => <span class="php-kw">true</span>,
-    <span class="php-str">'Coder le back-end'</span>         => <span class="php-kw">false</span>,
-    <span class="php-str">'Intégrer le front-end'</span>     => <span class="php-kw">false</span>,
-    <span class="php-str">'Rédiger la documentation'</span> => <span class="php-kw">false</span>,
-];
 
-<span class="php-cmt">// 1. Affiche chaque tâche avec ✅ ou ⏳</span>
-<span class="php-cmt">// 2. Affiche le nombre de tâches faites / total</span>
-<span class="php-cmt">// 3. Vérifie si 'Coder le back-end' existe</span></pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>✅ Créer la base de données
-✅ Concevoir les maquettes
-⏳ Coder le back-end
-⏳ Intégrer le front-end
-⏳ Rédiger la documentation
-
-Progression : 2 / 5 tâches terminées
-'Coder le back-end' existe dans la liste : OUI</pre>
-        </div>
         <div class="solution-wrapper" id="sol-h2">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -950,7 +758,7 @@ Progression : 2 / 5 tâches terminées
 <span class="php-var">$faites</span> = <span class="php-num">0</span>;
 
 <span class="php-kw">foreach</span> (<span class="php-var">$taches</span> <span class="php-kw">as</span> <span class="php-var">$nom</span> => <span class="php-var">$faite</span>) {
-    <span class="php-var">$icone</span> = <span class="php-var">$faite</span> ? <span class="php-str">'✅'</span> : <span class="php-str">'⏳'</span>;
+    <span class="php-var">$icone</span> = <span class="php-var">$faite</span> ? <span class="php-str">''</span> : <span class="php-str">''</span>;
     <span class="php-kw">echo</span> <span class="php-str">"{$icone} {$nom}\n"</span>;
     <span class="php-kw">if</span> (<span class="php-var">$faite</span>) <span class="php-var">$faites</span>++;
 }
@@ -1001,35 +809,7 @@ Progression : 2 / 5 tâches terminées
             <li>Utiliser <code>break</code> pour sortir d'une boucle dès qu'on a trouvé</li>
           </ul>
         </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-filename">exo09.php</span>
-            <span class="code-lang">PHP</span>
-          </div>
-          <pre><span class="php-tag">&lt;?php</span>
-<span class="php-var">$joueurs</span> = [
-    [<span class="php-str">'nom'</span> => <span class="php-str">'Alice'</span>,   <span class="php-str">'score'</span> => <span class="php-num">4200</span>],
-    [<span class="php-str">'nom'</span> => <span class="php-str">'Bob'</span>,     <span class="php-str">'score'</span> => <span class="php-num">7800</span>],
-    [<span class="php-str">'nom'</span> => <span class="php-str">'Clara'</span>,   <span class="php-str">'score'</span> => <span class="php-num">6100</span>],
-    [<span class="php-str">'nom'</span> => <span class="php-str">'David'</span>,   <span class="php-str">'score'</span> => <span class="php-num">9500</span>],
-    [<span class="php-str">'nom'</span> => <span class="php-str">'Eva'</span>,     <span class="php-str">'score'</span> => <span class="php-num">3300</span>],
-];
 
-<span class="php-cmt">// 1. Trie par score décroissant avec usort()</span>
-<span class="php-cmt">// 2. Affiche le classement</span>
-<span class="php-cmt">// 3. Cherche "Clara" et affiche son rang</span></pre>
-        </div>
-        <div class="expected">
-          <h4>Résultat attendu</h4>
-          <pre>=== CLASSEMENT ===
-#1  David   — 9 500 pts
-#2  Bob     — 7 800 pts
-#3  Clara   — 6 100 pts
-#4  Alice   — 4 200 pts
-#5  Eva     — 3 300 pts
-
-Clara est classée #3</pre>
-        </div>
         <div class="solution-wrapper" id="sol-h3">
           <div class="solution-block">
             <div class="solution-header">Solution</div>
@@ -1104,6 +884,10 @@ function toggleSolution(id) {
   btn.style.color = 'var(--gold)';
   btn.disabled = true;
 }
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => toggleSolution(btn.id.replace('btn-', '')));
+});
 </script>
 
 </body>
