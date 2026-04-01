@@ -1,0 +1,421 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PHP 24 &mdash; PHPUnit</title>
+<style>
+:root{--bg:#f5f2ee;--card:#fff;--surface:#faf8f5;--border:#e2ddd7;--accent:#16a34a;--green:#16a34a;--yellow:#b45309;--red:#dc2626;--blue:#2563eb;--teal:#0f766e;--purple:#7c3aed;--text:#1c1917;--muted:#57534e;--dim:#a8a29e;--title:#f0ece6;--mono:"SF Mono","Fira Code","Consolas",monospace;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:0 0 80px;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.022) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{position:fixed;left:0;top:0;width:238px;height:100vh;background:var(--card);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:50;box-shadow:var(--sh);}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}.sidebar-logo span{font-size:.83rem;font-weight:800;color:var(--accent);}.sidebar-logo p{font-size:.67rem;color:var(--dim);margin-top:3px;}
+.nav-section{padding:0 12px;margin-bottom:8px;}.nav-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:8px 8px 4px;font-weight:700;}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px;}
+.nav-link:hover{background:rgba(22,163,74,.07);}.nav-link.active{background:rgba(22,163,74,.1);color:var(--accent);font-weight:600;}
+.nav-num{font-family:var(--mono);font-size:.63rem;color:var(--dim);flex-shrink:0;width:18px;}
+.content{margin-left:238px;padding:48px 52px 80px;max-width:calc(100% - 238px);}
+.page-header{margin-bottom:52px;}
+.serie-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;padding:3px 10px;border-radius:20px;background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.2);color:var(--accent);margin-bottom:12px;}
+.page-header h1{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:12px;}
+.hl{background:linear-gradient(135deg,var(--accent),#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-header p{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin-bottom:16px;}
+.objectifs{display:flex;gap:8px;flex-wrap:wrap;}.obj{font-family:var(--mono);font-size:.67rem;padding:3px 10px;border-radius:20px;border:1px solid;}
+.obj.g{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.25);color:var(--green);}
+.obj.b{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.25);color:var(--blue);}
+.obj.y{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.25);color:var(--yellow);}
+.obj.p{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.25);color:var(--purple);}
+.obj.t{background:rgba(15,118,110,.07);border-color:rgba(15,118,110,.25);color:var(--teal);}
+.etape{margin-bottom:60px;scroll-margin-top:24px;}.etape-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.etape-num{font-family:var(--mono);font-size:2rem;font-weight:900;color:rgba(22,163,74,.13);line-height:1;flex-shrink:0;width:48px;}
+.etape-tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}.etape h2{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+.prose{color:var(--muted);font-size:.9rem;line-height:1.78;margin-bottom:14px;}.prose strong{color:var(--text);}.prose code{font-family:var(--mono);font-size:.8rem;background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.15);padding:1px 6px;border-radius:3px;color:var(--accent);}
+.callout{border-radius:10px;padding:13px 17px;margin-bottom:14px;font-size:.87rem;line-height:1.65;display:flex;gap:10px;}.ci{font-family:var(--mono);font-size:.73rem;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.2);color:#1e40af;}.callout.info .ci{background:rgba(37,99,235,.12);color:var(--blue);}
+.callout.tip{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.2);color:#92400e;}.callout.tip .ci{background:rgba(180,83,9,.1);color:var(--yellow);}
+.callout.warn{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.2);color:#991b1b;}.callout.warn .ci{background:rgba(220,38,38,.1);color:var(--red);}
+.callout.success{background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);color:#14532d;}.callout.success .ci{background:rgba(22,163,74,.1);color:var(--green);}
+.callout strong{color:inherit;}.callout code{font-family:var(--mono);font-size:.78rem;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;}
+.code-block{background:#1e1e2e;border:1px solid #2a2a3e;border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shm);}
+.cb-head{background:#16162a;padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a3e;}.dots{display:flex;gap:5px;}.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f57;}.dot.o{background:#febc2e;}.dot.g{background:#28c840;}.cb-name{font-family:var(--mono);font-size:.73rem;color:#8892b0;flex:1;}
+.cb-badge{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:3px;margin-left:4px;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.good{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#4ade80;}
+.cb-badge.sh{background:rgba(15,118,110,.12);border:1px solid rgba(15,118,110,.3);color:#5eead4;}
+.cb-badge.fail{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#fca5a5;}
+.cb-copy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8892b0;font-family:var(--mono);font-size:.65rem;padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s;}
+.cb-copy:hover{background:rgba(22,163,74,.2);color:#4ade80;}.cb-copy.ok{color:#4ade80;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.95;color:#cdd6f4;}
+.kw{color:#cba6f7;font-weight:600;}.fn{color:#89dceb;}.str{color:#a6e3a1;}.num{color:#fab387;}.cmt{color:#6c7086;font-style:italic;}.vr{color:#89b4fa;}.cls{color:#f38ba8;font-weight:600;}.vis{color:#cba6f7;font-weight:600;}.ns{color:#94e2d5;}.ptag{color:#f38ba8;font-weight:700;}.ann{color:#fab387;font-style:italic;}.pass{color:#4ade80;font-weight:700;}.fail{color:#fca5a5;font-weight:700;}.sh{color:#a6e3a1;}
+.test-output{background:#0d1117;border:1px solid #2a2a3e;border-radius:10px;padding:16px 20px;margin-bottom:14px;font-family:var(--mono);font-size:.8rem;line-height:1.9;}
+.t-pass{color:#4ade80;}.t-fail{color:#fca5a5;}.t-info{color:#8892b0;}.t-count{color:#fab387;font-weight:700;}
+.table-wrap{overflow-x:auto;margin-bottom:14px;}table{width:100%;border-collapse:collapse;font-size:.84rem;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--sh);}
+th{background:var(--title);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.55;}
+td:first-child{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.checkpoint{display:flex;align-items:center;gap:12px;background:rgba(22,163,74,.05);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:12px 16px;margin-top:16px;}.cp-icon{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--green);flex-shrink:0;border:1px solid rgba(22,163,74,.3);padding:2px 7px;border-radius:3px;}.cp-text{font-size:.84rem;color:#15803d;line-height:1.6;}.cp-text strong{color:var(--green);}
+.quiz-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}.q{font-weight:600;font-size:.91rem;margin-bottom:13px;}.qn{color:var(--accent);font-family:var(--mono);font-size:.77rem;margin-right:8px;}
+.opts{display:flex;flex-direction:column;gap:7px;}.opt{padding:9px 15px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.83rem;cursor:pointer;transition:all .15s;text-align:left;font-family:var(--mono);}
+.opt:hover{border-color:rgba(22,163,74,.3);}.opt.correct{border-color:rgba(22,163,74,.5);background:rgba(22,163,74,.07);color:var(--green);}.opt.wrong{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05);color:var(--red);}
+.fb{margin-top:10px;font-size:.81rem;padding:10px 14px;border-radius:7px;display:none;line-height:1.6;}.fb.show{display:block;}.fb.ok{background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.2);color:#15803d;}.fb.ko{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);color:#991b1b;}
+.divider{height:1px;background:var(--border);margin:48px 0;}
+@media(max-width:900px){.sidebar{display:none;}.content{margin-left:0;padding:24px;max-width:100%;}}
+</style></head><body><div class="layout">
+<aside class="sidebar"><div class="sidebar-logo"><span>[ ] PHP 24 &mdash; PHPUnit</span><p>Tests unitaires PHP</p></div><div class="nav-section"><div class="nav-label">Ce support</div><a href="#plan" class="nav-link"><span class="nav-num">00</span>Pourquoi tester</a><a href="#e1" class="nav-link"><span class="nav-num">01</span>Installation</a><a href="#e2" class="nav-link"><span class="nav-num">02</span>Premier test</a><a href="#e3" class="nav-link"><span class="nav-num">03</span>Assertions</a><a href="#e4" class="nav-link"><span class="nav-num">04</span>Tests sur exceptions</a><a href="#e5" class="nav-link"><span class="nav-num">05</span>Data providers</a><a href="#e6" class="nav-link"><span class="nav-num">06</span>Mocks et stubs</a><a href="#e7" class="nav-link"><span class="nav-num">07</span>Tester une classe PDO</a><a href="#e8" class="nav-link"><span class="nav-num">08</span>Coverage et config</a><a href="#e9" class="nav-link"><span class="nav-num">09</span>Synthese TDD</a><a href="#quiz" class="nav-link"><span class="nav-num">10</span>Quiz</a></div></aside><main class="content">
+<div class="page-header"><div class="serie-badge">Support 24</div><h1>Tests unitaires<br><span class="hl">PHPUnit</span></h1><p>PHPUnit est le framework de tests unitaires standard de PHP. Un test unitaire verifie qu'une unite de code (une methode, une fonction) produit le bon resultat dans des conditions donnees.</p><div class="objectifs"><span class="obj g">PHPUnit</span><span class="obj b">Assertions</span><span class="obj y">Data Provider</span><span class="obj p">Mocks</span><span class="obj t">TDD</span></div></div>
+<section class="etape" id="plan"><div class="etape-header"><div class="etape-num">00</div><div><div class="etape-tag">Concept</div><h2>Pourquoi ecrire des tests</h2></div></div><p class="prose">Les tests automatises detectent les regressions avant que les utilisateurs ne les trouvent. Un test ecrit une fois protege indefiniment contre les bugs futurs.</p><div class="table-wrap"><table><thead><tr><th>Sans tests</th><th>Avec tests</th></tr></thead><tbody><tr><td style="color:var(--red)">Modifier du code = peur de casser quelque chose</td><td style="color:var(--green)">Modifier du code = confiance (les tests passent)</td></tr><tr><td style="color:var(--red)">Decouvrir les bugs en production</td><td style="color:var(--green)">Decouvrir les bugs sur le poste du dev</td></tr><tr><td style="color:var(--red)">Refactoring risque</td><td style="color:var(--green)">Refactoring serein (meme comportement garanti)</td></tr><tr><td style="color:var(--red)">Documentation obsolete</td><td style="color:var(--green)">Tests = documentation executable toujours a jour</td></tr><tr><td style="color:var(--red)">Debugger a la main avec var_dump</td><td style="color:var(--green)">Feedback instantane en quelques secondes</td></tr></tbody></table></div><div class="callout info"><span class="ci">i</span><div><strong>Test unitaire vs test d'integration.</strong> Un <strong>test unitaire</strong> teste une seule methode en isolation (sans BDD, sans reseau, sans fichiers). Un <strong>test d'integration</strong> teste plusieurs composants ensemble. On commence par les tests unitaires : rapides, fiables, sans dependances.</div></div></section><div class="divider"></div>
+<section class="etape" id="e1"><div class="etape-header"><div class="etape-num">01</div><div><div class="etape-tag">Etape 1</div><h2>Installation et configuration</h2></div></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Installation PHPUnit</span><span class="cb-badge sh">Terminal</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># Installer PHPUnit en dependance de dev</span>
+<span class="sh">composer require --dev phpunit/phpunit</span>
+
+<span class="cmt"># Verifier l'installation</span>
+<span class="sh">./vendor/bin/phpunit --version</span>
+
+<span class="cmt"># Creer le fichier de configuration phpunit.xml</span>
+<span class="sh">./vendor/bin/phpunit --generate-configuration</span></code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">phpunit.xml &mdash; configuration</span><span class="cb-badge ">XML</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"&gt;
+
+    &lt;testsuites&gt;
+        &lt;testsuite name="Application Test Suite"&gt;
+            &lt;directory&gt;tests&lt;/directory&gt;
+        &lt;/testsuite&gt;
+    &lt;/testsuites&gt;
+
+    &lt;source&gt;
+        &lt;include&gt;
+            &lt;directory&gt;src&lt;/directory&gt;
+        &lt;/include&gt;
+    &lt;/source&gt;
+
+&lt;/phpunit&gt;</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Structure des dossiers</span><span class="cb-badge ">Dossiers</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code>mon-projet/
+  src/
+    Calculatrice.php        <span class="cmt">&lt;-- code a tester</span>
+    Models/ProduitModel.php
+  tests/                   <span class="cmt">&lt;-- meme structure que src/</span>
+    CalculatriceTest.php    <span class="cmt">&lt;-- NomClasse + Test.php</span>
+    Models/ProduitModelTest.php
+  phpunit.xml
+  composer.json</code></pre></div><div class="callout tip"><span class="ci">!</span><div><strong>Convention de nommage.</strong> Les classes de test se nomment <code>NomClasseTest</code> et etendent <code>TestCase</code>. Chaque methode de test commence par <code>test</code> ou porte l'attribut <code>#[Test]</code>. Le fichier se trouve dans <code>tests/</code> avec la meme structure que <code>src/</code>.</div></div></section><div class="divider"></div>
+<section class="etape" id="e2"><div class="etape-header"><div class="etape-num">02</div><div><div class="etape-tag">Etape 2</div><h2>Premier test &mdash; pattern AAA</h2></div></div><p class="prose">Chaque test suit le pattern <strong>Arrange / Act / Assert</strong> (AAA) : preparer les donnees, executer le code, verifier le resultat.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">src/Calculatrice.php &mdash; classe a tester</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// src/Calculatrice.php &mdash; classe a tester</span>
+<span class="kw">class</span> <span class="cls">Calculatrice</span> {
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">additionner</span>(float <span class="vr">$a</span>, float <span class="vr">$b</span>): float {
+        <span class="kw">return</span> <span class="vr">$a</span> + <span class="vr">$b</span>;
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">diviser</span>(float <span class="vr">$a</span>, float <span class="vr">$b</span>): float {
+        <span class="kw">if</span> (<span class="vr">$b</span> === <span class="num">0.0</span>) {
+            <span class="kw">throw new</span> <span class="cls">InvalidArgumentException</span>(<span class="str">'Division par zero'</span>);
+        }
+        <span class="kw">return</span> <span class="vr">$a</span> / <span class="vr">$b</span>;
+    }
+}
+</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">tests/CalculatriceTest.php &mdash; premier test</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// tests/CalculatriceTest.php</span>
+<span class="kw">use</span> <span class="ns">PHPUnit\Framework\TestCase</span>;
+
+<span class="kw">class</span> <span class="cls">CalculatriceTest</span> <span class="kw">extends</span> <span class="cls">TestCase</span> {
+
+    <span class="vis">private</span> <span class="cls">Calculatrice</span> <span class="vr">$calc</span>;
+
+    <span class="cmt">// setUp() est appele avant CHAQUE methode de test</span>
+    <span class="vis">protected</span> <span class="kw">function</span> <span class="fn">setUp</span>(): void {
+        <span class="vr">$this</span>-><span class="vr">calc</span> = <span class="kw">new</span> <span class="cls">Calculatrice</span>();
+    }
+
+    <span class="cmt">// Methode de test : commence par "test"</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">testAdditionnerDeuxNombresPositifs</span>(): void {
+        <span class="cmt">// Arrange &mdash; preparer les donnees</span>
+        <span class="vr">$a</span> = <span class="num">3.0</span>; <span class="vr">$b</span> = <span class="num">4.0</span>;
+
+        <span class="cmt">// Act &mdash; executer le code</span>
+        <span class="vr">$result</span> = <span class="vr">$this</span>-><span class="vr">calc</span>-><span class="fn">additionner</span>(<span class="vr">$a</span>, <span class="vr">$b</span>);
+
+        <span class="cmt">// Assert &mdash; verifier le resultat</span>
+        <span class="vr">$this</span>-><span class="fn">assertSame</span>(<span class="num">7.0</span>, <span class="vr">$result</span>);
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">testAdditionnerNegatifEtPositif</span>(): void {
+        <span class="vr">$this</span>-><span class="fn">assertSame</span>(<span class="num">1.0</span>, <span class="vr">$this</span>-><span class="vr">calc</span>-><span class="fn">additionner</span>(-<span class="num">2.0</span>, <span class="num">3.0</span>));
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">testAdditionnerZero</span>(): void {
+        <span class="vr">$this</span>-><span class="fn">assertSame</span>(<span class="num">5.0</span>, <span class="vr">$this</span>-><span class="vr">calc</span>-><span class="fn">additionner</span>(<span class="num">5.0</span>, <span class="num">0.0</span>));
+    }
+}
+</code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Lancer les tests</span><span class="cb-badge sh">Terminal</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># Lancer tous les tests</span>
+<span class="sh">./vendor/bin/phpunit</span>
+
+<span class="cmt"># Lancer un fichier specifique</span>
+<span class="sh">./vendor/bin/phpunit tests/CalculatriceTest.php</span>
+
+<span class="cmt"># Lancer une methode specifique</span>
+<span class="sh">./vendor/bin/phpunit --filter testAdditionnerDeuxNombresPositifs</span></code></pre></div><div class="test-output"><span class="t-info">PHPUnit 11.x by Sebastian Bergmann and contributors.</span>
+
+<span class="t-pass">...                                                                3 / 3 (100%)</span>
+
+<span class="t-info">Time: 00:00.012, Memory: 4.00 MB</span>
+
+<span class="t-pass">OK (3 tests, 3 assertions)</span></div><div class="callout success"><span class="ci">+</span><div><strong>setUp() est cle.</strong> La methode <code>setUp()</code> est appelee avant chaque test, creant un objet frais. Cela garantit que chaque test part d'un etat propre et ne peut pas etre affecte par les effets de bord d'un test precedent.</div></div></section><div class="divider"></div>
+<section class="etape" id="e3"><div class="etape-header"><div class="etape-num">03</div><div><div class="etape-tag">Etape 3</div><h2>Assertions</h2></div></div><p class="prose">PHPUnit propose des dizaines d'assertions. La plus importante : <code>assertSame</code> qui utilise <code>===</code>. Eviter <code>assertEquals</code> qui utilise <code>==</code> et peut masquer des bugs de type.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Assertions PHPUnit &mdash; reference complete</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Assertions d'egalite</span>
+<span class="vr">$this</span>-><span class="fn">assertSame</span>(<span class="num">42</span>, <span class="vr">$result</span>);            <span class="cmt">// egalite stricte (===)</span>
+<span class="vr">$this</span>-><span class="fn">assertEquals</span>(<span class="str">'42'</span>, <span class="num">42</span>);         <span class="cmt">// egalite loose (==) &mdash; utiliser assertSame en priorite</span>
+<span class="vr">$this</span>-><span class="fn">assertNotSame</span>(<span class="num">0</span>, <span class="vr">$result</span>);         <span class="cmt">// non egal strict</span>
+
+<span class="cmt">// Assertions booleennes</span>
+<span class="vr">$this</span>-><span class="fn">assertTrue</span>(<span class="vr">$bool</span>);                  <span class="cmt">// doit etre true</span>
+<span class="vr">$this</span>-><span class="fn">assertFalse</span>(<span class="vr">$bool</span>);                 <span class="cmt">// doit etre false</span>
+
+<span class="cmt">// Assertions sur les tableaux</span>
+<span class="vr">$this</span>-><span class="fn">assertCount</span>(<span class="num">3</span>, <span class="vr">$array</span>);             <span class="cmt">// nombre d'elements</span>
+<span class="vr">$this</span>-><span class="fn">assertContains</span>(<span class="str">'Alice'</span>, <span class="vr">$array</span>);    <span class="cmt">// contient la valeur</span>
+<span class="vr">$this</span>-><span class="fn">assertArrayHasKey</span>(<span class="str">'nom'</span>, <span class="vr">$array</span>); <span class="cmt">// cle presente</span>
+
+<span class="cmt">// Assertions sur les chaines</span>
+<span class="vr">$this</span>-><span class="fn">assertStringContainsString</span>(<span class="str">'PHP'</span>, <span class="vr">$str</span>);  <span class="cmt">// contient la sous-chaine</span>
+<span class="vr">$this</span>-><span class="fn">assertStringStartsWith</span>(<span class="str">'Hello'</span>, <span class="vr">$str</span>); <span class="cmt">// commence par</span>
+<span class="vr">$this</span>-><span class="fn">assertMatchesRegularExpression</span>(<span class="str">'#^\d+$#'</span>, <span class="vr">$str</span>);
+
+<span class="cmt">// Assertions sur les types</span>
+<span class="vr">$this</span>-><span class="fn">assertIsInt</span>(<span class="vr">$val</span>);
+<span class="vr">$this</span>-><span class="fn">assertIsString</span>(<span class="vr">$val</span>);
+<span class="vr">$this</span>-><span class="fn">assertIsArray</span>(<span class="vr">$val</span>);
+<span class="vr">$this</span>-><span class="fn">assertNull</span>(<span class="vr">$val</span>);
+<span class="vr">$this</span>-><span class="fn">assertNotNull</span>(<span class="vr">$val</span>);
+<span class="vr">$this</span>-><span class="fn">assertInstanceOf</span>(<span class="cls">Produit</span>::<span class="kw">class</span>, <span class="vr">$obj</span>);
+
+<span class="cmt">// Assertion avec message personnalise</span>
+<span class="vr">$this</span>-><span class="fn">assertSame</span>(<span class="num">7.0</span>, <span class="vr">$result</span>, <span class="str">'3 + 4 devrait valoir 7'</span>);
+
+<span class="cmt">// assertSame vs assertEquals : TOUJOURS preferez assertSame</span>
+<span class="vr">$this</span>-><span class="fn">assertSame</span>(<span class="num">0</span>, <span class="kw">false</span>);   <span class="cmt">// ECHEC : types differents</span>
+<span class="vr">$this</span>-><span class="fn">assertEquals</span>(<span class="num">0</span>, <span class="kw">false</span>); <span class="cmt">// PASSE : loose comparison</span></code></pre></div><div class="callout warn"><span class="ci">!</span><div><strong>assertSame plutot que assertEquals.</strong> <code>assertEquals(0, false)</code> passe car <code>0 == false</code> en PHP. <code>assertSame(0, false)</code> echoue correctement car <code>0 !== false</code>. Les bugs de type sont reels en PHP : preferez toujours la comparaison stricte dans les tests.</div></div></section><div class="divider"></div>
+<section class="etape" id="e4"><div class="etape-header"><div class="etape-num">04</div><div><div class="etape-tag">Etape 4</div><h2>Tester les exceptions</h2></div></div><p class="prose">Tester qu'une exception est bien lancee est aussi important que tester le bon resultat. <code>expectException()</code> doit etre appele avant le code qui lance l'exception.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Tester les exceptions</span><span class="cb-badge ">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="vis">public</span> <span class="kw">function</span> <span class="fn">testDiviserParZeroLanceException</span>(): void {
+    <span class="cmt">// Declarer que la prochaine operation doit lancer une exception</span>
+    <span class="vr">$this</span>-><span class="fn">expectException</span>(<span class="cls">InvalidArgumentException</span>::<span class="kw">class</span>);
+
+    <span class="cmt">// Cette ligne doit lancer l'exception</span>
+    <span class="vr">$this</span>-><span class="vr">calc</span>-><span class="fn">diviser</span>(<span class="num">10</span>, <span class="num">0</span>);
+    <span class="cmt">// Si l'exception n'est pas lancee : le test echoue</span>
+}
+
+<span class="vis">public</span> <span class="kw">function</span> <span class="fn">testDiviserParZeroMessageCorrect</span>(): void {
+    <span class="vr">$this</span>-><span class="fn">expectException</span>(<span class="cls">InvalidArgumentException</span>::<span class="kw">class</span>);
+    <span class="vr">$this</span>-><span class="fn">expectExceptionMessage</span>(<span class="str">'Division par zero'</span>);
+    <span class="vr">$this</span>-><span class="fn">expectExceptionCode</span>(<span class="num">0</span>);
+
+    <span class="vr">$this</span>-><span class="vr">calc</span>-><span class="fn">diviser</span>(<span class="num">10</span>, <span class="num">0</span>);
+}
+
+<span class="cmt">// Alternative avec try/catch explicite</span>
+<span class="vis">public</span> <span class="kw">function</span> <span class="fn">testDiviserParZeroAvecCatch</span>(): void {
+    <span class="kw">try</span> {
+        <span class="vr">$this</span>-><span class="vr">calc</span>-><span class="fn">diviser</span>(<span class="num">10</span>, <span class="num">0</span>);
+        <span class="vr">$this</span>-><span class="fn">fail</span>(<span class="str">'Une exception aurait du etre lancee'</span>);
+    } <span class="kw">catch</span> (<span class="cls">InvalidArgumentException</span> <span class="vr">$e</span>) {
+        <span class="vr">$this</span>-><span class="fn">assertStringContainsString</span>(<span class="str">'zero'</span>, <span class="vr">$e</span>-><span class="fn">getMessage</span>());
+    }
+}
+</code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>$this->fail() force l'echec.</strong> Dans le pattern try/catch, si le code ne lance pas d'exception, on atteint la ligne <code>$this->fail()</code> qui fait echouer le test avec un message clair. Sans ca, le test passerait silencieusement alors que le comportement attendu ne s'est pas produit.</div></div></section><div class="divider"></div>
+<section class="etape" id="e5"><div class="etape-header"><div class="etape-num">05</div><div><div class="etape-tag">Etape 5</div><h2>Data Providers</h2></div></div><p class="prose">Un data provider permet de lancer le meme test avec plusieurs jeux de donnees. On ecrit la logique de test une seule fois et on la nourrit avec toutes les combinaisons a couvrir.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Data Provider &mdash; #[DataProvider]</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="kw">use</span> <span class="ns">PHPUnit\Framework\Attributes\DataProvider</span>;
+
+<span class="kw">class</span> <span class="cls">CalculatriceTest</span> <span class="kw">extends</span> <span class="cls">TestCase</span> {
+
+    <span class="cmt">// Le data provider fournit les jeux de donnees</span>
+    <span class="vis">public</span> <span class="kw">static function</span> <span class="fn">additionDataProvider</span>(): array {
+        <span class="kw">return</span> [
+            <span class="cmt">// [a, b, resultats_attendu, description]</span>
+            <span class="str">'positifs'</span>             => [<span class="num">3.0</span>,  <span class="num">4.0</span>,  <span class="num">7.0</span>],
+            <span class="str">'negatif et positif'</span>   => [-<span class="num">2.0</span>, <span class="num">3.0</span>,  <span class="num">1.0</span>],
+            <span class="str">'deux negatifs'</span>       => [-<span class="num">1.0</span>, -<span class="num">1.0</span>, -<span class="num">2.0</span>],
+            <span class="str">'avec zero'</span>           => [<span class="num">5.0</span>,  <span class="num">0.0</span>,  <span class="num">5.0</span>],
+            <span class="str">'decimaux'</span>            => [<span class="num">1.5</span>,  <span class="num">2.5</span>,  <span class="num">4.0</span>],
+        ];
+    }
+
+    <span class="cmt">// PHPUnit execute ce test UNE FOIS PAR ligne du data provider</span>
+    <span class="ann">#[DataProvider('additionDataProvider')]</span>
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">testAdditionner</span>(float <span class="vr">$a</span>, float <span class="vr">$b</span>, float <span class="vr">$attendu</span>): void {
+        <span class="vr">$this</span>-><span class="fn">assertSame</span>(<span class="vr">$attendu</span>, <span class="vr">$this</span>-><span class="vr">calc</span>-><span class="fn">additionner</span>(<span class="vr">$a</span>, <span class="vr">$b</span>));
+    }
+}
+</code></pre></div><div class="test-output"><span class="t-pass">.....</span>                                                               <span class="t-count">5 / 5 (100%)</span>
+
+<span class="t-info">CalculatriceTest::testAdditionner with data set "positifs" (3, 4, 7)</span>
+<span class="t-info">CalculatriceTest::testAdditionner with data set "negatif et positif" (-2, 3, 1)</span>
+<span class="t-info">...</span>
+
+<span class="t-pass">OK (5 tests, 5 assertions)</span></div><div class="callout tip"><span class="ci">!</span><div><strong>Nommer les datasets avec des cles string.</strong> Au lieu de tableaux numerotes, utiliser des cles descriptives (<code>"positifs"</code>, <code>"negatif et positif"</code>). Quand un test echoue, PHPUnit affiche le nom du dataset ce qui localise immediatement quel cas pose probleme.</div></div></section><div class="divider"></div>
+<section class="etape" id="e6"><div class="etape-header"><div class="etape-num">06</div><div><div class="etape-tag">Etape 6</div><h2>Mocks et stubs</h2></div></div><p class="prose">Un mock remplace une dependance reelle (BDD, mailer, API) par un simulacre. Le test reste unitaire : rapide, reproductible, sans effets de bord.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Mocks &mdash; tester sans dependances reelles</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Un mock remplace une dependance reelle par un simulacre controlable</span>
+<span class="cmt">// Exemple : ProduitService depend d'un ProduitRepository</span>
+
+<span class="kw">class</span> <span class="cls">ProduitServiceTest</span> <span class="kw">extends</span> <span class="cls">TestCase</span> {
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">testCalculerStockTotal</span>(): void {
+        <span class="cmt">// Creer un mock de ProduitRepository</span>
+        <span class="vr">$mockRepo</span> = <span class="vr">$this</span>-><span class="fn">createMock</span>(<span class="cls">ProduitRepository</span>::<span class="kw">class</span>);
+
+        <span class="cmt">// Configurer : findAll() doit retourner ce tableau</span>
+        <span class="vr">$mockRepo</span>-><span class="fn">method</span>(<span class="str">'findAll'</span>)
+              -><span class="fn">willReturn</span>([
+                  [<span class="str">'nom'</span> => <span class="str">'T-shirt'</span>, <span class="str">'stock'</span> => <span class="num">50</span>],
+                  [<span class="str">'nom'</span> => <span class="str">'Jean'</span>,    <span class="str">'stock'</span> => <span class="num">30</span>],
+              ]);
+
+        <span class="cmt">// Injecter le mock dans le service</span>
+        <span class="vr">$service</span> = <span class="kw">new</span> <span class="cls">ProduitService</span>(<span class="vr">$mockRepo</span>);
+
+        <span class="cmt">// Tester sans toucher la BDD</span>
+        <span class="vr">$this</span>-><span class="fn">assertSame</span>(<span class="num">80</span>, <span class="vr">$service</span>-><span class="fn">calculerStockTotal</span>());
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">testEnvoyerEmailAppelleMailer</span>(): void {
+        <span class="vr">$mockMailer</span> = <span class="vr">$this</span>-><span class="fn">createMock</span>(<span class="cls">MailerInterface</span>::<span class="kw">class</span>);
+
+        <span class="cmt">// Verifier qu'envoyer() est appele EXACTEMENT UNE FOIS</span>
+        <span class="vr">$mockMailer</span>-><span class="fn">expects</span>(<span class="vr">$this</span>-><span class="fn">once</span>())
+               -><span class="fn">method</span>(<span class="str">'envoyer'</span>)
+               -><span class="fn">with</span>(<span class="str">'alice@ex.com'</span>, <span class="vr">$this</span>-><span class="fn">stringContains</span>(<span class="str">'Bienvenue'</span>));
+
+        <span class="vr">$service</span> = <span class="kw">new</span> <span class="cls">UserService</span>(<span class="vr">$mockMailer</span>);
+        <span class="vr">$service</span>-><span class="fn">inscrire</span>(<span class="str">'Alice'</span>, <span class="str">'alice@ex.com'</span>);
+        <span class="cmt">// PHPUnit verifie automatiquement que once() a ete respecte</span>
+    }
+}
+</code></pre></div><div class="callout info"><span class="ci">i</span><div><strong>Pour mocker une classe, elle doit etre injectable.</strong> Si <code>ProduitService</code> cree lui-meme son <code>ProduitRepository</code> avec <code>new</code>, on ne peut pas le remplacer par un mock. Il faut injecter la dependance via le constructeur (injection de dependances) pour pouvoir la substituer dans les tests.</div></div></section><div class="divider"></div>
+<section class="etape" id="e7"><div class="etape-header"><div class="etape-num">07</div><div><div class="etape-tag">Etape 7</div><h2>Tester avec PDO / SQLite</h2></div></div><p class="prose">Pour tester du code avec PDO sans toucher la vraie BDD, on utilise SQLite en memoire : instantane, sans configuration, reinitialisee a chaque test.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Tester un Model PDO avec SQLite en memoire</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// Option 1 : base de donnees SQLite en memoire pour les tests</span>
+<span class="cmt">// Rapide, sans configuration, reinitialisee a chaque test</span>
+
+<span class="kw">class</span> <span class="cls">ProduitModelTest</span> <span class="kw">extends</span> <span class="cls">TestCase</span> {
+
+    <span class="vis">private</span> <span class="cls">PDO</span> <span class="vr">$pdo</span>;
+    <span class="vis">private</span> <span class="cls">ProduitModel</span> <span class="vr">$model</span>;
+
+    <span class="vis">protected</span> <span class="kw">function</span> <span class="fn">setUp</span>(): void {
+        <span class="cmt">// SQLite en memoire &mdash; disparait a la fin du test</span>
+        <span class="vr">$this</span>-><span class="vr">pdo</span> = <span class="kw">new</span> <span class="cls">PDO</span>(<span class="str">'sqlite::memory:'</span>);
+        <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">setAttribute</span>(<span class="cls">PDO</span>::<span class="fn">ATTR_ERRMODE</span>, <span class="cls">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>);
+
+        <span class="cmt">// Creer le schema de test</span>
+        <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">exec</span>(<span class="str">'</span>
+            <span class="str">CREATE TABLE produits (</span>
+                <span class="str">id INTEGER PRIMARY KEY AUTOINCREMENT,</span>
+                <span class="str">nom TEXT NOT NULL,</span>
+                <span class="str">prix REAL NOT NULL,</span>
+                <span class="str">stock INTEGER DEFAULT 0</span>
+            <span class="str">)</span>
+        <span class="str">'</span>);
+
+        <span class="cmt">// Donnees de test</span>
+        <span class="vr">$this</span>-><span class="vr">pdo</span>-><span class="fn">exec</span>(<span class="str">'INSERT INTO produits (nom, prix, stock) VALUES</span>
+            <span class="str">('</span>T-shirt<span class="str">', 19.99, 50),</span>
+            <span class="str">('</span>Jean<span class="str">', 49.99, 0)'</span>);
+
+        <span class="vr">$this</span>-><span class="vr">model</span> = <span class="kw">new</span> <span class="cls">ProduitModel</span>(<span class="vr">$this</span>-><span class="vr">pdo</span>);
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">testFindAllRetourneTousLesProduits</span>(): void {
+        <span class="vr">$produits</span> = <span class="vr">$this</span>-><span class="vr">model</span>-><span class="fn">findAll</span>();
+        <span class="vr">$this</span>-><span class="fn">assertCount</span>(<span class="num">2</span>, <span class="vr">$produits</span>);
+        <span class="vr">$this</span>-><span class="fn">assertSame</span>(<span class="str">'T-shirt'</span>, <span class="vr">$produits</span>[<span class="num">0</span>][<span class="str">'nom'</span>]);
+    }
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">testCreateAjouteUnProduit</span>(): void {
+        <span class="vr">$id</span> = <span class="vr">$this</span>-><span class="vr">model</span>-><span class="fn">create</span>([<span class="str">'nom'</span> => <span class="str">'Veste'</span>, <span class="str">'prix'</span> => <span class="num">89.99</span>, <span class="str">'stock'</span> => <span class="num">10</span>]);
+        <span class="vr">$this</span>-><span class="fn">assertIsInt</span>(<span class="vr">$id</span>);
+        <span class="vr">$this</span>-><span class="fn">assertGreaterThan</span>(<span class="num">0</span>, <span class="vr">$id</span>);
+
+        <span class="cmt">// Verifier que le produit est bien en BDD</span>
+        <span class="vr">$produit</span> = <span class="vr">$this</span>-><span class="vr">model</span>-><span class="fn">findById</span>(<span class="vr">$id</span>);
+        <span class="vr">$this</span>-><span class="fn">assertNotNull</span>(<span class="vr">$produit</span>);
+        <span class="vr">$this</span>-><span class="fn">assertSame</span>(<span class="str">'Veste'</span>, <span class="vr">$produit</span>[<span class="str">'nom'</span>]);
+    }
+}
+</code></pre></div><div class="callout success"><span class="ci">+</span><div><strong>SQLite en memoire = tests BDD sans BDD.</strong> <code>new PDO("sqlite::memory:")</code> cree une BDD temporaire en RAM. Elle est compatible avec la majorite du SQL standard. Le test cree le schema, insere des donnees, execute le code, verifie le resultat. Chaque test repart d'une BDD vierge.</div></div></section><div class="divider"></div>
+<section class="etape" id="e8"><div class="etape-header"><div class="etape-num">08</div><div><div class="etape-tag">Etape 8</div><h2>Coverage et configuration</h2></div></div><p class="prose">La couverture de code (code coverage) mesure le pourcentage de lignes executees par les tests. Un taux de 80% est un bon objectif : viser 100% peut mener a des tests artificiels sans valeur.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Generer le rapport de couverture</span><span class="cb-badge sh">Terminal</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="cmt"># Generer le rapport de couverture (necessite Xdebug ou PCOV)</span>
+<span class="sh">./vendor/bin/phpunit --coverage-text</span>
+
+<span class="cmt"># Rapport HTML dans coverage/</span>
+<span class="sh">./vendor/bin/phpunit --coverage-html coverage/</span>
+
+<span class="cmt"># Installer Xdebug pour la couverture (Linux)</span>
+<span class="sh">sudo apt install php-xdebug</span>
+
+<span class="cmt"># Ou PCOV (plus rapide que Xdebug)</span>
+<span class="sh">composer require --dev pcov/clobber</span></code></pre></div><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">phpunit.xml &mdash; configuration coverage</span><span class="cb-badge ">XML</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code>&lt;!-- Ajouter dans phpunit.xml --&gt;
+&lt;coverage&gt;
+    &lt;report&gt;
+        &lt;html outputDirectory="coverage" lowUpperBound="50" highLowerBound="90"/&gt;
+        &lt;text outputFile="php://stdout" showUncoveredFiles="true"/&gt;
+    &lt;/report&gt;
+&lt;/coverage&gt;</code></pre></div><div class="test-output"><span class="t-info">Code Coverage Report:</span>
+
+<span class="t-info">  Calculatrice</span>
+<span class="t-pass">    Methods: 100.00% (2/2)   Lines: 100.00% (5/5)</span>
+
+<span class="t-info">  ProduitModel</span>
+<span class="t-fail">    Methods:  75.00% (3/4)   Lines:  83.33% (10/12)</span>
+
+<span class="t-count">Summary: Classes: 50.00%, Methods: 85.71%, Lines: 90.00%</span></div><div class="callout warn"><span class="ci">!</span><div><strong>La couverture ne garantit pas la qualite.</strong> 100% de lignes couvertes ne signifie pas que tous les comportements sont testes. Un test qui appelle une methode sans faire d'assertion contribue a la couverture mais ne teste rien. La couverture est un indicateur, pas une garantie.</div></div></section><div class="divider"></div>
+<section class="etape" id="e9"><div class="etape-header"><div class="etape-num">09</div><div><div class="etape-tag">Synthese</div><h2>TDD et cycle de vie des tests</h2></div></div><p class="prose">Le TDD (Test-Driven Development) inverse l'ordre : on ecrit le test avant le code. Cycle <strong>Red &rarr; Green &rarr; Refactor</strong>. Les tests guident la conception du code.</p><div class="code-block"><div class="cb-head"><div class="dots"><div class="dot r"></div><div class="dot o"></div><div class="dot g"></div></div><span class="cb-name">Cycle TDD &mdash; Red / Green / Refactor</span><span class="cb-badge good">PHP</span><button class="cb-copy" onclick="cp(this)">copier</button></div><pre><code><span class="ptag">&lt;?php</span>
+<span class="cmt">// TDD : Test-Driven Development</span>
+<span class="cmt">// Cycle : RED (test echoue) -> GREEN (code minimal) -> REFACTOR</span>
+
+<span class="cmt">// ETAPE 1 : RED &mdash; ecrire le test d'abord (la classe n'existe pas encore)</span>
+<span class="vis">public</span> <span class="kw">function</span> <span class="fn">testValiderEmailCorrect</span>(): void {
+    <span class="vr">$validator</span> = <span class="kw">new</span> <span class="cls">EmailValidator</span>();
+    <span class="vr">$this</span>-><span class="fn">assertTrue</span>(<span class="vr">$validator</span>-><span class="fn">isValid</span>(<span class="str">'alice@example.com'</span>));
+}
+
+<span class="vis">public</span> <span class="kw">function</span> <span class="fn">testValiderEmailSansAt</span>(): void {
+    <span class="vr">$validator</span> = <span class="kw">new</span> <span class="cls">EmailValidator</span>();
+    <span class="vr">$this</span>-><span class="fn">assertFalse</span>(<span class="vr">$validator</span>-><span class="fn">isValid</span>(<span class="str">'pasdetat'</span>));
+}
+
+<span class="cmt">// ETAPE 2 : GREEN &mdash; implementation minimale pour faire passer les tests</span>
+<span class="kw">class</span> <span class="cls">EmailValidator</span> {
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">isValid</span>(string <span class="vr">$email</span>): bool {
+        <span class="kw">return</span> (bool)<span class="fn">filter_var</span>(<span class="vr">$email</span>, <span class="fn">FILTER_VALIDATE_EMAIL</span>);
+    }
+}
+
+<span class="cmt">// ETAPE 3 : REFACTOR &mdash; ameliorer sans casser les tests</span>
+<span class="kw">class</span> <span class="cls">EmailValidator</span> {
+    <span class="kw">const</span> int <span class="fn">MAX_LENGTH</span> = <span class="num">254</span>;
+
+    <span class="vis">public</span> <span class="kw">function</span> <span class="fn">isValid</span>(string <span class="vr">$email</span>): bool {
+        <span class="kw">if</span> (<span class="fn">strlen</span>(<span class="vr">$email</span>) > self::<span class="fn">MAX_LENGTH</span>) <span class="kw">return</span> <span class="kw">false</span>;
+        <span class="kw">return</span> (bool)<span class="fn">filter_var</span>(<span class="vr">$email</span>, <span class="fn">FILTER_VALIDATE_EMAIL</span>);
+    }
+    <span class="cmt">// Les tests passent toujours apres le refactoring</span>
+}
+</code></pre></div><div class="table-wrap"><table><thead><tr><th>Methode de cycle de vie</th><th>Quand appelee</th></tr></thead><tbody><tr><td>setUpBeforeClass()</td><td>Une fois avant toute la classe de test (static)</td></tr><tr><td>setUp()</td><td>Avant chaque methode de test</td></tr><tr><td>tearDown()</td><td>Apres chaque methode de test (nettoyage)</td></tr><tr><td>tearDownAfterClass()</td><td>Une fois apres toute la classe (static)</td></tr></tbody></table></div><div class="checkpoint"><span class="cp-icon">OK</span><div class="cp-text"><strong>Recap PHPUnit :</strong> installer avec Composer (--dev), etendre TestCase, methodes commencent par test, pattern Arrange/Act/Assert, assertSame pour la comparaison stricte, data providers pour les jeux de donnees, mocks pour les dependances, SQLite en memoire pour PDO.</div></div></section><div class="divider"></div>
+<section class="etape" id="quiz"><div class="etape-header"><div class="etape-num">10</div><div><div class="etape-tag">Evaluation</div><h2>Quiz &mdash; PHPUnit</h2></div></div><div class="quiz-card"><div class="q"><span class="qn">Q1.</span> Quel est le pattern de structure d'un test unitaire ?</div><div class="opts"><button class="opt" onclick="ans(this,'q1',false)">Import / Execute / Verify</button><button class="opt" onclick="ans(this,'q1',true)">Arrange / Act / Assert (AAA). Arrange : preparer les objets et donnees. Act : executer le code a tester. Assert : verifier que le resultat correspond a l'attendu.</button><button class="opt" onclick="ans(this,'q1',false)">Setup / Run / Teardown</button></div><div class="fb" id="fb-q1"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q2.</span> Pourquoi preferer assertSame a assertEquals ?</div><div class="opts"><button class="opt" onclick="ans(this,'q2',false)">assertSame est plus rapide en termes de performances</button><button class="opt" onclick="ans(this,'q2',true)">assertSame utilise === (comparaison stricte). assertEquals utilise == : assertSame(0, false) echoue correctement, assertEquals(0, false) passe. Les bugs de type sont reels en PHP.</button><button class="opt" onclick="ans(this,'q2',false)">assertSame fonctionne avec les objets, assertEquals non</button></div><div class="fb" id="fb-q2"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q3.</span> A quoi sert la methode setUp() dans une classe de test ?</div><div class="opts"><button class="opt" onclick="ans(this,'q3',false)">Elle est appelee une seule fois avant toute la classe de test</button><button class="opt" onclick="ans(this,'q3',true)">setUp() est appelee avant CHAQUE methode de test. Elle reinitialise l'etat (cree un objet frais) pour que chaque test soit independant et ne soit pas affecte par les effets de bord des autres.</button><button class="opt" onclick="ans(this,'q3',false)">Elle remplace le constructeur de la classe de test</button></div><div class="fb" id="fb-q3"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q4.</span> Comment tester du code avec PDO sans avoir de base de donnees MySQL ?</div><div class="opts"><button class="opt" onclick="ans(this,'q4',false)">En utilisant $this->createMock(PDO::class) uniquement</button><button class="opt" onclick="ans(this,'q4',true)">Avec SQLite en memoire : new PDO("sqlite::memory:"). On cree le schema, insere des donnees de test, execute le code et verifie. Chaque test repart d'une BDD vierge. Rapide et sans configuration.</button><button class="opt" onclick="ans(this,'q4',false)">On ne peut pas tester du code PDO en tests unitaires</button></div><div class="fb" id="fb-q4"></div></div><div class="quiz-card"><div class="q"><span class="qn">Q5.</span> Qu'est-ce que le TDD (Test-Driven Development) ?</div><div class="opts"><button class="opt" onclick="ans(this,'q5',false)">Ecrire les tests apres avoir verifie que le code fonctionne en production</button><button class="opt" onclick="ans(this,'q5',true)">Ecrire le test AVANT le code. Cycle Red (test echoue car le code manque) -> Green (implementation minimale pour faire passer le test) -> Refactor (ameliorer sans casser les tests).</button><button class="opt" onclick="ans(this,'q5',false)">Utiliser un outil de generation automatique de tests</button></div><div class="fb" id="fb-q5"></div></div><div id="score-box" style="display:none;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:12px;text-align:center;"><div id="s-score" style="font-family:var(--mono);font-size:2.5rem;font-weight:900;color:var(--accent);line-height:1;margin-bottom:8px;"></div><div id="s-text" style="font-family:var(--mono);font-size:.88rem;color:var(--muted);"></div></div></section></main></div>
+<script>
+const secs=document.querySelectorAll('.etape[id]'),nl=document.querySelectorAll('.nav-link');
+secs.forEach(s=>new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){nl.forEach(l=>l.classList.remove('active'));const l=document.querySelector('.nav-link[href="#'+x.target.id+'"]');if(l)l.classList.add('active');}});},{threshold:.2}).observe(s));
+function cp(btn){const pre=btn.closest('.code-block').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copie';btn.classList.add('ok');setTimeout(()=>{btn.textContent='copier';btn.classList.remove('ok');},1800);});}
+const fbs={
+  q1:{ok:'Exact. Arrange : creer les objets et donnees necessaires. Act : appeler la methode a tester. Assert : verifier le resultat. Ce pattern structure chaque test de facon lisible et coherente.',ko:'Non. Le pattern est Arrange / Act / Assert (AAA). Arrange = preparer, Act = executer, Assert = verifier. Ce pattern structure chaque test de facon coherente.'},
+  q2:{ok:'Exact. assertSame utilise ===. assertEquals utilise ==. En PHP, 0 == false est vrai, 0 == null est vrai. Ces comparaisons laches cachent des bugs de type. Toujours utiliser assertSame pour detecter les vrais problemes.',ko:'Non. assertSame utilise === (strict) et assertEquals utilise == (loose). assertEquals(0, false) passe en PHP car 0 == false. assertSame(0, false) echoue correctement. Preferer assertSame.'},
+  q3:{ok:'Exact. setUp() est appelee avant chaque methode de test individuelle. Chaque test repart donc avec un objet frais. Sans ca, un test pourrait etre affecte par les modifications du test precedent, rendant les tests dependants et fragiles.',ko:'Non. setUp() est appelee avant CHAQUE methode de test (pas une seule fois pour la classe). setUpBeforeClass() est la methode statique appelee une seule fois avant toute la classe.'},
+  q4:{ok:'Exact. SQLite en memoire (sqlite::memory:) est la solution standard. Elle accepte la grande majorite du SQL, se cree instantanement sans configuration, et est detruite a la fin du test. Chaque test repart avec une BDD totalement vierge.',ko:'Non. On utilise SQLite en memoire : new PDO(sqlite::memory:). On cree le schema, insere des fixtures, teste le code. Chaque setUp() repart avec une BDD vierge. Pas besoin de MySQL pour les tests unitaires.'},
+  q5:{ok:'Exact. TDD : 1) Red = ecrire un test qui echoue (le code manque). 2) Green = coder le minimum pour faire passer le test. 3) Refactor = ameliorer sans casser les tests. Les tests guident la conception.',ko:'Non. TDD inverse le processus habituel. On ecrit le test AVANT le code. Cycle Red (test echoue) -> Green (code minimal) -> Refactor (ameliorer sans casser). Les tests definissent le comportement avant le code.'}
+};
+const rep={};
+function ans(btn,qid,ok){
+  if(rep[qid]!==undefined)return;rep[qid]=ok;
+  btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok)btn.closest('.quiz-card').querySelectorAll('.opt').forEach(o=>{if(o.onclick&&o.onclick.toString().includes(',true)'))o.classList.add('correct');});
+  const fb=document.getElementById('fb-'+qid);fb.innerHTML=fbs[qid][ok?'ok':'ko'];fb.className='fb show '+(ok?'ok':'ko');
+  if(Object.keys(rep).length===5){const g=Object.values(rep).filter(Boolean).length,box=document.getElementById('score-box');box.style.display='block';document.getElementById('s-score').textContent=g+'/5';document.getElementById('s-text').innerHTML=g===5?'Parfait ! PHPUnit maitrise !':g>=4?'Tres bien.':g>=3?'Revoir assertSame et setUp().':'Reprendre depuis les bases du test unitaire.';box.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+</script></body></html>

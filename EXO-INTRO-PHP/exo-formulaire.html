@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercices PHP — Formulaires & Validation</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+    :root {
+      --navy: #2C3F77;
+      --gold: #A0896A;
+      --dark: #0f1420;
+      --darker: #080d17;
+      --card: #151d2e;
+      --border: #1e2d47;
+      --text: #c8d0e0;
+      --muted: #5a6a88;
+      --green: #4ade80;
+      --orange: #fb923c;
+      --red: #f87171;
+      --code-bg: #0d1117;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Syne', sans-serif; background: var(--darker); color: var(--text); min-height: 100vh; }
+
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a2a55 50%, var(--gold) 100%);
+      padding: 3rem 2rem 2rem; text-align: center; position: relative; overflow: hidden;
+    }
+    header::before {
+      content: '$_POST[]';
+      position: absolute; font-family: 'JetBrains Mono', monospace;
+      font-size: 8rem; color: rgba(255,255,255,.04);
+      top: -1rem; right: -1rem; pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block; background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2); color: #fff;
+      font-size: .75rem; letter-spacing: 2px; text-transform: uppercase;
+      padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1rem;
+    }
+    header h1 { font-size: 2.4rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+    header p { color: rgba(255,255,255,.7); font-size: 1rem; }
+    .header-meta {
+      display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .header-meta span { color: rgba(255,255,255,.6); font-size: .85rem; }
+    .header-meta span strong { color: #fff; }
+
+    .pedagogy {
+      background: var(--dark); border-left: 4px solid var(--gold);
+      padding: 1.2rem 2rem; font-size: .85rem; color: #8899bb;
+    }
+    .pedagogy strong { color: var(--gold); }
+    .pedagogy code {
+      background: var(--code-bg); color: #79c0ff;
+      padding: .1rem .4rem; border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace; font-size: .82rem;
+    }
+
+    .alerte-prochaine {
+      background: rgba(251,146,60,.07); border: 1px solid rgba(251,146,60,.25);
+      border-left: 4px solid var(--orange);
+      padding: .8rem 1.5rem; margin: 1.5rem 0;
+      font-size: .88rem; color: #f4c07a; border-radius: 0 6px 6px 0;
+    }
+    .alerte-prochaine strong { color: var(--orange); }
+
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+    .tabs {
+      display: flex; gap: .5rem; margin-bottom: 2.5rem;
+      border-bottom: 2px solid var(--border); padding-bottom: .5rem;
+    }
+    .tab {
+      padding: .6rem 1.6rem; border: 2px solid transparent;
+      background: transparent; color: var(--muted);
+      font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 600;
+      cursor: pointer; border-radius: 6px 6px 0 0; transition: all .2s;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active-debutant      { color: var(--green);  border-color: var(--green);  background: rgba(74,222,128,.06); }
+    .tab.active-intermediaire { color: var(--orange); border-color: var(--orange); background: rgba(251,146,60,.06); }
+    .tab.active-difficile     { color: var(--red);    border-color: var(--red);    background: rgba(248,113,113,.06); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-green  { background: var(--green); }
+    .dot-orange { background: var(--orange); }
+    .dot-red    { background: var(--red); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .niveau-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem; padding: 1.2rem 1.5rem; border-radius: 8px;
+    }
+    .niveau-header.debutant      { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.2); }
+    .niveau-header.intermediaire { background: rgba(251,146,60,.07);  border: 1px solid rgba(251,146,60,.2); }
+    .niveau-header.difficile     { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.2); }
+
+    .niveau-label {
+      font-size: .7rem; letter-spacing: 2px; text-transform: uppercase;
+      font-weight: 700; padding: .3rem .8rem; border-radius: 4px; white-space: nowrap;
+    }
+    .debutant      .niveau-label { background: rgba(74,222,128,.15);  color: var(--green); }
+    .intermediaire .niveau-label { background: rgba(251,146,60,.15);  color: var(--orange); }
+    .difficile     .niveau-label { background: rgba(248,113,113,.15); color: var(--red); }
+    .niveau-desc { font-size: .9rem; color: var(--muted); }
+    .niveau-desc strong { color: var(--text); }
+
+    .exo {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; transition: border-color .2s;
+    }
+    .exo:hover { border-color: var(--navy); }
+
+    .exo-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .exo-header:hover { background: rgba(255,255,255,.02); }
+    .exo-title { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .exo-num {
+      font-family: 'JetBrains Mono', monospace; font-size: .75rem;
+      color: var(--muted); background: var(--dark); padding: .2rem .6rem; border-radius: 4px;
+    }
+    .exo-name { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .exo-theme {
+      font-size: .75rem; color: var(--muted); background: var(--dark);
+      padding: .2rem .7rem; border-radius: 10px;
+    }
+    .toggle-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      font-size: .8rem; padding: .3rem .8rem; border-radius: 4px; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace; transition: all .2s; white-space: nowrap;
+    }
+    .toggle-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .exo-body { padding: 1.5rem; }
+    .consigne { font-size: .95rem; line-height: 1.7; color: var(--text); margin-bottom: 1.2rem; }
+    .consigne strong { color: #fff; }
+
+    .objectifs {
+      background: var(--dark); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .objectifs h4 {
+      font-size: .75rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .6rem;
+    }
+    .objectifs li {
+      list-style: none; font-size: .88rem; color: #8899bb;
+      padding: .2rem 0 .2rem 1rem; position: relative;
+    }
+    .objectifs li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+
+    .code-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-radius: 8px; margin-bottom: 1.2rem; overflow: hidden;
+    }
+    .code-header {
+      background: #161b22; padding: .5rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #21262d;
+    }
+    .code-filename { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #8b949e; }
+    .code-lang { font-size: .7rem; color: #58a6ff; background: rgba(88,166,255,.1); padding: .1rem .5rem; border-radius: 3px; }
+    .code-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+    .php-tag { color: #ff7b72; }
+    .php-var { color: #79c0ff; }
+    .php-str { color: #a5d6ff; }
+    .php-num { color: #f2cc60; }
+    .php-kw  { color: #ff7b72; }
+    .php-fn  { color: #d2a8ff; }
+    .php-cmt { color: #6e7681; font-style: italic; }
+
+    .expected {
+      background: #0d1117; border: 1px solid #21262d;
+      border-left: 3px solid var(--green); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .expected h4 {
+      font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--green); margin-bottom: .6rem;
+    }
+    .expected pre { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: #7ee787; line-height: 1.8; }
+
+    .solution-wrapper { display: none; }
+    .solution-wrapper.open { display: block; }
+    .solution-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-left: 3px solid var(--gold); border-radius: 6px; overflow: hidden;
+    }
+    .solution-header {
+      background: #161b22; padding: .5rem 1rem; font-size: .75rem;
+      color: var(--gold); letter-spacing: 1px; text-transform: uppercase;
+      border-bottom: 1px solid #21262d;
+    }
+    .solution-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+
+    .notions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+    .notion-tag {
+      font-size: .72rem; padding: .2rem .7rem; border-radius: 10px;
+      background: rgba(44,63,119,.3); color: #79a4f5;
+      border: 1px solid rgba(44,63,119,.5);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .bonus-tag {
+      display: inline-block; font-size: .7rem; padding: .2rem .7rem;
+      background: rgba(248,113,113,.1); color: var(--red);
+      border: 1px solid rgba(248,113,113,.3); border-radius: 10px;
+      margin-left: .5rem; vertical-align: middle;
+    }
+
+    footer {
+      text-align: center; padding: 2rem; color: var(--muted);
+      font-size: .82rem; border-top: 1px solid var(--border);
+    }
+    footer strong { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">DWWM — Formation PHP</div>
+  <h1>Exercices PHP</h1>
+  <p>Formulaires &amp; Validation</p>
+  <div class="header-meta">
+    <span><strong>3</strong> niveaux</span>
+    <span><strong>9</strong> exercices</span>
+    <span>Notions vues : <strong>$_POST · $_GET · isset · empty · filter_var · htmlspecialchars</strong></span>
+  </div>
+</header>
+
+<div class="pedagogy">
+  <strong>Notions travaillées :</strong>
+  récupérer des données avec <code>$_POST</code> et <code>$_GET</code> →
+  vérifier avec <code>isset()</code> et <code>empty()</code> →
+  valider avec <code>filter_var()</code> →
+  sécuriser avec <code>htmlspecialchars()</code> →
+  rediriger avec <code>header()</code> + <code>exit()</code>
+</div>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab active-debutant" onclick="showSection('debutant', this)">
+      <span class="dot dot-green"></span> Débutant
+    </button>
+    <button class="tab" onclick="showSection('intermediaire', this)">
+      <span class="dot dot-orange"></span> Intermédiaire
+    </button>
+    <button class="tab" onclick="showSection('difficile', this)">
+      <span class="dot dot-red"></span> Difficile
+    </button>
+  </div>
+
+  <!-- DÉBUTANT -->
+  <div class="section active" id="section-debutant">
+
+    <div class="niveau-header debutant">
+      <span class="niveau-label">Débutant</span>
+      <div class="niveau-desc">
+        <strong>Objectif :</strong> Créer un formulaire HTML, récupérer les données avec <code>$_POST</code> et <code>$_GET</code>, vérifier qu'un champ n'est pas vide.
+      </div>
+    </div>
+
+    <!-- EXO D1 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-01</span>
+          <span class="exo-name">Mon premier formulaire POST</span>
+          <span class="exo-theme">$_POST / isset</span>
+        </div>
+        <button class="toggle-btn" id="btn-d1">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo01.php</strong>. Ce fichier contient à la fois le formulaire HTML
+          et le traitement PHP. Le formulaire demande un <strong>prénom</strong> et un <strong>message</strong>.
+          Quand il est soumis, affiche au-dessus du formulaire : <em>"Bonjour [prénom], tu as écrit : [message]"</em>.
+          Tant que le formulaire n'a pas été soumis, n'affiche rien.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Créer un formulaire HTML avec <code>method="POST"</code> et <code>action=""</code></li>
+            <li>Récupérer les données avec <code>$_POST['nom_du_champ']</code></li>
+            <li>Tester la soumission avec <code>isset($_POST['submit'])</code></li>
+            <li>Comprendre que PHP et HTML cohabitent dans le même fichier</li>
+          </ul>
+        </div>
+        <div class="solution-wrapper" id="sol-d1">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$resultat</span> = <span class="php-str">''</span>;
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_POST</span>[<span class="php-str">'submit'</span>])) {
+    <span class="php-var">$prenom</span>  = <span class="php-var">$_POST</span>[<span class="php-str">'prenom'</span>]  ?? <span class="php-str">''</span>;
+    <span class="php-var">$message</span> = <span class="php-var">$_POST</span>[<span class="php-str">'message'</span>] ?? <span class="php-str">''</span>;
+    <span class="php-var">$resultat</span> = <span class="php-str">"Bonjour {$prenom}, tu as écrit : {$message}"</span>;
+}
+<span class="php-tag">?&gt;</span>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="fr"&gt;
+&lt;body&gt;
+  &lt;?php <span class="php-kw">if</span> (<span class="php-var">$resultat</span>) <span class="php-kw">echo</span> <span class="php-str">"&lt;p&gt;{$resultat}&lt;/p&gt;"</span>; ?&gt;
+
+  &lt;form method="POST" action=""&gt;
+    &lt;input type="text" name="prenom" placeholder="Ton prénom"&gt;
+    &lt;textarea name="message" placeholder="Ton message"&gt;&lt;/textarea&gt;
+    &lt;button type="submit" name="submit"&gt;Envoyer&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">$_POST</span>
+          <span class="notion-tag">isset()</span>
+          <span class="notion-tag">method="POST"</span>
+          <span class="notion-tag">name="submit"</span>
+          <span class="notion-tag">?? opérateur</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO D2 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-02</span>
+          <span class="exo-name">Vérifier les champs vides</span>
+          <span class="exo-theme">empty / trim / messages d'erreur</span>
+        </div>
+        <button class="toggle-btn" id="btn-d2">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo02.php</strong> avec un formulaire de <strong>connexion</strong>
+          (champs email et mot de passe). Quand il est soumis, vérifie que les deux champs
+          sont remplis avec <code>empty()</code>. Si un champ est vide, affiche un message d'erreur
+          en rouge. Si les deux sont remplis, affiche "Connexion réussie !" en vert.
+          Utilise <code>trim()</code> pour supprimer les espaces avant de tester.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Utiliser <code>trim()</code> pour nettoyer la saisie</li>
+            <li>Utiliser <code>empty()</code> pour tester si un champ est vide</li>
+            <li>Stocker les erreurs dans un tableau <code>$erreurs[]</code></li>
+            <li>Afficher les erreurs conditionnellement</li>
+          </ul>
+        </div>
+
+        <div class="solution-wrapper" id="sol-d2">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$erreurs</span> = [];
+<span class="php-var">$succes</span>  = <span class="php-kw">false</span>;
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_POST</span>[<span class="php-str">'submit'</span>])) {
+    <span class="php-var">$email</span> = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'email'</span>] ?? <span class="php-str">''</span>);
+    <span class="php-var">$mdp</span>   = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'mdp'</span>]   ?? <span class="php-str">''</span>);
+
+    <span class="php-kw">if</span> (<span class="php-fn">empty</span>(<span class="php-var">$email</span>)) <span class="php-var">$erreurs</span>[] = <span class="php-str">"L'email est obligatoire."</span>;
+    <span class="php-kw">if</span> (<span class="php-fn">empty</span>(<span class="php-var">$mdp</span>))   <span class="php-var">$erreurs</span>[] = <span class="php-str">"Le mot de passe est obligatoire."</span>;
+    <span class="php-kw">if</span> (<span class="php-fn">empty</span>(<span class="php-var">$erreurs</span>)) <span class="php-var">$succes</span> = <span class="php-kw">true</span>;
+}
+<span class="php-tag">?&gt;</span>
+&lt;!DOCTYPE html&gt;&lt;html lang="fr"&gt;&lt;body&gt;
+
+&lt;?php <span class="php-kw">if</span> (<span class="php-var">$succes</span>): ?&gt;
+  &lt;p style="color:green"&gt;Connexion réussie !&lt;/p&gt;
+&lt;?php <span class="php-kw">elseif</span> (!<span class="php-fn">empty</span>(<span class="php-var">$erreurs</span>)): ?&gt;
+  &lt;?php <span class="php-kw">foreach</span> (<span class="php-var">$erreurs</span> <span class="php-kw">as</span> <span class="php-var">$e</span>): ?&gt;
+    &lt;p style="color:red"&gt; &lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$e</span>) ?&gt;&lt;/p&gt;
+  &lt;?php <span class="php-kw">endforeach</span>; ?&gt;
+&lt;?php <span class="php-kw">endif</span>; ?&gt;
+
+&lt;form method="POST" action=""&gt;
+  &lt;input type="email" name="email" placeholder="Email"&gt;
+  &lt;input type="password" name="mdp" placeholder="Mot de passe"&gt;
+  &lt;button type="submit" name="submit"&gt;Connexion&lt;/button&gt;
+&lt;/form&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">empty()</span>
+          <span class="notion-tag">trim()</span>
+          <span class="notion-tag">$erreurs[]</span>
+          <span class="notion-tag">if / elseif / endif</span>
+          <span class="notion-tag">htmlspecialchars()</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO D3 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-03</span>
+          <span class="exo-name">Formulaire de recherche GET</span>
+          <span class="exo-theme">$_GET / méthode GET</span>
+        </div>
+        <button class="toggle-btn" id="btn-d3">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo03.php</strong> avec une barre de recherche utilisant
+          <code>method="GET"</code>. Quand l'utilisateur soumet le formulaire,
+          récupère le terme de recherche depuis <code>$_GET</code> et affiche
+          <em>"Tu cherches : [terme]"</em>. Si le champ est vide, affiche
+          <em>"Merci de saisir un terme."</em>. Observe comment le terme apparaît dans l'URL.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Comprendre la différence entre <code>GET</code> (visible dans l'URL) et <code>POST</code></li>
+            <li>Récupérer une valeur avec <code>$_GET['nom']</code></li>
+            <li>Utiliser <code>isset($_GET['search'])</code> pour détecter la soumission</li>
+            <li>Pré-remplir le champ avec la valeur précédente</li>
+          </ul>
+        </div>
+
+        <div class="solution-wrapper" id="sol-d3">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$terme</span>   = <span class="php-str">''</span>;
+<span class="php-var">$message</span> = <span class="php-str">''</span>;
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_GET</span>[<span class="php-str">'search'</span>])) {
+    <span class="php-var">$terme</span> = <span class="php-fn">trim</span>(<span class="php-var">$_GET</span>[<span class="php-str">'search'</span>]);
+    <span class="php-kw">if</span> (<span class="php-fn">empty</span>(<span class="php-var">$terme</span>)) {
+        <span class="php-var">$message</span> = <span class="php-str">"Merci de saisir un terme."</span>;
+    } <span class="php-kw">else</span> {
+        <span class="php-var">$message</span> = <span class="php-str">"Tu cherches : "</span> . <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$terme</span>);
+    }
+}
+<span class="php-tag">?&gt;</span>
+&lt;!DOCTYPE html&gt;&lt;html lang="fr"&gt;&lt;body&gt;
+  &lt;?php <span class="php-kw">if</span> (<span class="php-var">$message</span>) <span class="php-kw">echo</span> <span class="php-str">"&lt;p&gt;{$message}&lt;/p&gt;"</span>; ?&gt;
+  &lt;form method="GET" action=""&gt;
+    &lt;input type="text" name="search"
+      value="&lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$terme</span>) ?&gt;"
+      placeholder="Rechercher..."&gt;
+    &lt;button type="submit"&gt;Chercher&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">$_GET</span>
+          <span class="notion-tag">method="GET"</span>
+          <span class="notion-tag">?param=valeur dans URL</span>
+          <span class="notion-tag">pré-remplissage value</span>
+          <span class="notion-tag">htmlspecialchars()</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /débutant -->
+
+  <!-- INTERMÉDIAIRE -->
+  <div class="section" id="section-intermediaire">
+
+    <div class="niveau-header intermediaire">
+      <span class="niveau-label">Intermédiaire</span>
+      <div class="niveau-desc">
+        <strong>Objectif :</strong> Valider les données avec <code>filter_var()</code>, sécuriser l'affichage, repopuler un formulaire après erreur.
+      </div>
+    </div>
+
+    <div class="alerte-prochaine">
+      <strong>Sécurité :</strong> Toujours utiliser <strong>htmlspecialchars()</strong> avant d'afficher une donnée venant de l'utilisateur. C'est la protection minimale contre les failles XSS (injection de code HTML/JS).
+    </div>
+
+    <!-- EXO I1 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-04</span>
+          <span class="exo-name">Validation d'email et de longueur</span>
+          <span class="exo-theme">filter_var / strlen / FILTER_VALIDATE_EMAIL</span>
+        </div>
+        <button class="toggle-btn" id="btn-i1">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo04.php</strong> avec un formulaire d'inscription simple :
+          champs <strong>nom</strong> (min 2 caractères, max 50), <strong>email</strong> (format valide)
+          et <strong>âge</strong> (nombre entier entre 18 et 99).
+          Utilise <code>filter_var()</code> pour valider l'email et l'entier.
+          Affiche les erreurs au-dessus du formulaire et repopule les champs avec les valeurs saisies.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Valider un email avec <code>filter_var($email, FILTER_VALIDATE_EMAIL)</code></li>
+            <li>Valider un entier avec <code>filter_var($age, FILTER_VALIDATE_INT)</code></li>
+            <li>Vérifier la longueur avec <code>strlen()</code></li>
+            <li>Repopuler les champs : <code>value="&lt;?= htmlspecialchars($nom) ?&gt;"</code></li>
+          </ul>
+        </div>
+        <div class="solution-wrapper" id="sol-i1">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$erreurs</span> = [];
+<span class="php-var">$succes</span>  = <span class="php-kw">false</span>;
+<span class="php-var">$nom</span> = <span class="php-var">$email</span> = <span class="php-var">$age</span> = <span class="php-str">''</span>;
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_POST</span>[<span class="php-str">'submit'</span>])) {
+    <span class="php-var">$nom</span>   = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'nom'</span>]   ?? <span class="php-str">''</span>);
+    <span class="php-var">$email</span> = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'email'</span>] ?? <span class="php-str">''</span>);
+    <span class="php-var">$age</span>   = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'age'</span>]   ?? <span class="php-str">''</span>);
+
+    <span class="php-kw">if</span> (<span class="php-fn">strlen</span>(<span class="php-var">$nom</span>) < <span class="php-num">2</span> || <span class="php-fn">strlen</span>(<span class="php-var">$nom</span>) > <span class="php-num">50</span>)
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"Le nom doit contenir entre 2 et 50 caractères."</span>;
+
+    <span class="php-kw">if</span> (!<span class="php-fn">filter_var</span>(<span class="php-var">$email</span>, <span class="php-num">FILTER_VALIDATE_EMAIL</span>))
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"L'email n'est pas valide."</span>;
+
+    <span class="php-var">$opts</span> = [<span class="php-str">'options'</span> => [<span class="php-str">'min_range'</span> => <span class="php-num">18</span>, <span class="php-str">'max_range'</span> => <span class="php-num">99</span>]];
+    <span class="php-kw">if</span> (!<span class="php-fn">filter_var</span>(<span class="php-var">$age</span>, <span class="php-num">FILTER_VALIDATE_INT</span>, <span class="php-var">$opts</span>))
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"L'âge doit être un entier entre 18 et 99."</span>;
+
+    <span class="php-kw">if</span> (<span class="php-fn">empty</span>(<span class="php-var">$erreurs</span>)) <span class="php-var">$succes</span> = <span class="php-kw">true</span>;
+}
+<span class="php-tag">?&gt;</span>
+&lt;!DOCTYPE html&gt;&lt;html lang="fr"&gt;&lt;body&gt;
+  &lt;?php <span class="php-kw">if</span> (<span class="php-var">$succes</span>): ?&gt;
+    &lt;p style="color:green"&gt;Inscription réussie !&lt;/p&gt;
+  &lt;?php <span class="php-kw">endif</span>; ?&gt;
+  &lt;?php <span class="php-kw">foreach</span> (<span class="php-var">$erreurs</span> <span class="php-kw">as</span> <span class="php-var">$e</span>): ?&gt;
+    &lt;p style="color:red"&gt; &lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$e</span>) ?&gt;&lt;/p&gt;
+  &lt;?php <span class="php-kw">endforeach</span>; ?&gt;
+  &lt;form method="POST" action=""&gt;
+    &lt;input type="text"  name="nom"   value="&lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$nom</span>) ?&gt;"&gt;
+    &lt;input type="email" name="email" value="&lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$email</span>) ?&gt;"&gt;
+    &lt;input type="number" name="age"  value="&lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$age</span>) ?&gt;"&gt;
+    &lt;button type="submit" name="submit"&gt;S'inscrire&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">filter_var()</span>
+          <span class="notion-tag">FILTER_VALIDATE_EMAIL</span>
+          <span class="notion-tag">FILTER_VALIDATE_INT</span>
+          <span class="notion-tag">min_range / max_range</span>
+          <span class="notion-tag">strlen()</span>
+          <span class="notion-tag">repopulation champs</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO I2 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-05</span>
+          <span class="exo-name">Formulaire d'ajout de produit</span>
+          <span class="exo-theme">validation complète / htmlspecialchars / header()</span>
+        </div>
+        <button class="toggle-btn" id="btn-i2">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée deux fichiers : <strong>ajouter.php</strong> (le formulaire) et <strong>liste.php</strong>
+          (affichage de la liste). Le formulaire contient les champs <strong>nom</strong>,
+          <strong>prix</strong> (nombre décimal positif) et <strong>stock</strong> (entier ≥ 0).
+          Après validation réussie, stocke le produit dans <code>$_SESSION</code> et redirige
+          vers <code>liste.php</code> avec <code>header()</code>.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Valider un flottant positif avec <code>filter_var($v, FILTER_VALIDATE_FLOAT)</code></li>
+            <li>Démarrer une session avec <code>session_start()</code></li>
+            <li>Stocker dans <code>$_SESSION['produits'][]</code></li>
+            <li>Rediriger avec <code>header('Location: liste.php')</code> + <code>exit()</code></li>
+          </ul>
+        </div>
+
+        <div class="solution-wrapper" id="sol-i2">
+          <div class="solution-block">
+            <div class="solution-header">Solution — ajouter.php</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-fn">session_start</span>();
+<span class="php-var">$erreurs</span> = [];
+<span class="php-var">$nom</span> = <span class="php-var">$prix</span> = <span class="php-var">$stock</span> = <span class="php-str">''</span>;
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_POST</span>[<span class="php-str">'submit'</span>])) {
+    <span class="php-var">$nom</span>   = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'nom'</span>]   ?? <span class="php-str">''</span>);
+    <span class="php-var">$prix</span>  = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'prix'</span>]  ?? <span class="php-str">''</span>);
+    <span class="php-var">$stock</span> = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'stock'</span>] ?? <span class="php-str">''</span>);
+
+    <span class="php-kw">if</span> (<span class="php-fn">empty</span>(<span class="php-var">$nom</span>))
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"Le nom est obligatoire."</span>;
+
+    <span class="php-var">$prixF</span> = <span class="php-fn">filter_var</span>(<span class="php-var">$prix</span>, <span class="php-num">FILTER_VALIDATE_FLOAT</span>);
+    <span class="php-kw">if</span> (<span class="php-var">$prixF</span> === <span class="php-kw">false</span> || <span class="php-var">$prixF</span> <= <span class="php-num">0</span>)
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"Le prix doit être un nombre positif."</span>;
+
+    <span class="php-var">$opts</span>  = [<span class="php-str">'options'</span> => [<span class="php-str">'min_range'</span> => <span class="php-num">0</span>]];
+    <span class="php-var">$stockI</span> = <span class="php-fn">filter_var</span>(<span class="php-var">$stock</span>, <span class="php-num">FILTER_VALIDATE_INT</span>, <span class="php-var">$opts</span>);
+    <span class="php-kw">if</span> (<span class="php-var">$stockI</span> === <span class="php-kw">false</span>)
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"Le stock doit être un entier >= 0."</span>;
+
+    <span class="php-kw">if</span> (<span class="php-fn">empty</span>(<span class="php-var">$erreurs</span>)) {
+        <span class="php-var">$_SESSION</span>[<span class="php-str">'produits'</span>][] = [
+            <span class="php-str">'nom'</span>   => <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$nom</span>),
+            <span class="php-str">'prix'</span>  => <span class="php-var">$prixF</span>,
+            <span class="php-str">'stock'</span> => <span class="php-var">$stockI</span>,
+        ];
+        <span class="php-fn">header</span>(<span class="php-str">'Location: liste.php'</span>);
+        <span class="php-fn">exit</span>();
+    }
+}
+<span class="php-tag">?&gt;</span></pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">session_start()</span>
+          <span class="notion-tag">$_SESSION</span>
+          <span class="notion-tag">FILTER_VALIDATE_FLOAT</span>
+          <span class="notion-tag">header() + exit()</span>
+          <span class="notion-tag">repopulation</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO I3 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-06</span>
+          <span class="exo-name">Confirmation de mot de passe</span>
+          <span class="exo-theme">comparaison / regex / password_hash</span>
+        </div>
+        <button class="toggle-btn" id="btn-i3">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo06.php</strong> avec un formulaire d'inscription demandant
+          un <strong>email</strong>, un <strong>mot de passe</strong> et une <strong>confirmation</strong>.
+          Valide que les deux mots de passe sont identiques, que le mot de passe fait
+          au moins <strong>8 caractères</strong> et contient au moins <strong>un chiffre</strong>
+          (utilise <code>preg_match()</code>). Si tout est valide, affiche le hash du mot de passe
+          avec <code>password_hash()</code>.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Comparer deux champs avec <code>===</code></li>
+            <li>Vérifier la longueur avec <code>strlen()</code></li>
+            <li>Utiliser une regex avec <code>preg_match('/[0-9]/', $mdp)</code></li>
+            <li>Hasher un mot de passe avec <code>password_hash($mdp, PASSWORD_DEFAULT)</code></li>
+          </ul>
+        </div>
+
+        <div class="solution-wrapper" id="sol-i3">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$erreurs</span> = [];
+<span class="php-var">$succes</span>  = <span class="php-str">''</span>;
+<span class="php-var">$email</span> = <span class="php-var">$mdp</span> = <span class="php-var">$confirm</span> = <span class="php-str">''</span>;
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_POST</span>[<span class="php-str">'submit'</span>])) {
+    <span class="php-var">$email</span>   = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'email'</span>]   ?? <span class="php-str">''</span>);
+    <span class="php-var">$mdp</span>     = <span class="php-var">$_POST</span>[<span class="php-str">'mdp'</span>]     ?? <span class="php-str">''</span>;
+    <span class="php-var">$confirm</span> = <span class="php-var">$_POST</span>[<span class="php-str">'confirm'</span>] ?? <span class="php-str">''</span>;
+
+    <span class="php-kw">if</span> (!<span class="php-fn">filter_var</span>(<span class="php-var">$email</span>, <span class="php-num">FILTER_VALIDATE_EMAIL</span>))
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"L'email n'est pas valide."</span>;
+
+    <span class="php-kw">if</span> (<span class="php-fn">strlen</span>(<span class="php-var">$mdp</span>) < <span class="php-num">8</span>)
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"Le mot de passe doit contenir au moins 8 caractères."</span>;
+
+    <span class="php-kw">if</span> (!<span class="php-fn">preg_match</span>(<span class="php-str">'/[0-9]/'</span>, <span class="php-var">$mdp</span>))
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"Le mot de passe doit contenir au moins un chiffre."</span>;
+
+    <span class="php-kw">if</span> (<span class="php-var">$mdp</span> !== <span class="php-var">$confirm</span>)
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"Les mots de passe ne correspondent pas."</span>;
+
+    <span class="php-kw">if</span> (<span class="php-fn">empty</span>(<span class="php-var">$erreurs</span>)) {
+        <span class="php-var">$hash</span>   = <span class="php-fn">password_hash</span>(<span class="php-var">$mdp</span>, <span class="php-num">PASSWORD_DEFAULT</span>);
+        <span class="php-var">$succes</span> = <span class="php-str">"✅ Compte créé ! Hash : {$hash}"</span>;
+    }
+}
+<span class="php-tag">?&gt;</span>
+&lt;!DOCTYPE html&gt;&lt;html lang="fr"&gt;&lt;body&gt;
+  &lt;?php <span class="php-kw">if</span> (<span class="php-var">$succes</span>) <span class="php-kw">echo</span> <span class="php-str">"&lt;p&gt;{$succes}&lt;/p&gt;"</span>; ?&gt;
+  &lt;?php <span class="php-kw">foreach</span> (<span class="php-var">$erreurs</span> <span class="php-kw">as</span> <span class="php-var">$e</span>): ?&gt;
+    &lt;p style="color:red"&gt; &lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$e</span>) ?&gt;&lt;/p&gt;
+  &lt;?php <span class="php-kw">endforeach</span>; ?&gt;
+  &lt;form method="POST" action=""&gt;
+    &lt;input type="email"    name="email"   value="&lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$email</span>) ?&gt;"&gt;
+    &lt;input type="password" name="mdp"&gt;
+    &lt;input type="password" name="confirm"&gt;
+    &lt;button type="submit" name="submit"&gt;Créer le compte&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">preg_match()</span>
+          <span class="notion-tag">regex /[0-9]/</span>
+          <span class="notion-tag">=== comparaison stricte</span>
+          <span class="notion-tag">password_hash()</span>
+          <span class="notion-tag">PASSWORD_DEFAULT</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /intermédiaire -->
+
+  <!--  DIFFICILE  -->
+  <div class="section" id="section-difficile">
+
+    <div class="niveau-header difficile">
+      <span class="niveau-label">Difficile</span>
+      <div class="niveau-desc">
+        <strong>Objectif :</strong> Construire un système de validation robuste, gérer plusieurs formulaires, protéger contre les failles XSS et CSRF basiques.
+      </div>
+    </div>
+
+    <!-- EXO H1 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-07</span>
+          <span class="exo-name">Formulaire de contact complet</span>
+          <span class="exo-theme">validation multi-champs / pattern PRG / session flash</span>
+        </div>
+        <button class="toggle-btn" id="btn-h1">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée deux fichiers : <strong>contact.php</strong> et <strong>merci.php</strong>.
+          Le formulaire contient <strong>nom</strong>, <strong>email</strong>, <strong>sujet</strong>
+          (select parmi 3 options), et <strong>message</strong> (min 20 caractères).
+          Applique le pattern <strong>PRG</strong> (Post Redirect Get) : après validation réussie,
+          stocke les données dans <code>$_SESSION</code> et redirige vers <code>merci.php</code>
+          qui les affiche puis les supprime de la session.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Valider un <code>&lt;select&gt;</code> avec <code>in_array()</code></li>
+            <li>Implémenter le pattern PRG complet</li>
+            <li>Utiliser un message "flash" en session (affiché une seule fois)</li>
+            <li>Nettoyer les données de session après affichage avec <code>unset()</code></li>
+          </ul>
+        </div>
+
+        <div class="solution-wrapper" id="sol-h1">
+          <div class="solution-block">
+            <div class="solution-header">Solution — contact.php</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-fn">session_start</span>();
+<span class="php-var">$erreurs</span>        = [];
+<span class="php-var">$sujets_valides</span> = [<span class="php-str">'question'</span>, <span class="php-str">'probleme'</span>, <span class="php-str">'suggestion'</span>];
+<span class="php-var">$nom</span> = <span class="php-var">$email</span> = <span class="php-var">$sujet</span> = <span class="php-var">$message</span> = <span class="php-str">''</span>;
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_POST</span>[<span class="php-str">'submit'</span>])) {
+    <span class="php-var">$nom</span>     = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'nom'</span>]     ?? <span class="php-str">''</span>);
+    <span class="php-var">$email</span>   = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'email'</span>]   ?? <span class="php-str">''</span>);
+    <span class="php-var">$sujet</span>   = <span class="php-var">$_POST</span>[<span class="php-str">'sujet'</span>]   ?? <span class="php-str">''</span>;
+    <span class="php-var">$message</span> = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'message'</span>] ?? <span class="php-str">''</span>);
+
+    <span class="php-var">$l</span> = <span class="php-fn">strlen</span>(<span class="php-var">$nom</span>);
+    <span class="php-kw">if</span> (<span class="php-var">$l</span> < <span class="php-num">2</span> || <span class="php-var">$l</span> > <span class="php-num">80</span>)
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"Le nom doit faire entre 2 et 80 caractères."</span>;
+
+    <span class="php-kw">if</span> (!<span class="php-fn">filter_var</span>(<span class="php-var">$email</span>, <span class="php-num">FILTER_VALIDATE_EMAIL</span>))
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"L'email n'est pas valide."</span>;
+
+    <span class="php-kw">if</span> (!<span class="php-fn">in_array</span>(<span class="php-var">$sujet</span>, <span class="php-var">$sujets_valides</span>))
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"Le sujet sélectionné est invalide."</span>;
+
+    <span class="php-kw">if</span> (<span class="php-fn">strlen</span>(<span class="php-var">$message</span>) < <span class="php-num">20</span>)
+        <span class="php-var">$erreurs</span>[] = <span class="php-str">"Le message doit contenir au moins 20 caractères."</span>;
+
+    <span class="php-kw">if</span> (<span class="php-fn">empty</span>(<span class="php-var">$erreurs</span>)) {
+        <span class="php-var">$_SESSION</span>[<span class="php-str">'contact'</span>] = [
+            <span class="php-str">'nom'</span>     => <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$nom</span>),
+            <span class="php-str">'email'</span>   => <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$email</span>),
+            <span class="php-str">'sujet'</span>   => <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$sujet</span>),
+            <span class="php-str">'message'</span> => <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$message</span>),
+        ];
+        <span class="php-fn">header</span>(<span class="php-str">'Location: merci.php'</span>);
+        <span class="php-fn">exit</span>();
+    }
+}
+<span class="php-tag">?&gt;</span></pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">in_array()</span>
+          <span class="notion-tag">pattern PRG</span>
+          <span class="notion-tag">$_SESSION flash</span>
+          <span class="notion-tag">unset()</span>
+          <span class="notion-tag">select validation</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO H2 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-08</span>
+          <span class="exo-name">Mini CRUD formulaire</span>
+          <span class="exo-theme">ajout / modification / suppression via formulaires</span>
+        </div>
+        <button class="toggle-btn" id="btn-h2">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>crud.php</strong> qui gère une liste de tâches en session.
+          Trois formulaires dans la même page : un pour <strong>ajouter</strong> une tâche (POST),
+          un pour <strong>marquer comme faite</strong> (POST avec un champ caché <code>id</code>),
+          et un lien pour <strong>supprimer</strong> (GET avec <code>?action=supprimer&amp;id=X</code>).
+          Recharge la page après chaque action avec <code>header()</code>.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Utiliser <code>&lt;input type="hidden"&gt;</code> pour passer un ID</li>
+            <li>Gérer plusieurs actions POST sur une même page</li>
+            <li>Gérer une action GET (<code>$_GET['action']</code>)</li>
+            <li>Modifier un élément de session par son index</li>
+          </ul>
+        </div>
+ 
+   
+        <div class="solution-wrapper" id="sol-h2">
+          <div class="solution-block">
+            <div class="solution-header">Solution — crud.php</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-fn">session_start</span>();
+<span class="php-kw">if</span> (!<span class="php-fn">isset</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'taches'</span>])) <span class="php-var">$_SESSION</span>[<span class="php-str">'taches'</span>] = [];
+
+<span class="php-cmt">// AJOUTER</span>
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_POST</span>[<span class="php-str">'ajouter'</span>])) {
+    <span class="php-var">$titre</span> = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'titre'</span>] ?? <span class="php-str">''</span>);
+    <span class="php-kw">if</span> (!<span class="php-fn">empty</span>(<span class="php-var">$titre</span>)) {
+        <span class="php-var">$_SESSION</span>[<span class="php-str">'taches'</span>][] = [<span class="php-str">'titre'</span> => <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$titre</span>), <span class="php-str">'faite'</span> => <span class="php-kw">false</span>];
+        <span class="php-fn">header</span>(<span class="php-str">'Location: crud.php'</span>); <span class="php-fn">exit</span>();
+    }
+}
+
+<span class="php-cmt">// MARQUER COMME FAITE</span>
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_POST</span>[<span class="php-str">'terminer'</span>])) {
+    <span class="php-var">$id</span> = (<span class="php-kw">int</span>) (<span class="php-var">$_POST</span>[<span class="php-str">'id'</span>] ?? <span class="php-num">-1</span>);
+    <span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'taches'</span>][<span class="php-var">$id</span>]))
+        <span class="php-var">$_SESSION</span>[<span class="php-str">'taches'</span>][<span class="php-var">$id</span>][<span class="php-str">'faite'</span>] = <span class="php-kw">true</span>;
+    <span class="php-fn">header</span>(<span class="php-str">'Location: crud.php'</span>); <span class="php-fn">exit</span>();
+}
+
+<span class="php-cmt">// SUPPRIMER</span>
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_GET</span>[<span class="php-str">'action'</span>]) && <span class="php-var">$_GET</span>[<span class="php-str">'action'</span>] === <span class="php-str">'supprimer'</span>) {
+    <span class="php-var">$id</span> = (<span class="php-kw">int</span>) (<span class="php-var">$_GET</span>[<span class="php-str">'id'</span>] ?? <span class="php-num">-1</span>);
+    <span class="php-fn">unset</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'taches'</span>][<span class="php-var">$id</span>]);
+    <span class="php-var">$_SESSION</span>[<span class="php-str">'taches'</span>] = <span class="php-fn">array_values</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'taches'</span>]); <span class="php-cmt">// réindexe</span>
+    <span class="php-fn">header</span>(<span class="php-str">'Location: crud.php'</span>); <span class="php-fn">exit</span>();
+}
+<span class="php-tag">?&gt;</span>
+&lt;!DOCTYPE html&gt;&lt;html lang="fr"&gt;&lt;body&gt;
+  &lt;form method="POST" action=""&gt;
+    &lt;input type="text" name="titre" placeholder="Nouvelle tâche"&gt;
+    &lt;button type="submit" name="ajouter"&gt;Ajouter&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;?php <span class="php-kw">foreach</span> (<span class="php-var">$_SESSION</span>[<span class="php-str">'taches'</span>] <span class="php-kw">as</span> <span class="php-var">$i</span> => <span class="php-var">$t</span>): ?&gt;
+    &lt;p&gt;
+      &lt;?= <span class="php-var">$t</span>[<span class="php-str">'faite'</span>] ? <span class="php-str">'✅'</span> : <span class="php-str">'⏳'</span> ?&gt;
+      &lt;?= <span class="php-var">$t</span>[<span class="php-str">'titre'</span>] ?&gt;
+      &lt;form method="POST" style="display:inline"&gt;
+        &lt;input type="hidden" name="id" value="&lt;?= <span class="php-var">$i</span> ?&gt;"&gt;
+        &lt;button type="submit" name="terminer"&gt;✓ Fait&lt;/button&gt;
+      &lt;/form&gt;
+      &lt;a href="?action=supprimer&amp;id=&lt;?= <span class="php-var">$i</span> ?&gt;"&gt;🗑&lt;/a&gt;
+    &lt;/p&gt;
+  &lt;?php <span class="php-kw">endforeach</span>; ?&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">input type="hidden"</span>
+          <span class="notion-tag">$_GET['action']</span>
+          <span class="notion-tag">unset() session</span>
+          <span class="notion-tag">array_values()</span>
+          <span class="notion-tag">PRG pattern</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO H3 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-09</span>
+          <span class="exo-name">Formulaire avec protection XSS</span>
+          <span class="exo-theme">htmlspecialchars / strip_tags / filter_input</span>
+          <span class="bonus-tag">Bonus</span>
+        </div>
+        <button class="toggle-btn" id="btn-h3">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Exercice bonus. Crée un fichier <strong>exo09.php</strong> avec un formulaire de commentaire.
+          Teste de saisir <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code> dans un champ.
+          Utilise <code>htmlspecialchars()</code> pour afficher le commentaire sans exécuter le script.
+          Utilise <code>strip_tags()</code> pour supprimer toutes les balises.
+          Utilise <code>filter_input()</code> pour récupérer les données directement filtrées.
+          Compare les trois approches et affiche chaque résultat.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Comprendre la faille XSS avec un exemple concret</li>
+            <li>Utiliser <code>htmlspecialchars($val, ENT_QUOTES, 'UTF-8')</code></li>
+            <li>Utiliser <code>strip_tags($val)</code> pour supprimer le HTML</li>
+            <li>Utiliser <code>filter_input(INPUT_POST, 'champ', FILTER_SANITIZE_SPECIAL_CHARS)</code></li>
+          </ul>
+        </div>
+
+        <div class="solution-wrapper" id="sol-h3">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-var">$brut</span> = <span class="php-var">$safe1</span> = <span class="php-var">$safe2</span> = <span class="php-var">$safe3</span> = <span class="php-str">''</span>;
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_POST</span>[<span class="php-str">'submit'</span>])) {
+    <span class="php-var">$brut</span>  = <span class="php-var">$_POST</span>[<span class="php-str">'commentaire'</span>] ?? <span class="php-str">''</span>;
+    <span class="php-var">$safe1</span> = <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$brut</span>, <span class="php-num">ENT_QUOTES</span>, <span class="php-str">'UTF-8'</span>);
+    <span class="php-var">$safe2</span> = <span class="php-fn">strip_tags</span>(<span class="php-var">$brut</span>);
+    <span class="php-var">$safe3</span> = <span class="php-fn">filter_input</span>(<span class="php-num">INPUT_POST</span>, <span class="php-str">'commentaire'</span>, <span class="php-num">FILTER_SANITIZE_SPECIAL_CHARS</span>);
+}
+<span class="php-tag">?&gt;</span>
+&lt;!DOCTYPE html&gt;&lt;html lang="fr"&gt;&lt;body&gt;
+  &lt;?php <span class="php-kw">if</span> (<span class="php-var">$brut</span>): ?&gt;
+    &lt;p&gt;&lt;strong&gt;Valeur brute&lt;/strong&gt; (DANGEREUX) :
+      &lt;?= <span class="php-var">$brut</span> ?&gt;&lt;/p&gt;
+    &lt;p&gt;&lt;strong&gt;htmlspecialchars&lt;/strong&gt; :
+      &lt;?= <span class="php-var">$safe1</span> ?&gt;&lt;/p&gt;
+    &lt;p&gt;&lt;strong&gt;strip_tags&lt;/strong&gt; :
+      &lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$safe2</span>) ?&gt;&lt;/p&gt;
+    &lt;p&gt;&lt;strong&gt;filter_input&lt;/strong&gt; :
+      &lt;?= <span class="php-var">$safe3</span> ?&gt;&lt;/p&gt;
+  &lt;?php <span class="php-kw">endif</span>; ?&gt;
+  &lt;form method="POST" action=""&gt;
+    &lt;textarea name="commentaire" rows="3"
+      placeholder="Teste : &lt;script&gt;alert('XSS')&lt;/script&gt;"&gt;&lt;/textarea&gt;
+    &lt;button type="submit" name="submit"&gt;Envoyer&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">htmlspecialchars()</span>
+          <span class="notion-tag">ENT_QUOTES</span>
+          <span class="notion-tag">strip_tags()</span>
+          <span class="notion-tag">filter_input()</span>
+          <span class="notion-tag">FILTER_SANITIZE_SPECIAL_CHARS</span>
+          <span class="notion-tag">XSS protection</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /difficile -->
+
+</main>
+
+
+
+<script>
+function showSection(niveau, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.remove('active-debutant', 'active-intermediaire', 'active-difficile');
+  });
+  document.getElementById('section-' + niveau).classList.add('active');
+  btn.classList.add('active-' + niveau);
+}
+
+function toggleSolution(id) {
+  const sol = document.getElementById('sol-' + id);
+  const btn = document.getElementById('btn-' + id);
+  sol.classList.add('open');
+  btn.textContent = 'Solution affichée ✓';
+  btn.style.borderColor = 'var(--gold)';
+  btn.style.color = 'var(--gold)';
+  btn.disabled = true;
+}
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => toggleSolution(btn.id.replace('btn-', '')));
+});
+</script>
+
+</body>
+</html>

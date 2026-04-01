@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PHP — Organisation des fichiers & Includes</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap');
+
+    :root {
+      --navy:    #2C3F77;
+      --gold:    #A0896A;
+      --darker:  #080d17;
+      --dark:    #0f1420;
+      --card:    #111827;
+      --card2:   #1a2235;
+      --border:  #1e2d47;
+      --text:    #c8d0e0;
+      --muted:   #5a6a88;
+      --green:   #4ade80;
+      --orange:  #fb923c;
+      --red:     #f87171;
+      --blue:    #60a5fa;
+      --purple:  #c084fc;
+      --yellow:  #fbbf24;
+      --code-bg: #0d1117;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--darker);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #0f1420 0%, var(--navy) 60%, #1a3a5c 100%);
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      border-bottom: 3px solid var(--gold);
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: 'require_once';
+      position: absolute; right: -1rem; top: .5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 6rem; color: rgba(255,255,255,.03);
+      pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block;
+      background: rgba(160,137,106,.15);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: .75rem; letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1rem;
+    }
+    header h1 { font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: .4rem; }
+    header p  { color: rgba(255,255,255,.6); font-size: .95rem; }
+
+    /* ── NAV TABS ─────────────────────────────────────── */
+    .nav-tabs {
+      display: flex; gap: 0;
+      background: var(--dark);
+      border-bottom: 2px solid var(--border);
+      overflow-x: auto;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-tab {
+      padding: .9rem 1.6rem;
+      background: transparent; border: none;
+      color: var(--muted); font-family: 'Syne', sans-serif;
+      font-size: .88rem; font-weight: 600;
+      cursor: pointer; white-space: nowrap;
+      border-bottom: 3px solid transparent;
+      transition: all .2s;
+    }
+    .nav-tab:hover { color: var(--text); }
+    .nav-tab.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+      background: rgba(160,137,106,.05);
+    }
+
+    /* ── SECTIONS ─────────────────────────────────────── */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+    /* ── BLOCS PÉDAGOGIQUES ───────────────────────────── */
+    .pedagogy {
+      background: var(--dark);
+      border-left: 4px solid var(--gold);
+      padding: 1rem 1.5rem;
+      font-size: .88rem; color: #8899bb;
+      margin-bottom: 2rem; border-radius: 0 6px 6px 0;
+    }
+    .pedagogy strong { color: var(--gold); }
+    .pedagogy code {
+      background: var(--code-bg); color: #79c0ff;
+      padding: .1rem .4rem; border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace; font-size: .82rem;
+    }
+
+    .section-title {
+      font-size: 1.3rem; font-weight: 800;
+      color: #fff; margin-bottom: 1.5rem;
+      padding-bottom: .6rem;
+      border-bottom: 2px solid var(--border);
+      display: flex; align-items: center; gap: .8rem;
+    }
+    .section-title .num {
+      background: var(--navy);
+      color: #fff; font-size: .8rem;
+      padding: .2rem .7rem; border-radius: 4px;
+    }
+
+    /* ── VSCODE WINDOW ────────────────────────────────── */
+    .vscode-window {
+      background: #1e1e1e;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #333;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+      margin-bottom: 2rem;
+    }
+    .vscode-titlebar {
+      background: #323233;
+      padding: .5rem 1rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .vscode-dots { display: flex; gap: .4rem; }
+    .vscode-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+    }
+    .vscode-dot.red    { background: #ff5f57; }
+    .vscode-dot.yellow { background: #febc2e; }
+    .vscode-dot.green  { background: #28c840; }
+    .vscode-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; color: #999;
+      margin-left: .5rem;
+    }
+
+    .vscode-body {
+      display: flex;
+      min-height: 340px;
+    }
+
+    /* ── SIDEBAR FICHIERS ─────────────────────────────── */
+    .vscode-sidebar {
+      width: 220px;
+      background: #252526;
+      padding: .5rem 0;
+      flex-shrink: 0;
+      border-right: 1px solid #333;
+    }
+    .sidebar-title {
+      font-size: .7rem; letter-spacing: 1px;
+      text-transform: uppercase; color: #bbb;
+      padding: .5rem 1rem .3rem;
+    }
+    .file-tree { list-style: none; }
+    .file-item {
+      display: flex; align-items: center; gap: .4rem;
+      padding: .25rem .8rem .25rem 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem; color: #ccc;
+      cursor: pointer; user-select: none;
+      transition: background .15s;
+    }
+    .file-item:hover { background: #2a2d2e; }
+    .file-item.active { background: #094771; color: #fff; }
+    .file-item.folder { color: #e8bf6a; font-weight: 600; }
+    .file-item.folder::before { content: '📁'; font-size: .85rem; }
+    .file-item.php::before    { content: '🐘'; font-size: .75rem; }
+    .file-item.sql::before    { content: '🗄️'; font-size: .75rem; }
+    .file-item.css::before    { content: '🎨'; font-size: .75rem; }
+    .file-item.env::before    { content: '⚙️'; font-size: .75rem; }
+    .file-item.indent1 { padding-left: 1.8rem; }
+    .file-item.indent2 { padding-left: 2.8rem; }
+
+    /* ── EDITEUR CODE ─────────────────────────────────── */
+    .vscode-editor {
+      flex: 1;
+      background: #1e1e1e;
+      overflow: hidden;
+    }
+    .editor-tabs {
+      display: flex;
+      background: #2d2d2d;
+      border-bottom: 1px solid #333;
+    }
+    .editor-tab {
+      padding: .4rem 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; color: #999;
+      border-right: 1px solid #333;
+      cursor: pointer;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .editor-tab.active { background: #1e1e1e; color: #fff; border-top: 2px solid #007acc; }
+    .editor-content {
+      padding: 1rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem; line-height: 1.8;
+      overflow-x: auto;
+    }
+    .editor-panel { display: none; }
+    .editor-panel.active { display: block; }
+
+    /* ── COLORATION SYNTAXIQUE ────────────────────────── */
+    .kw   { color: #c586c0; }
+    .fn   { color: #dcdcaa; }
+    .str  { color: #ce9178; }
+    .var  { color: #9cdcfe; }
+    .cmt  { color: #6a9955; font-style: italic; }
+    .tag  { color: #569cd6; }
+    .num  { color: #b5cea8; }
+    .path { color: #4ec9b0; }
+
+    /* ── LIGNE NUMÉROTÉE ──────────────────────────────── */
+    .line { display: flex; }
+    .ln {
+      width: 30px; color: #555; text-align: right;
+      padding-right: 1rem; user-select: none; flex-shrink: 0;
+    }
+
+    /* ── FLECHE D'INCLUSION ───────────────────────────── */
+    .include-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+    .flow-file {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      flex: 1; min-width: 200px;
+    }
+    .flow-file .flow-filename {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem; color: var(--gold);
+      margin-bottom: .6rem;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .flow-arrow {
+      display: flex; align-items: center;
+      font-size: 1.4rem; color: var(--gold);
+      padding: 0 .3rem;
+    }
+    .flow-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; color: #9cdcfe;
+      background: var(--code-bg);
+      padding: .3rem .6rem; border-radius: 4px;
+    }
+
+    /* ── TABLEAU COMPARATIF ───────────────────────────── */
+    .compare-table {
+      width: 100%; border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+    .compare-table th {
+      background: var(--navy);
+      color: #fff; font-size: .85rem;
+      padding: .8rem 1rem; text-align: left;
+    }
+    .compare-table td {
+      padding: .8rem 1rem; font-size: .88rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .compare-table tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+    .compare-table tr:hover td { background: rgba(255,255,255,.04); }
+    .compare-table .fn-name {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--purple); font-weight: 700; font-size: .9rem;
+    }
+    .compare-table .badge {
+      display: inline-block; font-size: .7rem;
+      padding: .15rem .5rem; border-radius: 4px;
+      font-weight: 600;
+    }
+    .badge-red    { background: rgba(248,113,113,.15); color: var(--red); }
+    .badge-green  { background: rgba(74,222,128,.15);  color: var(--green); }
+    .badge-orange { background: rgba(251,146,60,.15);  color: var(--orange); }
+
+    /* ── DEMO INTERACTIVE ─────────────────────────────── */
+    .demo-zone {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 1.5rem 0;
+    }
+    .demo-header {
+      background: var(--navy);
+      padding: .7rem 1.2rem;
+      font-size: .85rem; font-weight: 600; color: #fff;
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .demo-body { padding: 1.5rem; }
+
+    .scenario-tabs {
+      display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .scenario-btn {
+      padding: .4rem 1rem;
+      background: var(--card2); border: 1px solid var(--border);
+      color: var(--muted); font-family: 'Syne', sans-serif;
+      font-size: .82rem; font-weight: 600; border-radius: 4px;
+      cursor: pointer; transition: all .2s;
+    }
+    .scenario-btn:hover { color: var(--text); border-color: var(--text); }
+    .scenario-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+    .scenario { display: none; }
+    .scenario.active { display: block; }
+
+    /* ── ALERTE & TIPS ────────────────────────────────── */
+    .tip {
+      padding: .8rem 1.2rem;
+      border-radius: 6px; margin: 1rem 0;
+      font-size: .88rem; display: flex; gap: .8rem; align-items: flex-start;
+    }
+    .tip-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .1rem; }
+    .tip.warning { background: rgba(251,146,60,.08); border-left: 3px solid var(--orange); }
+    .tip.success { background: rgba(74,222,128,.08);  border-left: 3px solid var(--green); }
+    .tip.info    { background: rgba(96,165,250,.08);  border-left: 3px solid var(--blue); }
+    .tip.danger  { background: rgba(248,113,113,.08); border-left: 3px solid var(--red); }
+
+    /* ── GRID 2 COLS ──────────────────────────────────── */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+    @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+
+    .block {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+    }
+    .block-title {
+      background: var(--card2);
+      padding: .6rem 1rem;
+      font-size: .82rem; font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .block-body { padding: 1rem; }
+    .block-body pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem; line-height: 1.8;
+      overflow-x: auto;
+    }
+
+    /* ── SCHEMA STRUCTURE ─────────────────────────────── */
+    .schema {
+      background: var(--code-bg);
+      border-radius: 8px; padding: 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 2;
+      margin: 1.5rem 0;
+      border: 1px solid #21262d;
+    }
+    .schema .folder-name { color: var(--yellow); font-weight: 700; }
+    .schema .file-name   { color: #79c0ff; }
+    .schema .file-desc   { color: #6e7681; font-style: italic; }
+    .schema .highlight   { color: var(--green); background: rgba(74,222,128,.08); padding: 0 .3rem; border-radius: 3px; }
+
+    /* ── ANIMATED FLOW ────────────────────────────────── */
+    .flow-anim {
+      display: flex; align-items: center; gap: 0;
+      margin: 1.5rem 0; overflow-x: auto;
+    }
+    .flow-node {
+      background: var(--card2);
+      border: 2px solid var(--border);
+      border-radius: 8px; padding: .8rem 1.2rem;
+      text-align: center; flex-shrink: 0;
+      min-width: 120px;
+    }
+    .flow-node.main   { border-color: var(--blue); }
+    .flow-node.include-file { border-color: var(--green); }
+    .flow-node.result { border-color: var(--gold); }
+    .flow-node .node-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; margin-bottom: .3rem;
+    }
+    .flow-node .node-name { font-weight: 700; font-size: .9rem; }
+    .flow-connector {
+      flex: 1; height: 2px; background: var(--border);
+      position: relative; min-width: 30px;
+    }
+    .flow-connector::after {
+      content: '▶';
+      position: absolute; right: -8px; top: -10px;
+      color: var(--gold); font-size: .9rem;
+    }
+
+    footer {
+      text-align: center; padding: 2rem;
+      color: var(--muted); font-size: .82rem;
+      border-top: 1px solid var(--border);
+    }
+    footer strong { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">DWWM — Formation PHP</div>
+  <h1>Organisation des fichiers PHP</h1>
+  <p>Arborescence · require · include · header() · Bonnes pratiques</p>
+</header>
+
+<nav class="nav-tabs">
+  <button class="nav-tab active" onclick="showSection('arbo', this)">📁 Arborescence</button>
+  <button class="nav-tab" onclick="showSection('include', this)">🔗 include vs require</button>
+  <button class="nav-tab" onclick="showSection('once', this)">🔒 _once</button>
+  <button class="nav-tab" onclick="showSection('chemins', this)">🗺️ Chemins</button>
+  <button class="nav-tab" onclick="showSection('header', this)">🔀 header()</button>
+  <button class="nav-tab" onclick="showSection('pratique', this)">🏗️ Projet complet</button>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 1. ARBORESCENCE                                 -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section active" id="section-arbo">
+
+  <div class="section-title">
+    <span class="num">1</span> L'arborescence — comment ranger ses fichiers PHP
+  </div>
+
+  <div class="pedagogy">
+    <strong>Pourquoi ranger ses fichiers ?</strong> Un projet PHP mal rangé devient vite ingérable.
+    L'objectif est de séparer ce qui appartient au <code>serveur</code> (PHP, config, BDD)
+    de ce qui appartient au <code>navigateur</code> (CSS, JS, images) et d'éviter que
+    des fichiers sensibles soient accessibles depuis le web.
+  </div>
+
+  <div class="section-title" style="font-size:1rem; margin-top:0;">
+    Voilà à quoi ressemble un projet PHP bien structuré dans VS Code :
+  </div>
+
+  <div class="vscode-window">
+    <div class="vscode-titlebar">
+      <div class="vscode-dots">
+        <div class="vscode-dot red"></div>
+        <div class="vscode-dot yellow"></div>
+        <div class="vscode-dot green"></div>
+      </div>
+      <span class="vscode-title">Visual Studio Code — mon-projet/</span>
+    </div>
+    <div class="vscode-body">
+      <div class="vscode-sidebar">
+        <div class="sidebar-title">Explorateur</div>
+        <ul class="file-tree">
+          <li class="file-item folder">MON-PROJET</li>
+          <li class="file-item php indent1 active" onclick="showFile('index')">index.php</li>
+          <li class="file-item folder indent1">includes/</li>
+          <li class="file-item php indent2" onclick="showFile('header')">header.php</li>
+          <li class="file-item php indent2" onclick="showFile('footer')">footer.php</li>
+          <li class="file-item php indent2" onclick="showFile('nav')">nav.php</li>
+          <li class="file-item php indent2" onclick="showFile('connexion')">connexion.php</li>
+          <li class="file-item folder indent1">pages/</li>
+          <li class="file-item php indent2" onclick="showFile('produits')">produits.php</li>
+          <li class="file-item php indent2" onclick="showFile('detail')">detail.php</li>
+          <li class="file-item folder indent1">assets/</li>
+          <li class="file-item css indent2">style.css</li>
+          <li class="file-item folder indent2">images/</li>
+          <li class="file-item env indent1">.env</li>
+          <li class="file-item sql indent1">bdd.sql</li>
+        </ul>
+      </div>
+      <div class="vscode-editor">
+        <div class="editor-tabs">
+          <div class="editor-tab active" id="tab-index">🐘 index.php</div>
+        </div>
+        <div class="editor-content">
+
+          <!-- index.php -->
+          <div class="editor-panel active" id="panel-index">
+<div class="line"><span class="ln">1</span><span class="tag">&lt;?php</span></div>
+<div class="line"><span class="ln">2</span><span class="cmt">// index.php — point d'entrée du site</span></div>
+<div class="line"><span class="ln">3</span><span class="cmt">// Il orchestre tous les autres fichiers</span></div>
+<div class="line"><span class="ln">4</span>&nbsp;</div>
+<div class="line"><span class="ln">5</span><span class="kw">require_once</span> <span class="str">'includes/connexion.php'</span>;</div>
+<div class="line"><span class="ln">6</span><span class="kw">require_once</span> <span class="str">'includes/header.php'</span>;</div>
+<div class="line"><span class="ln">7</span><span class="kw">require_once</span> <span class="str">'includes/nav.php'</span>;</div>
+<div class="line"><span class="ln">8</span>&nbsp;</div>
+<div class="line"><span class="ln">9</span><span class="cmt">// Contenu principal de la page</span></div>
+<div class="line"><span class="ln">10</span><span class="tag">&lt;?php</span> <span class="kw">echo</span> <span class="str">"&lt;h1&gt;Bienvenue !&lt;/h1&gt;"</span>; <span class="tag">?&gt;</span></div>
+<div class="line"><span class="ln">11</span>&nbsp;</div>
+<div class="line"><span class="ln">12</span><span class="kw">require_once</span> <span class="str">'includes/footer.php'</span>;</div>
+          </div>
+
+          <!-- header.php -->
+          <div class="editor-panel" id="panel-header">
+<div class="line"><span class="ln">1</span><span class="cmt">&lt;!-- includes/header.php --&gt;</span></div>
+<div class="line"><span class="ln">2</span><span class="cmt">&lt;!-- Ce fichier contient la balise HTML du début --&gt;</span></div>
+<div class="line"><span class="ln">3</span><span class="tag">&lt;!DOCTYPE html&gt;</span></div>
+<div class="line"><span class="ln">4</span><span class="tag">&lt;html</span> lang=<span class="str">"fr"</span><span class="tag">&gt;</span></div>
+<div class="line"><span class="ln">5</span><span class="tag">&lt;head&gt;</span></div>
+<div class="line"><span class="ln">6</span>  <span class="tag">&lt;meta</span> charset=<span class="str">"UTF-8"</span><span class="tag">&gt;</span></div>
+<div class="line"><span class="ln">7</span>  <span class="tag">&lt;title&gt;</span>Mon Site<span class="tag">&lt;/title&gt;</span></div>
+<div class="line"><span class="ln">8</span>  <span class="tag">&lt;link</span> rel=<span class="str">"stylesheet"</span> href=<span class="str">"assets/style.css"</span><span class="tag">&gt;</span></div>
+<div class="line"><span class="ln">9</span><span class="tag">&lt;/head&gt;</span></div>
+<div class="line"><span class="ln">10</span><span class="tag">&lt;body&gt;</span></div>
+<div class="line"><span class="ln">11</span><span class="cmt">&lt;!-- header.php s'arrête ici --&gt;</span></div>
+<div class="line"><span class="ln">12</span><span class="cmt">&lt;!-- footer.php fermera &lt;/body&gt;&lt;/html&gt; --&gt;</span></div>
+          </div>
+
+          <!-- footer.php -->
+          <div class="editor-panel" id="panel-footer">
+<div class="line"><span class="ln">1</span><span class="cmt">&lt;!-- includes/footer.php --&gt;</span></div>
+<div class="line"><span class="ln">2</span><span class="cmt">&lt;!-- Ce fichier ferme la page HTML --&gt;</span></div>
+<div class="line"><span class="ln">3</span>&nbsp;</div>
+<div class="line"><span class="ln">4</span><span class="tag">&lt;footer&gt;</span></div>
+<div class="line"><span class="ln">5</span>  <span class="tag">&lt;p&gt;</span>&copy; 2024 Mon Site<span class="tag">&lt;/p&gt;</span></div>
+<div class="line"><span class="ln">6</span><span class="tag">&lt;/footer&gt;</span></div>
+<div class="line"><span class="ln">7</span><span class="tag">&lt;/body&gt;</span></div>
+<div class="line"><span class="ln">8</span><span class="tag">&lt;/html&gt;</span></div>
+<div class="line"><span class="ln">9</span><span class="cmt">&lt;!-- Fin du document --&gt;</span></div>
+          </div>
+
+          <!-- connexion.php -->
+          <div class="editor-panel" id="panel-connexion">
+<div class="line"><span class="ln">1</span><span class="tag">&lt;?php</span></div>
+<div class="line"><span class="ln">2</span><span class="cmt">// includes/connexion.php</span></div>
+<div class="line"><span class="ln">3</span><span class="cmt">// NE JAMAIS mettre ce fichier dans assets/ !</span></div>
+<div class="line"><span class="ln">4</span><span class="cmt">// Il contient des données sensibles</span></div>
+<div class="line"><span class="ln">5</span>&nbsp;</div>
+<div class="line"><span class="ln">6</span><span class="var">$dsn</span>  = <span class="str">'mysql:host=localhost;port=8889;dbname=ma_bdd'</span>;</div>
+<div class="line"><span class="ln">7</span><span class="var">$user</span> = <span class="str">'root'</span>;</div>
+<div class="line"><span class="ln">8</span><span class="var">$pass</span> = <span class="str">'root'</span>;</div>
+<div class="line"><span class="ln">9</span>&nbsp;</div>
+<div class="line"><span class="ln">10</span><span class="kw">try</span> {</div>
+<div class="line"><span class="ln">11</span>  <span class="var">$pdo</span> = <span class="kw">new</span> <span class="fn">PDO</span>(<span class="var">$dsn</span>, <span class="var">$user</span>, <span class="var">$pass</span>);</div>
+<div class="line"><span class="ln">12</span>} <span class="kw">catch</span> (<span class="fn">PDOException</span> <span class="var">$e</span>) {</div>
+<div class="line"><span class="ln">13</span>  <span class="kw">die</span>(<span class="str">'Connexion impossible'</span>);</div>
+<div class="line"><span class="ln">14</span>}</div>
+          </div>
+
+          <!-- nav.php -->
+          <div class="editor-panel" id="panel-nav">
+<div class="line"><span class="ln">1</span><span class="cmt">&lt;!-- includes/nav.php --&gt;</span></div>
+<div class="line"><span class="ln">2</span><span class="tag">&lt;nav&gt;</span></div>
+<div class="line"><span class="ln">3</span>  <span class="tag">&lt;a</span> href=<span class="str">"index.php"</span><span class="tag">&gt;</span>Accueil<span class="tag">&lt;/a&gt;</span></div>
+<div class="line"><span class="ln">4</span>  <span class="tag">&lt;a</span> href=<span class="str">"pages/produits.php"</span><span class="tag">&gt;</span>Produits<span class="tag">&lt;/a&gt;</span></div>
+<div class="line"><span class="ln">5</span>  <span class="tag">&lt;a</span> href=<span class="str">"pages/contact.php"</span><span class="tag">&gt;</span>Contact<span class="tag">&lt;/a&gt;</span></div>
+<div class="line"><span class="ln">6</span><span class="tag">&lt;/nav&gt;</span></div>
+          </div>
+
+          <!-- produits.php -->
+          <div class="editor-panel" id="panel-produits">
+<div class="line"><span class="ln">1</span><span class="tag">&lt;?php</span></div>
+<div class="line"><span class="ln">2</span><span class="cmt">// pages/produits.php</span></div>
+<div class="line"><span class="ln">3</span><span class="cmt">// Cette page est dans sous-dossier pages/</span></div>
+<div class="line"><span class="ln">4</span><span class="cmt">// Le chemin vers includes/ remonte d'un niveau avec ../</span></div>
+<div class="line"><span class="ln">5</span>&nbsp;</div>
+<div class="line"><span class="ln">6</span><span class="kw">require_once</span> <span class="str">'../includes/connexion.php'</span>;</div>
+<div class="line"><span class="ln">7</span><span class="kw">require_once</span> <span class="str">'../includes/header.php'</span>;</div>
+<div class="line"><span class="ln">8</span><span class="kw">require_once</span> <span class="str">'../includes/nav.php'</span>;</div>
+<div class="line"><span class="ln">9</span>&nbsp;</div>
+<div class="line"><span class="ln">10</span><span class="var">$produits</span> = <span class="var">$pdo</span>-><span class="fn">query</span>(<span class="str">'SELECT * FROM produits'</span>)-><span class="fn">fetchAll</span>();</div>
+<div class="line"><span class="ln">11</span>&nbsp;</div>
+<div class="line"><span class="ln">12</span><span class="kw">require_once</span> <span class="str">'../includes/footer.php'</span>;</div>
+          </div>
+
+          <!-- detail.php -->
+          <div class="editor-panel" id="panel-detail">
+<div class="line"><span class="ln">1</span><span class="tag">&lt;?php</span></div>
+<div class="line"><span class="ln">2</span><span class="cmt">// pages/detail.php</span></div>
+<div class="line"><span class="ln">3</span><span class="cmt">// Même logique : ../ pour remonter</span></div>
+<div class="line"><span class="ln">4</span>&nbsp;</div>
+<div class="line"><span class="ln">5</span><span class="kw">require_once</span> <span class="str">'../includes/connexion.php'</span>;</div>
+<div class="line"><span class="ln">6</span>&nbsp;</div>
+<div class="line"><span class="ln">7</span><span class="var">$id</span> = (<span class="kw">int</span>) (<span class="var">$_GET</span>[<span class="str">'id'</span>] ?? <span class="num">0</span>);</div>
+<div class="line"><span class="ln">8</span><span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT * FROM produits WHERE id = :id'</span>);</div>
+<div class="line"><span class="ln">9</span><span class="var">$stmt</span>-><span class="fn">execute</span>([<span class="str">':id'</span> => <span class="var">$id</span>]);</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="schema">
+    <div><span class="folder-name">📁 mon-projet/</span>  <span class="file-desc">← racine du projet (htdocs)</span></div>
+    <div>&nbsp;&nbsp;<span class="file-name">index.php</span>  <span class="file-desc">← point d'entrée, inclut tout</span></div>
+    <div>&nbsp;&nbsp;<span class="folder-name">📁 includes/</span>  <span class="file-desc">← fichiers réutilisables (jamais visités directement)</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight">header.php</span>  <span class="file-desc">← &lt;!DOCTYPE&gt;&lt;html&gt;&lt;head&gt;&lt;body&gt;</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight">footer.php</span>  <span class="file-desc">← &lt;/body&gt;&lt;/html&gt;</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight">nav.php</span>     <span class="file-desc">← menu de navigation</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight">connexion.php</span>  <span class="file-desc">← PDO, identifiants BDD</span></div>
+    <div>&nbsp;&nbsp;<span class="folder-name">📁 pages/</span>  <span class="file-desc">← pages du site</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-name">produits.php</span>  <span class="file-desc">← utilise ../includes/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-name">detail.php</span>    <span class="file-desc">← utilise ../includes/</span></div>
+    <div>&nbsp;&nbsp;<span class="folder-name">📁 assets/</span>  <span class="file-desc">← CSS, images, JS (accessible depuis le navigateur)</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-name">style.css</span></div>
+  </div>
+
+  <div class="tip warning">
+    <span class="tip-icon">⚠️</span>
+    <div>Le dossier <strong>includes/</strong> ne doit jamais contenir de fichiers visitables directement par l'URL. Il ne contient que des fragments PHP inclus par d'autres pages. <strong>connexion.php</strong> ne doit surtout pas être accessible depuis le navigateur !</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 2. INCLUDE VS REQUIRE                           -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="section-include">
+
+  <div class="section-title">
+    <span class="num">2</span> include vs require — quelle différence ?
+  </div>
+
+  <div class="pedagogy">
+    <strong>La question clé :</strong> Si le fichier inclus est introuvable, que se passe-t-il ?
+    C'est là que <code>include</code> et <code>require</code> se comportent différemment.
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Fonction</th>
+        <th>Si le fichier est introuvable...</th>
+        <th>L'exécution continue ?</th>
+        <th>Quand l'utiliser</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="fn-name">include</span></td>
+        <td>⚠️ Warning (avertissement), mais <strong>continue</strong></td>
+        <td><span class="badge badge-green">OUI</span></td>
+        <td>Fichiers optionnels (widget, bannière...)</td>
+      </tr>
+      <tr>
+        <td><span class="fn-name">require</span></td>
+        <td>💥 Fatal Error — <strong>stoppe tout</strong></td>
+        <td><span class="badge badge-red">NON</span></td>
+        <td>Fichiers indispensables (connexion BDD, config...)</td>
+      </tr>
+      <tr>
+        <td><span class="fn-name">include_once</span></td>
+        <td>⚠️ Warning, mais continue</td>
+        <td><span class="badge badge-green">OUI</span></td>
+        <td>Fichiers optionnels, jamais deux fois</td>
+      </tr>
+      <tr>
+        <td><span class="fn-name">require_once</span></td>
+        <td>💥 Fatal Error</td>
+        <td><span class="badge badge-red">NON</span></td>
+        <td>Fichiers critiques, jamais deux fois ✅ <strong>le plus utilisé</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="grid2">
+    <div class="block">
+      <div class="block-title" style="color:var(--orange)">❌ include — fichier manquant → continue quand même</div>
+      <div class="block-body">
+        <pre><span class="tag">&lt;?php</span>
+<span class="cmt">// widgets/pub.php n'existe pas</span>
+<span class="kw">include</span> <span class="str">'widgets/pub.php'</span>;
+
+<span class="cmt">// Warning dans les logs, mais ça continue</span>
+<span class="kw">echo</span> <span class="str">"La page s'affiche quand même !"</span>;
+<span class="cmt">// → Utile si c'est un widget optionnel</span></pre>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-title" style="color:var(--red)">💥 require — fichier manquant → TOUT s'arrête</div>
+      <div class="block-body">
+        <pre><span class="tag">&lt;?php</span>
+<span class="cmt">// connexion.php est introuvable</span>
+<span class="kw">require</span> <span class="str">'includes/connexion.php'</span>;
+
+<span class="cmt">// Fatal Error : la page est blanche</span>
+<span class="cmt">// Rien en dessous ne s'exécute</span>
+<span class="kw">echo</span> <span class="str">"Ce code ne s'exécute jamais"</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip success">
+    <span class="tip-icon">✅</span>
+    <div><strong>Règle simple à retenir :</strong> utilise <strong>toujours <code>require_once</code></strong> dans 99% des cas. Si le fichier est indispensable (connexion BDD, config, header), il vaut mieux que tout s'arrête plutôt qu'afficher une page cassée ou pleine d'erreurs SQL.</div>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon">💡</span>
+    <div><strong>Quand utiliser <code>include</code> ?</strong> Uniquement quand le fichier est vraiment optionnel : une bannière promo, un widget de météo, une sidebar... Sa disparition ne casse pas le site.</div>
+  </div>
+
+  <!-- FLOW VISUEL -->
+  <div class="section-title" style="font-size:1rem; margin-top:2rem;">
+    Ce qui se passe quand PHP lit un require_once :
+  </div>
+
+  <div class="flow-anim">
+    <div class="flow-node main">
+      <div class="node-label" style="color:var(--blue)">Fichier appelant</div>
+      <div class="node-name">index.php</div>
+    </div>
+    <div class="flow-connector"></div>
+    <div class="flow-node include-file">
+      <div class="node-label" style="color:var(--green)">require_once</div>
+      <div class="node-name">connexion.php</div>
+    </div>
+    <div class="flow-connector"></div>
+    <div class="flow-node include-file">
+      <div class="node-label" style="color:var(--green)">require_once</div>
+      <div class="node-name">header.php</div>
+    </div>
+    <div class="flow-connector"></div>
+    <div class="flow-node result">
+      <div class="node-label" style="color:var(--gold)">Résultat final</div>
+      <div class="node-name">Page HTML</div>
+    </div>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon">🧩</span>
+    <div>PHP lit le fichier appelant de haut en bas. Chaque fois qu'il rencontre un <code>require_once</code>, il <strong>copie-colle</strong> le contenu du fichier inclus à cet endroit, comme si tu avais tout écrit dans un seul fichier. Le résultat final est une seule page HTML complète.</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 3. _ONCE                                        -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="section-once">
+
+  <div class="section-title">
+    <span class="num">3</span> Pourquoi _once ? Le danger des inclusions multiples
+  </div>
+
+  <div class="pedagogy">
+    <strong>Le problème :</strong> Imagine que tu inclus <code>connexion.php</code> dans deux fichiers différents,
+    et que ces deux fichiers sont eux-mêmes inclus dans <code>index.php</code>.
+    Sans <code>_once</code>, la connexion PDO sera créée <strong>deux fois</strong> → erreur !
+  </div>
+
+  <div class="grid2">
+    <div class="block">
+      <div class="block-title" style="color:var(--red)">❌ Sans _once — double inclusion</div>
+      <div class="block-body">
+        <pre><span class="tag">&lt;?php</span>
+<span class="cmt">// index.php</span>
+<span class="kw">require</span> <span class="str">'includes/connexion.php'</span>;
+<span class="cmt">// ↑ $pdo est créé une 1ère fois</span>
+
+<span class="kw">require</span> <span class="str">'includes/header.php'</span>;
+<span class="cmt">// header.php fait aussi :</span>
+<span class="cmt">// require 'connexion.php'</span>
+<span class="cmt">// ↑ $pdo est créé une 2ème fois !</span>
+<span class="cmt">// → Variable redéfinie, erreur possible</span></pre>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-title" style="color:var(--green)">✅ Avec _once — inclus une seule fois</div>
+      <div class="block-body">
+        <pre><span class="tag">&lt;?php</span>
+<span class="cmt">// index.php</span>
+<span class="kw">require_once</span> <span class="str">'includes/connexion.php'</span>;
+<span class="cmt">// ↑ $pdo créé, PHP mémorise</span>
+
+<span class="kw">require_once</span> <span class="str">'includes/header.php'</span>;
+<span class="cmt">// header.php fait aussi :</span>
+<span class="cmt">// require_once 'connexion.php'</span>
+<span class="cmt">// ↑ PHP dit "déjà inclus, j'ignore"</span>
+<span class="cmt">// → Aucune erreur ✅</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip warning">
+    <span class="tip-icon">⚠️</span>
+    <div><strong>Règle d'or :</strong> Utilise <strong>toujours <code>require_once</code></strong> et jamais <code>require</code> seul (sauf cas très particuliers). Le <code>_once</code> ne coûte rien et évite des bugs difficiles à trouver.</div>
+  </div>
+
+  <div class="section-title" style="font-size:1rem; margin-top:2rem;">
+    Résumé des 4 fonctions en une image :
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr><th>Fonction</th><th>Si fichier absent</th><th>Double inclusion</th><th>Usage conseillé</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="fn-name">include</span></td>
+        <td>⚠️ Warning, continue</td>
+        <td>Inclus plusieurs fois</td>
+        <td>Fichier optionnel, peu utilisé</td>
+      </tr>
+      <tr>
+        <td><span class="fn-name">include_once</span></td>
+        <td>⚠️ Warning, continue</td>
+        <td>Inclus 1 seule fois</td>
+        <td>Fichier optionnel, protégé</td>
+      </tr>
+      <tr>
+        <td><span class="fn-name">require</span></td>
+        <td>💥 Fatal Error, stop</td>
+        <td>Inclus plusieurs fois</td>
+        <td>À éviter</td>
+      </tr>
+      <tr>
+        <td><span class="fn-name">require_once</span></td>
+        <td>💥 Fatal Error, stop</td>
+        <td>Inclus 1 seule fois</td>
+        <td>⭐ À utiliser dans 99% des cas</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 4. CHEMINS                                      -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="section-chemins">
+
+  <div class="section-title">
+    <span class="num">4</span> Les chemins — comment écrire le bon chemin ?
+  </div>
+
+  <div class="pedagogy">
+    <strong>C'est souvent là que les apprenants bloquent !</strong> Le chemin dans le <code>require_once</code>
+    est toujours <strong>relatif à l'emplacement du fichier qui fait l'appel</strong>, pas à la racine du projet.
+  </div>
+
+  <div class="schema">
+    <div><span class="folder-name">📁 mon-projet/</span></div>
+    <div>&nbsp;&nbsp;<span class="file-name">index.php</span>  <span class="file-desc">← je suis ICI</span></div>
+    <div>&nbsp;&nbsp;<span class="folder-name">📁 includes/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-name">connexion.php</span></div>
+    <div>&nbsp;&nbsp;<span class="folder-name">📁 pages/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-name">produits.php</span>  <span class="file-desc">← ou je suis ICI</span></div>
+  </div>
+
+  <div class="grid2">
+    <div class="block">
+      <div class="block-title">📄 Depuis index.php (à la racine)</div>
+      <div class="block-body">
+        <pre><span class="tag">&lt;?php</span>
+<span class="cmt">// index.php est à la racine</span>
+<span class="cmt">// includes/ est juste à côté</span>
+
+<span class="kw">require_once</span> <span class="str">'includes/connexion.php'</span>;
+<span class="cmt">//            ↑ chemin direct</span>
+<span class="cmt">//            on descend dans includes/</span></pre>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-title">📄 Depuis pages/produits.php (sous-dossier)</div>
+      <div class="block-body">
+        <pre><span class="tag">&lt;?php</span>
+<span class="cmt">// produits.php est dans pages/</span>
+<span class="cmt">// Il faut d'abord remonter d'un niveau</span>
+
+<span class="kw">require_once</span> <span class="str">'../includes/connexion.php'</span>;
+<span class="cmt">//            ↑ ../ = remonter d'un niveau</span>
+<span class="cmt">//            puis descendre dans includes/</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip info">
+    <span class="tip-icon">🗺️</span>
+    <div>
+      <strong>La règle des chemins relatifs :</strong><br>
+      &nbsp;&nbsp;<code>includes/fichier.php</code> → descend dans le dossier <em>includes</em><br>
+      &nbsp;&nbsp;<code>../includes/fichier.php</code> → remonte d'un niveau (<code>../</code>), puis descend dans <em>includes</em><br>
+      &nbsp;&nbsp;<code>../../includes/fichier.php</code> → remonte de deux niveaux, etc.
+    </div>
+  </div>
+
+  <div class="block" style="margin-top:1.5rem;">
+    <div class="block-title" style="color:var(--green)">✅ Solution propre : utiliser __DIR__</div>
+    <div class="block-body">
+      <pre><span class="tag">&lt;?php</span>
+<span class="cmt">// __DIR__ = chemin absolu du dossier du fichier courant</span>
+<span class="cmt">// Fonctionne peu importe d'où on l'appelle !</span>
+
+<span class="cmt">// Dans pages/produits.php :</span>
+<span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'/../includes/connexion.php'</span>;
+
+<span class="cmt">// Dans index.php :</span>
+<span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'/includes/connexion.php'</span>;
+
+<span class="cmt">// __DIR__ vaut par exemple : /Applications/MAMP/htdocs/mon-projet/pages</span>
+<span class="cmt">// Le chemin final sera toujours exact, même si tu déplaces le projet</span></pre>
+      </div>
+  </div>
+
+  <div class="tip success">
+    <span class="tip-icon">⭐</span>
+    <div><strong>Bonne pratique :</strong> utilise <code>__DIR__</code> + concaténation <code>.</code> pour construire tes chemins. C'est plus robuste que les chemins relatifs simples, surtout quand le projet grossit.</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 5. HEADER()                                     -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="section-header">
+
+  <div class="section-title">
+    <span class="num">5</span> header() — la redirection PHP
+  </div>
+
+  <div class="pedagogy">
+    <strong>Ne pas confondre !</strong> Il y a deux "header" en PHP :
+    <code>includes/header.php</code> (ton fichier HTML) et la fonction PHP <code>header()</code>
+    qui envoie des en-têtes HTTP, notamment pour <strong>rediriger l'utilisateur</strong> vers une autre page.
+  </div>
+
+  <div class="grid2">
+    <div class="block">
+      <div class="block-title" style="color:var(--purple)">🔀 header() — redirection</div>
+      <div class="block-body">
+        <pre><span class="tag">&lt;?php</span>
+<span class="cmt">// Redirige vers une autre page</span>
+<span class="fn">header</span>(<span class="str">'Location: index.php'</span>);
+<span class="fn">exit</span>(); <span class="cmt">// TOUJOURS après header() !</span>
+
+<span class="cmt">// Redirection vers une URL absolue</span>
+<span class="fn">header</span>(<span class="str">'Location: https://monsite.fr/accueil.php'</span>);
+<span class="fn">exit</span>();
+
+<span class="cmt">// Redirection avec paramètre GET</span>
+<span class="fn">header</span>(<span class="str">'Location: produits.php?message=ajoute'</span>);
+<span class="fn">exit</span>();</pre>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-title" style="color:var(--red)">❌ L'erreur la plus fréquente</div>
+      <div class="block-body">
+        <pre><span class="tag">&lt;?php</span>
+<span class="cmt">// ERREUR : du HTML ou echo AVANT header()</span>
+<span class="kw">echo</span> <span class="str">"Bonjour !"</span>; <span class="cmt">// ← envoie déjà du contenu</span>
+
+<span class="fn">header</span>(<span class="str">'Location: index.php'</span>);
+<span class="cmt">// ↑ Warning : "Cannot modify header information</span>
+<span class="cmt">//   - headers already sent"</span>
+<span class="cmt">// La redirection ne fonctionne pas !</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip danger">
+    <span class="tip-icon">🚨</span>
+    <div>
+      <strong>Règle absolue :</strong> <code>header()</code> doit être appelé <strong>avant tout affichage</strong>.
+      Pas de <code>echo</code>, pas de HTML, pas même une ligne vide ou un espace avant <code>&lt;?php</code> !
+      Sinon PHP a déjà commencé à envoyer la réponse et ne peut plus changer les en-têtes.
+    </div>
+  </div>
+
+  <div class="section-title" style="font-size:1rem; margin-top:2rem;">
+    Cas d'utilisation typiques de header()
+  </div>
+
+  <div class="demo-zone">
+    <div class="demo-header">📋 Scénarios réels</div>
+    <div class="demo-body">
+      <div class="scenario-tabs">
+        <button class="scenario-btn active" onclick="showScenario('login', this)">Après connexion</button>
+        <button class="scenario-btn" onclick="showScenario('form', this)">Après formulaire</button>
+        <button class="scenario-btn" onclick="showScenario('auth', this)">Page protégée</button>
+        <button class="scenario-btn" onclick="showScenario('logout', this)">Déconnexion</button>
+      </div>
+
+      <div class="scenario active" id="scenario-login">
+        <div class="block-title" style="margin-bottom:.8rem;">✅ Redirection après une connexion réussie</div>
+        <pre style="font-family:'JetBrains Mono',monospace; font-size:.85rem; line-height:1.8; background:var(--code-bg); padding:1.2rem; border-radius:6px; overflow-x:auto;">
+<span class="tag">&lt;?php</span>
+<span class="fn">session_start</span>(); <span class="cmt">// Toujours en tout premier !</span>
+
+<span class="kw">if</span> (<span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+    <span class="var">$email</span> = <span class="var">$_POST</span>[<span class="str">'email'</span>]   ?? <span class="str">''</span>;
+    <span class="var">$mdp</span>   = <span class="var">$_POST</span>[<span class="str">'password'</span>] ?? <span class="str">''</span>;
+
+    <span class="cmt">// On vérifie en base de données...</span>
+    <span class="var">$user</span> = <span class="fn">verifierUtilisateur</span>(<span class="var">$email</span>, <span class="var">$mdp</span>);
+
+    <span class="kw">if</span> (<span class="var">$user</span>) {
+        <span class="var">$_SESSION</span>[<span class="str">'user_id'</span>] = <span class="var">$user</span>[<span class="str">'id'</span>];
+        <span class="fn">header</span>(<span class="str">'Location: index.php'</span>); <span class="cmt">// ← Redirection !</span>
+        <span class="fn">exit</span>();
+    } <span class="kw">else</span> {
+        <span class="var">$erreur</span> = <span class="str">"Email ou mot de passe incorrect"</span>;
+        <span class="cmt">// Pas de redirection → on reste sur la page de login</span>
+    }
+}
+        </pre>
+      </div>
+
+      <div class="scenario" id="scenario-form">
+        <div class="block-title" style="margin-bottom:.8rem;">📝 Après soumission d'un formulaire (pattern PRG)</div>
+        <pre style="font-family:'JetBrains Mono',monospace; font-size:.85rem; line-height:1.8; background:var(--code-bg); padding:1.2rem; border-radius:6px; overflow-x:auto;">
+<span class="tag">&lt;?php</span>
+<span class="cmt">// ajouter-produit.php</span>
+<span class="kw">if</span> (<span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+    <span class="cmt">// Traitement du formulaire...</span>
+    <span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'INSERT INTO produits ...'</span>);
+    <span class="var">$stmt</span>-><span class="fn">execute</span>([...]);
+
+    <span class="cmt">// Pattern PRG : Post → Redirect → Get</span>
+    <span class="cmt">// Évite la double soumission si l'utilisateur recharge la page</span>
+    <span class="fn">header</span>(<span class="str">'Location: produits.php?message=ajoute'</span>);
+    <span class="fn">exit</span>();
+}
+
+<span class="cmt">// Dans produits.php, on lit le message :</span>
+<span class="kw">if</span> (<span class="kw">isset</span>(<span class="var">$_GET</span>[<span class="str">'message'</span>]) && <span class="var">$_GET</span>[<span class="str">'message'</span>] === <span class="str">'ajoute'</span>) {
+    <span class="kw">echo</span> <span class="str">"&lt;p class='success'&gt;Produit ajouté !&lt;/p&gt;"</span>;
+}
+        </pre>
+      </div>
+
+      <div class="scenario" id="scenario-auth">
+        <div class="block-title" style="margin-bottom:.8rem;">🔒 Protéger une page (vérifier si connecté)</div>
+        <pre style="font-family:'JetBrains Mono',monospace; font-size:.85rem; line-height:1.8; background:var(--code-bg); padding:1.2rem; border-radius:6px; overflow-x:auto;">
+<span class="tag">&lt;?php</span>
+<span class="cmt">// En haut de chaque page protégée</span>
+<span class="fn">session_start</span>();
+
+<span class="kw">if</span> (!<span class="kw">isset</span>(<span class="var">$_SESSION</span>[<span class="str">'user_id'</span>])) {
+    <span class="cmt">// Pas connecté → on redirige vers la page de login</span>
+    <span class="fn">header</span>(<span class="str">'Location: login.php'</span>);
+    <span class="fn">exit</span>(); <span class="cmt">// ← INDISPENSABLE !</span>
+}
+
+<span class="cmt">// Si on arrive ici, l'utilisateur EST connecté</span>
+<span class="cmt">// On peut afficher le contenu protégé</span>
+
+<span class="cmt">// Astuce : mettre ce bloc dans un fichier</span>
+<span class="cmt">// includes/auth.php et faire require_once dessus</span>
+        </pre>
+      </div>
+
+      <div class="scenario" id="scenario-logout">
+        <div class="block-title" style="margin-bottom:.8rem;">🚪 Déconnexion</div>
+        <pre style="font-family:'JetBrains Mono',monospace; font-size:.85rem; line-height:1.8; background:var(--code-bg); padding:1.2rem; border-radius:6px; overflow-x:auto;">
+<span class="tag">&lt;?php</span>
+<span class="cmt">// logout.php — page de déconnexion</span>
+<span class="fn">session_start</span>();
+
+<span class="cmt">// Détruire toutes les données de session</span>
+<span class="fn">session_unset</span>();
+<span class="fn">session_destroy</span>();
+
+<span class="cmt">// Rediriger vers l'accueil ou le login</span>
+<span class="fn">header</span>(<span class="str">'Location: login.php'</span>);
+<span class="fn">exit</span>();
+<span class="cmt">// Ne jamais oublier exit() après header() !</span>
+        </pre>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="tip success">
+    <span class="tip-icon">💡</span>
+    <div><strong>Toujours mettre <code>exit()</code> après <code>header('Location: ...')</code> !</strong> Sans <code>exit()</code>, PHP continue d'exécuter le code qui suit la redirection. L'utilisateur est redirigé dans le navigateur mais le serveur a quand même exécuté tout le reste du script — ce qui peut causer des effets de bord indésirables.</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 6. PROJET COMPLET                               -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="section-pratique">
+
+  <div class="section-title">
+    <span class="num">6</span> Projet complet — tout assembler
+  </div>
+
+  <div class="pedagogy">
+    <strong>On repart de notre catalogue produits</strong> et on l'organise correctement avec les bonnes pratiques :
+    fichiers séparés, <code>require_once</code>, chemins corrects et <code>header()</code> après ajout.
+  </div>
+
+  <div class="vscode-window">
+    <div class="vscode-titlebar">
+      <div class="vscode-dots">
+        <div class="vscode-dot red"></div>
+        <div class="vscode-dot yellow"></div>
+        <div class="vscode-dot green"></div>
+      </div>
+      <span class="vscode-title">VS Code — catalogue-shop/</span>
+    </div>
+    <div class="vscode-body">
+      <div class="vscode-sidebar">
+        <div class="sidebar-title">Explorateur</div>
+        <ul class="file-tree">
+          <li class="file-item folder">CATALOGUE-SHOP</li>
+          <li class="file-item php indent1 active" onclick="showFile2('p-index')">index.php</li>
+          <li class="file-item folder indent1">includes/</li>
+          <li class="file-item php indent2" onclick="showFile2('p-connexion')">connexion.php</li>
+          <li class="file-item php indent2" onclick="showFile2('p-header')">header.php</li>
+          <li class="file-item php indent2" onclick="showFile2('p-footer')">footer.php</li>
+          <li class="file-item folder indent1">pages/</li>
+          <li class="file-item php indent2" onclick="showFile2('p-catalogue')">catalogue.php</li>
+          <li class="file-item php indent2" onclick="showFile2('p-ajouter')">ajouter.php</li>
+          <li class="file-item folder indent1">assets/</li>
+          <li class="file-item css indent2">style.css</li>
+          <li class="file-item folder indent2">images/</li>
+        </ul>
+      </div>
+      <div class="vscode-editor">
+        <div class="editor-tabs">
+          <div class="editor-tab active" id="tab2-p-index">🐘 index.php</div>
+        </div>
+        <div class="editor-content">
+
+          <div class="editor-panel active" id="panel2-p-index">
+<div class="line"><span class="ln">1</span><span class="tag">&lt;?php</span></div>
+<div class="line"><span class="ln">2</span><span class="cmt">// index.php — point d'entrée, redirige vers le catalogue</span></div>
+<div class="line"><span class="ln">3</span><span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'/includes/connexion.php'</span>;</div>
+<div class="line"><span class="ln">4</span><span class="fn">header</span>(<span class="str">'Location: pages/catalogue.php'</span>);</div>
+<div class="line"><span class="ln">5</span><span class="fn">exit</span>();</div>
+          </div>
+
+          <div class="editor-panel" id="panel2-p-connexion">
+<div class="line"><span class="ln">1</span><span class="tag">&lt;?php</span></div>
+<div class="line"><span class="ln">2</span><span class="cmt">// includes/connexion.php — connexion PDO unique</span></div>
+<div class="line"><span class="ln">3</span><span class="var">$dsn</span>  = <span class="str">'mysql:host=localhost;port=8889;dbname=catalogue_shop;charset=utf8mb4'</span>;</div>
+<div class="line"><span class="ln">4</span><span class="var">$user</span> = <span class="str">'root'</span>;</div>
+<div class="line"><span class="ln">5</span><span class="var">$pass</span> = <span class="str">'root'</span>;</div>
+<div class="line"><span class="ln">6</span>&nbsp;</div>
+<div class="line"><span class="ln">7</span><span class="kw">try</span> {</div>
+<div class="line"><span class="ln">8</span>  <span class="var">$pdo</span> = <span class="kw">new</span> <span class="fn">PDO</span>(<span class="var">$dsn</span>, <span class="var">$user</span>, <span class="var">$pass</span>, [</div>
+<div class="line"><span class="ln">9</span>    <span class="fn">PDO</span>::<span class="fn">ATTR_ERRMODE</span>            => <span class="fn">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>,</div>
+<div class="line"><span class="ln">10</span>    <span class="fn">PDO</span>::<span class="fn">ATTR_DEFAULT_FETCH_MODE</span> => <span class="fn">PDO</span>::<span class="fn">FETCH_ASSOC</span>,</div>
+<div class="line"><span class="ln">11</span>  ]);</div>
+<div class="line"><span class="ln">12</span>} <span class="kw">catch</span> (<span class="fn">PDOException</span> <span class="var">$e</span>) {</div>
+<div class="line"><span class="ln">13</span>  <span class="fn">die</span>(<span class="str">'Connexion impossible : '</span> . <span class="var">$e</span>-><span class="fn">getMessage</span>());</div>
+<div class="line"><span class="ln">14</span>}</div>
+          </div>
+
+          <div class="editor-panel" id="panel2-p-header">
+<div class="line"><span class="ln">1</span><span class="cmt">&lt;!-- includes/header.php --&gt;</span></div>
+<div class="line"><span class="ln">2</span><span class="tag">&lt;!DOCTYPE html&gt;</span></div>
+<div class="line"><span class="ln">3</span><span class="tag">&lt;html</span> lang=<span class="str">"fr"</span><span class="tag">&gt;</span></div>
+<div class="line"><span class="ln">4</span><span class="tag">&lt;head&gt;</span></div>
+<div class="line"><span class="ln">5</span>  <span class="tag">&lt;meta</span> charset=<span class="str">"UTF-8"</span><span class="tag">&gt;</span></div>
+<div class="line"><span class="ln">6</span>  <span class="tag">&lt;title&gt;</span>Catalogue Shop<span class="tag">&lt;/title&gt;</span></div>
+<div class="line"><span class="ln">7</span>  <span class="tag">&lt;link</span> rel=<span class="str">"stylesheet"</span> href=<span class="str">"../assets/style.css"</span><span class="tag">&gt;</span></div>
+<div class="line"><span class="ln">8</span><span class="tag">&lt;/head&gt;</span></div>
+<div class="line"><span class="ln">9</span><span class="tag">&lt;body&gt;</span></div>
+<div class="line"><span class="ln">10</span><span class="tag">&lt;nav&gt;</span></div>
+<div class="line"><span class="ln">11</span>  <span class="tag">&lt;a</span> href=<span class="str">"catalogue.php"</span><span class="tag">&gt;</span>Produits<span class="tag">&lt;/a&gt;</span></div>
+<div class="line"><span class="ln">12</span>  <span class="tag">&lt;a</span> href=<span class="str">"ajouter.php"</span><span class="tag">&gt;</span>Ajouter<span class="tag">&lt;/a&gt;</span></div>
+<div class="line"><span class="ln">13</span><span class="tag">&lt;/nav&gt;</span></div>
+          </div>
+
+          <div class="editor-panel" id="panel2-p-footer">
+<div class="line"><span class="ln">1</span><span class="cmt">&lt;!-- includes/footer.php --&gt;</span></div>
+<div class="line"><span class="ln">2</span><span class="tag">&lt;footer&gt;</span></div>
+<div class="line"><span class="ln">3</span>  <span class="tag">&lt;p&gt;</span>&copy; 2024 Catalogue Shop<span class="tag">&lt;/p&gt;</span></div>
+<div class="line"><span class="ln">4</span><span class="tag">&lt;/footer&gt;</span></div>
+<div class="line"><span class="ln">5</span><span class="tag">&lt;/body&gt;</span></div>
+<div class="line"><span class="ln">6</span><span class="tag">&lt;/html&gt;</span></div>
+          </div>
+
+          <div class="editor-panel" id="panel2-p-catalogue">
+<div class="line"><span class="ln">1</span><span class="tag">&lt;?php</span></div>
+<div class="line"><span class="ln">2</span><span class="cmt">// pages/catalogue.php</span></div>
+<div class="line"><span class="ln">3</span><span class="cmt">// Dans pages/ → chemin vers includes/ avec ../</span></div>
+<div class="line"><span class="ln">4</span><span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'/../includes/connexion.php'</span>;</div>
+<div class="line"><span class="ln">5</span><span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'/../includes/header.php'</span>;</div>
+<div class="line"><span class="ln">6</span>&nbsp;</div>
+<div class="line"><span class="ln">7</span><span class="cmt">// Message après ajout</span></div>
+<div class="line"><span class="ln">8</span><span class="kw">if</span> (<span class="kw">isset</span>(<span class="var">$_GET</span>[<span class="str">'msg'</span>]) && <span class="var">$_GET</span>[<span class="str">'msg'</span>] === <span class="str">'ok'</span>) {</div>
+<div class="line"><span class="ln">9</span>  <span class="kw">echo</span> <span class="str">"&lt;p class='success'&gt;Produit ajouté !&lt;/p&gt;"</span>;</div>
+<div class="line"><span class="ln">10</span>}</div>
+<div class="line"><span class="ln">11</span>&nbsp;</div>
+<div class="line"><span class="ln">12</span><span class="var">$produits</span> = <span class="var">$pdo</span>-><span class="fn">query</span>(<span class="str">'SELECT * FROM produits'</span>)-><span class="fn">fetchAll</span>();</div>
+<div class="line"><span class="ln">13</span><span class="cmt">// ... affichage des produits</span></div>
+<div class="line"><span class="ln">14</span>&nbsp;</div>
+<div class="line"><span class="ln">15</span><span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'/../includes/footer.php'</span>;</div>
+          </div>
+
+          <div class="editor-panel" id="panel2-p-ajouter">
+<div class="line"><span class="ln">1</span><span class="tag">&lt;?php</span></div>
+<div class="line"><span class="ln">2</span><span class="cmt">// pages/ajouter.php — traitement du formulaire d'ajout</span></div>
+<div class="line"><span class="ln">3</span><span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'/../includes/connexion.php'</span>;</div>
+<div class="line"><span class="ln">4</span>&nbsp;</div>
+<div class="line"><span class="ln">5</span><span class="kw">if</span> (<span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {</div>
+<div class="line"><span class="ln">6</span>  <span class="var">$nom</span>  = <span class="fn">trim</span>(<span class="var">$_POST</span>[<span class="str">'nom'</span>]  ?? <span class="str">''</span>);</div>
+<div class="line"><span class="ln">7</span>  <span class="var">$prix</span> = (<span class="kw">float</span>) (<span class="var">$_POST</span>[<span class="str">'prix'</span>] ?? <span class="num">0</span>);</div>
+<div class="line"><span class="ln">8</span>&nbsp;</div>
+<div class="line"><span class="ln">9</span>  <span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'INSERT INTO produits (nom, prix) VALUES (:nom, :prix)'</span>);</div>
+<div class="line"><span class="ln">10</span>  <span class="var">$stmt</span>-><span class="fn">execute</span>([<span class="str">':nom'</span> => <span class="var">$nom</span>, <span class="str">':prix'</span> => <span class="var">$prix</span>]);</div>
+<div class="line"><span class="ln">11</span>&nbsp;</div>
+<div class="line"><span class="ln">12</span>  <span class="cmt">// Redirection après insertion ← Pattern PRG</span></div>
+<div class="line"><span class="ln">13</span>  <span class="fn">header</span>(<span class="str">'Location: catalogue.php?msg=ok'</span>);</div>
+<div class="line"><span class="ln">14</span>  <span class="fn">exit</span>(); <span class="cmt">// ← TOUJOURS !</span></div>
+<div class="line"><span class="ln">15</span>}</div>
+<div class="line"><span class="ln">16</span><span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'/../includes/header.php'</span>;</div>
+<div class="line"><span class="ln">17</span><span class="cmt">// Affiche le formulaire...</span></div>
+<div class="line"><span class="ln">18</span><span class="kw">require_once</span> <span class="fn">__DIR__</span> . <span class="str">'/../includes/footer.php'</span>;</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip success">
+    <span class="tip-icon">⭐</span>
+    <div>
+      <strong>Récap des bonnes pratiques :</strong><br>
+      1. <strong>Un fichier = une responsabilité</strong> (connexion, header, footer séparés)<br>
+      2. <strong>Toujours <code>require_once</code></strong> avec <code>__DIR__</code> pour les chemins<br>
+      3. <strong><code>connexion.php</code> en premier</strong>, avant tout affichage<br>
+      4. <strong><code>header()</code> + <code>exit()</code></strong> après tout traitement POST<br>
+      5. <strong>Jamais de HTML avant <code>header()</code></strong>
+    </div>
+  </div>
+
+</div>
+
+</main>
+
+<footer>
+  <strong>Real Conseil Formation</strong> — DWWM — PHP Organisation &amp; Includes<br>
+  require_once · include · header() · Chemins · Arborescence
+</footer>
+
+<script>
+// ── Navigation principale ──────────────────────────
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Fichiers VS Code (section 1) ──────────────────
+function showFile(id) {
+  document.querySelectorAll('#section-arbo .editor-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#section-arbo .file-item').forEach(f => f.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  // Met à jour l'onglet éditeur
+  const tab = document.querySelector('#section-arbo .editor-tab');
+  const names = {
+    index: '🐘 index.php', header: '🐘 header.php', footer: '🐘 footer.php',
+    nav: '🐘 nav.php', connexion: '🐘 connexion.php',
+    produits: '🐘 produits.php', detail: '🐘 detail.php'
+  };
+  if (tab) tab.textContent = names[id] || id;
+}
+
+// ── Fichiers VS Code (section 6) ──────────────────
+function showFile2(id) {
+  document.querySelectorAll('#section-pratique .editor-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#section-pratique .file-item').forEach(f => f.classList.remove('active'));
+  document.getElementById('panel2-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  const tab = document.querySelector('#section-pratique .editor-tab');
+  const names = {
+    'p-index': '🐘 index.php', 'p-connexion': '🐘 connexion.php',
+    'p-header': '🐘 header.php', 'p-footer': '🐘 footer.php',
+    'p-catalogue': '🐘 catalogue.php', 'p-ajouter': '🐘 ajouter.php'
+  };
+  if (tab) tab.textContent = names[id] || id;
+}
+
+// ── Scénarios header() ────────────────────────────
+function showScenario(id, btn) {
+  document.querySelectorAll('.scenario').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('scenario-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+
+</body>
+</html>
