@@ -247,12 +247,21 @@
         }
 
         /* ═══ SECTIONS ═══ */
+        .sections-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+        @media (max-width: 640px) {
+            .sections-grid { grid-template-columns: 1fr; }
+        }
         .section {
             background: var(--surface);
             border: 1px solid var(--border2);
             border-radius: 8px;
             padding: 1.75rem 1.75rem 1.25rem;
-            margin: 1.25rem 0;
+            margin: 0;
             position: relative;
             overflow: hidden;
             transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
@@ -687,6 +696,8 @@
             <h1>Supports cours <span class="acc">PHP</span></h1>
         </div>
 
+        <div class="sections-grid">
+
   <!-- Section 0 -->
         <div class="section">
             <div class="scan"></div>
@@ -698,12 +709,12 @@
         </div>
 
 
-        <!-- Section 0.bis -->
+        <!-- Section bis -->
         <div class="section">
             <div class="scan"></div>
             <h3>Organisation des fichiers & Includes</h3>
             <a href="./intro-PHP-organisation.html">
-                <span class="link-icon">P0.Bis</span>
+                <span class="link-icon">Bis</span>
                 Support PHP — Organisation des fichiers
             </a>
         </div>
@@ -997,6 +1008,8 @@
         </div>
 
 
+        </div><!-- /sections-grid -->
+
         <!-- Bouton retour -->
         <div class="btn-wrapper">
             <a href="../index.html" class="btn"><span>← Retour a l'accueil</span></a>
@@ -1010,7 +1023,7 @@
             <p>DWWM 2025–2026</p>
             <div class="footer-divider"></div>
             <p>&copy; DARRAS Thomas</p>
-            <p><a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a></p>
+            <p><a href="/cdn-cgi/l/email-protection#166238727764647765566473777a75797865737f7a3875797b"><span class="__cf_email__" data-cfemail="f286dc969380809381b28097939e919d9c81979b9edc919d9f">[email&#160;protected]</span></a></p>
             <p style="margin-top:0.75rem; font-size:0.62rem; color:var(--muted);">
                 Les supports sont mis a jour regulierement via GitHub
             </p>
@@ -1022,18 +1035,15 @@
     </div>
 
     <script>
-        // Re-trigger scan animation on each hover
         document.querySelectorAll('.section').forEach(section => {
             section.addEventListener('mouseenter', () => {
                 const scan = section.querySelector('.scan');
+                if (!scan) return;
                 scan.style.animation = 'none';
-                scan.offsetHeight; // force reflow
+                void scan.offsetWidth;
                 scan.style.animation = 'scanLine 1.2s linear';
             });
         });
     </script>
-
-    <script src="../cursor.js"></script>
-
 </body>
 </html>
