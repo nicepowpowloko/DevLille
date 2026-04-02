@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercices PHP — Sessions</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+    :root {
+      --navy: #2C3F77;
+      --gold: #A0896A;
+      --dark: #0f1420;
+      --darker: #080d17;
+      --card: #151d2e;
+      --border: #1e2d47;
+      --text: #c8d0e0;
+      --muted: #5a6a88;
+      --green: #4ade80;
+      --orange: #fb923c;
+      --red: #f87171;
+      --code-bg: #0d1117;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Syne', sans-serif; background: var(--darker); color: var(--text); min-height: 100vh; }
+
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a2a55 50%, var(--gold) 100%);
+      padding: 3rem 2rem 2rem; text-align: center; position: relative; overflow: hidden;
+    }
+    header::before {
+      content: 'session_start()';
+      position: absolute; font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5rem; color: rgba(255,255,255,.04);
+      top: -1rem; right: -1rem; pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block; background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2); color: #fff;
+      font-size: .75rem; letter-spacing: 2px; text-transform: uppercase;
+      padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1rem;
+    }
+    header h1 { font-size: 2.4rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+    header p { color: rgba(255,255,255,.7); font-size: 1rem; }
+    .header-meta {
+      display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .header-meta span { color: rgba(255,255,255,.6); font-size: .85rem; }
+    .header-meta span strong { color: #fff; }
+
+    .pedagogy {
+      background: var(--dark); border-left: 4px solid var(--gold);
+      padding: 1.2rem 2rem; font-size: .85rem; color: #8899bb;
+    }
+    .pedagogy strong { color: var(--gold); }
+    .pedagogy code {
+      background: var(--code-bg); color: #79c0ff;
+      padding: .1rem .4rem; border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace; font-size: .82rem;
+    }
+
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+    .tabs {
+      display: flex; gap: .5rem; margin-bottom: 2.5rem;
+      border-bottom: 2px solid var(--border); padding-bottom: .5rem;
+    }
+    .tab {
+      padding: .6rem 1.6rem; border: 2px solid transparent;
+      background: transparent; color: var(--muted);
+      font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 600;
+      cursor: pointer; border-radius: 6px 6px 0 0; transition: all .2s;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active-debutant      { color: var(--green);  border-color: var(--green);  background: rgba(74,222,128,.06); }
+    .tab.active-intermediaire { color: var(--orange); border-color: var(--orange); background: rgba(251,146,60,.06); }
+    .tab.active-difficile     { color: var(--red);    border-color: var(--red);    background: rgba(248,113,113,.06); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-green  { background: var(--green); }
+    .dot-orange { background: var(--orange); }
+    .dot-red    { background: var(--red); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .niveau-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem; padding: 1.2rem 1.5rem; border-radius: 8px;
+    }
+    .niveau-header.debutant      { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.2); }
+    .niveau-header.intermediaire { background: rgba(251,146,60,.07);  border: 1px solid rgba(251,146,60,.2); }
+    .niveau-header.difficile     { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.2); }
+
+    .niveau-label {
+      font-size: .7rem; letter-spacing: 2px; text-transform: uppercase;
+      font-weight: 700; padding: .3rem .8rem; border-radius: 4px; white-space: nowrap;
+    }
+    .debutant      .niveau-label { background: rgba(74,222,128,.15);  color: var(--green); }
+    .intermediaire .niveau-label { background: rgba(251,146,60,.15);  color: var(--orange); }
+    .difficile     .niveau-label { background: rgba(248,113,113,.15); color: var(--red); }
+    .niveau-desc { font-size: .9rem; color: var(--muted); }
+    .niveau-desc strong { color: var(--text); }
+
+    .exo {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; transition: border-color .2s;
+    }
+    .exo:hover { border-color: var(--navy); }
+
+    .exo-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .exo-title { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .exo-num {
+      font-family: 'JetBrains Mono', monospace; font-size: .75rem;
+      color: var(--muted); background: var(--dark); padding: .2rem .6rem; border-radius: 4px;
+    }
+    .exo-name { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .exo-theme {
+      font-size: .75rem; color: var(--muted); background: var(--dark);
+      padding: .2rem .7rem; border-radius: 10px;
+    }
+    .toggle-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      font-size: .8rem; padding: .3rem .8rem; border-radius: 4px; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace; transition: all .2s; white-space: nowrap;
+    }
+    .toggle-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .exo-body { padding: 1.5rem; }
+    .consigne { font-size: .95rem; line-height: 1.7; color: var(--text); margin-bottom: 1.2rem; }
+    .consigne strong { color: #fff; }
+
+    .objectifs {
+      background: var(--dark); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .objectifs h4 {
+      font-size: .75rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .6rem;
+    }
+    .objectifs li {
+      list-style: none; font-size: .88rem; color: #8899bb;
+      padding: .2rem 0 .2rem 1rem; position: relative;
+    }
+    .objectifs li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+
+    .code-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-radius: 8px; margin-bottom: 1.2rem; overflow: hidden;
+    }
+    .code-header {
+      background: #161b22; padding: .5rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #21262d;
+    }
+    .code-filename { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #8b949e; }
+    .code-lang { font-size: .7rem; color: #58a6ff; background: rgba(88,166,255,.1); padding: .1rem .5rem; border-radius: 3px; }
+    .code-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+    .php-tag { color: #ff7b72; }
+    .php-var { color: #79c0ff; }
+    .php-str { color: #a5d6ff; }
+    .php-num { color: #f2cc60; }
+    .php-kw  { color: #ff7b72; }
+    .php-fn  { color: #d2a8ff; }
+    .php-cmt { color: #6e7681; font-style: italic; }
+
+    .expected {
+      background: #0d1117; border: 1px solid #21262d;
+      border-left: 3px solid var(--green); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .expected h4 {
+      font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--green); margin-bottom: .6rem;
+    }
+    .expected pre { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: #7ee787; line-height: 1.8; }
+
+    .solution-wrapper { display: none; }
+    .solution-wrapper.open { display: block; }
+    .solution-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-left: 3px solid var(--gold); border-radius: 6px; overflow: hidden;
+    }
+    .solution-header {
+      background: #161b22; padding: .5rem 1rem; font-size: .75rem;
+      color: var(--gold); letter-spacing: 1px; text-transform: uppercase;
+      border-bottom: 1px solid #21262d;
+    }
+    .solution-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+
+    .notions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+    .notion-tag {
+      font-size: .72rem; padding: .2rem .7rem; border-radius: 10px;
+      background: rgba(44,63,119,.3); color: #79a4f5;
+      border: 1px solid rgba(44,63,119,.5);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .bonus-tag {
+      display: inline-block; font-size: .7rem; padding: .2rem .7rem;
+      background: rgba(248,113,113,.1); color: var(--red);
+      border: 1px solid rgba(248,113,113,.3); border-radius: 10px;
+      margin-left: .5rem; vertical-align: middle;
+    }
+
+    footer {
+      text-align: center; padding: 2rem; color: var(--muted);
+      font-size: .82rem; border-top: 1px solid var(--border);
+    }
+    footer strong { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">DWWM — Formation PHP</div>
+  <h1>Exercices PHP</h1>
+  <p>Sessions &amp; session_start()</p>
+  <div class="header-meta">
+    <span><strong>3</strong> niveaux</span>
+    <span><strong>9</strong> exercices</span>
+    <span>Notions vues : <strong>session_start() / $_SESSION / unset() / session_destroy() / session_unset()</strong></span>
+  </div>
+</header>
+
+<div class="pedagogy">
+  <strong>Notions travaillées :</strong>
+  <code>session_start()</code> → 
+  super globale <code>$_SESSION</code> → 
+  <code>isset()</code> / <code>unset()</code> → 
+  <code>session_destroy()</code> / <code>session_unset()</code> → 
+  compteur de visites, panier, login simple, préférences utilisateur
+</div>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab active-debutant" onclick="showSection('debutant', this)">
+      <span class="dot dot-green"></span> Débutant
+    </button>
+    <button class="tab" onclick="showSection('intermediaire', this)">
+      <span class="dot dot-orange"></span> Intermédiaire
+    </button>
+    <button class="tab" onclick="showSection('difficile', this)">
+      <span class="dot dot-red"></span> Difficile
+    </button>
+  </div>
+
+  <!-- ===== DÉBUTANT ===== -->
+  <div class="section active" id="section-debutant">
+
+    <div class="niveau-header debutant">
+      <span class="niveau-label">Débutant</span>
+      <div class="niveau-desc">
+        <strong>Objectif :</strong> Comprendre le démarrage d’une session et la manipulation basique de variables de session.
+      </div>
+    </div>
+
+    <!-- EXO D1 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-01</span>
+          <span class="exo-name">Bienvenue avec session</span>
+          <span class="exo-theme">session_start() + $_SESSION</span>
+        </div>
+        <button class="toggle-btn" id="btn-d1">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo01.php</strong>. Au tout début du fichier, démarre la session avec <code>session_start()</code>.<br>
+          Si la variable de session <code>$_SESSION['nom']</code> n’existe pas, initialise-la avec ton prénom.<br>
+          Affiche ensuite : « Bonjour [prénom] ! » et le nombre de visites de la page (compteur de session).
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Appeler <code>session_start()</code> en tout premier</li>
+            <li>Utiliser <code>isset()</code> pour vérifier une variable de session</li>
+            <li>Créer et incrémenter un compteur de visites</li>
+          </ul>
+        </div>
+
+        <div class="solution-wrapper" id="sol-d1">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-kw">session_start</span>();
+
+<span class="php-kw">if</span> (!<span class="php-fn">isset</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'nom'</span>])) {
+    <span class="php-var">$_SESSION</span>[<span class="php-str">'nom'</span>] = <span class="php-str">"Alex"</span>;
+}
+
+<span class="php-kw">if</span> (!<span class="php-fn">isset</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'visites'</span>])) {
+    <span class="php-var">$_SESSION</span>[<span class="php-str">'visites'</span>] = <span class="php-num">0</span>;
+}
+<span class="php-var">$_SESSION</span>[<span class="php-str">'visites'</span>]++;
+
+<span class="php-kw">echo</span> <span class="php-str">"Bonjour "</span> . <span class="php-var">$_SESSION</span>[<span class="php-str">'nom'</span>] . <span class="php-str">" !&lt;br&gt;"</span>;
+<span class="php-kw">echo</span> <span class="php-str">"Vous avez visité cette page "</span> . <span class="php-var">$_SESSION</span>[<span class="php-str">'visites'</span>] . <span class="php-str">" fois.";</span>
+<span class="php-tag">?&gt;</span></pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">session_start()</span>
+          <span class="notion-tag">$_SESSION</span>
+          <span class="notion-tag">isset()</span>
+          <span class="notion-tag">compteur</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO D2 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-02</span>
+          <span class="exo-name">Préférence de couleur</span>
+          <span class="exo-theme">session + formulaire</span>
+        </div>
+        <button class="toggle-btn" id="btn-d2">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée deux fichiers : <strong>exo02.php</strong> (formulaire) et <strong>traitement.php</strong>.<br>
+          Dans le formulaire, propose un choix de couleur de fond (rouge, bleu, vert). Envoie en POST vers traitement.php.<br>
+          Dans traitement.php, démarre la session et stocke la couleur choisie dans <code>$_SESSION['couleur']</code>, puis redirige vers exo02.php.<br>
+          Dans exo02.php, applique la couleur de fond enregistrée en session (sinon couleur par défaut).
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Stocker une valeur venant d’un formulaire dans une session</li>
+            <li>Utiliser la session pour persister un choix utilisateur</li>
+            <li><code>header("Location: ...")</code> après traitement</li>
+          </ul>
+        </div>
+
+        <div class="solution-wrapper" id="sol-d2">
+          <div class="solution-block">
+            <div class="solution-header">Solution (traitement.php)</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-kw">session_start</span>();
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_POST</span>[<span class="php-str">'couleur'</span>])) {
+    <span class="php-var">$_SESSION</span>[<span class="php-str">'couleur'</span>] = <span class="php-var">$_POST</span>[<span class="php-str">'couleur'</span>];
+}
+<span class="php-fn">header</span>(<span class="php-str">"Location: exo02.php"</span>);
+<span class="php-kw">exit</span>;
+<span class="php-tag">?&gt;</span></pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">session_start()</span>
+          <span class="notion-tag">$_SESSION['clé'] = valeur</span>
+          <span class="notion-tag">header Location</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO D3 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-03</span>
+          <span class="exo-name">Compteur de visites global</span>
+          <span class="exo-theme">session + unset</span>
+        </div>
+        <button class="toggle-btn" id="btn-d3">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>exo03.php</strong>. Affiche le nombre total de visites sur le site (toutes pages confondues).<br>
+          Ajoute un lien « Réinitialiser le compteur » qui supprime la variable de session correspondante avec <code>unset()</code>.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Compteur persistant sur plusieurs pages</li>
+            <li>Supprimer une variable de session avec <code>unset($_SESSION['clé'])</code></li>
+          </ul>
+        </div>
+
+        <div class="solution-wrapper" id="sol-d3">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-kw">session_start</span>();
+
+<span class="php-kw">if</span> (!<span class="php-fn">isset</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'total_visites'</span>])) {
+    <span class="php-var">$_SESSION</span>[<span class="php-str">'total_visites'</span>] = <span class="php-num">0</span>;
+}
+<span class="php-var">$_SESSION</span>[<span class="php-str">'total_visites'</span>]++;
+
+<span class="php-kw">echo</span> <span class="php-str">"Nombre total de visites sur le site : "</span> . <span class="php-var">$_SESSION</span>[<span class="php-str">'total_visites'</span>];
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_GET</span>[<span class="php-str">'reset'</span>])) {
+    <span class="php-fn">unset</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'total_visites'</span>]);
+    <span class="php-fn">header</span>(<span class="php-str">"Location: exo03.php"</span>);
+    <span class="php-kw">exit</span>;
+}
+<span class="php-tag">?&gt;</span>
+&lt;a href="exo03.php?reset=1"&gt;Réinitialiser le compteur&lt;/a&gt;</pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">unset($_SESSION[...])</span>
+          <span class="notion-tag">$_GET pour action</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /débutant -->
+
+  <!-- ===== INTERMÉDIAIRE ===== -->
+  <div class="section" id="section-intermediaire">
+
+    <div class="niveau-header intermediaire">
+      <span class="niveau-label">Intermédiaire</span>
+      <div class="niveau-desc">
+        <strong>Objectif :</strong> Gérer plusieurs variables de session, destruction partielle ou totale.
+      </div>
+    </div>
+
+    <!-- EXO I1 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-04</span>
+          <span class="exo-name">Panier simple</span>
+          <span class="exo-theme">tableau dans $_SESSION</span>
+        </div>
+        <button class="toggle-btn" id="btn-i1">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée un fichier <strong>panier.php</strong>. Initialise un tableau <code>$_SESSION['panier']</code> si nécessaire.<br>
+          Ajoute 3 produits (via des liens GET ou un formulaire). Affiche le contenu du panier et le nombre d’articles.<br>
+          Ajoute un bouton « Vider le panier » qui supprime uniquement la clé panier.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Stocker un tableau dans une session</li>
+            <li><code>array_push()</code> ou <code>$_SESSION['panier'][] = ...</code></li>
+            <li><code>count()</code> sur un tableau de session</li>
+          </ul>
+        </div>
+
+        <div class="solution-wrapper" id="sol-i1">
+          <div class="solution-block">
+            <div class="solution-header">Solution (extrait)</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-kw">session_start</span>();
+<span class="php-kw">if</span> (!<span class="php-fn">isset</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'panier'</span>])) {
+    <span class="php-var">$_SESSION</span>[<span class="php-str">'panier'</span>] = [];
+}
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_GET</span>[<span class="php-str">'add'</span>])) {
+    <span class="php-fn">array_push</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'panier'</span>], <span class="php-var">$_GET</span>[<span class="php-str">'add'</span>]);
+}
+
+<span class="php-kw">echo</span> <span class="php-str">"Articles dans le panier : "</span> . <span class="php-fn">count</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'panier'</span>]);
+<span class="php-kw">foreach</span> (<span class="php-var">$_SESSION</span>[<span class="php-str">'panier'</span>] <span class="php-kw">as</span> <span class="php-var">$item</span>) {
+    <span class="php-kw">echo</span> <span class="php-str">"&lt;li&gt;"</span> . <span class="php-var">$item</span> . <span class="php-str">"&lt;/li&gt;"</span>;
+}
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_GET</span>[<span class="php-str">'vider'</span>])) {
+    <span class="php-var">$_SESSION</span>[<span class="php-str">'panier'</span>] = [];
+}
+<span class="php-tag">?&gt;</span></pre>
+          </div>
+        </div>
+        <div class="notions">
+          <span class="notion-tag">tableau dans $_SESSION</span>
+          <span class="notion-tag">array_push()</span>
+          <span class="notion-tag">vider une clé</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO I2 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-05</span>
+          <span class="exo-name">Login / Logout simple</span>
+          <span class="exo-theme">session + déconnexion</span>
+        </div>
+        <button class="toggle-btn" id="btn-i2">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Simule un login : un formulaire avec username et mot de passe fixe (ex: admin / 1234).<br>
+          Si les identifiants sont corrects, stocke <code>$_SESSION['user'] = $username;</code> et affiche un espace membre.<br>
+          Ajoute un lien « Déconnexion » qui détruit la session ou uniquement la variable user.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Vérifier l’authentification via session</li>
+            <li><code>session_destroy()</code> ou <code>unset($_SESSION['user'])</code></li>
+            <li>Protection d’une page avec <code>if (!isset($_SESSION['user']))</code></li>
+          </ul>
+        </div>
+
+        <div class="solution-wrapper" id="sol-i2">
+          <div class="solution-block">
+            <div class="solution-header">Solution (extrait login)</div>
+            <pre><span class="php-tag">&lt;?php</span>
+<span class="php-kw">session_start</span>();
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_POST</span>[<span class="php-str">'username'</span>])) {
+    <span class="php-kw">if</span> (<span class="php-var">$_POST</span>[<span class="php-str">'username'</span>] === <span class="php-str">'admin'</span> && <span class="php-var">$_POST</span>[<span class="php-str">'password'</span>] === <span class="php-str">'1234'</span>) {
+        <span class="php-var">$_SESSION</span>[<span class="php-str">'user'</span>] = <span class="php-var">$_POST</span>[<span class="php-str">'username'</span>];
+    }
+}
+
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_GET</span>[<span class="php-str">'logout'</span>])) {
+    <span class="php-fn">unset</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'user'</span>]);
+    <span class="php-kw">session_destroy</span>();
+}
+<span class="php-tag">?&gt;</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /intermédiaire -->
+
+  <!-- ===== DIFFICILE ===== -->
+  <div class="section" id="section-difficile">
+
+    <div class="niveau-header difficile">
+      <span class="niveau-label">Difficile</span>
+      <div class="niveau-desc">
+        <strong>Objectif :</strong> Combiner sessions avec logique plus avancée (panier complet, timeout, etc.).
+      </div>
+    </div>
+
+    <!-- EXO H1 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-06</span>
+          <span class="exo-name">Panier avec quantité</span>
+          <span class="exo-theme">tableau associatif dans session</span>
+        </div>
+        <button class="toggle-btn" id="btn-h1">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Améliore le panier : chaque article est un tableau associatif <code>['nom' => , 'prix' => , 'qte' => ]</code>.<br>
+          Permets d’ajouter, de modifier la quantité et de supprimer un article.<br>
+          Calcule le total du panier.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Tableau de tableaux dans <code>$_SESSION</code></li>
+            <li>Modification et suppression d’éléments</li>
+            <li>Calcul de total avec boucle</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO H2 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-07</span>
+          <span class="exo-name">Session avec timeout</span>
+          <span class="exo-theme">inactivité</span>
+        </div>
+        <button class="toggle-btn" id="btn-h2">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée une session utilisateur qui se détruit automatiquement après 5 minutes d’inactivité.<br>
+          À chaque chargement de page, vérifie le temps écoulé depuis la dernière activité et mets à jour le timestamp.
+        </p>
+        <div class="objectifs">
+          <h4>Objectifs</h4>
+          <ul>
+            <li>Stocker un timestamp <code>$_SESSION['last_activity'] = time();</code></li>
+            <li>Comparer avec <code>time() - last_activity > 300</code></li>
+            <li>Destruction automatique de la session</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO H3 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-08</span>
+          <span class="exo-name">Multi-pages avec session</span>
+          <span class="exo-theme">profil + préférences</span>
+          <span class="bonus-tag">Bonus</span>
+        </div>
+        <button class="toggle-btn" id="btn-h3">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">
+          Crée plusieurs pages (accueil, profil, préférences) qui partagent toutes la même session.<br>
+          Sur profil : afficher et modifier nom/prénom stockés en session.<br>
+          Sur préférences : choisir thème clair/sombre et langue, sauvegarder en session.
+        </p>
+      </div>
+    </div>
+
+  </div><!-- /difficile -->
+
+</main>
+
+<script>
+function showSection(niveau, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.remove('active-debutant', 'active-intermediaire', 'active-difficile');
+  });
+  document.getElementById('section-' + niveau).classList.add('active');
+  btn.classList.add('active-' + niveau);
+}
+
+function toggleSolution(id) {
+  const sol = document.getElementById('sol-' + id);
+  const btn = document.getElementById('btn-' + id);
+  sol.classList.add('open');
+  btn.textContent = 'Solution affichée ✓';
+  btn.style.borderColor = 'var(--gold)';
+  btn.style.color = 'var(--gold)';
+  btn.disabled = true;
+}
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => toggleSolution(btn.id.replace('btn-', '')));
+});
+</script>
+
+</body>
+</html>
