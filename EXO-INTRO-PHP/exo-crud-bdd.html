@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercices CRUD — PHP &amp; PDO avec Base de donnees</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+    :root {
+      --navy: #2C3F77;
+      --gold: #A0896A;
+      --dark: #0f1420;
+      --darker: #080d17;
+      --card: #151d2e;
+      --border: #1e2d47;
+      --text: #c8d0e0;
+      --muted: #5a6a88;
+      --green: #4ade80;
+      --orange: #fb923c;
+      --red: #f87171;
+      --code-bg: #0d1117;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Syne', sans-serif; background: var(--darker); color: var(--text); min-height: 100vh; }
+
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a2a55 50%, var(--gold) 100%);
+      padding: 3rem 2rem 2rem; text-align: center; position: relative; overflow: hidden;
+    }
+    header::before {
+      content: 'CRUD';
+      position: absolute; font-family: 'JetBrains Mono', monospace;
+      font-size: 8rem; color: rgba(255,255,255,.04);
+      top: -1rem; right: -1rem; pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block; background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2); color: #fff;
+      font-size: .75rem; letter-spacing: 2px; text-transform: uppercase;
+      padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1rem;
+    }
+    header h1 { font-size: 2.4rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+    header p { color: rgba(255,255,255,.7); font-size: 1rem; }
+    .header-meta {
+      display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .header-meta span { color: rgba(255,255,255,.6); font-size: .85rem; }
+    .header-meta span strong { color: #fff; }
+
+    .pedagogy {
+      background: var(--dark); border-left: 4px solid var(--gold);
+      padding: 1.2rem 2rem; font-size: .85rem; color: #8899bb;
+    }
+    .pedagogy strong { color: var(--gold); }
+    .pedagogy code {
+      background: var(--code-bg); color: #79c0ff;
+      padding: .1rem .4rem; border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace; font-size: .82rem;
+    }
+
+    .alerte-prochaine {
+      background: rgba(251,146,60,.07); border: 1px solid rgba(251,146,60,.25);
+      border-left: 4px solid var(--orange);
+      padding: .8rem 1.5rem; margin: 1.5rem 0;
+      font-size: .88rem; color: #f4c07a; border-radius: 0 6px 6px 0;
+    }
+    .alerte-prochaine strong { color: var(--orange); }
+
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+    .tabs {
+      display: flex; gap: .5rem; margin-bottom: 2.5rem;
+      border-bottom: 2px solid var(--border); padding-bottom: .5rem;
+    }
+    .tab {
+      padding: .6rem 1.6rem; border: 2px solid transparent;
+      background: transparent; color: var(--muted);
+      font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 600;
+      cursor: pointer; border-radius: 6px 6px 0 0; transition: all .2s;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active-debutant      { color: var(--green);  border-color: var(--green);  background: rgba(74,222,128,.06); }
+    .tab.active-intermediaire { color: var(--orange); border-color: var(--orange); background: rgba(251,146,60,.06); }
+    .tab.active-difficile     { color: var(--red);    border-color: var(--red);    background: rgba(248,113,113,.06); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-green  { background: var(--green); }
+    .dot-orange { background: var(--orange); }
+    .dot-red    { background: var(--red); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .niveau-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem; padding: 1.2rem 1.5rem; border-radius: 8px;
+    }
+    .niveau-header.debutant      { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.2); }
+    .niveau-header.intermediaire { background: rgba(251,146,60,.07);  border: 1px solid rgba(251,146,60,.2); }
+    .niveau-header.difficile     { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.2); }
+
+    .niveau-label {
+      font-size: .7rem; letter-spacing: 2px; text-transform: uppercase;
+      font-weight: 700; padding: .3rem .8rem; border-radius: 4px; white-space: nowrap;
+    }
+    .debutant      .niveau-label { background: rgba(74,222,128,.15);  color: var(--green); }
+    .intermediaire .niveau-label { background: rgba(251,146,60,.15);  color: var(--orange); }
+    .difficile     .niveau-label { background: rgba(248,113,113,.15); color: var(--red); }
+    .niveau-desc { font-size: .9rem; color: var(--muted); }
+    .niveau-desc strong { color: var(--text); }
+
+    .exo {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; transition: border-color .2s;
+    }
+    .exo:hover { border-color: var(--navy); }
+
+    .exo-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .exo-header:hover { background: rgba(255,255,255,.02); }
+    .exo-title { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .exo-num {
+      font-family: 'JetBrains Mono', monospace; font-size: .75rem;
+      color: var(--muted); background: var(--dark); padding: .2rem .6rem; border-radius: 4px;
+    }
+    .exo-name { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .exo-theme {
+      font-size: .75rem; color: var(--muted); background: var(--dark);
+      padding: .2rem .7rem; border-radius: 10px;
+    }
+    .toggle-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      font-size: .8rem; padding: .3rem .8rem; border-radius: 4px; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace; transition: all .2s; white-space: nowrap;
+    }
+    .toggle-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .exo-body { padding: 1.5rem; }
+    .consigne { font-size: .95rem; line-height: 1.7; color: var(--text); margin-bottom: 1.2rem; }
+    .consigne strong { color: #fff; }
+
+    .objectifs {
+      background: var(--dark); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .objectifs h4 {
+      font-size: .75rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .6rem;
+    }
+    .objectifs li {
+      list-style: none; font-size: .88rem; color: #8899bb;
+      padding: .2rem 0 .2rem 1rem; position: relative;
+    }
+    .objectifs li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+
+    .code-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-radius: 8px; margin-bottom: 1.2rem; overflow: hidden;
+    }
+    .code-header {
+      background: #161b22; padding: .5rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #21262d;
+    }
+    .code-filename { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #8b949e; }
+    .code-lang { font-size: .7rem; color: #58a6ff; background: rgba(88,166,255,.1); padding: .1rem .5rem; border-radius: 3px; }
+    .code-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+    .php-tag { color: #ff7b72; }
+    .php-var { color: #79c0ff; }
+    .php-str { color: #a5d6ff; }
+    .php-num { color: #f2cc60; }
+    .php-kw  { color: #ff7b72; }
+    .php-fn  { color: #d2a8ff; }
+    .php-cmt { color: #6e7681; font-style: italic; }
+
+    .expected {
+      background: #0d1117; border: 1px solid #21262d;
+      border-left: 3px solid var(--green); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .expected h4 {
+      font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--green); margin-bottom: .6rem;
+    }
+    .expected pre { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: #7ee787; line-height: 1.8; }
+
+    .solution-wrapper { display: none; }
+    .solution-wrapper.open { display: block; }
+    .solution-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-left: 3px solid var(--gold); border-radius: 6px; overflow: hidden;
+    }
+    .solution-header {
+      background: #161b22; padding: .5rem 1rem; font-size: .75rem;
+      color: var(--gold); letter-spacing: 1px; text-transform: uppercase;
+      border-bottom: 1px solid #21262d;
+    }
+    .solution-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+
+    .notions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+    .notion-tag {
+      font-size: .72rem; padding: .2rem .7rem; border-radius: 10px;
+      background: rgba(44,63,119,.3); color: #79a4f5;
+      border: 1px solid rgba(44,63,119,.5);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .bonus-tag {
+      display: inline-block; font-size: .7rem; padding: .2rem .7rem;
+      background: rgba(248,113,113,.1); color: var(--red);
+      border: 1px solid rgba(248,113,113,.3); border-radius: 10px;
+      margin-left: .5rem; vertical-align: middle;
+    }
+
+    footer {
+      text-align: center; padding: 2rem; color: var(--muted);
+      font-size: .82rem; border-top: 1px solid var(--border);
+    }
+    footer strong { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">DWWM — Formation PHP</div>
+  <h1>Exercices CRUD</h1>
+  <p>Create · Read · Update · Delete — PHP, PDO &amp; MariaDB</p>
+  <div class="header-meta">
+    <span><strong>3</strong> niveaux</span>
+    <span><strong>9</strong> exercices</span>
+    <span>Notions vues : <strong>INSERT · SELECT · UPDATE · DELETE · PDO · prepare · execute</strong></span>
+  </div>
+</header>
+
+<div class="pedagogy">
+  <strong>Notions travaillees :</strong>
+  creer des donnees avec <code>INSERT INTO</code> via PDO &rarr;
+  lire avec <code>SELECT</code> et <code>fetchAll()</code> &rarr;
+  modifier avec <code>UPDATE</code> et requete preparee &rarr;
+  supprimer avec <code>DELETE</code> &rarr;
+  securiser avec <code>prepare()</code> + <code>execute()</code> &rarr;
+  pattern PRG (Post Redirect Get)
+</div>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab active-debutant" onclick="showSection('debutant', this)"><span class="dot dot-green"></span> Debutant</button>
+    <button class="tab" onclick="showSection('intermediaire', this)"><span class="dot dot-orange"></span> Intermediaire</button>
+    <button class="tab" onclick="showSection('difficile', this)"><span class="dot dot-red"></span> Difficile</button>
+  </div>
+
+  <div class="section active" id="section-debutant">
+
+    <div class="niveau-header debutant">
+      <span class="niveau-label">Debutant</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Se connecter a la BDD avec PDO, afficher tous les enregistrements et en ajouter un nouveau via un formulaire.</div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-01</span>
+          <span class="exo-name">Connexion PDO + afficher les produits</span>
+          <span class="exo-theme">new PDO · query() · fetchAll() · foreach</span>
+        </div>
+        <button class="toggle-btn" id="btn-01">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>connexion.php</strong> avec la connexion PDO, puis un fichier <strong>liste.php</strong> qui inclut la connexion et affiche tous les produits de la table <code>produits</code> dans un tableau HTML. Chaque ligne doit afficher : id, nom, prix et stock.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Creer la connexion PDO avec <code>try/catch</code> et <code>ATTR_ERRMODE_EXCEPTION</code></li>
+        <li>Inclure la connexion dans liste.php avec <code>require_once</code></li>
+        <li>Executer : <code>$stmt = $pdo->query('SELECT * FROM produits ORDER BY nom')</code></li>
+        <li>Recuperer tout : <code>$produits = $stmt->fetchAll()</code></li>
+        <li>Afficher dans un <code>&lt;table&gt;</code> HTML avec <code>foreach</code></li>
+      </ul></div>
+
+
+      <div class="solution-wrapper" id="sol-01">
+        <div class="solution-block">
+          <div class="solution-header">Solution — connexion.php</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-var">$dsn</span>  = <span class="php-str">'mysql:host=localhost;port=8889;dbname=catalogue_shop;charset=utf8mb4'</span>;
+<span class="php-var">$user</span> = <span class="php-str">'root'</span>; <span class="php-var">$pass</span> = <span class="php-str">'root'</span>;
+<span class="php-kw">try</span> {
+    <span class="php-var">$pdo</span> = <span class="php-kw">new</span> <span class="php-fn">PDO</span>(<span class="php-var">$dsn</span>, <span class="php-var">$user</span>, <span class="php-var">$pass</span>, [
+        <span class="php-fn">PDO</span>::ATTR_ERRMODE            => <span class="php-fn">PDO</span>::ERRMODE_EXCEPTION,
+        <span class="php-fn">PDO</span>::ATTR_DEFAULT_FETCH_MODE => <span class="php-fn">PDO</span>::FETCH_ASSOC,
+    ]);
+} <span class="php-kw">catch</span> (<span class="php-fn">PDOException</span> <span class="php-var">$e</span>) {
+    <span class="php-kw">die</span>(<span class="php-str">'Connexion impossible : '</span> . <span class="php-var">$e</span>-><span class="php-fn">getMessage</span>());
+}
+          </pre>
+        </div>
+        <div class="solution-block" style="margin-top:.8rem;">
+          <div class="solution-header">Solution — liste.php</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>;
+<span class="php-var">$produits</span> = <span class="php-var">$pdo</span>-><span class="php-fn">query</span>(<span class="php-str">'SELECT * FROM produits ORDER BY nom'</span>)-><span class="php-fn">fetchAll</span>();
+<span class="php-tag">?&gt;</span>
+&lt;!DOCTYPE html&gt;&lt;html lang="fr"&gt;&lt;body&gt;
+&lt;h1&gt;Liste des produits&lt;/h1&gt;
+&lt;p&gt;&lt;?= <span class="php-fn">count</span>(<span class="php-var">$produits</span>) ?&gt; produits affiches&lt;/p&gt;
+&lt;table border="1"&gt;
+  &lt;tr&gt;&lt;th&gt;ID&lt;/th&gt;&lt;th&gt;Nom&lt;/th&gt;&lt;th&gt;Prix&lt;/th&gt;&lt;th&gt;Stock&lt;/th&gt;&lt;/tr&gt;
+  &lt;?php <span class="php-kw">foreach</span> (<span class="php-var">$produits</span> <span class="php-kw">as</span> <span class="php-var">$p</span>): ?&gt;
+  &lt;tr&gt;
+    &lt;td&gt;&lt;?= <span class="php-var">$p</span>[<span class="php-str">'id'</span>] ?&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$p</span>[<span class="php-str">'nom'</span>]) ?&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;?= <span class="php-fn">number_format</span>(<span class="php-var">$p</span>[<span class="php-str">'prix'</span>], 2, <span class="php-str">','</span>, <span class="php-str">' '</span>) ?&gt; &euro;&lt;/td&gt;
+    &lt;td&gt;&lt;?= <span class="php-var">$p</span>[<span class="php-str">'stock'</span>] ?&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;?php <span class="php-kw">endforeach</span>; ?&gt;
+&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">require_once</span>
+          <span class="notion-tag">new PDO()</span>
+          <span class="notion-tag">query()</span>
+          <span class="notion-tag">fetchAll()</span>
+          <span class="notion-tag">foreach</span>
+          <span class="notion-tag">htmlspecialchars()</span>
+          <span class="notion-tag">number_format()</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-02</span>
+          <span class="exo-name">Ajouter un produit (CREATE)</span>
+          <span class="exo-theme">INSERT INTO · prepare() · execute() · lastInsertId()</span>
+        </div>
+        <button class="toggle-btn" id="btn-02">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>ajouter.php</strong> avec un formulaire HTML (nom, prix, stock, categorie_id). Quand le formulaire est soumis, insere le nouveau produit dans la base avec une requete preparee. Recupere l'id genere avec <code>lastInsertId()</code> et redirige vers <code>liste.php</code> avec un message flash.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Detecter la soumission : <code>$_SERVER['REQUEST_METHOD'] === 'POST'</code></li>
+        <li>Valider les champs : non vide, prix > 0, stock >= 0</li>
+        <li>Preparer l'INSERT : <code>$pdo->prepare('INSERT INTO produits (nom, prix, stock) VALUES (:nom, :prix, :stock)')</code></li>
+        <li>Executer avec les valeurs : <code>$stmt->execute([...])</code></li>
+        <li>Recuperer l'id insere : <code>$pdo->lastInsertId()</code></li>
+        <li>Stocker un message flash en session et rediriger : <code>header('Location: liste.php')</code></li>
+      </ul></div>
+
+ 
+      <div class="solution-wrapper" id="sol-02">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>; <span class="php-fn">session_start</span>();
+<span class="php-var">$erreurs</span> = []; <span class="php-var">$nom</span> = <span class="php-var">$prix</span> = <span class="php-var">$stock</span> = <span class="php-var">$cat_id</span> = <span class="php-str">''</span>;
+<span class="php-kw">if</span> (<span class="php-var">$_SERVER</span>[<span class="php-str">'REQUEST_METHOD'</span>] === <span class="php-str">'POST'</span>) {
+    <span class="php-var">$nom</span> = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'nom'</span>] ?? <span class="php-str">''</span>);
+    <span class="php-var">$prix</span> = (<span class="php-kw">float</span>)(<span class="php-var">$_POST</span>[<span class="php-str">'prix'</span>] ?? 0);
+    <span class="php-var">$stock</span> = (<span class="php-kw">int</span>)(<span class="php-var">$_POST</span>[<span class="php-str">'stock'</span>] ?? 0);
+    <span class="php-var">$cat_id</span> = (<span class="php-kw">int</span>)(<span class="php-var">$_POST</span>[<span class="php-str">'categorie_id'</span>] ?? 0);
+    <span class="php-kw">if</span>(<span class="php-fn">empty</span>(<span class="php-var">$nom</span>)) <span class="php-var">$erreurs</span>[] = <span class="php-str">'Le nom est obligatoire.'</span>;
+    <span class="php-kw">if</span>(<span class="php-var">$prix</span> <= 0) <span class="php-var">$erreurs</span>[] = <span class="php-str">'Le prix doit etre positif.'</span>;
+    <span class="php-kw">if</span>(<span class="php-var">$stock</span> < 0) <span class="php-var">$erreurs</span>[] = <span class="php-str">'Le stock ne peut pas etre negatif.'</span>;
+    <span class="php-kw">if</span>(<span class="php-fn">empty</span>(<span class="php-var">$erreurs</span>)) {
+        <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'INSERT INTO produits (nom, prix, stock, categorie_id) VALUES (:nom, :prix, :stock, :cat)'</span>);
+        <span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':nom'</span>=><span class="php-fn">htmlspecialchars</span>(<span class="php-var">$nom</span>), <span class="php-str">':prix'</span>=><span class="php-var">$prix</span>, <span class="php-str">':stock'</span>=><span class="php-var">$stock</span>, <span class="php-str">':cat'</span>=><span class="php-var">$cat_id</span>]);
+        <span class="php-var">$new_id</span> = <span class="php-var">$pdo</span>-><span class="php-fn">lastInsertId</span>();
+        <span class="php-var">$_SESSION</span>[<span class="php-str">'flash'</span>] = <span class="php-str">"Produit #" . $new_id . " ajoute !"</span>;
+        <span class="php-fn">header</span>(<span class="php-str">'Location: liste.php'</span>); <span class="php-fn">exit</span>();
+    }
+}
+<span class="php-tag">?&gt;</span>
+&lt;!DOCTYPE html&gt;&lt;html lang="fr"&gt;&lt;body&gt;
+&lt;?php <span class="php-kw">foreach</span>(<span class="php-var">$erreurs</span> <span class="php-kw">as</span> <span class="php-var">$e</span>): ?&gt;&lt;p style="color:red"&gt; &lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$e</span>) ?&gt;&lt;/p&gt;&lt;?php <span class="php-kw">endforeach</span>; ?&gt;
+&lt;form method="POST"&gt;
+  &lt;input type="text"   name="nom"          value="&lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$nom</span>) ?&gt;" placeholder="Nom"&gt;
+  &lt;input type="number" name="prix"         value="&lt;?= <span class="php-var">$prix</span> ?&gt;" step="0.01" placeholder="Prix"&gt;
+  &lt;input type="number" name="stock"        value="&lt;?= <span class="php-var">$stock</span> ?&gt;" placeholder="Stock"&gt;
+  &lt;input type="number" name="categorie_id" value="&lt;?= <span class="php-var">$cat_id</span> ?&gt;" placeholder="ID categorie"&gt;
+  &lt;button type="submit"&gt;Ajouter&lt;/button&gt;
+&lt;/form&gt;
+&lt;/body&gt;&lt;/html&gt;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">prepare() INSERT</span>
+          <span class="notion-tag">execute([...])</span>
+          <span class="notion-tag">lastInsertId()</span>
+          <span class="notion-tag">session flash</span>
+          <span class="notion-tag">header() redirect</span>
+          <span class="notion-tag">validation erreurs</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-03</span>
+          <span class="exo-name">Afficher le detail d'un produit (READ)</span>
+          <span class="exo-theme">fetch() · WHERE id = :id · htmlspecialchars()</span>
+        </div>
+        <button class="toggle-btn" id="btn-03">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>detail.php</strong> qui recoit l'id du produit via l'URL (<code>?id=1</code>). Utilise une requete preparee pour charger ce produit depuis la BDD. Affiche tous ses details. Si l'id n'existe pas, affiche "Produit introuvable" et un lien retour. Ajoute aussi les liens "Modifier" et "Supprimer".</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Recuperer et securiser l'id : <code>$id = (int) ($_GET['id'] ?? 0);</code></li>
+        <li>Requete preparee : <code>$pdo->prepare('SELECT * FROM produits WHERE id = :id')</code></li>
+        <li>Recuperer une seule ligne : <code>$stmt->fetch()</code></li>
+        <li>Verifier que le produit existe : <code>if (!$produit)</code></li>
+        <li>Afficher les donnees en securisant avec <code>htmlspecialchars()</code></li>
+      </ul></div>
+
+      <div class="solution-wrapper" id="sol-03">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>;
+<span class="php-var">$id</span> = (<span class="php-kw">int</span>)(<span class="php-var">$_GET</span>[<span class="php-str">'id'</span>] ?? 0);
+<span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'SELECT p.*, c.nom AS categorie_nom FROM produits p LEFT JOIN categories c ON p.categorie_id = c.id WHERE p.id = :id'</span>);
+<span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':id'</span> => <span class="php-var">$id</span>]);
+<span class="php-var">$produit</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetch</span>();
+<span class="php-kw">if</span> (!<span class="php-var">$produit</span>) { <span class="php-kw">echo</span> <span class="php-str">'&lt;p&gt;Produit introuvable.&lt;/p&gt;&lt;a href="liste.php"&gt;Retour&lt;/a&gt;'</span>; <span class="php-fn">exit</span>(); }
+<span class="php-tag">?&gt;</span>
+&lt;h1&gt;&lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$produit</span>[<span class="php-str">'nom'</span>]) ?&gt;&lt;/h1&gt;
+&lt;p&gt;Prix : &lt;?= <span class="php-fn">number_format</span>(<span class="php-var">$produit</span>[<span class="php-str">'prix'</span>], 2, <span class="php-str">','</span>, <span class="php-str">' '</span>) ?&gt; &euro;&lt;/p&gt;
+&lt;p&gt;Stock : &lt;?= <span class="php-var">$produit</span>[<span class="php-str">'stock'</span>] ?&gt;&lt;/p&gt;
+&lt;p&gt;Categorie : &lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$produit</span>[<span class="php-str">'categorie_nom'</span>] ?? <span class="php-str">'Non definie'</span>) ?&gt;&lt;/p&gt;
+&lt;a href="modifier.php?id=&lt;?= <span class="php-var">$produit</span>[<span class="php-str">'id'</span>] ?&gt;"&gt;Modifier&lt;/a&gt; | 
+&lt;a href="supprimer.php?id=&lt;?= <span class="php-var">$produit</span>[<span class="php-str">'id'</span>] ?&gt;" onclick="return confirm('Supprimer ?')"&gt;Supprimer&lt;/a&gt;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">(int) cast securite</span>
+          <span class="notion-tag">prepare() + execute()</span>
+          <span class="notion-tag">fetch()</span>
+          <span class="notion-tag">if (!$produit)</span>
+          <span class="notion-tag">htmlspecialchars()</span>
+          <span class="notion-tag">LEFT JOIN dans la requete</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /debutant -->
+
+  <div class="section" id="section-intermediaire">
+
+    <div class="niveau-header intermediaire">
+      <span class="niveau-label">Intermediaire</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Modifier un enregistrement avec un formulaire pre-rempli, supprimer avec confirmation et gerer les messages flash.</div>
+    </div>
+
+    <div class="alerte-prochaine">
+      <strong>Securite :</strong> Toujours utiliser <strong>prepare() + execute()</strong> pour toute requete avec des donnees utilisateur. Ne jamais concatener directement une variable dans le SQL — c'est la protection anti-injection SQL.
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-04</span>
+          <span class="exo-name">Modifier un produit (UPDATE)</span>
+          <span class="exo-theme">prepare() UPDATE · formulaire pre-rempli · rowCount()</span>
+        </div>
+        <button class="toggle-btn" id="btn-04">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>modifier.php</strong>. Il charge le produit depuis la BDD (pre-remplissage du formulaire) et execute un UPDATE quand le formulaire est soumis. Valide les donnees, execute la requete preparee, affiche le nombre de lignes modifiees avec <code>rowCount()</code> et redirige vers <code>detail.php</code>.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Charger le produit existant pour pre-remplir le formulaire</li>
+        <li>Gerer deux scenarios dans le meme fichier : GET (affichage) et POST (traitement)</li>
+        <li>UPDATE prepare : <code>UPDATE produits SET nom=:nom, prix=:prix WHERE id=:id</code></li>
+        <li>Verifier le nombre de lignes modifiees : <code>$stmt->rowCount()</code></li>
+        <li>Rediriger vers le detail apres succes</li>
+      </ul></div>
+  
+      <div class="solution-wrapper" id="sol-04">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>; <span class="php-fn">session_start</span>();
+<span class="php-var">$id</span> = (<span class="php-kw">int</span>)(<span class="php-var">$_GET</span>[<span class="php-str">'id'</span>] ?? <span class="php-var">$_POST</span>[<span class="php-str">'id'</span>] ?? 0);
+<span class="php-kw">if</span>(<span class="php-var">$_SERVER</span>[<span class="php-str">'REQUEST_METHOD'</span>] === <span class="php-str">'POST'</span>) {
+    <span class="php-var">$nom</span> = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'nom'</span>] ?? <span class="php-str">''</span>);
+    <span class="php-var">$prix</span> = (<span class="php-kw">float</span>)(<span class="php-var">$_POST</span>[<span class="php-str">'prix'</span>] ?? 0);
+    <span class="php-var">$stock</span> = (<span class="php-kw">int</span>)(<span class="php-var">$_POST</span>[<span class="php-str">'stock'</span>] ?? 0);
+    <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'UPDATE produits SET nom=:nom, prix=:prix, stock=:stock WHERE id=:id'</span>);
+    <span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':nom'</span>=><span class="php-fn">htmlspecialchars</span>(<span class="php-var">$nom</span>), <span class="php-str">':prix'</span>=><span class="php-var">$prix</span>, <span class="php-str">':stock'</span>=><span class="php-var">$stock</span>, <span class="php-str">':id'</span>=><span class="php-var">$id</span>]);
+    <span class="php-var">$_SESSION</span>[<span class="php-str">'flash'</span>] = <span class="php-var">$stmt</span>-><span class="php-fn">rowCount</span>() . <span class="php-str">' ligne(s) modifiee(s).'</span>;
+    <span class="php-fn">header</span>(<span class="php-str">"Location: detail.php?id={$id}"</span>); <span class="php-fn">exit</span>();
+}
+<span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'SELECT * FROM produits WHERE id = :id'</span>);
+<span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':id'</span> => <span class="php-var">$id</span>]);
+<span class="php-var">$produit</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetch</span>();
+<span class="php-kw">if</span>(!<span class="php-var">$produit</span>) { <span class="php-fn">header</span>(<span class="php-str">'Location: liste.php'</span>); <span class="php-fn">exit</span>(); }
+<span class="php-tag">?&gt;</span>
+&lt;form method="POST"&gt;
+  &lt;input type="hidden" name="id" value="&lt;?= <span class="php-var">$id</span> ?&gt;"&gt;
+  &lt;input type="text"   name="nom"   value="&lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$produit</span>[<span class="php-str">'nom'</span>]) ?&gt;"&gt;
+  &lt;input type="number" name="prix"  value="&lt;?= <span class="php-var">$produit</span>[<span class="php-str">'prix'</span>] ?&gt;" step="0.01"&gt;
+  &lt;input type="number" name="stock" value="&lt;?= <span class="php-var">$produit</span>[<span class="php-str">'stock'</span>] ?&gt;"&gt;
+  &lt;button type="submit"&gt;Enregistrer&lt;/button&gt;
+&lt;/form&gt;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">prepare() UPDATE</span>
+          <span class="notion-tag">execute([...])</span>
+          <span class="notion-tag">rowCount()</span>
+          <span class="notion-tag">formulaire pre-rempli</span>
+          <span class="notion-tag">GET vs POST meme fichier</span>
+          <span class="notion-tag">input type="hidden"</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-05</span>
+          <span class="exo-name">Supprimer un produit (DELETE)</span>
+          <span class="exo-theme">DELETE · confirm() · flash session · PRG</span>
+        </div>
+        <button class="toggle-btn" id="btn-05">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>supprimer.php</strong>. Il affiche une page de confirmation avec les details du produit a supprimer. Quand l'utilisateur confirme (formulaire POST), execute un DELETE prepare. Stocke un message flash en session et redirige vers <code>liste.php</code>. Applique le pattern PRG pour eviter la double soumission.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Afficher une page de confirmation avant de supprimer</li>
+        <li>DELETE prepare : <code>DELETE FROM produits WHERE id = :id</code></li>
+        <li>Pattern PRG : POST -> stocker flash -> Redirect -> GET affiche flash</li>
+        <li>Supprimer le flash apres affichage : <code>unset($_SESSION['flash'])</code></li>
+        <li>Verifier avec <code>rowCount()</code> si la suppression a eu lieu</li>
+      </ul></div>
+    
+      <div class="solution-wrapper" id="sol-05">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>; <span class="php-fn">session_start</span>();
+<span class="php-var">$id</span> = (<span class="php-kw">int</span>)(<span class="php-var">$_GET</span>[<span class="php-str">'id'</span>] ?? <span class="php-var">$_POST</span>[<span class="php-str">'id'</span>] ?? 0);
+<span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'SELECT * FROM produits WHERE id = :id'</span>);
+<span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':id'</span>=><span class="php-var">$id</span>]);
+<span class="php-var">$produit</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetch</span>();
+<span class="php-kw">if</span>(!<span class="php-var">$produit</span>) { <span class="php-fn">header</span>(<span class="php-str">'Location: liste.php'</span>); <span class="php-fn">exit</span>(); }
+<span class="php-kw">if</span>(<span class="php-var">$_SERVER</span>[<span class="php-str">'REQUEST_METHOD'</span>] === <span class="php-str">'POST'</span>) {
+    <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'DELETE FROM produits WHERE id = :id'</span>);
+    <span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':id'</span>=><span class="php-var">$id</span>]);
+    <span class="php-kw">if</span>(<span class="php-var">$stmt</span>-><span class="php-fn">rowCount</span>() > 0) <span class="php-var">$_SESSION</span>[<span class="php-str">'flash'</span>] = <span class="php-str">"Produit supprime."</span>;
+    <span class="php-fn">header</span>(<span class="php-str">'Location: liste.php'</span>); <span class="php-fn">exit</span>();
+}
+<span class="php-tag">?&gt;</span>
+&lt;h2&gt;Supprimer &lt;?= <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$produit</span>[<span class="php-str">'nom'</span>]) ?&gt; ?&lt;/h2&gt;
+&lt;form method="POST"&gt;&lt;input type="hidden" name="id" value="&lt;?= <span class="php-var">$id</span> ?&gt;"&gt;
+  &lt;button type="submit"&gt;Oui, supprimer&lt;/button&gt; &lt;a href="liste.php"&gt;Annuler&lt;/a&gt;
+&lt;/form&gt;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">DELETE prepare</span>
+          <span class="notion-tag">rowCount()</span>
+          <span class="notion-tag">pattern PRG</span>
+          <span class="notion-tag">flash session</span>
+          <span class="notion-tag">page confirmation</span>
+          <span class="notion-tag">unset($_SESSION)</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-06</span>
+          <span class="exo-name">Liste avec recherche et filtres</span>
+          <span class="exo-theme">LIKE · WHERE · SELECT dynamique · $_GET</span>
+        </div>
+        <button class="toggle-btn" id="btn-06">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Ameliore <strong>liste.php</strong> en ajoutant une barre de recherche par nom (LIKE) et un filtre par categorie (SELECT). Les filtres passent par GET pour que l'URL soit partageble. Affiche le nombre de resultats trouves. Si aucun resultat, affiche un message. Conserve les valeurs dans les champs apres soumission.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Construire la requete SQL dynamiquement selon les filtres actifs</li>
+        <li>Recherche partielle : <code>WHERE nom LIKE :terme</code> avec <code>%terme%</code></li>
+        <li>Filtre categorie : ajouter <code>AND categorie_id = :cat</code> si present</li>
+        <li>Pre-remplir les champs : <code>value="&lt;?= htmlspecialchars($_GET['q'] ?? '') ?&gt;"</code></li>
+        <li>Charger les categories pour le select : requete separee</li>
+      </ul></div>
+   
+      <div class="solution-wrapper" id="sol-06">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>; <span class="php-fn">session_start</span>();
+<span class="php-var">$flash</span> = <span class="php-var">$_SESSION</span>[<span class="php-str">'flash'</span>] ?? <span class="php-str">''</span>; <span class="php-kw">unset</span>(<span class="php-var">$_SESSION</span>[<span class="php-str">'flash'</span>]);
+<span class="php-var">$q</span> = <span class="php-fn">trim</span>(<span class="php-var">$_GET</span>[<span class="php-str">'q'</span>] ?? <span class="php-str">''</span>);
+<span class="php-var">$cat</span> = (<span class="php-kw">int</span>)(<span class="php-var">$_GET</span>[<span class="php-str">'cat'</span>] ?? 0);
+<span class="php-var">$sql</span> = <span class="php-str">'SELECT p.*, c.nom AS categorie_nom FROM produits p LEFT JOIN categories c ON p.categorie_id = c.id WHERE 1=1'</span>;
+<span class="php-var">$params</span> = [];
+<span class="php-kw">if</span>(<span class="php-var">$q</span>) { <span class="php-var">$sql</span> .= <span class="php-str">' AND p.nom LIKE :terme'</span>; <span class="php-var">$params</span>[<span class="php-str">':terme'</span>] = <span class="php-str">'%'</span>.<span class="php-var">$q</span>.<span class="php-str">'%'</span>; }
+<span class="php-kw">if</span>(<span class="php-var">$cat</span>) { <span class="php-var">$sql</span> .= <span class="php-str">' AND p.categorie_id = :cat'</span>; <span class="php-var">$params</span>[<span class="php-str">':cat'</span>] = <span class="php-var">$cat</span>; }
+<span class="php-var">$sql</span> .= <span class="php-str">' ORDER BY p.nom ASC'</span>;
+<span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-var">$sql</span>);
+<span class="php-var">$stmt</span>-><span class="php-fn">execute</span>(<span class="php-var">$params</span>);
+<span class="php-var">$produits</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetchAll</span>();
+<span class="php-var">$categories</span> = <span class="php-var">$pdo</span>-><span class="php-fn">query</span>(<span class="php-str">'SELECT * FROM categories ORDER BY nom'</span>)-><span class="php-fn">fetchAll</span>();
+<span class="php-tag">?&gt;</span>
+<span class="php-cmt">/* Formulaire GET + tableau HTML avec les resultats */</span>
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">WHERE 1=1</span>
+          <span class="notion-tag">LIKE %terme%</span>
+          <span class="notion-tag">requete dynamique</span>
+          <span class="notion-tag">$params[]</span>
+          <span class="notion-tag">pre-remplissage GET</span>
+          <span class="notion-tag">categories en select</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /intermediaire -->
+
+  <div class="section" id="section-difficile">
+
+    <div class="niveau-header difficile">
+      <span class="niveau-label">Difficile</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Construire un CRUD complet avec pagination, transactions et gestion avancee des erreurs.</div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-07</span>
+          <span class="exo-name">CRUD complet en un seul fichier</span>
+          <span class="exo-theme">switch action · POST · GET · flash · PRG</span>
+        </div>
+        <button class="toggle-btn" id="btn-07">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>crud.php</strong> qui gere toutes les actions CRUD dans un seul fichier. L'action est determinee par <code>$_GET['action']</code> (liste, ajouter, modifier, supprimer) ou <code>$_POST['action']</code>. Utilise un <code>switch</code> pour router vers la bonne logique. Chaque action POST redirige apres execution (pattern PRG).</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Router les actions avec <code>switch ($action)</code></li>
+        <li>Lire l'action : <code>$action = $_GET['action'] ?? $_POST['action'] ?? 'liste'</code></li>
+        <li>Toutes les actions POST redirigent apres execution</li>
+        <li>La vue est rendue apres le switch (separation logique/affichage)</li>
+        <li>Un seul require_once connexion.php pour tout le fichier</li>
+      </ul></div>
+
+      <div class="solution-wrapper" id="sol-07">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>; <span class="php-fn">session_start</span>();
+<span class="php-var">$action</span> = <span class="php-var">$_GET</span>[<span class="php-str">'action'</span>] ?? <span class="php-var">$_POST</span>[<span class="php-str">'action'</span>] ?? <span class="php-str">'liste'</span>;
+<span class="php-var">$id</span> = (<span class="php-kw">int</span>)(<span class="php-var">$_GET</span>[<span class="php-str">'id'</span>] ?? <span class="php-var">$_POST</span>[<span class="php-str">'id'</span>] ?? 0);
+
+<span class="php-kw">if</span>(<span class="php-var">$_SERVER</span>[<span class="php-str">'REQUEST_METHOD'</span>] === <span class="php-str">'POST'</span>) {
+    <span class="php-kw">switch</span>(<span class="php-var">$action</span>) {
+        <span class="php-kw">case</span> <span class="php-str">'creer'</span>:
+            <span class="php-var">$s</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'INSERT INTO produits (nom, prix, stock) VALUES (:n, :p, :s)'</span>);
+            <span class="php-var">$s</span>-><span class="php-fn">execute</span>([<span class="php-str">':n'</span>=><span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'nom'</span>]), <span class="php-str">':p'</span>=>(<span class="php-kw">float</span>)<span class="php-var">$_POST</span>[<span class="php-str">'prix'</span>], <span class="php-str">':s'</span>=>(<span class="php-kw">int</span>)<span class="php-var">$_POST</span>[<span class="php-str">'stock'</span>]]);
+            <span class="php-var">$_SESSION</span>[<span class="php-str">'flash'</span>] = <span class="php-str">'Produit cree !'</span>; <span class="php-fn">header</span>(<span class="php-str">'Location: crud.php'</span>); <span class="php-fn">exit</span>();
+        <span class="php-kw">case</span> <span class="php-str">'modifier'</span>:
+            <span class="php-var">$s</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'UPDATE produits SET nom=:n, prix=:p, stock=:s WHERE id=:id'</span>);
+            <span class="php-var">$s</span>-><span class="php-fn">execute</span>([<span class="php-str">':n'</span>=><span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'nom'</span>]), <span class="php-str">':p'</span>=>(<span class="php-kw">float</span>)<span class="php-var">$_POST</span>[<span class="php-str">'prix'</span>], <span class="php-str">':s'</span>=>(<span class="php-kw">int</span>)<span class="php-var">$_POST</span>[<span class="php-str">'stock'</span>], <span class="php-str">':id'</span>=><span class="php-var">$id</span>]);
+            <span class="php-var">$_SESSION</span>[<span class="php-str">'flash'</span>] = <span class="php-str">'Produit modifie !'</span>; <span class="php-fn">header</span>(<span class="php-str">'Location: crud.php'</span>); <span class="php-fn">exit</span>();
+        <span class="php-kw">case</span> <span class="php-str">'supprimer'</span>:
+            <span class="php-var">$s</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'DELETE FROM produits WHERE id=:id'</span>);
+            <span class="php-var">$s</span>-><span class="php-fn">execute</span>([<span class="php-str">':id'</span>=><span class="php-var">$id</span>]);
+            <span class="php-var">$_SESSION</span>[<span class="php-str">'flash'</span>] = <span class="php-str">'Supprime !'</span>; <span class="php-fn">header</span>(<span class="php-str">'Location: crud.php'</span>); <span class="php-fn">exit</span>();
+    }
+}
+<span class="php-cmt">/* switch($action) pour charger les donnees de vue */</span>
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">switch($action)</span>
+          <span class="notion-tag">$_GET['action']</span>
+          <span class="notion-tag">routage CRUD</span>
+          <span class="notion-tag">pattern PRG</span>
+          <span class="notion-tag">flash session</span>
+          <span class="notion-tag">un fichier unique</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-08</span>
+          <span class="exo-name">Pagination des resultats</span>
+          <span class="exo-theme">LIMIT · OFFSET · COUNT(*) · pages</span>
+        </div>
+        <button class="toggle-btn" id="btn-08">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Ajoute la pagination a <strong>liste.php</strong>. Affiche <strong>5 produits par page</strong>. Calcule le nombre total de pages avec <code>COUNT(*)</code>. Affiche les liens de navigation (Precedent / Suivant / numeros de page). La page courante vient de <code>$_GET['page']</code> avec comme valeur par defaut 1.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Compter le total : <code>$total = $pdo->query('SELECT COUNT(*) FROM produits')->fetchColumn();</code></li>
+        <li>Calculer : <code>$nb_pages = ceil($total / $par_page)</code></li>
+        <li>Securiser la page courante : <code>$page = max(1, min((int)($_GET['page'] ?? 1), $nb_pages))</code></li>
+        <li>Calculer l'offset : <code>$offset = ($page - 1) * $par_page</code></li>
+        <li>Requete avec pagination : <code>SELECT * FROM produits ORDER BY nom LIMIT :limit OFFSET :offset</code></li>
+        <li>Afficher les liens de navigation avec boucle <code>for</code></li>
+      </ul></div>
+
+      <div class="solution-wrapper" id="sol-08">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>;
+<span class="php-var">$par_page</span> = <span class="php-num">5</span>;
+<span class="php-var">$total</span> = (<span class="php-kw">int</span>)<span class="php-var">$pdo</span>-><span class="php-fn">query</span>(<span class="php-str">'SELECT COUNT(*) FROM produits'</span>)-><span class="php-fn">fetchColumn</span>();
+<span class="php-var">$nb_pages</span> = (<span class="php-kw">int</span>)<span class="php-fn">ceil</span>(<span class="php-var">$total</span>/<span class="php-var">$par_page</span>);
+<span class="php-var">$page</span> = <span class="php-fn">max</span>(1, <span class="php-fn">min</span>((<span class="php-kw">int</span>)(<span class="php-var">$_GET</span>[<span class="php-str">'page'</span>] ?? 1), <span class="php-var">$nb_pages</span>));
+<span class="php-var">$offset</span> = (<span class="php-var">$page</span>-1) * <span class="php-var">$par_page</span>;
+<span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'SELECT * FROM produits ORDER BY nom LIMIT :lim OFFSET :off'</span>);
+<span class="php-var">$stmt</span>-><span class="php-fn">bindValue</span>(<span class="php-str">':lim'</span>, <span class="php-var">$par_page</span>, PDO::PARAM_INT);
+<span class="php-var">$stmt</span>-><span class="php-fn">bindValue</span>(<span class="php-str">':off'</span>, <span class="php-var">$offset</span>,   PDO::PARAM_INT);
+<span class="php-var">$stmt</span>-><span class="php-fn">execute</span>(); <span class="php-var">$produits</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetchAll</span>();
+<span class="php-tag">?&gt;</span>
+<span class="php-cmt">/* Afficher le tableau + la navigation pagination */</span>
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">COUNT(*)</span>
+          <span class="notion-tag">fetchColumn()</span>
+          <span class="notion-tag">ceil()</span>
+          <span class="notion-tag">LIMIT :lim OFFSET :off</span>
+          <span class="notion-tag">bindValue() PDO::PARAM_INT</span>
+          <span class="notion-tag">max() min() securisation page</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-09</span>
+          <span class="exo-name">CRUD avec transactions et upload image</span>
+          <span class="exo-theme">beginTransaction · commit · rollBack · $_FILES</span>
+          <span class="bonus-tag">Bonus</span>
+        </div>
+        <button class="toggle-btn" id="btn-09">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Exercice bonus. Ameliore le formulaire d'ajout de produit pour qu'il accepte une <strong>image</strong> (upload de fichier). Utilise une <strong>transaction PDO</strong> pour garantir que l'INSERT dans <code>produits</code> et la copie du fichier reussissent ensemble ou echouent ensemble. Si l'image est invalide, rollback et aucun produit n'est insere.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Valider l'upload : type MIME, taille max, extension autorisee</li>
+        <li>Generer un nom unique : <code>uniqid() . '.' . $extension</code></li>
+        <li>Utiliser une transaction : <code>$pdo->beginTransaction()</code></li>
+        <li>En cas d'erreur : <code>$pdo->rollBack()</code> + supprimer le fichier copie</li>
+        <li>En cas de succes : <code>$pdo->commit()</code></li>
+        <li>Stocker le nom du fichier dans la colonne <code>image</code> de la table</li>
+      </ul></div>
+  
+      <div class="solution-wrapper" id="sol-09">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>; <span class="php-fn">session_start</span>();
+<span class="php-kw">if</span>(<span class="php-var">$_SERVER</span>[<span class="php-str">'REQUEST_METHOD'</span>] === <span class="php-str">'POST'</span>) {
+    <span class="php-var">$nom</span> = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'nom'</span>] ?? <span class="php-str">''</span>);
+    <span class="php-var">$prix</span> = (<span class="php-kw">float</span>)(<span class="php-var">$_POST</span>[<span class="php-str">'prix'</span>] ?? 0);
+    <span class="php-var">$stock</span> = (<span class="php-kw">int</span>)(<span class="php-var">$_POST</span>[<span class="php-str">'stock'</span>] ?? 0);
+    <span class="php-var">$erreurs</span> = [];
+    <span class="php-var">$types_ok</span> = [<span class="php-str">'image/jpeg'</span>, <span class="php-str">'image/png'</span>, <span class="php-str">'image/webp'</span>];
+    <span class="php-kw">if</span>(<span class="php-var">$_FILES</span>[<span class="php-str">'image'</span>][<span class="php-str">'error'</span>] !== UPLOAD_ERR_OK) <span class="php-var">$erreurs</span>[] = <span class="php-str">'Image manquante.'</span>;
+    <span class="php-kw">if</span>(!<span class="php-fn">in_array</span>(<span class="php-var">$_FILES</span>[<span class="php-str">'image'</span>][<span class="php-str">'type'</span>], <span class="php-var">$types_ok</span>)) <span class="php-var">$erreurs</span>[] = <span class="php-str">'Type non autorise.'</span>;
+    <span class="php-kw">if</span>(<span class="php-var">$_FILES</span>[<span class="php-str">'image'</span>][<span class="php-str">'size'</span>] > 2*1024*1024) <span class="php-var">$erreurs</span>[] = <span class="php-str">'Max 2 Mo.'</span>;
+    <span class="php-kw">if</span>(<span class="php-fn">empty</span>(<span class="php-var">$erreurs</span>)) {
+        <span class="php-var">$ext</span> = <span class="php-fn">strtolower</span>(<span class="php-fn">pathinfo</span>(<span class="php-var">$_FILES</span>[<span class="php-str">'image'</span>][<span class="php-str">'name'</span>], PATHINFO_EXTENSION));
+        <span class="php-var">$nom_fichier</span> = <span class="php-fn">uniqid</span>() . <span class="php-str">'.'</span> . <span class="php-var">$ext</span>;
+        <span class="php-var">$dest</span> = <span class="php-str">'images/'</span> . <span class="php-var">$nom_fichier</span>;
+        <span class="php-var">$pdo</span>-><span class="php-fn">beginTransaction</span>();
+        <span class="php-kw">try</span> {
+            <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'INSERT INTO produits (nom, prix, stock, image) VALUES (:nom, :prix, :stock, :img)'</span>);
+            <span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':nom'</span>=><span class="php-var">$nom</span>, <span class="php-str">':prix'</span>=><span class="php-var">$prix</span>, <span class="php-str">':stock'</span>=><span class="php-var">$stock</span>, <span class="php-str">':img'</span>=><span class="php-var">$nom_fichier</span>]);
+            <span class="php-kw">if</span>(!<span class="php-fn">move_uploaded_file</span>(<span class="php-var">$_FILES</span>[<span class="php-str">'image'</span>][<span class="php-str">'tmp_name'</span>], <span class="php-var">$dest</span>)) <span class="php-kw">throw new</span> <span class="php-fn">Exception</span>(<span class="php-str">'Echec copie'</span>);
+            <span class="php-var">$pdo</span>-><span class="php-fn">commit</span>();
+            <span class="php-var">$_SESSION</span>[<span class="php-str">'flash'</span>] = <span class="php-str">'Produit ajoute !'</span>; <span class="php-fn">header</span>(<span class="php-str">'Location: liste.php'</span>); <span class="php-fn">exit</span>();
+        } <span class="php-kw">catch</span>(<span class="php-fn">Exception</span> <span class="php-var">$e</span>) {
+            <span class="php-var">$pdo</span>-><span class="php-fn">rollBack</span>(); <span class="php-var">$erreurs</span>[] = <span class="php-str">'Erreur : '</span> . <span class="php-var">$e</span>-><span class="php-fn">getMessage</span>();
+        }
+    }
+}
+<span class="php-tag">?&gt;</span>
+&lt;form method="POST" enctype="multipart/form-data"&gt;
+  &lt;input type="text"   name="nom"   placeholder="Nom"&gt;
+  &lt;input type="number" name="prix"  step="0.01"&gt;
+  &lt;input type="number" name="stock"&gt;
+  &lt;input type="file"   name="image" accept="image/*"&gt;
+  &lt;button type="submit"&gt;Ajouter&lt;/button&gt;
+&lt;/form&gt;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">$_FILES validation</span>
+          <span class="notion-tag">UPLOAD_ERR_OK</span>
+          <span class="notion-tag">in_array() types MIME</span>
+          <span class="notion-tag">uniqid() nom unique</span>
+          <span class="notion-tag">move_uploaded_file()</span>
+          <span class="notion-tag">beginTransaction()</span>
+          <span class="notion-tag">commit() / rollBack()</span>
+          <span class="notion-tag">enctype="multipart/form-data"</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /difficile -->
+
+</main>
+
+
+
+<script>
+function showSection(niveau, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.remove('active-debutant', 'active-intermediaire', 'active-difficile');
+  });
+  document.getElementById('section-' + niveau).classList.add('active');
+  btn.classList.add('active-' + niveau);
+}
+
+function toggleSolution(id) {
+  const sol = document.getElementById('sol-' + id);
+  const btn = document.getElementById('btn-' + id);
+  sol.classList.add('open');
+  btn.textContent = 'Solution affichée ✓';
+  btn.style.borderColor = 'var(--gold)';
+  btn.style.color = 'var(--gold)';
+  btn.disabled = true;
+}
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => toggleSolution(btn.id.replace('btn-', '')));
+});
+</script>
+
+</body>
+</html>
