@@ -246,13 +246,25 @@
             margin-top: 0.75rem;
         }
 
+        /* ═══ GRILLE 2 COLONNES ═══ */
+        .sections-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        @media (max-width: 640px) {
+            .sections-grid { grid-template-columns: 1fr; }
+        }
+
         /* ═══ SECTIONS ═══ */
         .section {
             background: var(--surface);
             border: 1px solid var(--border2);
             border-radius: 8px;
             padding: 1.75rem 1.75rem 1.25rem;
-            margin: 1.25rem 0;
+            margin: 0;
             position: relative;
             overflow: hidden;
             transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
@@ -261,6 +273,66 @@
 
         .section:nth-child(1) { animation-delay: 0.2s; }
         .section:nth-child(2) { animation-delay: 0.35s; }
+
+        /* ═══ SECTION PROJET (violet distinct) ═══ */
+        .section-projet {
+            background: linear-gradient(135deg, #1a0a2e 0%, #12082a 100%);
+            border: 1px solid rgba(139,92,246,0.35);
+            box-shadow: 0 0 0 1px rgba(139,92,246,0.08), inset 0 1px 0 rgba(139,92,246,0.12);
+            grid-column: 1 / -1;
+        }
+
+        .section-projet::before {
+            background: linear-gradient(90deg, var(--purple), #a855f7, var(--purple-light)) !important;
+            opacity: 0.7 !important;
+        }
+
+        .section-projet::after {
+            background: linear-gradient(180deg, var(--purple), #a855f7) !important;
+        }
+
+        .section-projet:hover {
+            border-color: rgba(139,92,246,0.55) !important;
+            box-shadow: 0 14px 44px rgba(0,0,0,0.55), 0 0 55px rgba(139,92,246,0.2), 0 0 0 1px rgba(139,92,246,0.35) !important;
+        }
+
+        .section-projet h3 { color: var(--purple-light); }
+
+        .section-projet h3::before {
+            content: "PROJET";
+            color: var(--purple);
+            font-size: 0.62rem;
+            background: rgba(139,92,246,0.15);
+            border: 1px solid rgba(139,92,246,0.3);
+            padding: 0.1rem 0.5rem;
+            border-radius: 2px;
+        }
+
+        .section-projet .link-icon {
+            background: rgba(139,92,246,0.15);
+            border-color: rgba(139,92,246,0.4);
+            color: var(--purple-light);
+        }
+
+        .section-projet a {
+            border-color: rgba(139,92,246,0.2);
+            background: rgba(139,92,246,0.06);
+        }
+
+        .section-projet a::before {
+            background: linear-gradient(90deg, rgba(139,92,246,0.18), transparent) !important;
+        }
+
+        .section-projet a:hover {
+            border-color: rgba(139,92,246,0.5);
+            background: rgba(139,92,246,0.14);
+        }
+
+        .section-projet a:hover .link-icon {
+            background: rgba(139,92,246,0.3);
+            border-color: var(--purple-light);
+            color: #fff;
+        }
 
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(16px); }
@@ -681,71 +753,115 @@
             </div>
         </div>
 
-     
-
-         <!-- Section 1 -->
-        <div class="section">
-            <div class="scan"></div>
-            <h3>Exo Introduction</h3>
-            <a href="./exo-intro.html">
-                <span class="link-icon">P1</span>
-                Exercices PHP — Introduction
-            </a>
+       <div class="title-block">
+            <div class="eyebrow">Formation DWWM 2025–2026</div>
+            <h1>Exercices, Projet <span class="acc">PHP</span></h1>
         </div>
 
-          <!-- Section 1 -->
-        <div class="section">
-            <div class="scan"></div>
-            <h3>Exo Tableaux et structures</h3>
-            <a href="./exo-tab-controle.html">
-                <span class="link-icon">P2</span>
-                Exercices PHP — Tableaux et structures
-            </a>
-        </div>
+        <!-- Grille exercices 2 colonnes -->
+        <div class="sections-grid">
+
+            <div class="section">
+                <div class="scan"></div>
+                <h3>Exo Introduction</h3>
+                <a href="./exo-intro.html">
+                    <span class="link-icon">P1</span>
+                    Exercices PHP — Introduction
+                </a>
+            </div>
+
+            <div class="section">
+                <div class="scan"></div>
+                <h3>Exo Tableaux et structures</h3>
+                <a href="./exo-tab-controle.html">
+                    <span class="link-icon">P2</span>
+                    Exercices PHP — Tableaux et structures
+                </a>
+            </div>
+
+            <div class="section">
+                <div class="scan"></div>
+                <h3>Exo Formulaires</h3>
+                <a href="./exo-formulaire.html">
+                    <span class="link-icon">P3</span>
+                    Exercices PHP — Formulaires
+                </a>
+            </div>
+
+            <div class="section">
+                <div class="scan"></div>
+                <h3>Exo Sessions-Start</h3>
+                <a href="./exo-session-start.html">
+                    <span class="link-icon">P4</span>
+                    Exercices PHP — Sessions-Start
+                </a>
+            </div>
+
+            <div class="section">
+                <div class="scan"></div>
+                <h3>Exo Upload de fichiers</h3>
+                <a href="./exo-upload-files.html">
+                    <span class="link-icon">P5</span>
+                    Exercices PHP — Upload de fichiers sécurisé
+                </a>
+            </div>
+
+            <div class="section">
+                <div class="scan"></div>
+                <h3>Exo Mini CRUD</h3>
+                <a href="./exo-mini-crud.html">
+                    <span class="link-icon">P6</span>
+                    Exercices PHP — Mini CRUD
+                </a>
+            </div>
+
+            <div class="section">
+                <div class="scan"></div>
+                <h3>Exo SQL</h3>
+                <a href="./exo-sql.html">
+                    <span class="link-icon">P7</span>
+                    Exercices PHP — SQL
+                </a>
+            </div>
+
+            <div class="section">
+                <div class="scan"></div>
+                <h3>Exo PDO</h3>
+                <a href="./exo-pdo.html">
+                    <span class="link-icon">P8</span>
+                    Exercices PHP — PDO
+                </a>
+            </div>
 
 
-            <!-- Section 1 -->
-        <div class="section">
-            <div class="scan"></div>
-            <h3>Exo Formulaires</h3>
-            <a href="./exo-formulaire.html">
-                <span class="link-icon">P3</span>
-                Exercices PHP — Formulaires
-            </a>
-        </div>
 
 
 
-            <!-- Section 1 -->
-        <div class="section">
-            <div class="scan"></div>
-            <h3>Exo Sessions-Start</h3>
-            <a href="./exo-session-start.html">
-                <span class="link-icon">P4</span>
-                Exercices PHP — Sessions-Start
-            </a>
-        </div>
 
 
-             <!-- Section 1 -->
-        <div class="section">
-            <div class="scan"></div>
-            <h3>Exo Upload de fichiers</h3>
-            <a href="./exo-upload-files.html">
-                <span class="link-icon">P5</span>
-                Exercices PHP — Upload de fichiers sécurisé
-            </a>
-        </div>
 
 
-             <!-- Section 1 -->
-        <div class="section">
-            <div class="scan"></div>
-            <h3>Exo Mini CRUD</h3>
-            <a href="./exo-mini-crud.html">
-                <span class="link-icon">P6</span>
-                Exercices PHP — Mini CRUD
-            </a>
+            <!-- Section PROJET — violette, pleine largeur -->
+            <div class="section section-projet">
+                <div class="scan"></div>
+                <h3>Projet n°1 Groupe</h3>
+                <a href="./Projet-1-Duo-PHP.pdf" target="_blank">
+                    <span class="link-icon">PR1</span>
+                    Projet PHP 1
+                </a>
+            </div>
+
+
+            <div class="section section-projet">
+                <div class="scan"></div>
+                <h3>Projet n°2 Groupe</h3>
+                <a href="./Projet-2-Quatre-PHP.pdf" target="_blank">
+                    <span class="link-icon">PR2</span>
+                    Projet PHP 2
+                </a>
+            </div>
+
+
         </div>
 
 
@@ -763,7 +879,7 @@
             <p>DWWM 2025–2026</p>
             <div class="footer-divider"></div>
             <p>&copy; DARRAS Thomas</p>
-            <p><a href="mailto:t.darras@realconseil.com">t.darras@realconseil.com</a></p>
+            <p><a href="/cdn-cgi/l/email-protection#cbbfe5afaab9b9aab88bb9aeaaa7a8a4a5b8aea2a7e5a8a4a6"><span class="__cf_email__" data-cfemail="daaef4bebba8a8bba99aa8bfbbb6b9b5b4a9bfb3b6f4b9b5b7">[email&#160;protected]</span></a></p>
             <p style="margin-top:0.75rem; font-size:0.62rem; color:var(--muted);">
                 Les supports sont mis a jour regulierement via GitHub
             </p>
@@ -775,18 +891,15 @@
     </div>
 
     <script>
-        // Re-trigger scan animation on each hover
         document.querySelectorAll('.section').forEach(section => {
             section.addEventListener('mouseenter', () => {
                 const scan = section.querySelector('.scan');
+                if (!scan) return;
                 scan.style.animation = 'none';
-                scan.offsetHeight; // force reflow
+                void scan.offsetWidth;
                 scan.style.animation = 'scanLine 1.2s linear';
             });
         });
     </script>
-
-    <script src="../cursor.js"></script>
-
 </body>
 </html>

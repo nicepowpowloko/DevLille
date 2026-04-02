@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercices PDO — PHP Data Objects</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+    :root {
+      --navy: #2C3F77;
+      --gold: #A0896A;
+      --dark: #0f1420;
+      --darker: #080d17;
+      --card: #151d2e;
+      --border: #1e2d47;
+      --text: #c8d0e0;
+      --muted: #5a6a88;
+      --green: #4ade80;
+      --orange: #fb923c;
+      --red: #f87171;
+      --code-bg: #0d1117;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Syne', sans-serif; background: var(--darker); color: var(--text); min-height: 100vh; }
+
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a2a55 50%, var(--gold) 100%);
+      padding: 3rem 2rem 2rem; text-align: center; position: relative; overflow: hidden;
+    }
+    header::before {
+      content: 'new PDO()';
+      position: absolute; font-family: 'JetBrains Mono', monospace;
+      font-size: 8rem; color: rgba(255,255,255,.04);
+      top: -1rem; right: -1rem; pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block; background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2); color: #fff;
+      font-size: .75rem; letter-spacing: 2px; text-transform: uppercase;
+      padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1rem;
+    }
+    header h1 { font-size: 2.4rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+    header p { color: rgba(255,255,255,.7); font-size: 1rem; }
+    .header-meta {
+      display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .header-meta span { color: rgba(255,255,255,.6); font-size: .85rem; }
+    .header-meta span strong { color: #fff; }
+
+    .pedagogy {
+      background: var(--dark); border-left: 4px solid var(--gold);
+      padding: 1.2rem 2rem; font-size: .85rem; color: #8899bb;
+    }
+    .pedagogy strong { color: var(--gold); }
+    .pedagogy code {
+      background: var(--code-bg); color: #79c0ff;
+      padding: .1rem .4rem; border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace; font-size: .82rem;
+    }
+
+    .alerte-prochaine {
+      background: rgba(251,146,60,.07); border: 1px solid rgba(251,146,60,.25);
+      border-left: 4px solid var(--orange);
+      padding: .8rem 1.5rem; margin: 1.5rem 0;
+      font-size: .88rem; color: #f4c07a; border-radius: 0 6px 6px 0;
+    }
+    .alerte-prochaine strong { color: var(--orange); }
+
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+    .tabs {
+      display: flex; gap: .5rem; margin-bottom: 2.5rem;
+      border-bottom: 2px solid var(--border); padding-bottom: .5rem;
+    }
+    .tab {
+      padding: .6rem 1.6rem; border: 2px solid transparent;
+      background: transparent; color: var(--muted);
+      font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 600;
+      cursor: pointer; border-radius: 6px 6px 0 0; transition: all .2s;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active-debutant      { color: var(--green);  border-color: var(--green);  background: rgba(74,222,128,.06); }
+    .tab.active-intermediaire { color: var(--orange); border-color: var(--orange); background: rgba(251,146,60,.06); }
+    .tab.active-difficile     { color: var(--red);    border-color: var(--red);    background: rgba(248,113,113,.06); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-green  { background: var(--green); }
+    .dot-orange { background: var(--orange); }
+    .dot-red    { background: var(--red); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .niveau-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem; padding: 1.2rem 1.5rem; border-radius: 8px;
+    }
+    .niveau-header.debutant      { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.2); }
+    .niveau-header.intermediaire { background: rgba(251,146,60,.07);  border: 1px solid rgba(251,146,60,.2); }
+    .niveau-header.difficile     { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.2); }
+
+    .niveau-label {
+      font-size: .7rem; letter-spacing: 2px; text-transform: uppercase;
+      font-weight: 700; padding: .3rem .8rem; border-radius: 4px; white-space: nowrap;
+    }
+    .debutant      .niveau-label { background: rgba(74,222,128,.15);  color: var(--green); }
+    .intermediaire .niveau-label { background: rgba(251,146,60,.15);  color: var(--orange); }
+    .difficile     .niveau-label { background: rgba(248,113,113,.15); color: var(--red); }
+    .niveau-desc { font-size: .9rem; color: var(--muted); }
+    .niveau-desc strong { color: var(--text); }
+
+    .exo {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; transition: border-color .2s;
+    }
+    .exo:hover { border-color: var(--navy); }
+
+    .exo-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .exo-header:hover { background: rgba(255,255,255,.02); }
+    .exo-title { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .exo-num {
+      font-family: 'JetBrains Mono', monospace; font-size: .75rem;
+      color: var(--muted); background: var(--dark); padding: .2rem .6rem; border-radius: 4px;
+    }
+    .exo-name { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .exo-theme {
+      font-size: .75rem; color: var(--muted); background: var(--dark);
+      padding: .2rem .7rem; border-radius: 10px;
+    }
+    .toggle-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      font-size: .8rem; padding: .3rem .8rem; border-radius: 4px; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace; transition: all .2s; white-space: nowrap;
+    }
+    .toggle-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .exo-body { padding: 1.5rem; }
+    .consigne { font-size: .95rem; line-height: 1.7; color: var(--text); margin-bottom: 1.2rem; }
+    .consigne strong { color: #fff; }
+
+    .objectifs {
+      background: var(--dark); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .objectifs h4 {
+      font-size: .75rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .6rem;
+    }
+    .objectifs li {
+      list-style: none; font-size: .88rem; color: #8899bb;
+      padding: .2rem 0 .2rem 1rem; position: relative;
+    }
+    .objectifs li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+
+    .code-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-radius: 8px; margin-bottom: 1.2rem; overflow: hidden;
+    }
+    .code-header {
+      background: #161b22; padding: .5rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #21262d;
+    }
+    .code-filename { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #8b949e; }
+    .code-lang { font-size: .7rem; color: #58a6ff; background: rgba(88,166,255,.1); padding: .1rem .5rem; border-radius: 3px; }
+    .code-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+    .php-tag { color: #ff7b72; }
+    .php-var { color: #79c0ff; }
+    .php-str { color: #a5d6ff; }
+    .php-num { color: #f2cc60; }
+    .php-kw  { color: #ff7b72; }
+    .php-fn  { color: #d2a8ff; }
+    .php-cmt { color: #6e7681; font-style: italic; }
+
+    .expected {
+      background: #0d1117; border: 1px solid #21262d;
+      border-left: 3px solid var(--green); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .expected h4 {
+      font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--green); margin-bottom: .6rem;
+    }
+    .expected pre { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: #7ee787; line-height: 1.8; }
+
+    .solution-wrapper { display: none; }
+    .solution-wrapper.open { display: block; }
+    .solution-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-left: 3px solid var(--gold); border-radius: 6px; overflow: hidden;
+    }
+    .solution-header {
+      background: #161b22; padding: .5rem 1rem; font-size: .75rem;
+      color: var(--gold); letter-spacing: 1px; text-transform: uppercase;
+      border-bottom: 1px solid #21262d;
+    }
+    .solution-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+
+    .notions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+    .notion-tag {
+      font-size: .72rem; padding: .2rem .7rem; border-radius: 10px;
+      background: rgba(44,63,119,.3); color: #79a4f5;
+      border: 1px solid rgba(44,63,119,.5);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .bonus-tag {
+      display: inline-block; font-size: .7rem; padding: .2rem .7rem;
+      background: rgba(248,113,113,.1); color: var(--red);
+      border: 1px solid rgba(248,113,113,.3); border-radius: 10px;
+      margin-left: .5rem; vertical-align: middle;
+    }
+
+    footer {
+      text-align: center; padding: 2rem; color: var(--muted);
+      font-size: .82rem; border-top: 1px solid var(--border);
+    }
+    footer strong { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">DWWM — Formation PHP</div>
+  <h1>Exercices PDO</h1>
+  <p>PHP Data Objects — Connexion, Requetes, Securite</p>
+  <div class="header-meta">
+    <span><strong>3</strong> niveaux</span>
+    <span><strong>9</strong> exercices</span>
+    <span>Notions vues : <strong>new PDO · query · prepare · execute · fetch · fetchAll</strong></span>
+  </div>
+</header>
+
+<div class="pedagogy">
+  <strong>Notions travaillees :</strong>
+  connexion avec <code>new PDO($dsn, $user, $pass)</code> &rarr;
+  requete simple avec <code>query()</code> &rarr;
+  requete preparee avec <code>prepare()</code> + <code>execute()</code> &rarr;
+  lire les resultats avec <code>fetch()</code> et <code>fetchAll()</code> &rarr;
+  INSERT / UPDATE / DELETE via PDO &rarr;
+  gerer les erreurs avec <code>PDOException</code>
+</div>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab active-debutant" onclick="showSection('debutant', this)"><span class="dot dot-green"></span> Debutant</button>
+    <button class="tab" onclick="showSection('intermediaire', this)"><span class="dot dot-orange"></span> Intermediaire</button>
+    <button class="tab" onclick="showSection('difficile', this)"><span class="dot dot-red"></span> Difficile</button>
+  </div>
+
+  <div class="section active" id="section-debutant">
+
+    <div class="niveau-header debutant">
+      <span class="niveau-label">Debutant</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Se connecter a la base de donnees avec PDO, faire un SELECT simple et afficher les resultats.</div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-01</span>
+          <span class="exo-name">Connexion PDO a la base</span>
+          <span class="exo-theme">new PDO / DSN / try-catch / PDOException</span>
+        </div>
+        <button class="toggle-btn" id="btn-01">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>connexion.php</strong> dans <code>htdocs/</code>. Connecte-toi a la base <code>catalogue_shop</code> avec PDO en utilisant un bloc <code>try/catch</code>. Si la connexion reussit, affiche "Connexion OK !". Si elle echoue, affiche le message d'erreur. Configure PDO pour lancer des exceptions et retourner les resultats en tableaux associatifs.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Construire le DSN (Data Source Name) : <code>mysql:host=localhost;port=8889;dbname=...</code></li>
+        <li>Instancier PDO avec <code>new PDO($dsn, $user, $pass)</code></li>
+        <li>Capturer les erreurs avec <code>try { } catch (PDOException $e) { }</code></li>
+        <li>Configurer avec <code>PDO::ATTR_ERRMODE</code> et <code>PDO::ATTR_DEFAULT_FETCH_MODE</code></li>
+      </ul></div>
+  
+      <div class="solution-wrapper" id="sol-01">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-var">$dsn</span> = <span class="php-str">'mysql:host=localhost;port=8889;dbname=catalogue_shop;charset=utf8mb4'</span>;
+<span class="php-var">$user</span> = <span class="php-str">'root'</span>;
+<span class="php-var">$pass</span> = <span class="php-str">'root'</span>;
+
+<span class="php-kw">try</span> {
+    <span class="php-var">$pdo</span> = <span class="php-kw">new</span> <span class="php-fn">PDO</span>(<span class="php-var">$dsn</span>, <span class="php-var">$user</span>, <span class="php-var">$pass</span>, [
+        <span class="php-fn">PDO</span>::<span class="php-fn">ATTR_ERRMODE</span> => <span class="php-fn">PDO</span>::<span class="php-fn">ERRMODE_EXCEPTION</span>,
+        <span class="php-fn">PDO</span>::<span class="php-fn">ATTR_DEFAULT_FETCH_MODE</span> => <span class="php-fn">PDO</span>::<span class="php-fn">FETCH_ASSOC</span>,
+    ]);
+    <span class="php-kw">echo</span> <span class="php-str">'Connexion OK !'</span>;
+} <span class="php-kw">catch</span> (<span class="php-fn">PDOException</span> <span class="php-var">$e</span>) {
+    <span class="php-kw">die</span>(<span class="php-str">'Erreur de connexion : '</span> . <span class="php-var">$e</span>-><span class="php-fn">getMessage</span>());
+}
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">new PDO($dsn, $u, $p)</span>
+          <span class="notion-tag">DSN mysql:</span>
+          <span class="notion-tag">try / catch</span>
+          <span class="notion-tag">PDOException</span>
+          <span class="notion-tag">ATTR_ERRMODE</span>
+          <span class="notion-tag">FETCH_ASSOC</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-02</span>
+          <span class="exo-name">Lire tous les produits avec query()</span>
+          <span class="exo-theme">query() / fetchAll() / foreach</span>
+        </div>
+        <button class="toggle-btn" id="btn-02">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>liste.php</strong>. Inclus la connexion PDO puis utilise <code>query()</code> pour selectionner tous les produits de la table <code>produits</code>. Recupere tous les resultats avec <code>fetchAll()</code> et affiche chaque produit dans une boucle <code>foreach</code> avec le nom, le prix et le stock.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Executer une requete simple : <code>$pdo->query('SELECT ...')</code></li>
+        <li>Recuperer tous les resultats : <code>$stmt->fetchAll()</code></li>
+        <li>Parcourir les resultats avec <code>foreach ($produits as $p)</code></li>
+        <li>Acceder aux colonnes : <code>$p['nom']</code>, <code>$p['prix']</code></li>
+      </ul></div>
+  
+
+      <div class="solution-wrapper" id="sol-02">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>;
+
+<span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">query</span>(<span class="php-str">'SELECT * FROM produits ORDER BY nom'</span>);
+<span class="php-var">$produits</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetchAll</span>();
+
+<span class="php-kw">foreach</span> (<span class="php-var">$produits</span> <span class="php-kw">as</span> <span class="php-var">$p</span>) {
+    <span class="php-kw">echo</span> <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$p</span>[<span class="php-str">'nom'</span>]) . <span class="php-str">' — '</span> . <span class="php-fn">number_format</span>(<span class="php-var">$p</span>[<span class="php-str">'prix'</span>], <span class="php-num">2</span>, <span class="php-str">','</span>, <span class="php-str">' '</span>) . <span class="php-str">' EUR\n'</span>;
+}
+<span class="php-kw">echo</span> <span class="php-fn">count</span>(<span class="php-var">$produits</span>) . <span class="php-str">' produits trouves'</span>;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">$pdo->query()</span>
+          <span class="notion-tag">fetchAll()</span>
+          <span class="notion-tag">foreach</span>
+          <span class="notion-tag">$p['col']</span>
+          <span class="notion-tag">count()</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-03</span>
+          <span class="exo-name">Lire un seul produit avec fetch()</span>
+          <span class="exo-theme">fetch() / un seul enregistrement</span>
+        </div>
+        <button class="toggle-btn" id="btn-03">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>detail.php</strong>. Recois l'id du produit via l'URL (<code>?id=1</code>). Utilise <code>query()</code> pour selectionner le produit correspondant. Recupere le resultat avec <code>fetch()</code> (une seule ligne). Affiche les details complets. Si le produit n'existe pas, affiche "Produit introuvable.".</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Recuperer un parametre GET : <code>$_GET['id']</code></li>
+        <li>Difference entre <code>fetch()</code> (1 ligne) et <code>fetchAll()</code> (toutes)</li>
+        <li>Verifier si le resultat existe : <code>if ($produit)</code></li>
+        <li>Caster en entier pour eviter les injections : <code>(int) $_GET['id']</code></li>
+      </ul></div>
+ 
+
+      <div class="solution-wrapper" id="sol-03">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>;
+<span class="php-var">$id</span> = (<span class="php-kw">int</span>) (<span class="php-var">$_GET</span>[<span class="php-str">'id'</span>] ?? <span class="php-num">0</span>);
+<span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">query</span>(<span class="php-str">"SELECT * FROM produits WHERE id = {$id}"</span>);
+<span class="php-var">$produit</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetch</span>();
+
+<span class="php-kw">if</span> (<span class="php-var">$produit</span>) {
+    <span class="php-kw">echo</span> <span class="php-str">"Nom : "</span> . <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$produit</span>[<span class="php-str">'nom'</span>]) . <span class="php-str">"\n"</span>;
+    <span class="php-kw">echo</span> <span class="php-str">"Prix : "</span> . <span class="php-var">$produit</span>[<span class="php-str">'prix'</span>] . <span class="php-str">" EUR\n"</span>;
+    <span class="php-kw">echo</span> <span class="php-str">"Stock : "</span> . <span class="php-var">$produit</span>[<span class="php-str">'stock'</span>] . <span class="php-str">"\n"</span>;
+} <span class="php-kw">else</span> {
+    <span class="php-kw">echo</span> <span class="php-str">'Produit introuvable.'</span>;
+}
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">fetch()</span>
+          <span class="notion-tag">fetchAll()</span>
+          <span class="notion-tag">(int) cast</span>
+          <span class="notion-tag">$_GET['id']</span>
+          <span class="notion-tag">if ($result)</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /debutant -->
+
+  <div class="section" id="section-intermediaire">
+
+    <div class="niveau-header intermediaire">
+      <span class="niveau-label">Intermediaire</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Utiliser les requetes preparees pour securiser les donnees, inserer et modifier via PDO.</div>
+    </div>
+
+    <div class="alerte-prochaine">
+      <strong>Securite :</strong> Ne jamais concatener directement une variable dans une requete SQL. Toujours utiliser <strong>prepare()</strong> + <strong>execute()</strong> avec des marqueurs <strong>:nom</strong> ou <strong>?</strong> pour eviter les injections SQL.
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-04</span>
+          <span class="exo-name">Requete preparee — SELECT securise</span>
+          <span class="exo-theme">prepare() / execute() / marqueurs :nom</span>
+        </div>
+        <button class="toggle-btn" id="btn-04">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Reprends <strong>detail.php</strong> et remplace le <code>query()</code> par une requete preparee avec <code>prepare()</code> et <code>execute()</code>. Utilise un marqueur nomme <code>:id</code>. C'est la bonne pratique pour toute requete recevant des donnees externes. Ajoute aussi une recherche par nom avec <code>LIKE</code> et un marqueur <code>:terme</code>.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Preparer la requete : <code>$stmt = $pdo->prepare('SELECT ... WHERE id = :id')</code></li>
+        <li>Executer avec les valeurs : <code>$stmt->execute(['id' => $id])</code></li>
+        <li>Difference entre marqueurs nommes <code>:nom</code> et positionnels <code>?</code></li>
+        <li>Comprendre pourquoi c'est plus sur que la concatenation directe</li>
+      </ul></div>
+   
+      <div class="solution-wrapper" id="sol-04">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>;
+
+<span class="php-cmt">// Marqueur nomme :id</span>
+<span class="php-var">$id</span> = (<span class="php-kw">int</span>) (<span class="php-var">$_GET</span>[<span class="php-str">'id'</span>] ?? <span class="php-num">0</span>);
+<span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'SELECT * FROM produits WHERE id = :id'</span>);
+<span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':id'</span> => <span class="php-var">$id</span>]);
+<span class="php-var">$produit</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetch</span>();
+
+<span class="php-cmt">// Recherche LIKE</span>
+<span class="php-var">$terme</span> = <span class="php-str">'%'</span> . <span class="php-fn">trim</span>(<span class="php-var">$_GET</span>[<span class="php-str">'q'</span>] ?? <span class="php-str">''</span>) . <span class="php-str">'%'</span>;
+<span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'SELECT * FROM produits WHERE nom LIKE :terme'</span>);
+<span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':terme'</span> => <span class="php-var">$terme</span>]);
+<span class="php-var">$resultats</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetchAll</span>();
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">prepare()</span>
+          <span class="notion-tag">execute([...])</span>
+          <span class="notion-tag">:marqueur nomme</span>
+          <span class="notion-tag">? positionnel</span>
+          <span class="notion-tag">injection SQL</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-05</span>
+          <span class="exo-name">INSERT avec PDO</span>
+          <span class="exo-theme">prepare() / execute() / lastInsertId()</span>
+        </div>
+        <button class="toggle-btn" id="btn-05">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>ajouter.php</strong> avec un formulaire (nom, prix, stock, categorie_id). Quand le formulaire est soumis, valide les donnees puis insere le nouveau produit dans la table <code>produits</code> avec une requete preparee. Recupere l'id du produit insere avec <code>lastInsertId()</code> et redirige vers le detail du produit.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Preparer un INSERT : <code>INSERT INTO produits (nom, prix) VALUES (:nom, :prix)</code></li>
+        <li>Passer tous les marqueurs dans execute()</li>
+        <li>Recuperer l'id auto-genere : <code>$pdo->lastInsertId()</code></li>
+        <li>Rediriger apres insertion : <code>header("Location: detail.php?id=$id")</code></li>
+      </ul></div>
+   
+
+      <div class="solution-wrapper" id="sol-05">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>;
+
+<span class="php-kw">if</span> (<span class="php-var">$_SERVER</span>[<span class="php-str">'REQUEST_METHOD'</span>] === <span class="php-str">'POST'</span>) {
+    <span class="php-var">$nom</span> = <span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'nom'</span>] ?? <span class="php-str">''</span>);
+    <span class="php-var">$prix</span> = (<span class="php-kw">float</span>) (<span class="php-var">$_POST</span>[<span class="php-str">'prix'</span>] ?? <span class="php-num">0</span>);
+    <span class="php-var">$stock</span> = (<span class="php-kw">int</span>)   (<span class="php-var">$_POST</span>[<span class="php-str">'stock'</span>] ?? <span class="php-num">0</span>);
+    <span class="php-var">$categorie_id</span> = (<span class="php-kw">int</span>)   (<span class="php-var">$_POST</span>[<span class="php-str">'categorie_id'</span>] ?? <span class="php-num">0</span>);
+
+    <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(
+        <span class="php-str">'INSERT INTO produits (nom, prix, stock, categorie_id) VALUES (:nom, :prix, :stock, :categorie_id)'</span>
+    );
+    <span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([
+        <span class="php-str">':nom'</span>          => <span class="php-var">$nom</span>,
+        <span class="php-str">':prix'</span>         => <span class="php-var">$prix</span>,
+        <span class="php-str">':stock'</span>        => <span class="php-var">$stock</span>,
+        <span class="php-str">':categorie_id'</span> => <span class="php-var">$categorie_id</span>,
+    ]);
+    <span class="php-var">$new_id</span> = <span class="php-var">$pdo</span>-><span class="php-fn">lastInsertId</span>();
+    <span class="php-fn">header</span>(<span class="php-str">"Location: detail.php?id={$new_id}"</span>);
+    <span class="php-fn">exit</span>();
+}
+<span class="php-tag">?&gt;</span>
+&lt;form method="POST"&gt;
+  &lt;input type="text"   name="nom"          placeholder="Nom du produit"&gt;
+  &lt;input type="number" name="prix"         step="0.01" placeholder="Prix"&gt;
+  &lt;input type="number" name="stock"        placeholder="Stock"&gt;
+  &lt;input type="number" name="categorie_id" placeholder="ID categorie"&gt;
+  &lt;button type="submit"&gt;Ajouter&lt;/button&gt;
+&lt;/form&gt;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">prepare() INSERT</span>
+          <span class="notion-tag">execute([...])</span>
+          <span class="notion-tag">lastInsertId()</span>
+          <span class="notion-tag">header() redirect</span>
+          <span class="notion-tag">cast (int)(float)</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-06</span>
+          <span class="exo-name">UPDATE et DELETE avec PDO</span>
+          <span class="exo-theme">UPDATE / DELETE / rowCount()</span>
+        </div>
+        <button class="toggle-btn" id="btn-06">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>modifier.php</strong>. Recois l'id via GET, charge le produit existant, affiche un formulaire pre-rempli. Quand soumis, execute un UPDATE. Ajoute aussi une action "supprimer" via GET (<code>?action=supprimer&amp;id=X</code>) qui execute un DELETE et redirige vers la liste. Utilise <code>rowCount()</code> pour verifier combien de lignes ont ete affectees.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>UPDATE prepare : <code>UPDATE produits SET nom=:nom WHERE id=:id</code></li>
+        <li>DELETE prepare : <code>DELETE FROM produits WHERE id=:id</code></li>
+        <li>Compter les lignes affectees : <code>$stmt->rowCount()</code></li>
+        <li>Repopuler le formulaire avec les valeurs actuelles du produit</li>
+      </ul></div>
+   
+      <div class="solution-wrapper" id="sol-06">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>;
+<span class="php-var">$id</span> = (<span class="php-kw">int</span>) (<span class="php-var">$_GET</span>[<span class="php-str">'id'</span>] ?? <span class="php-num">0</span>);
+
+<span class="php-cmt">// Supprimer</span>
+<span class="php-kw">if</span> (<span class="php-fn">isset</span>(<span class="php-var">$_GET</span>[<span class="php-str">'action'</span>]) && <span class="php-var">$_GET</span>[<span class="php-str">'action'</span>] === <span class="php-str">'supprimer'</span>) {
+    <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'DELETE FROM produits WHERE id = :id'</span>);
+    <span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':id'</span> => <span class="php-var">$id</span>]);
+    <span class="php-fn">header</span>(<span class="php-str">'Location: liste.php'</span>); <span class="php-fn">exit</span>();
+}
+
+<span class="php-cmt">// UPDATE</span>
+<span class="php-kw">if</span> (<span class="php-var">$_SERVER</span>[<span class="php-str">'REQUEST_METHOD'</span>] === <span class="php-str">'POST'</span>) {
+    <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'UPDATE produits SET nom=:nom, prix=:prix, stock=:stock WHERE id=:id'</span>);
+    <span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':nom'</span>=><span class="php-fn">trim</span>(<span class="php-var">$_POST</span>[<span class="php-str">'nom'</span>]), <span class="php-str">':prix'</span>=>(<span class="php-kw">float</span>)<span class="php-var">$_POST</span>[<span class="php-str">'prix'</span>], <span class="php-str">':stock'</span>=>(<span class="php-kw">int</span>)<span class="php-var">$_POST</span>[<span class="php-str">'stock'</span>], <span class="php-str">':id'</span>=><span class="php-var">$id</span>]);
+    <span class="php-fn">header</span>(<span class="php-str">'Location: liste.php'</span>); <span class="php-fn">exit</span>();
+}
+
+<span class="php-cmt">// Charger le produit pour pre-remplir</span>
+<span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'SELECT * FROM produits WHERE id = :id'</span>);
+<span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':id'</span> => <span class="php-var">$id</span>]);
+<span class="php-var">$produit</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetch</span>();
+<span class="php-tag">?&gt;</span>
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">UPDATE prepare</span>
+          <span class="notion-tag">DELETE prepare</span>
+          <span class="notion-tag">rowCount()</span>
+          <span class="notion-tag">repopulation formulaire</span>
+          <span class="notion-tag">pre-remplissage</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /intermediaire -->
+
+  <div class="section" id="section-difficile">
+
+    <div class="niveau-header difficile">
+      <span class="niveau-label">Difficile</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Requetes avancees avec JOIN, transactions PDO, gestion des erreurs robuste et fichier de connexion reutilisable.</div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-07</span>
+          <span class="exo-name">SELECT avec JOIN via PDO</span>
+          <span class="exo-theme">prepare() / JOIN / fetchAll / FETCH_ASSOC</span>
+        </div>
+        <button class="toggle-btn" id="btn-07">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>catalogue.php</strong>. Ecris une requete preparee qui fait un <code>JOIN</code> entre <code>produits</code> et <code>categories</code>. Ajoute un filtre optionnel par categorie passe en GET (<code>?categorie_id=1</code>). Si le parametre est present, utilise un marqueur <code>:categorie_id</code>. Sinon execute la requete sans filtre. Affiche les resultats avec le nom de la categorie.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>JOIN via PDO : requete preparee avec plusieurs tables</li>
+        <li>Requete conditionnelle : construire la requete SQL selon les parametres</li>
+        <li>Passer ou non un parametre a execute() selon le contexte</li>
+        <li>Afficher les colonnes de plusieurs tables : <code>$p['categorie_nom']</code></li>
+      </ul></div>
+   
+      <div class="solution-wrapper" id="sol-07">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>;
+<span class="php-var">$categorie_id</span> = (<span class="php-kw">int</span>) (<span class="php-var">$_GET</span>[<span class="php-str">'categorie_id'</span>] ?? <span class="php-num">0</span>);
+
+<span class="php-var">$sql</span> = <span class="php-str">'SELECT p.*, c.nom AS categorie_nom FROM produits p JOIN categories c ON p.categorie_id = c.id'</span>;
+
+<span class="php-kw">if</span> (<span class="php-var">$categorie_id</span>) {
+    <span class="php-var">$sql</span> .= <span class="php-str">' WHERE p.categorie_id = :categorie_id'</span>;
+    <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-var">$sql</span>);
+    <span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':categorie_id'</span> => <span class="php-var">$categorie_id</span>]);
+} <span class="php-kw">else</span> {
+    <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">query</span>(<span class="php-var">$sql</span>);
+}
+
+<span class="php-var">$produits</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetchAll</span>();
+<span class="php-kw">foreach</span> (<span class="php-var">$produits</span> <span class="php-kw">as</span> <span class="php-var">$p</span>) {
+    <span class="php-kw">echo</span> <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$p</span>[<span class="php-str">'nom'</span>]) . <span class="php-str">' ['</span> . <span class="php-fn">htmlspecialchars</span>(<span class="php-var">$p</span>[<span class="php-str">'categorie_nom'</span>]) . <span class="php-str">']\n'</span>;
+}
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">JOIN via PDO</span>
+          <span class="notion-tag">requete conditionnelle</span>
+          <span class="notion-tag">$p['categorie_nom']</span>
+          <span class="notion-tag">query() vs prepare()</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-08</span>
+          <span class="exo-name">Transactions PDO</span>
+          <span class="exo-theme">beginTransaction / commit / rollBack</span>
+        </div>
+        <button class="toggle-btn" id="btn-08">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un fichier <strong>transaction.php</strong>. Simule un achat : quand un utilisateur achete un produit, il faut <strong>1)</strong> diminuer le stock du produit et <strong>2)</strong> inserer une ligne dans la table <code>commandes</code>. Ces deux operations doivent reussir ensemble ou echouer ensemble. Utilise une transaction PDO pour garantir l'integrite des donnees.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Demarrer une transaction : <code>$pdo->beginTransaction()</code></li>
+        <li>Valider les changements : <code>$pdo->commit()</code></li>
+        <li>Annuler en cas d'erreur : <code>$pdo->rollBack()</code></li>
+        <li>Comprendre l'atomicite : tout ou rien</li>
+      </ul></div>
+   
+
+      <div class="solution-wrapper" id="sol-08">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">require_once</span> <span class="php-str">'connexion.php'</span>;
+<span class="php-var">$produit_id</span> = <span class="php-num">1</span>; <span class="php-var">$utilisateur_id</span> = <span class="php-num">1</span>; <span class="php-var">$quantite</span> = <span class="php-num">2</span>;
+
+<span class="php-kw">try</span> {
+    <span class="php-var">$pdo</span>-><span class="php-fn">beginTransaction</span>();
+
+    <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'SELECT stock FROM produits WHERE id = :id'</span>);
+    <span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':id'</span> => <span class="php-var">$produit_id</span>]);
+    <span class="php-var">$stock</span> = <span class="php-var">$stmt</span>-><span class="php-fn">fetchColumn</span>();
+    <span class="php-kw">if</span> (<span class="php-var">$stock</span> < <span class="php-var">$quantite</span>) <span class="php-kw">throw new</span> <span class="php-fn">Exception</span>(<span class="php-str">'Stock insuffisant'</span>);
+
+    <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'UPDATE produits SET stock = stock - :qte WHERE id = :id'</span>);
+    <span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':qte'</span> => <span class="php-var">$quantite</span>, <span class="php-str">':id'</span> => <span class="php-var">$produit_id</span>]);
+
+    <span class="php-var">$stmt</span> = <span class="php-var">$pdo</span>-><span class="php-fn">prepare</span>(<span class="php-str">'INSERT INTO commandes (utilisateur_id, produit_id, quantite) VALUES (:u, :p, :q)'</span>);
+    <span class="php-var">$stmt</span>-><span class="php-fn">execute</span>([<span class="php-str">':u'</span>=><span class="php-var">$utilisateur_id</span>, <span class="php-str">':p'</span>=><span class="php-var">$produit_id</span>, <span class="php-str">':q'</span>=><span class="php-var">$quantite</span>]);
+
+    <span class="php-var">$pdo</span>-><span class="php-fn">commit</span>();
+    <span class="php-kw">echo</span> <span class="php-str">'Achat reussi !'</span>;
+} <span class="php-kw">catch</span> (<span class="php-fn">Exception</span> <span class="php-var">$e</span>) {
+    <span class="php-var">$pdo</span>-><span class="php-fn">rollBack</span>();
+    <span class="php-kw">echo</span> <span class="php-str">'Erreur : '</span> . <span class="php-var">$e</span>-><span class="php-fn">getMessage</span>();
+}
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">beginTransaction()</span>
+          <span class="notion-tag">commit()</span>
+          <span class="notion-tag">rollBack()</span>
+          <span class="notion-tag">fetchColumn()</span>
+          <span class="notion-tag">throw new Exception</span>
+          <span class="notion-tag">atomicite</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-09</span>
+          <span class="exo-name">Classe Database reutilisable</span>
+          <span class="exo-theme">Singleton / connexion unique / require_once</span>
+          <span class="bonus-tag">Bonus</span>
+        </div>
+        <button class="toggle-btn" id="btn-09">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Exercice bonus. Cree un fichier <strong>Database.php</strong> qui encapsule la connexion PDO dans une classe avec le pattern <strong>Singleton</strong> : une seule instance de PDO pour toute l'application. La methode statique <code>getInstance()</code> retourne toujours la meme connexion. Utilise-la dans <strong>liste.php</strong> et <strong>detail.php</strong> avec <code>Database::getInstance()</code>.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Comprendre le pattern Singleton : une seule instance partagee</li>
+        <li>Creer une propriete statique <code>private static $instance</code></li>
+        <li>Methode statique <code>public static function getInstance()</code></li>
+        <li>Utilisation : <code>$pdo = Database::getInstance()</code></li>
+      </ul></div>
+  
+      <div class="solution-wrapper" id="sol-09">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-tag">&lt;?php</span>
+<span class="php-kw">class</span> <span class="php-fn">Database</span> {
+    <span class="php-kw">private static</span> <span class="php-var">$instance</span> = <span class="php-kw">null</span>;
+    <span class="php-kw">private function</span> <span class="php-fn">__construct</span>() {}
+
+    <span class="php-kw">public static function</span> <span class="php-fn">getInstance</span>(): <span class="php-fn">PDO</span> {
+        <span class="php-kw">if</span> (<span class="php-kw">self</span>::<span class="php-var">$instance</span> === <span class="php-kw">null</span>) {
+            <span class="php-kw">try</span> {
+                <span class="php-kw">self</span>::<span class="php-var">$instance</span> = <span class="php-kw">new</span> <span class="php-fn">PDO</span>(
+                    <span class="php-str">'mysql:host=localhost;port=8889;dbname=catalogue_shop;charset=utf8mb4'</span>,
+                    <span class="php-str">'root'</span>, <span class="php-str">'root'</span>,
+                    [<span class="php-fn">PDO</span>::<span class="php-fn">ATTR_ERRMODE</span> => <span class="php-fn">PDO</span>::<span class="php-fn">ERRMODE_EXCEPTION</span>, <span class="php-fn">PDO</span>::<span class="php-fn">ATTR_DEFAULT_FETCH_MODE</span> => <span class="php-fn">PDO</span>::<span class="php-fn">FETCH_ASSOC</span>]
+                );
+            } <span class="php-kw">catch</span> (<span class="php-fn">PDOException</span> <span class="php-var">$e</span>) {
+                <span class="php-kw">die</span>(<span class="php-str">'Connexion impossible : '</span> . <span class="php-var">$e</span>-><span class="php-fn">getMessage</span>());
+            }
+        }
+        <span class="php-kw">return</span> <span class="php-kw">self</span>::<span class="php-var">$instance</span>;
+    }
+}
+
+<span class="php-cmt">// Dans liste.php / detail.php :</span>
+<span class="php-kw">require_once</span> <span class="php-str">'Database.php'</span>;
+<span class="php-var">$pdo</span> = <span class="php-fn">Database</span>::<span class="php-fn">getInstance</span>();
+<span class="php-var">$produits</span> = <span class="php-var">$pdo</span>-><span class="php-fn">query</span>(<span class="php-str">'SELECT * FROM produits'</span>)-><span class="php-fn">fetchAll</span>();
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">Singleton pattern</span>
+          <span class="notion-tag">static $instance</span>
+          <span class="notion-tag">getInstance()</span>
+          <span class="notion-tag">private __construct</span>
+          <span class="notion-tag">connexion unique</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /difficile -->
+
+</main>
+
+
+
+<script>
+function showSection(niveau, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.remove('active-debutant', 'active-intermediaire', 'active-difficile');
+  });
+  document.getElementById('section-' + niveau).classList.add('active');
+  btn.classList.add('active-' + niveau);
+}
+
+function toggleSolution(id) {
+  const sol = document.getElementById('sol-' + id);
+  const btn = document.getElementById('btn-' + id);
+  sol.classList.add('open');
+  btn.textContent = 'Solution affichée ✓';
+  btn.style.borderColor = 'var(--gold)';
+  btn.style.color = 'var(--gold)';
+  btn.disabled = true;
+}
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => toggleSolution(btn.id.replace('btn-', '')));
+});
+</script>
+
+</body>
+</html>

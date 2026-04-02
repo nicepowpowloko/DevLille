@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercices — Administrer MariaDB</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+    :root {
+      --navy: #2C3F77;
+      --gold: #A0896A;
+      --dark: #0f1420;
+      --darker: #080d17;
+      --card: #151d2e;
+      --border: #1e2d47;
+      --text: #c8d0e0;
+      --muted: #5a6a88;
+      --green: #4ade80;
+      --orange: #fb923c;
+      --red: #f87171;
+      --code-bg: #0d1117;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Syne', sans-serif; background: var(--darker); color: var(--text); min-height: 100vh; }
+
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a2a55 50%, var(--gold) 100%);
+      padding: 3rem 2rem 2rem; text-align: center; position: relative; overflow: hidden;
+    }
+    header::before {
+      content: 'MariaDB';
+      position: absolute; font-family: 'JetBrains Mono', monospace;
+      font-size: 8rem; color: rgba(255,255,255,.04);
+      top: -1rem; right: -1rem; pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block; background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2); color: #fff;
+      font-size: .75rem; letter-spacing: 2px; text-transform: uppercase;
+      padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1rem;
+    }
+    header h1 { font-size: 2.4rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+    header p { color: rgba(255,255,255,.7); font-size: 1rem; }
+    .header-meta {
+      display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .header-meta span { color: rgba(255,255,255,.6); font-size: .85rem; }
+    .header-meta span strong { color: #fff; }
+
+    .pedagogy {
+      background: var(--dark); border-left: 4px solid var(--gold);
+      padding: 1.2rem 2rem; font-size: .85rem; color: #8899bb;
+    }
+    .pedagogy strong { color: var(--gold); }
+    .pedagogy code {
+      background: var(--code-bg); color: #79c0ff;
+      padding: .1rem .4rem; border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace; font-size: .82rem;
+    }
+
+    .alerte-prochaine {
+      background: rgba(251,146,60,.07); border: 1px solid rgba(251,146,60,.25);
+      border-left: 4px solid var(--orange);
+      padding: .8rem 1.5rem; margin: 1.5rem 0;
+      font-size: .88rem; color: #f4c07a; border-radius: 0 6px 6px 0;
+    }
+    .alerte-prochaine strong { color: var(--orange); }
+
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+    .tabs {
+      display: flex; gap: .5rem; margin-bottom: 2.5rem;
+      border-bottom: 2px solid var(--border); padding-bottom: .5rem;
+    }
+    .tab {
+      padding: .6rem 1.6rem; border: 2px solid transparent;
+      background: transparent; color: var(--muted);
+      font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 600;
+      cursor: pointer; border-radius: 6px 6px 0 0; transition: all .2s;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active-debutant      { color: var(--green);  border-color: var(--green);  background: rgba(74,222,128,.06); }
+    .tab.active-intermediaire { color: var(--orange); border-color: var(--orange); background: rgba(251,146,60,.06); }
+    .tab.active-difficile     { color: var(--red);    border-color: var(--red);    background: rgba(248,113,113,.06); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-green  { background: var(--green); }
+    .dot-orange { background: var(--orange); }
+    .dot-red    { background: var(--red); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .niveau-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem; padding: 1.2rem 1.5rem; border-radius: 8px;
+    }
+    .niveau-header.debutant      { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.2); }
+    .niveau-header.intermediaire { background: rgba(251,146,60,.07);  border: 1px solid rgba(251,146,60,.2); }
+    .niveau-header.difficile     { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.2); }
+
+    .niveau-label {
+      font-size: .7rem; letter-spacing: 2px; text-transform: uppercase;
+      font-weight: 700; padding: .3rem .8rem; border-radius: 4px; white-space: nowrap;
+    }
+    .debutant      .niveau-label { background: rgba(74,222,128,.15);  color: var(--green); }
+    .intermediaire .niveau-label { background: rgba(251,146,60,.15);  color: var(--orange); }
+    .difficile     .niveau-label { background: rgba(248,113,113,.15); color: var(--red); }
+    .niveau-desc { font-size: .9rem; color: var(--muted); }
+    .niveau-desc strong { color: var(--text); }
+
+    .exo {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; transition: border-color .2s;
+    }
+    .exo:hover { border-color: var(--navy); }
+
+    .exo-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .exo-header:hover { background: rgba(255,255,255,.02); }
+    .exo-title { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .exo-num {
+      font-family: 'JetBrains Mono', monospace; font-size: .75rem;
+      color: var(--muted); background: var(--dark); padding: .2rem .6rem; border-radius: 4px;
+    }
+    .exo-name { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .exo-theme {
+      font-size: .75rem; color: var(--muted); background: var(--dark);
+      padding: .2rem .7rem; border-radius: 10px;
+    }
+    .toggle-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      font-size: .8rem; padding: .3rem .8rem; border-radius: 4px; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace; transition: all .2s; white-space: nowrap;
+    }
+    .toggle-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .exo-body { padding: 1.5rem; }
+    .consigne { font-size: .95rem; line-height: 1.7; color: var(--text); margin-bottom: 1.2rem; }
+    .consigne strong { color: #fff; }
+
+    .objectifs {
+      background: var(--dark); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .objectifs h4 {
+      font-size: .75rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .6rem;
+    }
+    .objectifs li {
+      list-style: none; font-size: .88rem; color: #8899bb;
+      padding: .2rem 0 .2rem 1rem; position: relative;
+    }
+    .objectifs li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+
+    .code-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-radius: 8px; margin-bottom: 1.2rem; overflow: hidden;
+    }
+    .code-header {
+      background: #161b22; padding: .5rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #21262d;
+    }
+    .code-filename { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #8b949e; }
+    .code-lang { font-size: .7rem; color: #58a6ff; background: rgba(88,166,255,.1); padding: .1rem .5rem; border-radius: 3px; }
+    .code-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+    .php-tag { color: #ff7b72; }
+    .php-var { color: #79c0ff; }
+    .php-str { color: #a5d6ff; }
+    .php-num { color: #f2cc60; }
+    .php-kw  { color: #ff7b72; }
+    .php-fn  { color: #d2a8ff; }
+    .php-cmt { color: #6e7681; font-style: italic; }
+
+    .expected {
+      background: #0d1117; border: 1px solid #21262d;
+      border-left: 3px solid var(--green); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .expected h4 {
+      font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--green); margin-bottom: .6rem;
+    }
+    .expected pre { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: #7ee787; line-height: 1.8; }
+
+    .solution-wrapper { display: none; }
+    .solution-wrapper.open { display: block; }
+    .solution-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-left: 3px solid var(--gold); border-radius: 6px; overflow: hidden;
+    }
+    .solution-header {
+      background: #161b22; padding: .5rem 1rem; font-size: .75rem;
+      color: var(--gold); letter-spacing: 1px; text-transform: uppercase;
+      border-bottom: 1px solid #21262d;
+    }
+    .solution-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+
+    .notions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+    .notion-tag {
+      font-size: .72rem; padding: .2rem .7rem; border-radius: 10px;
+      background: rgba(44,63,119,.3); color: #79a4f5;
+      border: 1px solid rgba(44,63,119,.5);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .bonus-tag {
+      display: inline-block; font-size: .7rem; padding: .2rem .7rem;
+      background: rgba(248,113,113,.1); color: var(--red);
+      border: 1px solid rgba(248,113,113,.3); border-radius: 10px;
+      margin-left: .5rem; vertical-align: middle;
+    }
+
+    footer {
+      text-align: center; padding: 2rem; color: var(--muted);
+      font-size: .82rem; border-top: 1px solid var(--border);
+    }
+    footer strong { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">DWWM — Formation PHP</div>
+  <h1>Exercices MariaDB</h1>
+  <p>Administration — Utilisateurs, Droits, Backup, Performance</p>
+  <div class="header-meta">
+    <span><strong>3</strong> niveaux</span>
+    <span><strong>9</strong> exercices</span>
+    <span>Notions vues : <strong>CREATE USER · GRANT · REVOKE · mysqldump · INDEX · EXPLAIN · VIEW</strong></span>
+  </div>
+</header>
+
+<div class="pedagogy">
+  <strong>Notions travaillees :</strong>
+  gerer les bases avec <code>SHOW DATABASES</code> &rarr;
+  creer des utilisateurs avec <code>CREATE USER</code> &rarr;
+  attribuer des droits avec <code>GRANT</code> &rarr;
+  sauvegarder avec <code>mysqldump</code> &rarr;
+  optimiser avec <code>INDEX</code> et <code>EXPLAIN</code> &rarr;
+  surveiller avec <code>SHOW STATUS</code> et <code>SHOW PROCESSLIST</code>
+</div>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab active-debutant" onclick="showSection('debutant', this)"><span class="dot dot-green"></span> Debutant</button>
+    <button class="tab" onclick="showSection('intermediaire', this)"><span class="dot dot-orange"></span> Intermediaire</button>
+    <button class="tab" onclick="showSection('difficile', this)"><span class="dot dot-red"></span> Difficile</button>
+  </div>
+
+  <div class="section active" id="section-debutant">
+
+    <div class="niveau-header debutant">
+      <span class="niveau-label">Debutant</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Gerer les bases, creer des utilisateurs et leur attribuer des droits simples.</div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-01</span>
+          <span class="exo-name">Gerer les bases de donnees</span>
+          <span class="exo-theme">SHOW DATABASES · CREATE · DROP · USE</span>
+        </div>
+        <button class="toggle-btn" id="btn-01">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Dans le terminal ou phpMyAdmin, connecte-toi a MariaDB avec root. Liste toutes les bases existantes, cree une nouvelle base <strong>formation_test</strong> en UTF-8, selectionne-la, affiche la version du serveur, puis supprime cette base.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Lister les bases : <code>SHOW DATABASES;</code></li>
+        <li>Creer avec le bon encodage : <code>CREATE DATABASE formation_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;</code></li>
+        <li>Selectionner : <code>USE formation_test;</code> et verifier : <code>SELECT DATABASE();</code></li>
+        <li>Infos serveur : <code>SELECT VERSION(), USER(), NOW();</code></li>
+        <li>Supprimer proprement : <code>DROP DATABASE IF EXISTS formation_test;</code></li>
+      </ul></div>
+
+      <div class="solution-wrapper" id="sol-01">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-kw">SHOW</span> <span class="php-kw">DATABASES</span>;
+<span class="php-kw">CREATE</span> <span class="php-kw">DATABASE</span> formation_test <span class="php-kw">CHARACTER</span> <span class="php-kw">SET</span> utf8mb4 <span class="php-kw">COLLATE</span> utf8mb4_unicode_ci;
+<span class="php-kw">USE</span> formation_test;
+<span class="php-kw">SELECT</span> <span class="php-fn">DATABASE</span>();
+<span class="php-kw">SELECT</span> <span class="php-fn">VERSION</span>(), <span class="php-fn">USER</span>(), <span class="php-fn">NOW</span>();
+<span class="php-kw">DROP</span> <span class="php-kw">DATABASE</span> <span class="php-kw">IF</span> <span class="php-kw">EXISTS</span> formation_test;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">SHOW DATABASES</span>
+          <span class="notion-tag">CREATE DATABASE</span>
+          <span class="notion-tag">CHARACTER SET utf8mb4</span>
+          <span class="notion-tag">USE</span>
+          <span class="notion-tag">SELECT DATABASE()</span>
+          <span class="notion-tag">DROP DATABASE IF EXISTS</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-02</span>
+          <span class="exo-name">Creer et gerer des utilisateurs</span>
+          <span class="exo-theme">CREATE USER · ALTER USER · DROP USER · mysql.user</span>
+        </div>
+        <button class="toggle-btn" id="btn-02">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree un utilisateur <strong>dev_user</strong> avec le mot de passe <code>DevPass2025!</code> accessible uniquement depuis <code>localhost</code>. Verifie son existence dans la table systeme <code>mysql.user</code>, change son mot de passe, puis supprime-le proprement.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Creer un utilisateur : <code>CREATE USER 'dev_user'@'localhost' IDENTIFIED BY 'DevPass2025!';</code></li>
+        <li>Lister tous les utilisateurs : <code>SELECT user, host FROM mysql.user ORDER BY user;</code></li>
+        <li>Modifier le mot de passe : <code>ALTER USER 'dev_user'@'localhost' IDENTIFIED BY 'NouveauMdp!';</code></li>
+        <li>Supprimer : <code>DROP USER IF EXISTS 'dev_user'@'localhost';</code></li>
+        <li>Comprendre le format <code>user@host</code> : host controle depuis ou la connexion est autorisee</li>
+      </ul></div>
+
+      <div class="solution-wrapper" id="sol-02">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-kw">CREATE</span> <span class="php-kw">USER</span> <span class="php-str">'dev_user'</span>@<span class="php-str">'localhost'</span> <span class="php-kw">IDENTIFIED</span> <span class="php-kw">BY</span> <span class="php-str">'DevPass2025!'</span>;
+<span class="php-kw">SELECT</span> <span class="php-var">user</span>, <span class="php-var">host</span>, <span class="php-var">password_expired</span> <span class="php-kw">FROM</span> mysql.user <span class="php-kw">WHERE</span> <span class="php-var">user</span> = <span class="php-str">'dev_user'</span>;
+<span class="php-kw">ALTER</span> <span class="php-kw">USER</span> <span class="php-str">'dev_user'</span>@<span class="php-str">'localhost'</span> <span class="php-kw">IDENTIFIED</span> <span class="php-kw">BY</span> <span class="php-str">'NouveauMdp2025!'</span>;
+<span class="php-kw">SELECT</span> <span class="php-var">user</span>, <span class="php-var">host</span> <span class="php-kw">FROM</span> mysql.user <span class="php-kw">ORDER</span> <span class="php-kw">BY</span> <span class="php-var">user</span>;
+<span class="php-kw">DROP</span> <span class="php-kw">USER</span> <span class="php-kw">IF</span> <span class="php-kw">EXISTS</span> <span class="php-str">'dev_user'</span>@<span class="php-str">'localhost'</span>;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">CREATE USER</span>
+          <span class="notion-tag">user@localhost</span>
+          <span class="notion-tag">IDENTIFIED BY</span>
+          <span class="notion-tag">mysql.user</span>
+          <span class="notion-tag">ALTER USER</span>
+          <span class="notion-tag">DROP USER IF EXISTS</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-03</span>
+          <span class="exo-name">Attribuer et retirer des droits</span>
+          <span class="exo-theme">GRANT · REVOKE · SHOW GRANTS · FLUSH PRIVILEGES</span>
+        </div>
+        <button class="toggle-btn" id="btn-03">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree l'utilisateur <strong>app_user</strong>. Accorde-lui tous les droits sur la base <code>catalogue_shop</code> uniquement. Verifie ses droits avec <code>SHOW GRANTS</code>. Retire-lui ensuite le droit <code>DELETE</code> pour proteger les donnees. Cree aussi un utilisateur en lecture seule.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Tous les droits sur une base : <code>GRANT ALL PRIVILEGES ON catalogue_shop.* TO 'app_user'@'localhost';</code></li>
+        <li>Droits specifiques : <code>GRANT SELECT, INSERT, UPDATE ON catalogue_shop.* TO 'app_user'@'localhost';</code></li>
+        <li>Verifier les droits : <code>SHOW GRANTS FOR 'app_user'@'localhost';</code></li>
+        <li>Retirer un droit : <code>REVOKE DELETE ON catalogue_shop.* FROM 'app_user'@'localhost';</code></li>
+        <li>Appliquer : <code>FLUSH PRIVILEGES;</code></li>
+      </ul></div>
+
+ 
+      <div class="solution-wrapper" id="sol-03">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-kw">CREATE</span> <span class="php-kw">USER</span> <span class="php-str">'app_user'</span>@<span class="php-str">'localhost'</span> <span class="php-kw">IDENTIFIED</span> <span class="php-kw">BY</span> <span class="php-str">'AppPass2025!'</span>;
+<span class="php-kw">GRANT</span> <span class="php-kw">ALL</span> <span class="php-kw">PRIVILEGES</span> <span class="php-kw">ON</span> catalogue_shop.* <span class="php-kw">TO</span> <span class="php-str">'app_user'</span>@<span class="php-str">'localhost'</span>;
+<span class="php-kw">SHOW</span> <span class="php-kw">GRANTS</span> <span class="php-kw">FOR</span> <span class="php-str">'app_user'</span>@<span class="php-str">'localhost'</span>;
+<span class="php-kw">REVOKE</span> <span class="php-kw">DELETE</span> <span class="php-kw">ON</span> catalogue_shop.* <span class="php-kw">FROM</span> <span class="php-str">'app_user'</span>@<span class="php-str">'localhost'</span>;
+<span class="php-kw">FLUSH</span> <span class="php-kw">PRIVILEGES</span>;
+<span class="php-kw">SHOW</span> <span class="php-kw">GRANTS</span> <span class="php-kw">FOR</span> <span class="php-str">'app_user'</span>@<span class="php-str">'localhost'</span>;
+<span class="php-kw">GRANT</span> <span class="php-kw">SELECT</span> <span class="php-kw">ON</span> catalogue_shop.* <span class="php-kw">TO</span> <span class="php-str">'readonly_user'</span>@<span class="php-str">'localhost'</span>;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">GRANT ALL PRIVILEGES ON base.*</span>
+          <span class="notion-tag">GRANT SELECT INSERT UPDATE</span>
+          <span class="notion-tag">REVOKE DELETE</span>
+          <span class="notion-tag">SHOW GRANTS FOR</span>
+          <span class="notion-tag">FLUSH PRIVILEGES</span>
+          <span class="notion-tag">utilisateur lecture seule</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /debutant -->
+
+  <div class="section" id="section-intermediaire">
+
+    <div class="niveau-header intermediaire">
+      <span class="niveau-label">Intermediaire</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Sauvegarder et restaurer des bases, creer des index pour optimiser les requetes, utiliser les vues.</div>
+    </div>
+
+    <div class="alerte-prochaine">
+      <strong>Important :</strong> Toujours sauvegarder la base <strong>avant</strong> toute modification importante. Un <code>DROP TABLE</code> ou un <code>UPDATE</code> sans <code>WHERE</code> est irreversible sans backup !
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-04</span>
+          <span class="exo-name">Sauvegarder avec mysqldump</span>
+          <span class="exo-theme">mysqldump · backup · restore · compression</span>
+        </div>
+        <button class="toggle-btn" id="btn-04">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Depuis le terminal, utilise <code>mysqldump</code> (fourni avec MAMP) pour sauvegarder la base <code>catalogue_shop</code>. Exporte la structure seule, les donnees seules, puis l'ensemble complet. Restaure ensuite le backup dans une nouvelle base <strong>catalogue_restore</strong>.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Localiser mysqldump sur MAMP Mac : <code>/Applications/MAMP/Library/bin/mysqldump</code></li>
+        <li>Export complet : <code>mysqldump -u root -p -P 8889 catalogue_shop > backup.sql</code></li>
+        <li>Structure seule : <code>mysqldump --no-data catalogue_shop > structure.sql</code></li>
+        <li>Donnees seules : <code>mysqldump --no-create-info catalogue_shop > data.sql</code></li>
+        <li>Restaurer : <code>mysql -u root -p -P 8889 catalogue_restore < backup.sql</code></li>
+      </ul></div>
+
+ 
+      <div class="solution-wrapper" id="sol-04">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-cmt"># Export complet</span>
+<span class="php-cmt">mysqldump -u root -proot -P 8889 catalogue_shop > ~/Desktop/backup_complet.sql</span>
+<span class="php-cmt"># Structure seule</span>
+<span class="php-cmt">mysqldump -u root -proot -P 8889 --no-data catalogue_shop > ~/Desktop/structure.sql</span>
+<span class="php-cmt"># Donnees seules</span>
+<span class="php-cmt">mysqldump -u root -proot -P 8889 --no-create-info catalogue_shop > ~/Desktop/data.sql</span>
+<span class="php-cmt"># Export compresse</span>
+<span class="php-cmt">mysqldump -u root -proot -P 8889 catalogue_shop | gzip > ~/Desktop/backup.sql.gz</span>
+
+<span class="php-cmt"># Restauration</span>
+<span class="php-cmt">mysql -u root -proot -P 8889 -e "CREATE DATABASE catalogue_restore CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"</span>
+<span class="php-cmt">mysql -u root -proot -P 8889 catalogue_restore < ~/Desktop/backup_complet.sql</span>
+<span class="php-cmt">mysql -u root -proot -P 8889 catalogue_restore -e "SHOW TABLES;"</span>
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">mysqldump</span>
+          <span class="notion-tag">--no-data</span>
+          <span class="notion-tag">--no-create-info</span>
+          <span class="notion-tag">--databases</span>
+          <span class="notion-tag">gzip compression</span>
+          <span class="notion-tag">mysql < backup.sql</span>
+          <span class="notion-tag">restauration</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-05</span>
+          <span class="exo-name">Creer et analyser des INDEX</span>
+          <span class="exo-theme">CREATE INDEX · EXPLAIN · SHOW INDEX · performance</span>
+        </div>
+        <button class="toggle-btn" id="btn-05">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Sur la table <code>produits</code> de <code>catalogue_shop</code>, cree des index pour accelerer les recherches. Utilise <code>EXPLAIN</code> pour comparer les performances avant et apres. Cree un index simple sur <code>nom</code>, un index unique sur <code>email</code>, et un index composite sur <code>(categorie_id, prix)</code>.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Voir les index existants : <code>SHOW INDEX FROM produits;</code></li>
+        <li>Creer un index simple : <code>CREATE INDEX idx_nom ON produits(nom);</code></li>
+        <li>Index composite : <code>CREATE INDEX idx_cat_prix ON produits(categorie_id, prix);</code></li>
+        <li>Analyser une requete : <code>EXPLAIN SELECT * FROM produits WHERE nom = '...';</code></li>
+        <li>Lire le resultat EXPLAIN : colonne <code>type</code> (ALL = mauvais, ref = bien) et <code>rows</code> (moins = mieux)</li>
+        <li>Supprimer un index : <code>DROP INDEX idx_nom ON produits;</code></li>
+      </ul></div>
+
+      <div class="solution-wrapper" id="sol-05">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-kw">SHOW</span> <span class="php-kw">INDEX</span> <span class="php-kw">FROM</span> produits;
+<span class="php-kw">EXPLAIN</span> <span class="php-kw">SELECT</span> * <span class="php-kw">FROM</span> produits <span class="php-kw">WHERE</span> nom = <span class="php-str">'Clavier mecanique'</span>;
+<span class="php-kw">CREATE</span> <span class="php-kw">INDEX</span> idx_nom <span class="php-kw">ON</span> produits(nom);
+<span class="php-kw">EXPLAIN</span> <span class="php-kw">SELECT</span> * <span class="php-kw">FROM</span> produits <span class="php-kw">WHERE</span> nom = <span class="php-str">'Clavier mecanique'</span>;
+<span class="php-kw">CREATE</span> <span class="php-kw">INDEX</span> idx_cat_prix <span class="php-kw">ON</span> produits(categorie_id, prix);
+<span class="php-kw">EXPLAIN</span> <span class="php-kw">SELECT</span> * <span class="php-kw">FROM</span> produits <span class="php-kw">WHERE</span> categorie_id = <span class="php-num">1</span> <span class="php-kw">ORDER</span> <span class="php-kw">BY</span> prix ASC;
+<span class="php-kw">SHOW</span> <span class="php-kw">INDEX</span> <span class="php-kw">FROM</span> produits;
+<span class="php-kw">DROP</span> <span class="php-kw">INDEX</span> idx_nom <span class="php-kw">ON</span> produits;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">CREATE INDEX</span>
+          <span class="notion-tag">CREATE INDEX composite</span>
+          <span class="notion-tag">EXPLAIN</span>
+          <span class="notion-tag">type ALL vs ref</span>
+          <span class="notion-tag">rows = nombre de lignes lues</span>
+          <span class="notion-tag">SHOW INDEX FROM</span>
+          <span class="notion-tag">DROP INDEX ON</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-06</span>
+          <span class="exo-name">Creer et utiliser des VUES</span>
+          <span class="exo-theme">CREATE VIEW · DROP VIEW · SHOW FULL TABLES</span>
+        </div>
+        <button class="toggle-btn" id="btn-06">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Une vue est une requete sauvegardee qu'on utilise comme une table. Cree une vue <strong>v_catalogue</strong> qui joint produits et categories et ne garde que les produits en stock. Cree aussi une vue <strong>v_stats_categories</strong> avec le nombre de produits et le prix moyen par categorie.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Creer une vue : <code>CREATE VIEW v_catalogue AS SELECT ...;</code></li>
+        <li>Interroger comme une table : <code>SELECT * FROM v_catalogue WHERE categorie = 'Electronique';</code></li>
+        <li>Lister les vues : <code>SHOW FULL TABLES WHERE Table_type = 'VIEW';</code></li>
+        <li>Voir la definition : <code>SHOW CREATE VIEW v_catalogue;</code></li>
+        <li>Supprimer : <code>DROP VIEW IF EXISTS v_catalogue;</code></li>
+      </ul></div>
+  
+
+      <div class="solution-wrapper" id="sol-06">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-kw">CREATE</span> <span class="php-kw">VIEW</span> v_catalogue <span class="php-kw">AS</span>
+<span class="php-kw">SELECT</span> p.id, p.nom, p.prix, p.stock, c.nom <span class="php-kw">AS</span> categorie
+<span class="php-kw">FROM</span> produits p <span class="php-kw">JOIN</span> categories c <span class="php-kw">ON</span> p.categorie_id = c.id
+<span class="php-kw">WHERE</span> p.stock > <span class="php-num">0</span>;
+
+<span class="php-kw">SELECT</span> * <span class="php-kw">FROM</span> v_catalogue <span class="php-kw">ORDER</span> <span class="php-kw">BY</span> prix ASC;
+
+<span class="php-kw">CREATE</span> <span class="php-kw">VIEW</span> v_stats_categories <span class="php-kw">AS</span>
+<span class="php-kw">SELECT</span> c.nom, COUNT(p.id) AS nb_produits, ROUND(AVG(p.prix),2) AS prix_moyen, SUM(p.stock) AS stock_total
+<span class="php-kw">FROM</span> categories c <span class="php-kw">LEFT</span> <span class="php-kw">JOIN</span> produits p <span class="php-kw">ON</span> c.id = p.categorie_id
+<span class="php-kw">GROUP</span> <span class="php-kw">BY</span> c.id, c.nom;
+
+<span class="php-kw">SHOW</span> <span class="php-kw">FULL</span> <span class="php-kw">TABLES</span> <span class="php-kw">WHERE</span> Table_type = <span class="php-str">'VIEW'</span>;
+<span class="php-kw">DROP</span> <span class="php-kw">VIEW</span> <span class="php-kw">IF</span> <span class="php-kw">EXISTS</span> v_catalogue;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">CREATE VIEW AS</span>
+          <span class="notion-tag">SELECT * FROM vue</span>
+          <span class="notion-tag">LEFT JOIN dans une vue</span>
+          <span class="notion-tag">SHOW FULL TABLES WHERE Table_type</span>
+          <span class="notion-tag">DROP VIEW IF EXISTS</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /intermediaire -->
+
+  <div class="section" id="section-difficile">
+
+    <div class="niveau-header difficile">
+      <span class="niveau-label">Difficile</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Surveiller le serveur, utiliser les procedures stockees et planifier des sauvegardes automatiques.</div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-07</span>
+          <span class="exo-name">Surveiller le serveur MariaDB</span>
+          <span class="exo-theme">SHOW STATUS · SHOW PROCESSLIST · information_schema</span>
+        </div>
+        <button class="toggle-btn" id="btn-07">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Utilise les commandes de surveillance pour connaitre l'etat du serveur. Liste les connexions actives, consulte les variables de configuration importantes (max_connections, encodage), consulte les statistiques globales et analyse la taille des tables depuis <code>information_schema</code>.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Voir les connexions actives : <code>SHOW FULL PROCESSLIST;</code></li>
+        <li>Variables cles : <code>SHOW VARIABLES LIKE 'max_connections';</code></li>
+        <li>Stats serveur : <code>SHOW GLOBAL STATUS LIKE 'Connections';</code></li>
+        <li>Taille des tables depuis <code>information_schema.TABLES</code></li>
+        <li>Identifier les tables sans index primaire</li>
+      </ul></div>
+   
+      <div class="solution-wrapper" id="sol-07">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-kw">SHOW</span> <span class="php-kw">FULL</span> PROCESSLIST;
+<span class="php-kw">SHOW</span> VARIABLES <span class="php-kw">LIKE</span> <span class="php-str">'max_connections'</span>;
+<span class="php-kw">SHOW</span> VARIABLES <span class="php-kw">LIKE</span> <span class="php-str">'character_set%'</span>;
+<span class="php-kw">SHOW</span> <span class="php-kw">GLOBAL</span> STATUS <span class="php-kw">LIKE</span> <span class="php-str">'Connections'</span>;
+<span class="php-kw">SHOW</span> <span class="php-kw">GLOBAL</span> STATUS <span class="php-kw">LIKE</span> <span class="php-str">'Slow_queries'</span>;
+
+<span class="php-kw">SELECT</span> TABLE_NAME, TABLE_ROWS, ROUND((DATA_LENGTH+INDEX_LENGTH)/1024,2) AS taille_ko
+<span class="php-kw">FROM</span> information_schema.TABLES
+<span class="php-kw">WHERE</span> TABLE_SCHEMA = <span class="php-str">'catalogue_shop'</span> <span class="php-kw">ORDER</span> <span class="php-kw">BY</span> taille_ko DESC;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">SHOW FULL PROCESSLIST</span>
+          <span class="notion-tag">SHOW VARIABLES LIKE</span>
+          <span class="notion-tag">SHOW GLOBAL STATUS</span>
+          <span class="notion-tag">information_schema.TABLES</span>
+          <span class="notion-tag">DATA_LENGTH + INDEX_LENGTH</span>
+          <span class="notion-tag">ROUND() / 1024</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-08</span>
+          <span class="exo-name">Procedure stockee et Trigger</span>
+          <span class="exo-theme">CREATE PROCEDURE · CALL · CREATE TRIGGER · OLD · NEW</span>
+        </div>
+        <button class="toggle-btn" id="btn-08">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree une procedure stockee <strong>sp_ajouter_produit</strong> qui verifie que le prix est positif avant d'inserer. Cree aussi un trigger <strong>tr_log_prix</strong> qui enregistre automatiquement dans une table <code>logs_prix</code> chaque modification de prix.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Changer le delimiteur : <code>DELIMITER $$</code> pour ecrire des blocs multi-lignes</li>
+        <li>Creer une procedure : <code>CREATE PROCEDURE nom(IN param TYPE) BEGIN ... END</code></li>
+        <li>Lever une erreur : <code>SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '...';</code></li>
+        <li>Appeler : <code>CALL sp_ajouter_produit('Webcam', 59.90, 20, 1);</code></li>
+        <li>Trigger AFTER UPDATE : acceder aux valeurs avec <code>OLD.prix</code> et <code>NEW.prix</code></li>
+      </ul></div>
+
+
+      <div class="solution-wrapper" id="sol-08">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-kw">CREATE</span> <span class="php-kw">TABLE</span> <span class="php-kw">IF</span> <span class="php-kw">NOT</span> <span class="php-kw">EXISTS</span> logs_prix (id INT AUTO_INCREMENT PRIMARY KEY, produit_id INT, ancien_prix DECIMAL(10,2), nouveau_prix DECIMAL(10,2), modifie_le DATETIME DEFAULT CURRENT_TIMESTAMP);
+
+<span class="php-kw">DELIMITER</span> $$
+<span class="php-kw">CREATE</span> <span class="php-kw">PROCEDURE</span> sp_ajouter_produit(IN p_nom VARCHAR(150), IN p_prix DECIMAL(10,2), IN p_stock INT, IN p_cat_id INT)
+<span class="php-kw">BEGIN</span>
+  <span class="php-kw">IF</span> p_prix <= 0 THEN
+    SIGNAL SQLSTATE <span class="php-str">'45000'</span> <span class="php-kw">SET</span> MESSAGE_TEXT = <span class="php-str">'Le prix doit etre positif'</span>;
+  <span class="php-kw">END</span> <span class="php-kw">IF</span>;
+  <span class="php-kw">INSERT</span> <span class="php-kw">INTO</span> produits (nom, prix, stock, categorie_id) VALUES (p_nom, p_prix, p_stock, p_cat_id);
+<span class="php-kw">END</span> $$
+<span class="php-kw">DELIMITER</span> ;
+
+<span class="php-kw">DELIMITER</span> $$
+CREATE TRIGGER tr_log_prix AFTER <span class="php-kw">UPDATE</span> <span class="php-kw">ON</span> produits <span class="php-kw">FOR</span> <span class="php-kw">EACH</span> ROW
+<span class="php-kw">BEGIN</span>
+  <span class="php-kw">IF</span> OLD.prix <> NEW.prix THEN
+    <span class="php-kw">INSERT</span> <span class="php-kw">INTO</span> logs_prix (produit_id, ancien_prix, nouveau_prix) VALUES (NEW.id, OLD.prix, NEW.prix);
+  <span class="php-kw">END</span> <span class="php-kw">IF</span>;
+<span class="php-kw">END</span> $$
+<span class="php-kw">DELIMITER</span> ;
+
+CALL sp_ajouter_produit(<span class="php-str">'Webcam HD'</span>, 59.90, 20, 1);
+<span class="php-kw">UPDATE</span> produits <span class="php-kw">SET</span> prix = 699.00 <span class="php-kw">WHERE</span> id = 1;
+<span class="php-kw">SELECT</span> * FROM logs_prix;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">DELIMITER $$</span>
+          <span class="notion-tag">CREATE PROCEDURE</span>
+          <span class="notion-tag">IN param TYPE</span>
+          <span class="notion-tag">IF ... THEN ... END IF</span>
+          <span class="notion-tag">SIGNAL SQLSTATE 45000</span>
+          <span class="notion-tag">CALL</span>
+          <span class="notion-tag">CREATE TRIGGER AFTER UPDATE</span>
+          <span class="notion-tag">OLD.col / NEW.col</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-09</span>
+          <span class="exo-name">Script backup automatise + cron</span>
+          <span class="exo-theme">bash · mysqldump · gzip · rotation · crontab</span>
+          <span class="bonus-tag">Bonus</span>
+        </div>
+        <button class="toggle-btn" id="btn-09">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Exercice bonus. Cree un script bash <strong>backup_mariadb.sh</strong> qui sauvegarde automatiquement la base, compresse le fichier, garde seulement les 7 derniers backups (rotation automatique) et enregistre chaque operation dans un fichier de log. Planifie ensuite ce script avec <code>crontab</code> pour qu'il s'execute chaque nuit a 2h.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Script bash avec variables : chemin mysqldump, credentials, dossier backup</li>
+        <li>Nommer avec la date : <code>$(date +%Y%m%d_%H%M%S)</code></li>
+        <li>Compression gzip : <code>mysqldump ... | gzip > backup.sql.gz</code></li>
+        <li>Verifier le succes : <code>if [ $? -eq 0 ]; then ... fi</code></li>
+        <li>Rotation automatique : <code>ls -t *.sql.gz | tail -n +8 | xargs rm -f</code></li>
+        <li>Planification : <code>crontab -e</code> puis <code>0 2 * * * /chemin/backup.sh</code></li>
+      </ul></div>
+  
+      <div class="solution-wrapper" id="sol-09">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="php-cmt">#!/bin/bash</span>
+DB_USER="root"; DB_PASS="root"; DB_PORT="8889"; DB_NAME="catalogue_shop"
+BACKUP_DIR="$HOME/Desktop/backups_mariadb"
+LOG_FILE="$BACKUP_DIR/backup.log"
+MYSQLDUMP="/Applications/MAMP/Library/bin/mysqldump"
+
+mkdir -p "$BACKUP_DIR"
+DATE=$(date +%Y%m%d_%H%M%S)
+FILENAME="$BACKUP_DIR/${DB_NAME}_${DATE}.sql.gz"
+
+echo "[$(date)] Debut..." >> "$LOG_FILE"
+$MYSQLDUMP -u $DB_USER -p$DB_PASS -P $DB_PORT --single-transaction --routines --triggers $DB_NAME | gzip > "$FILENAME"
+
+if [ $? -eq 0 ]; then
+  SIZE=$(du -sh "$FILENAME" | cut -f1)
+  echo "[$(date)] OK — $FILENAME ($SIZE)" >> "$LOG_FILE"
+else
+  echo "[$(date)] ERREUR !" >> "$LOG_FILE"; exit 1
+fi
+
+ls -t "$BACKUP_DIR"/*.sql.gz 2>/dev/null | tail -n +$((RETENTION + 1)) | xargs rm -f
+echo "[$(date)] Rotation OK" >> "$LOG_FILE"
+<span class="php-cmt"># Planifier : crontab -e  ->  0 2 * * * /bin/bash /chemin/backup_mariadb.sh</span>
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">bash script</span>
+          <span class="notion-tag">mysqldump --single-transaction</span>
+          <span class="notion-tag">gzip compression</span>
+          <span class="notion-tag">$(date +%Y%m%d)</span>
+          <span class="notion-tag">if [ $? -eq 0 ]</span>
+          <span class="notion-tag">ls -t tail -n xargs rm</span>
+          <span class="notion-tag">crontab -e</span>
+          <span class="notion-tag">0 2 * * *</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /difficile -->
+
+</main>
+
+<footer>
+  <strong>Real Conseil Formation</strong> — DWWM — Administrer MariaDB<br>
+  Prochaine seance : <strong>Architecture MVC</strong> — separation Model, View, Controller
+</footer>
+
+<script>
+function showSection(niveau, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.remove('active-debutant', 'active-intermediaire', 'active-difficile');
+  });
+  document.getElementById('section-' + niveau).classList.add('active');
+  btn.classList.add('active-' + niveau);
+}
+
+function toggleSolution(id) {
+  const sol = document.getElementById('sol-' + id);
+  const btn = document.getElementById('btn-' + id);
+  sol.classList.add('open');
+  btn.textContent = 'Solution affichée ✓';
+  btn.style.borderColor = 'var(--gold)';
+  btn.style.color = 'var(--gold)';
+  btn.disabled = true;
+}
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => toggleSolution(btn.id.replace('btn-', '')));
+});
+</script>
+
+</body>
+</html>

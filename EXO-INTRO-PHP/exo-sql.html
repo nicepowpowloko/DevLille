@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercices SQL — Bases de donnees</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+    :root {
+      --navy: #2C3F77;
+      --gold: #A0896A;
+      --dark: #0f1420;
+      --darker: #080d17;
+      --card: #151d2e;
+      --border: #1e2d47;
+      --text: #c8d0e0;
+      --muted: #5a6a88;
+      --green: #4ade80;
+      --orange: #fb923c;
+      --red: #f87171;
+      --code-bg: #0d1117;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Syne', sans-serif; background: var(--darker); color: var(--text); min-height: 100vh; }
+
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a2a55 50%, var(--gold) 100%);
+      padding: 3rem 2rem 2rem; text-align: center; position: relative; overflow: hidden;
+    }
+    header::before {
+      content: 'SELECT *';
+      position: absolute; font-family: 'JetBrains Mono', monospace;
+      font-size: 8rem; color: rgba(255,255,255,.04);
+      top: -1rem; right: -1rem; pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block; background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2); color: #fff;
+      font-size: .75rem; letter-spacing: 2px; text-transform: uppercase;
+      padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1rem;
+    }
+    header h1 { font-size: 2.4rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+    header p { color: rgba(255,255,255,.7); font-size: 1rem; }
+    .header-meta {
+      display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .header-meta span { color: rgba(255,255,255,.6); font-size: .85rem; }
+    .header-meta span strong { color: #fff; }
+
+    .pedagogy {
+      background: var(--dark); border-left: 4px solid var(--gold);
+      padding: 1.2rem 2rem; font-size: .85rem; color: #8899bb;
+    }
+    .pedagogy strong { color: var(--gold); }
+    .pedagogy code {
+      background: var(--code-bg); color: #79c0ff;
+      padding: .1rem .4rem; border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace; font-size: .82rem;
+    }
+
+    .alerte-prochaine {
+      background: rgba(251,146,60,.07); border: 1px solid rgba(251,146,60,.25);
+      border-left: 4px solid var(--orange);
+      padding: .8rem 1.5rem; margin: 1.5rem 0;
+      font-size: .88rem; color: #f4c07a; border-radius: 0 6px 6px 0;
+    }
+    .alerte-prochaine strong { color: var(--orange); }
+
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+    .tabs {
+      display: flex; gap: .5rem; margin-bottom: 2.5rem;
+      border-bottom: 2px solid var(--border); padding-bottom: .5rem;
+    }
+    .tab {
+      padding: .6rem 1.6rem; border: 2px solid transparent;
+      background: transparent; color: var(--muted);
+      font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 600;
+      cursor: pointer; border-radius: 6px 6px 0 0; transition: all .2s;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active-debutant      { color: var(--green);  border-color: var(--green);  background: rgba(74,222,128,.06); }
+    .tab.active-intermediaire { color: var(--orange); border-color: var(--orange); background: rgba(251,146,60,.06); }
+    .tab.active-difficile     { color: var(--red);    border-color: var(--red);    background: rgba(248,113,113,.06); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-green  { background: var(--green); }
+    .dot-orange { background: var(--orange); }
+    .dot-red    { background: var(--red); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .niveau-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem; padding: 1.2rem 1.5rem; border-radius: 8px;
+    }
+    .niveau-header.debutant      { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.2); }
+    .niveau-header.intermediaire { background: rgba(251,146,60,.07);  border: 1px solid rgba(251,146,60,.2); }
+    .niveau-header.difficile     { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.2); }
+
+    .niveau-label {
+      font-size: .7rem; letter-spacing: 2px; text-transform: uppercase;
+      font-weight: 700; padding: .3rem .8rem; border-radius: 4px; white-space: nowrap;
+    }
+    .debutant      .niveau-label { background: rgba(74,222,128,.15);  color: var(--green); }
+    .intermediaire .niveau-label { background: rgba(251,146,60,.15);  color: var(--orange); }
+    .difficile     .niveau-label { background: rgba(248,113,113,.15); color: var(--red); }
+    .niveau-desc { font-size: .9rem; color: var(--muted); }
+    .niveau-desc strong { color: var(--text); }
+
+    .exo {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; transition: border-color .2s;
+    }
+    .exo:hover { border-color: var(--navy); }
+
+    .exo-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .exo-header:hover { background: rgba(255,255,255,.02); }
+    .exo-title { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .exo-num {
+      font-family: 'JetBrains Mono', monospace; font-size: .75rem;
+      color: var(--muted); background: var(--dark); padding: .2rem .6rem; border-radius: 4px;
+    }
+    .exo-name { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .exo-theme {
+      font-size: .75rem; color: var(--muted); background: var(--dark);
+      padding: .2rem .7rem; border-radius: 10px;
+    }
+    .toggle-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      font-size: .8rem; padding: .3rem .8rem; border-radius: 4px; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace; transition: all .2s; white-space: nowrap;
+    }
+    .toggle-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .exo-body { padding: 1.5rem; }
+    .consigne { font-size: .95rem; line-height: 1.7; color: var(--text); margin-bottom: 1.2rem; }
+    .consigne strong { color: #fff; }
+
+    .objectifs {
+      background: var(--dark); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .objectifs h4 {
+      font-size: .75rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .6rem;
+    }
+    .objectifs li {
+      list-style: none; font-size: .88rem; color: #8899bb;
+      padding: .2rem 0 .2rem 1rem; position: relative;
+    }
+    .objectifs li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+
+    .code-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-radius: 8px; margin-bottom: 1.2rem; overflow: hidden;
+    }
+    .code-header {
+      background: #161b22; padding: .5rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #21262d;
+    }
+    .code-filename { font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #8b949e; }
+    .code-lang { font-size: .7rem; color: #58a6ff; background: rgba(88,166,255,.1); padding: .1rem .5rem; border-radius: 3px; }
+    .code-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+    .php-tag { color: #ff7b72; }
+    .php-var { color: #79c0ff; }
+    .php-str { color: #a5d6ff; }
+    .php-num { color: #f2cc60; }
+    .php-kw  { color: #ff7b72; }
+    .php-fn  { color: #d2a8ff; }
+    .php-cmt { color: #6e7681; font-style: italic; }
+
+    .expected {
+      background: #0d1117; border: 1px solid #21262d;
+      border-left: 3px solid var(--green); border-radius: 6px;
+      padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+    }
+    .expected h4 {
+      font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--green); margin-bottom: .6rem;
+    }
+    .expected pre { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: #7ee787; line-height: 1.8; }
+
+    .solution-wrapper { display: none; }
+    .solution-wrapper.open { display: block; }
+    .solution-block {
+      background: var(--code-bg); border: 1px solid #21262d;
+      border-left: 3px solid var(--gold); border-radius: 6px; overflow: hidden;
+    }
+    .solution-header {
+      background: #161b22; padding: .5rem 1rem; font-size: .75rem;
+      color: var(--gold); letter-spacing: 1px; text-transform: uppercase;
+      border-bottom: 1px solid #21262d;
+    }
+    .solution-block pre {
+      padding: 1.2rem; font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto;
+    }
+
+    .notions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+    .notion-tag {
+      font-size: .72rem; padding: .2rem .7rem; border-radius: 10px;
+      background: rgba(44,63,119,.3); color: #79a4f5;
+      border: 1px solid rgba(44,63,119,.5);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .bonus-tag {
+      display: inline-block; font-size: .7rem; padding: .2rem .7rem;
+      background: rgba(248,113,113,.1); color: var(--red);
+      border: 1px solid rgba(248,113,113,.3); border-radius: 10px;
+      margin-left: .5rem; vertical-align: middle;
+    }
+
+    footer {
+      text-align: center; padding: 2rem; color: var(--muted);
+      font-size: .82rem; border-top: 1px solid var(--border);
+    }
+    footer strong { color: var(--gold); }
+  
+    .sql-kw  { color: #ff7b72; font-weight: 600; }
+    .sql-tbl { color: #e06c75; }
+    .sql-col { color: #98c379; }
+    .sql-str { color: #a5d6ff; }
+    .sql-num { color: #f2cc60; }
+    .sql-cmt { color: #6e7681; font-style: italic; }
+    .sql-fn  { color: #d2a8ff; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">DWWM — Formation PHP</div>
+  <h1>Exercices SQL</h1>
+  <p>Bases de donnees — Bloc 3</p>
+  <div class="header-meta">
+    <span><strong>3</strong> niveaux</span>
+    <span><strong>9</strong> exercices</span>
+    <span>Notions vues : <strong>CREATE TABLE · SELECT · INSERT · UPDATE · DELETE · WHERE · JOIN</strong></span>
+  </div>
+</header>
+
+<div class="pedagogy">
+  <strong>Notions travaillees :</strong>
+  creer une table avec <code>CREATE TABLE</code> &rarr;
+  lire avec <code>SELECT</code> et filtrer avec <code>WHERE</code> &rarr;
+  inserer avec <code>INSERT INTO</code> &rarr;
+  modifier avec <code>UPDATE</code> &rarr;
+  supprimer avec <code>DELETE</code> &rarr;
+  lier des tables avec <code>JOIN</code>
+</div>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab active-debutant" onclick="showSection('debutant', this)"><span class="dot dot-green"></span> Debutant</button>
+    <button class="tab" onclick="showSection('intermediaire', this)"><span class="dot dot-orange"></span> Intermediaire</button>
+    <button class="tab" onclick="showSection('difficile', this)"><span class="dot dot-red"></span> Difficile</button>
+  </div>
+
+  <div class="section active" id="section-debutant">
+
+    <div class="niveau-header debutant">
+      <span class="niveau-label">Debutant</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Creer une table, inserer des donnees et faire des SELECT simples.</div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-01</span>
+          <span class="exo-name">Creer la table utilisateurs</span>
+          <span class="exo-theme">CREATE TABLE / types de colonnes</span>
+        </div>
+        <button class="toggle-btn" id="btn-01">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Dans phpMyAdmin, onglet <strong>SQL</strong>, cree une table <strong>utilisateurs</strong> dans ta base avec les colonnes : <code>id</code> (cle primaire auto-increment), <code>nom</code> (varchar 100), <code>email</code> (varchar 150 unique), <code>age</code> (int), <code>actif</code> (tinyint, valeur par defaut 1), <code>cree_le</code> (datetime, CURRENT_TIMESTAMP). Verifie ensuite dans l'onglet Structure que tout est correct.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Utiliser <code>INT AUTO_INCREMENT PRIMARY KEY</code> pour l'id</li>
+        <li>Definir les bons types : <code>VARCHAR</code>, <code>INT</code>, <code>TINYINT</code>, <code>DATETIME</code></li>
+        <li>Ajouter une contrainte <code>UNIQUE</code> sur l'email</li>
+        <li>Definir une valeur par defaut avec <code>DEFAULT</code></li>
+      </ul></div>
+ 
+      <div class="solution-wrapper" id="sol-01">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="sql-cmt">-- Solution complete</span>
+<span class="sql-kw">CREATE TABLE</span> <span class="sql-tbl">utilisateurs</span> (
+  <span class="sql-col">id</span>     <span class="sql-kw">INT</span> <span class="sql-kw">AUTO_INCREMENT</span> <span class="sql-kw">PRIMARY KEY</span>,
+  <span class="sql-col">nom</span>     <span class="sql-kw">VARCHAR</span>(<span class="sql-num">100</span>) <span class="sql-kw">NOT NULL</span>,
+  <span class="sql-col">email</span>   <span class="sql-kw">VARCHAR</span>(<span class="sql-num">150</span>) <span class="sql-kw">NOT NULL</span> <span class="sql-kw">UNIQUE</span>,
+  <span class="sql-col">age</span>     <span class="sql-kw">INT</span>,
+  <span class="sql-col">actif</span>   <span class="sql-kw">TINYINT</span> <span class="sql-kw">DEFAULT</span> <span class="sql-num">1</span>,
+  <span class="sql-col">cree_le</span> <span class="sql-kw">DATETIME</span> <span class="sql-kw">DEFAULT</span> <span class="sql-kw">CURRENT_TIMESTAMP</span>
+);
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">CREATE TABLE</span>
+          <span class="notion-tag">PRIMARY KEY</span>
+          <span class="notion-tag">AUTO_INCREMENT</span>
+          <span class="notion-tag">VARCHAR / INT / DATETIME</span>
+          <span class="notion-tag">DEFAULT</span>
+          <span class="notion-tag">UNIQUE</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-02</span>
+          <span class="exo-name">Inserer des utilisateurs</span>
+          <span class="exo-theme">INSERT INTO / VALUES</span>
+        </div>
+        <button class="toggle-btn" id="btn-02">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Dans la table <strong>utilisateurs</strong>, insere <strong>4 utilisateurs</strong> avec leurs donnees. Utilise d'abord la syntaxe avec les noms de colonnes explicites, puis sans les noms. Insere aussi plusieurs lignes en une seule requete.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Syntaxe complete : <code>INSERT INTO table (col1, col2) VALUES (val1, val2)</code></li>
+        <li>Inserer plusieurs lignes en une fois avec plusieurs <code>VALUES (...), (...)</code></li>
+        <li>Ne pas renseigner l'<code>id</code> (AUTO_INCREMENT) ni <code>cree_le</code> (DEFAULT)</li>
+        <li>Verifier l'insertion dans l'onglet Parcourir de phpMyAdmin</li>
+      </ul></div>
+   
+  
+      <div class="solution-wrapper" id="sol-02">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="sql-kw">INSERT INTO</span> <span class="sql-tbl">utilisateurs</span> (<span class="sql-col">nom</span>, <span class="sql-col">email</span>, <span class="sql-col">age</span>)
+<span class="sql-kw">VALUES</span> (<span class="sql-str">'Alice Martin'</span>, <span class="sql-str">'alice@exemple.fr'</span>, <span class="sql-num">28</span>);
+
+<span class="sql-kw">INSERT INTO</span> <span class="sql-tbl">utilisateurs</span> (<span class="sql-col">nom</span>, <span class="sql-col">email</span>, <span class="sql-col">age</span>)
+<span class="sql-kw">VALUES</span>
+  (<span class="sql-str">'Bob Dupont'</span>, <span class="sql-str">'bob@exemple.fr'</span>, <span class="sql-num">34</span>),
+  (<span class="sql-str">'Clara Rey'</span>, <span class="sql-str">'clara@exemple.fr'</span>, <span class="sql-num">22</span>),
+  (<span class="sql-str">'David Kim'</span>, <span class="sql-str">'david@exemple.fr'</span>, <span class="sql-num">41</span>);
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">INSERT INTO</span>
+          <span class="notion-tag">VALUES</span>
+          <span class="notion-tag">multi-lignes</span>
+          <span class="notion-tag">AUTO_INCREMENT</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-03</span>
+          <span class="exo-name">Lire des donnees avec SELECT</span>
+          <span class="exo-theme">SELECT / * / colonnes specifiques</span>
+        </div>
+        <button class="toggle-btn" id="btn-03">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Sur la table <strong>utilisateurs</strong>, ecris trois requetes distinctes : <strong>1)</strong> selectionne toutes les colonnes de tous les utilisateurs, <strong>2)</strong> selectionne uniquement le nom et l'email, <strong>3)</strong> selectionne les utilisateurs de plus de 25 ans avec <code>WHERE</code>, tries par age croissant avec <code>ORDER BY</code>.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Selectionner toutes les colonnes : <code>SELECT *</code></li>
+        <li>Selectionner des colonnes precises : <code>SELECT col1, col2</code></li>
+        <li>Filtrer avec <code>WHERE age > 25</code></li>
+        <li>Trier avec <code>ORDER BY age ASC</code></li>
+      </ul></div>
+ 
+
+      <div class="solution-wrapper" id="sol-03">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="sql-cmt">-- 1. Toutes les colonnes</span>
+<span class="sql-kw">SELECT</span> * <span class="sql-kw">FROM</span> <span class="sql-tbl">utilisateurs</span>;
+
+<span class="sql-cmt">-- 2. Colonnes specifiques</span>
+<span class="sql-kw">SELECT</span> <span class="sql-col">nom</span>, <span class="sql-col">email</span> <span class="sql-kw">FROM</span> <span class="sql-tbl">utilisateurs</span>;
+
+<span class="sql-cmt">-- 3. Filtrer et trier</span>
+<span class="sql-kw">SELECT</span> <span class="sql-col">nom</span>, <span class="sql-col">age</span> <span class="sql-kw">FROM</span> <span class="sql-tbl">utilisateurs</span>
+<span class="sql-kw">WHERE</span> <span class="sql-col">age</span> > <span class="sql-num">25</span>
+<span class="sql-kw">ORDER BY</span> <span class="sql-col">age</span> <span class="sql-kw">ASC</span>;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">SELECT *</span>
+          <span class="notion-tag">SELECT col1, col2</span>
+          <span class="notion-tag">WHERE</span>
+          <span class="notion-tag">ORDER BY ASC / DESC</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /debutant -->
+
+  <div class="section" id="section-intermediaire">
+
+    <div class="niveau-header intermediaire">
+      <span class="niveau-label">Intermediaire</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Modifier, supprimer des donnees, utiliser WHERE avec plusieurs conditions et les fonctions d'agregation.</div>
+    </div>
+
+    <div class="alerte-prochaine">
+      <strong>Attention :</strong> Toujours utiliser <strong>WHERE</strong> avec UPDATE et DELETE. Sans WHERE, tu modifies ou supprimes <em>toutes</em> les lignes de la table !
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-04</span>
+          <span class="exo-name">Modifier des donnees</span>
+          <span class="exo-theme">UPDATE / SET / WHERE</span>
+        </div>
+        <button class="toggle-btn" id="btn-04">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Sur la table <strong>utilisateurs</strong>, ecris trois requetes UPDATE : <strong>1)</strong> change l'age d'Alice a 29, <strong>2)</strong> desactive tous les utilisateurs de moins de 25 ans (mettre <code>actif = 0</code>), <strong>3)</strong> change l'email de Bob. Verifie apres chaque requete dans l'onglet Parcourir.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Syntaxe : <code>UPDATE table SET col = val WHERE condition</code></li>
+        <li>Modifier plusieurs colonnes a la fois : <code>SET col1 = v1, col2 = v2</code></li>
+        <li>Ne jamais oublier le <code>WHERE</code> sinon toutes les lignes sont modifiees</li>
+        <li>Cibler par <code>id</code> pour etre precis</li>
+      </ul></div>
+  
+    
+      <div class="solution-wrapper" id="sol-04">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="sql-cmt">-- 1. Modifier l'age d'Alice</span>
+<span class="sql-kw">UPDATE</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-kw">SET</span> <span class="sql-col">age</span> = <span class="sql-num">29</span> <span class="sql-kw">WHERE</span> <span class="sql-col">id</span> = <span class="sql-num">1</span>;
+
+<span class="sql-cmt">-- 2. Desactiver les moins de 25 ans</span>
+<span class="sql-kw">UPDATE</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-kw">SET</span> <span class="sql-col">actif</span> = <span class="sql-num">0</span> <span class="sql-kw">WHERE</span> <span class="sql-col">age</span> < <span class="sql-num">25</span>;
+
+<span class="sql-cmt">-- 3. Changer l'email de Bob</span>
+<span class="sql-kw">UPDATE</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-kw">SET</span> <span class="sql-col">email</span> = <span class="sql-str">'bob.dupont@nouveau.fr'</span> <span class="sql-kw">WHERE</span> <span class="sql-col">id</span> = <span class="sql-num">2</span>;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">UPDATE</span>
+          <span class="notion-tag">SET</span>
+          <span class="notion-tag">WHERE id = X</span>
+          <span class="notion-tag">modifier plusieurs colonnes</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-05</span>
+          <span class="exo-name">Supprimer et filtrer avec WHERE</span>
+          <span class="exo-theme">DELETE / WHERE / AND / OR / LIKE</span>
+        </div>
+        <button class="toggle-btn" id="btn-05">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Sur la table <strong>utilisateurs</strong>, ecris quatre requetes : <strong>1)</strong> supprime l'utilisateur avec <code>id = 3</code>, <strong>2)</strong> selectionne les utilisateurs actifs de plus de 25 ans (AND), <strong>3)</strong> selectionne ceux dont le nom contient "in" avec <code>LIKE</code>, <strong>4)</strong> selectionne ceux ayant l'age 29 OU 41 avec <code>IN</code>.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Supprimer une ligne precise : <code>DELETE FROM table WHERE id = X</code></li>
+        <li>Combiner des conditions : <code>WHERE cond1 AND cond2</code></li>
+        <li>Recherche partielle : <code>WHERE nom LIKE '%in%'</code></li>
+        <li>Liste de valeurs : <code>WHERE age IN (29, 41)</code></li>
+      </ul></div>
+
+
+      <div class="solution-wrapper" id="sol-05">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="sql-kw">DELETE FROM</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-kw">WHERE</span> <span class="sql-col">id</span> = <span class="sql-num">3</span>;
+
+<span class="sql-kw">SELECT</span> * <span class="sql-kw">FROM</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-kw">WHERE</span> <span class="sql-col">actif</span> = <span class="sql-num">1</span> <span class="sql-kw">AND</span> <span class="sql-col">age</span> > <span class="sql-num">25</span>;
+
+<span class="sql-kw">SELECT</span> <span class="sql-col">nom</span> <span class="sql-kw">FROM</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-kw">WHERE</span> <span class="sql-col">nom</span> <span class="sql-kw">LIKE</span> <span class="sql-str">'%in%'</span>;
+
+<span class="sql-kw">SELECT</span> <span class="sql-col">nom</span>, <span class="sql-col">age</span> <span class="sql-kw">FROM</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-kw">WHERE</span> <span class="sql-col">age</span> <span class="sql-kw">IN</span> (<span class="sql-num">29</span>, <span class="sql-num">41</span>);
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">DELETE FROM</span>
+          <span class="notion-tag">WHERE AND</span>
+          <span class="notion-tag">LIKE %val%</span>
+          <span class="notion-tag">IN (v1, v2)</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-06</span>
+          <span class="exo-name">Fonctions d'agregation</span>
+          <span class="exo-theme">COUNT / SUM / AVG / MIN / MAX / GROUP BY</span>
+        </div>
+        <button class="toggle-btn" id="btn-06">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Cree une table <strong>commandes</strong> avec les colonnes <code>id</code>, <code>utilisateur_id</code> (int), <code>montant</code> (decimal 10,2), <code>statut</code> (varchar 20). Insere 6 commandes. Ecris ensuite des requetes utilisant <code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MAX</code> et <code>GROUP BY</code> pour analyser les donnees.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Compter les lignes : <code>COUNT(*)</code></li>
+        <li>Calculer la somme : <code>SUM(montant)</code></li>
+        <li>Calculer la moyenne : <code>AVG(montant)</code></li>
+        <li>Regrouper par colonne : <code>GROUP BY utilisateur_id</code></li>
+      </ul></div>
+
+      <div class="solution-wrapper" id="sol-06">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="sql-kw">SELECT</span> <span class="sql-fn">COUNT</span>(*) <span class="sql-kw">AS</span> total <span class="sql-kw">FROM</span> <span class="sql-tbl">commandes</span>;
+<span class="sql-kw">SELECT</span> <span class="sql-fn">SUM</span>(<span class="sql-col">montant</span>) <span class="sql-kw">FROM</span> <span class="sql-tbl">commandes</span> <span class="sql-kw">WHERE</span> <span class="sql-col">statut</span> = <span class="sql-str">'payee'</span>;
+<span class="sql-kw">SELECT</span> <span class="sql-fn">AVG</span>(<span class="sql-col">montant</span>), <span class="sql-fn">MIN</span>(<span class="sql-col">montant</span>), <span class="sql-fn">MAX</span>(<span class="sql-col">montant</span>) <span class="sql-kw">FROM</span> <span class="sql-tbl">commandes</span>;
+<span class="sql-kw">SELECT</span> <span class="sql-col">utilisateur_id</span>, <span class="sql-fn">SUM</span>(<span class="sql-col">montant</span>) <span class="sql-kw">AS</span> total <span class="sql-kw">FROM</span> <span class="sql-tbl">commandes</span> <span class="sql-kw">GROUP BY</span> <span class="sql-col">utilisateur_id</span>;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">COUNT(*)</span>
+          <span class="notion-tag">SUM()</span>
+          <span class="notion-tag">AVG()</span>
+          <span class="notion-tag">MIN() / MAX()</span>
+          <span class="notion-tag">GROUP BY</span>
+          <span class="notion-tag">AS alias</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /intermediaire -->
+
+  <div class="section" id="section-difficile">
+
+    <div class="niveau-header difficile">
+      <span class="niveau-label">Difficile</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Lier des tables avec JOIN, utiliser des sous-requetes et combiner plusieurs notions SQL.</div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-07</span>
+          <span class="exo-name">Liaison de tables avec JOIN</span>
+          <span class="exo-theme">INNER JOIN / LEFT JOIN / cle etrangere</span>
+        </div>
+        <button class="toggle-btn" id="btn-07">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Utilise les tables <strong>utilisateurs</strong> et <strong>commandes</strong> crees precedemment. Ecris trois requetes JOIN : <strong>1)</strong> affiche le nom de l'utilisateur avec chacune de ses commandes (INNER JOIN), <strong>2)</strong> affiche tous les utilisateurs meme ceux sans commande (LEFT JOIN), <strong>3)</strong> affiche le nom et le total des commandes par utilisateur.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Comprendre la cle etrangere : <code>commandes.utilisateur_id</code> reference <code>utilisateurs.id</code></li>
+        <li><code>INNER JOIN</code> : seulement les lignes qui correspondent dans les deux tables</li>
+        <li><code>LEFT JOIN</code> : toutes les lignes de gauche, meme sans correspondance a droite</li>
+        <li>Combiner <code>JOIN</code> + <code>GROUP BY</code> + <code>SUM()</code></li>
+      </ul></div>
+ 
+      <div class="solution-wrapper" id="sol-07">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="sql-cmt">-- INNER JOIN</span>
+<span class="sql-kw">SELECT</span> <span class="sql-tbl">u</span>.<span class="sql-col">nom</span>, <span class="sql-tbl">c</span>.<span class="sql-col">montant</span>, <span class="sql-tbl">c</span>.<span class="sql-col">statut</span>
+<span class="sql-kw">FROM</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-tbl">u</span>
+<span class="sql-kw">INNER JOIN</span> <span class="sql-tbl">commandes</span> <span class="sql-tbl">c</span> <span class="sql-kw">ON</span> <span class="sql-tbl">u</span>.<span class="sql-col">id</span> = <span class="sql-tbl">c</span>.<span class="sql-col">utilisateur_id</span>;
+
+<span class="sql-cmt">-- LEFT JOIN</span>
+<span class="sql-kw">SELECT</span> <span class="sql-tbl">u</span>.<span class="sql-col">nom</span>, <span class="sql-tbl">c</span>.<span class="sql-col">montant</span>
+<span class="sql-kw">FROM</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-tbl">u</span>
+<span class="sql-kw">LEFT JOIN</span> <span class="sql-tbl">commandes</span> <span class="sql-tbl">c</span> <span class="sql-kw">ON</span> <span class="sql-tbl">u</span>.<span class="sql-col">id</span> = <span class="sql-tbl">c</span>.<span class="sql-col">utilisateur_id</span>;
+
+<span class="sql-cmt">-- JOIN + GROUP BY</span>
+<span class="sql-kw">SELECT</span> <span class="sql-tbl">u</span>.<span class="sql-col">nom</span>, <span class="sql-fn">SUM</span>(<span class="sql-tbl">c</span>.<span class="sql-col">montant</span>) <span class="sql-kw">AS</span> total
+<span class="sql-kw">FROM</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-tbl">u</span>
+<span class="sql-kw">INNER JOIN</span> <span class="sql-tbl">commandes</span> <span class="sql-tbl">c</span> <span class="sql-kw">ON</span> <span class="sql-tbl">u</span>.<span class="sql-col">id</span> = <span class="sql-tbl">c</span>.<span class="sql-col">utilisateur_id</span>
+<span class="sql-kw">GROUP BY</span> <span class="sql-tbl">u</span>.<span class="sql-col">id</span>, <span class="sql-tbl">u</span>.<span class="sql-col">nom</span>;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">INNER JOIN</span>
+          <span class="notion-tag">LEFT JOIN</span>
+          <span class="notion-tag">ON u.id = c.user_id</span>
+          <span class="notion-tag">alias u / c</span>
+          <span class="notion-tag">JOIN + GROUP BY</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-08</span>
+          <span class="exo-name">Requetes imbriquees et HAVING</span>
+          <span class="exo-theme">sous-requete / HAVING / LIMIT / OFFSET</span>
+        </div>
+        <button class="toggle-btn" id="btn-08">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Avec les tables <strong>utilisateurs</strong> et <strong>commandes</strong>, ecris quatre requetes avancees : <strong>1)</strong> affiche les utilisateurs ayant passe au moins 2 commandes avec <code>HAVING</code>, <strong>2)</strong> affiche les 2 commandes les plus chere avec <code>ORDER BY ... LIMIT</code>, <strong>3)</strong> selectionne les utilisateurs dont l'id est dans une sous-requete, <strong>4)</strong> pagine les resultats avec <code>LIMIT</code> et <code>OFFSET</code>.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Filtrer apres GROUP BY : <code>HAVING COUNT(*) >= 2</code></li>
+        <li>Limiter les resultats : <code>LIMIT 2</code></li>
+        <li>Paginer : <code>LIMIT 5 OFFSET 10</code> (page 3 avec 5 resultats/page)</li>
+        <li>Sous-requete : <code>WHERE id IN (SELECT utilisateur_id FROM commandes)</code></li>
+      </ul></div>
+
+  
+      <div class="solution-wrapper" id="sol-08">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="sql-cmt">-- HAVING</span>
+<span class="sql-kw">SELECT</span> <span class="sql-tbl">u</span>.<span class="sql-col">nom</span>, <span class="sql-fn">COUNT</span>(<span class="sql-tbl">c</span>.<span class="sql-col">id</span>) <span class="sql-kw">AS</span> nb_commandes
+<span class="sql-kw">FROM</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-tbl">u</span>
+<span class="sql-kw">INNER JOIN</span> <span class="sql-tbl">commandes</span> <span class="sql-tbl">c</span> <span class="sql-kw">ON</span> <span class="sql-tbl">u</span>.<span class="sql-col">id</span> = <span class="sql-tbl">c</span>.<span class="sql-col">utilisateur_id</span>
+<span class="sql-kw">GROUP BY</span> <span class="sql-tbl">u</span>.<span class="sql-col">id</span> <span class="sql-kw">HAVING</span> <span class="sql-fn">COUNT</span>(<span class="sql-tbl">c</span>.<span class="sql-col">id</span>) >= <span class="sql-num">2</span>;
+
+<span class="sql-cmt">-- LIMIT</span>
+<span class="sql-kw">SELECT</span> * <span class="sql-kw">FROM</span> <span class="sql-tbl">commandes</span> <span class="sql-kw">ORDER BY</span> <span class="sql-col">montant</span> <span class="sql-kw">DESC</span> <span class="sql-kw">LIMIT</span> <span class="sql-num">2</span>;
+
+<span class="sql-cmt">-- Sous-requete</span>
+<span class="sql-kw">SELECT</span> <span class="sql-col">nom</span> <span class="sql-kw">FROM</span> <span class="sql-tbl">utilisateurs</span> <span class="sql-kw">WHERE</span> <span class="sql-col">id</span> <span class="sql-kw">IN</span> (<span class="sql-kw">SELECT</span> <span class="sql-col">utilisateur_id</span> <span class="sql-kw">FROM</span> <span class="sql-tbl">commandes</span>);
+
+<span class="sql-cmt">-- Pagination page 2</span>
+<span class="sql-kw">SELECT</span> * <span class="sql-kw">FROM</span> <span class="sql-tbl">commandes</span> <span class="sql-kw">ORDER BY</span> <span class="sql-col">id</span> <span class="sql-kw">LIMIT</span> <span class="sql-num">2</span> <span class="sql-kw">OFFSET</span> <span class="sql-num">2</span>;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">HAVING</span>
+          <span class="notion-tag">LIMIT</span>
+          <span class="notion-tag">OFFSET</span>
+          <span class="notion-tag">sous-requete IN</span>
+          <span class="notion-tag">pagination</span>
+        </div>
+      </div>
+    </div>
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title">
+          <span class="exo-num">EXO-09</span>
+          <span class="exo-name">Schema complet e-commerce</span>
+          <span class="exo-theme">CREATE TABLE / FK / JOIN multi-tables</span>
+          <span class="bonus-tag">Bonus</span>
+        </div>
+        <button class="toggle-btn" id="btn-09">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+      <p class="consigne">Exercice bonus. Cree un schema e-commerce avec 3 tables liees : <strong>categories</strong> (id, nom), <strong>produits</strong> (id, nom, prix, stock, categorie_id FK), <strong>commande_produits</strong> (id, commande_id, produit_id, quantite). Insere des donnees dans chaque table. Ecris une requete JOIN sur les 3 tables pour afficher : nom du produit, categorie, quantite commandee, sous-total.</p>
+      <div class="objectifs"><h4>Objectifs</h4><ul>
+        <li>Creer des cles etrangeres : <code>FOREIGN KEY (col) REFERENCES table(id)</code></li>
+        <li>Inserer dans le bon ordre (categorie avant produit)</li>
+        <li>JOIN sur 3 tables en chainant les ON</li>
+        <li>Calculer un sous-total : <code>quantite * prix AS sous_total</code></li>
+      </ul></div>
+
+      <div class="solution-wrapper" id="sol-09">
+        <div class="solution-block">
+          <div class="solution-header">Solution</div>
+          <pre>
+<span class="sql-cmt">-- Inserer dans l'ordre : categories -> produits -> commande_produits</span>
+<span class="sql-kw">INSERT INTO</span> <span class="sql-tbl">categories</span> (<span class="sql-col">nom</span>) <span class="sql-kw">VALUES</span> (<span class="sql-str">'Electronique'</span>), (<span class="sql-str">'Vetements'</span>), (<span class="sql-str">'Alimentation'</span>);
+
+<span class="sql-kw">INSERT INTO</span> <span class="sql-tbl">produits</span> (<span class="sql-col">nom</span>, <span class="sql-col">prix</span>, <span class="sql-col">stock</span>, <span class="sql-col">categorie_id</span>) <span class="sql-kw">VALUES</span>
+  (<span class="sql-str">'Clavier Pro'</span>, <span class="sql-num">49.90</span>, <span class="sql-num">10</span>, <span class="sql-num">1</span>),
+  (<span class="sql-str">'T-shirt blanc'</span>, <span class="sql-num">24.90</span>, <span class="sql-num">50</span>, <span class="sql-num">2</span>),
+  (<span class="sql-str">'Cafe Ethiopia'</span>, <span class="sql-num">12.50</span>, <span class="sql-num">200</span>, <span class="sql-num">3</span>);
+
+<span class="sql-cmt">-- JOIN 3 tables</span>
+<span class="sql-kw">SELECT</span> <span class="sql-tbl">p</span>.<span class="sql-col">nom</span> <span class="sql-kw">AS</span> produit, <span class="sql-tbl">cat</span>.<span class="sql-col">nom</span> <span class="sql-kw">AS</span> categorie,
+       <span class="sql-tbl">cp</span>.<span class="sql-col">quantite</span>, (<span class="sql-tbl">p</span>.<span class="sql-col">prix</span> * <span class="sql-tbl">cp</span>.<span class="sql-col">quantite</span>) <span class="sql-kw">AS</span> sous_total
+<span class="sql-kw">FROM</span> <span class="sql-tbl">commande_produits</span> <span class="sql-tbl">cp</span>
+<span class="sql-kw">INNER JOIN</span> <span class="sql-tbl">produits</span> <span class="sql-tbl">p</span> <span class="sql-kw">ON</span> <span class="sql-tbl">cp</span>.<span class="sql-col">produit_id</span> = <span class="sql-tbl">p</span>.<span class="sql-col">id</span>
+<span class="sql-kw">INNER JOIN</span> <span class="sql-tbl">categories</span> <span class="sql-tbl">cat</span> <span class="sql-kw">ON</span> <span class="sql-tbl">p</span>.<span class="sql-col">categorie_id</span> = <span class="sql-tbl">cat</span>.<span class="sql-col">id</span>;
+          </pre>
+        </div>
+      </div>
+        <div class="notions">
+          <span class="notion-tag">FOREIGN KEY REFERENCES</span>
+          <span class="notion-tag">JOIN 3 tables</span>
+          <span class="notion-tag">prix * quantite</span>
+          <span class="notion-tag">AS alias colonne</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /difficile -->
+
+</main>
+
+
+
+<script>
+function showSection(niveau, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.remove('active-debutant', 'active-intermediaire', 'active-difficile');
+  });
+  document.getElementById('section-' + niveau).classList.add('active');
+  btn.classList.add('active-' + niveau);
+}
+
+function toggleSolution(id) {
+  const sol = document.getElementById('sol-' + id);
+  const btn = document.getElementById('btn-' + id);
+  sol.classList.add('open');
+  btn.textContent = 'Solution affichée ✓';
+  btn.style.borderColor = 'var(--gold)';
+  btn.style.color = 'var(--gold)';
+  btn.disabled = true;
+}
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => toggleSolution(btn.id.replace('btn-', '')));
+});
+</script>
+
+</body>
+</html>
