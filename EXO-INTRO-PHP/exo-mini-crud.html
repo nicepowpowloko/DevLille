@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercices PHP — Mini CRUD </title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+    :root {
+      --navy: #2C3F77;
+      --gold: #A0896A;
+      --dark: #0f1420;
+      --darker: #080d17;
+      --card: #151d2e;
+      --border: #1e2d47;
+      --text: #c8d0e0;
+      --muted: #5a6a88;
+      --green: #4ade80;
+      --orange: #fb923c;
+      --red: #f87171;
+      --code-bg: #0d1117;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Syne', sans-serif; background: var(--darker); color: var(--text); min-height: 100vh; }
+
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a2a55 50%, var(--gold) 100%);
+      padding: 3rem 2rem 2rem; text-align: center; position: relative; overflow: hidden;
+    }
+    header::before {
+      content: 'CRUD'; position: absolute; font-family: 'JetBrains Mono', monospace;
+      font-size: 8rem; color: rgba(255,255,255,.04); top: -1rem; right: -1rem; pointer-events: none;
+    }
+    .header-badge { display: inline-block; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); color: #fff; font-size: .75rem; letter-spacing: 2px; text-transform: uppercase; padding: .3rem 1rem; border-radius: 20px; margin-bottom: 1rem; }
+    header h1 { font-size: 2.4rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+    header p { color: rgba(255,255,255,.7); font-size: 1rem; }
+    .header-meta { display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    .header-meta span { color: rgba(255,255,255,.6); font-size: .85rem; }
+    .header-meta span strong { color: #fff; }
+
+    .pedagogy { background: var(--dark); border-left: 4px solid var(--gold); padding: 1.2rem 2rem; font-size: .85rem; color: #8899bb; }
+    .pedagogy strong { color: var(--gold); }
+    .pedagogy code { background: var(--code-bg); color: #79c0ff; padding: .1rem .4rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: .82rem; }
+
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+    .tabs { display: flex; gap: .5rem; margin-bottom: 2.5rem; border-bottom: 2px solid var(--border); padding-bottom: .5rem; }
+    .tab { padding: .6rem 1.6rem; border: 2px solid transparent; background: transparent; color: var(--muted); font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 600; cursor: pointer; border-radius: 6px 6px 0 0; transition: all .2s; display: flex; align-items: center; gap: .5rem; }
+    .tab:hover { color: var(--text); }
+    .tab.active-debutant      { color: var(--green);  border-color: var(--green);  background: rgba(74,222,128,.06); }
+    .tab.active-intermediaire { color: var(--orange); border-color: var(--orange); background: rgba(251,146,60,.06); }
+    .tab.active-difficile     { color: var(--red);    border-color: var(--red);    background: rgba(248,113,113,.06); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-green  { background: var(--green); }
+    .dot-orange { background: var(--orange); }
+    .dot-red    { background: var(--red); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .niveau-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; padding: 1.2rem 1.5rem; border-radius: 8px; }
+    .niveau-header.debutant      { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.2); }
+    .niveau-header.intermediaire { background: rgba(251,146,60,.07);  border: 1px solid rgba(251,146,60,.2); }
+    .niveau-header.difficile     { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.2); }
+
+    .niveau-label { font-size: .7rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; padding: .3rem .8rem; border-radius: 4px; white-space: nowrap; }
+    .debutant      .niveau-label { background: rgba(74,222,128,.15);  color: var(--green); }
+    .intermediaire .niveau-label { background: rgba(251,146,60,.15);  color: var(--orange); }
+    .difficile     .niveau-label { background: rgba(248,113,113,.15); color: var(--red); }
+    .niveau-desc { font-size: .9rem; color: var(--muted); }
+    .niveau-desc strong { color: var(--text); }
+
+    .exo { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; transition: border-color .2s; }
+    .exo:hover { border-color: var(--navy); }
+
+    .exo-header { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); }
+    .exo-title { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .exo-num { font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--muted); background: var(--dark); padding: .2rem .6rem; border-radius: 4px; }
+    .exo-name { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .exo-theme { font-size: .75rem; color: var(--muted); background: var(--dark); padding: .2rem .7rem; border-radius: 10px; }
+
+    .toggle-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      font-size: .8rem; padding: .3rem .8rem; border-radius: 4px; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace; transition: all .2s;
+    }
+    .toggle-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .exo-body { padding: 1.5rem; }
+    .consigne { font-size: .95rem; line-height: 1.7; color: var(--text); margin-bottom: 1.2rem; }
+    .consigne strong { color: #fff; }
+
+    .objectifs { background: var(--dark); border-radius: 6px; padding: 1rem 1.2rem; margin-bottom: 1.2rem; }
+    .objectifs h4 { font-size: .75rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: .6rem; }
+    .objectifs li { list-style: none; font-size: .88rem; color: #8899bb; padding: .2rem 0 .2rem 1rem; position: relative; }
+    .objectifs li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+
+    .code-block { background: var(--code-bg); border: 1px solid #21262d; border-radius: 8px; margin-bottom: 1.2rem; overflow: hidden; }
+    .code-block pre { padding: 1.2rem; font-family: 'JetBrains Mono', monospace; font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto; }
+
+    .solution-wrapper { display: none; }
+    .solution-wrapper.open { display: block; }
+    .solution-block { background: var(--code-bg); border: 1px solid #21262d; border-left: 3px solid var(--gold); border-radius: 6px; overflow: hidden; }
+    .solution-header { background: #161b22; padding: .5rem 1rem; font-size: .75rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid #21262d; }
+    .solution-block pre { padding: 1.2rem; font-family: 'JetBrains Mono', monospace; font-size: .85rem; line-height: 1.8; color: #e6edf3; overflow-x: auto; }
+
+    .notions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+    .notion-tag { font-size: .72rem; padding: .2rem .7rem; border-radius: 10px; background: rgba(44,63,119,.3); color: #79a4f5; border: 1px solid rgba(44,63,119,.5); font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">DWWM — Formation PHP</div>
+  <h1>Exercices PHP</h1>
+  <p>Mini CRUD avec JSON (sans base de données)</p>
+  <div class="header-meta">
+    <span><strong>3</strong> niveaux</span>
+    <span><strong>9</strong> exercices</span>
+    <span>Notions vues : <strong>JSON • file_get_contents • file_put_contents • CRUD</strong></span>
+  </div>
+</header>
+
+<div class="pedagogy">
+  <strong>Notions travaillées :</strong>
+  <code>json_encode</code> / <code>json_decode</code> →
+  <code>file_get_contents</code> / <code>file_put_contents</code> →
+  Create • Read • Update • Delete
+</div>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab active-debutant" onclick="showSection('debutant', this)"><span class="dot dot-green"></span> Débutant</button>
+    <button class="tab" onclick="showSection('intermediaire', this)"><span class="dot dot-orange"></span> Intermédiaire</button>
+    <button class="tab" onclick="showSection('difficile', this)"><span class="dot dot-red"></span> Difficile</button>
+  </div>
+
+  <!-- ====================== DÉBUTANT ====================== -->
+  <div class="section active" id="section-debutant">
+    <div class="niveau-header debutant">
+      <span class="niveau-label">Débutant</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Lire et écrire dans un fichier JSON.</div>
+    </div>
+
+    <!-- EXO 1 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title"><span class="exo-num">EXO-01</span><span class="exo-name">Créer le fichier JSON</span><span class="exo-theme">Initialisation</span></div>
+        <button class="toggle-btn" id="btn-u1">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">Crée <strong>data.json</strong> avec un tableau vide <code>[]</code>.<br>Dans <strong>index.php</strong>, lis le fichier et affiche un message si aucun produit.</p>
+        <div class="solution-wrapper" id="sol-u1">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+$file = 'data.json';
+if (!file_exists($file)) {
+    file_put_contents($file, '[]');
+}
+$data = json_decode(file_get_contents($file), true);
+
+if (empty($data)) {
+    echo "Aucun produit pour le moment.";
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO 2 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title"><span class="exo-num">EXO-02</span><span class="exo-name">Ajouter un produit (Create)</span><span class="exo-theme">Formulaire POST</span></div>
+        <button class="toggle-btn" id="btn-u2">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">Crée un formulaire (nom, prix) qui envoie vers <strong>create.php</strong>. Ajoute le produit avec un ID auto-incrémenté.</p>
+        <div class="solution-wrapper" id="sol-u2">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+// create.php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $file = 'data.json';
+    $data = json_decode(file_get_contents($file), true) ?? [];
+
+    $new = [
+        'id'   => count($data) + 1,
+        'nom'  => trim($_POST['nom']),
+        'prix' => (float)$_POST['prix']
+    ];
+
+    $data[] = $new;
+    file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT));
+
+    header('Location: index.php');
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO 3 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title"><span class="exo-num">EXO-03</span><span class="exo-name">Afficher la liste (Read)</span><span class="exo-theme">Tableau HTML</span></div>
+        <button class="toggle-btn" id="btn-u3">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">Dans <strong>index.php</strong>, affiche tous les produits dans un tableau avec colonnes Nom, Prix et Actions.</p>
+        <div class="solution-wrapper" id="sol-u3">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+$data = json_decode(file_get_contents('data.json'), true) ?? [];
+?>
+&lt;table border="1" cellpadding="8"&gt;
+&lt;tr&gt;&lt;th&gt;ID&lt;/th&gt;&lt;th&gt;Nom&lt;/th&gt;&lt;th&gt;Prix&lt;/th&gt;&lt;th&gt;Actions&lt;/th&gt;&lt;/tr&gt;
+&lt;?php foreach($data as $p): ?&gt;
+&lt;tr&gt;
+    &lt;td&gt;<?= $p['id'] ?>&lt;/td&gt;
+    &lt;td&gt;<?= htmlspecialchars($p['nom']) ?>&lt;/td&gt;
+    &lt;td&gt;<?= number_format($p['prix'], 2) ?> €&lt;/td&gt;
+    &lt;td&gt;
+        &lt;a href="edit.php?id=<?= $p['id'] ?>"&gt;Modifier&lt;/a&gt; |
+        &lt;a href="delete.php?id=<?= $p['id'] ?>" onclick="return confirm('Supprimer ce produit ?')"&gt;Supprimer&lt;/a&gt;
+    &lt;/td&gt;
+&lt;/tr&gt;
+&lt;?php endforeach; ?&gt;
+&lt;/table&gt;</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== INTERMÉDIAIRE ====================== -->
+  <div class="section" id="section-intermediaire">
+    <div class="niveau-header intermediaire">
+      <span class="niveau-label">Intermédiaire</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Modifier et supprimer des produits.</div>
+    </div>
+
+    <!-- EXO 4 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title"><span class="exo-num">EXO-04</span><span class="exo-name">Modifier un produit (Update)</span><span class="exo-theme">edit.php</span></div>
+        <button class="toggle-btn" id="btn-u4">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">Crée <strong>edit.php</strong> qui charge le produit par ID, affiche un formulaire pré-rempli et met à jour le JSON.</p>
+        <div class="solution-wrapper" id="sol-u4">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+// edit.php
+$id = (int)$_GET['id'];
+$file = 'data.json';
+$data = json_decode(file_get_contents($file), true) ?? [];
+
+$index = array_search($id, array_column($data, 'id'));
+
+if ($index !== false) {
+    $product = &$data[$index];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $product['nom'] = trim($_POST['nom']);
+        $product['prix'] = (float)$_POST['prix'];
+        file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT));
+        header('Location: index.php');
+        exit;
+    }
+}
+?>
+&lt;form method="POST"&gt;
+    Nom: &lt;input type="text" name="nom" value="<?= htmlspecialchars($product['nom'] ?? '') ?>"&gt;&lt;br&gt;
+    Prix: &lt;input type="number" name="prix" value="<?= $product['prix'] ?? '' ?>" step="0.01"&gt;&lt;br&gt;
+    &lt;button type="submit"&gt;Enregistrer les modifications&lt;/button&gt;
+&lt;/form&gt;</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO 5 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title"><span class="exo-num">EXO-05</span><span class="exo-name">Supprimer un produit (Delete)</span><span class="exo-theme">delete.php</span></div>
+        <button class="toggle-btn" id="btn-u5">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">Crée <strong>delete.php</strong> qui supprime un produit par ID et redirige vers la liste.</p>
+        <div class="solution-wrapper" id="sol-u5">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+// delete.php
+$id = (int)$_GET['id'];
+$file = 'data.json';
+$data = json_decode(file_get_contents($file), true) ?? [];
+
+$data = array_filter($data, fn($p) => $p['id'] !== $id);
+$data = array_values($data); // réindexer
+
+file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT));
+
+header('Location: index.php');</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO 6 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title"><span class="exo-num">EXO-06</span><span class="exo-name">Rechercher un produit</span><span class="exo-theme">Filtrage</span></div>
+        <button class="toggle-btn" id="btn-u6">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">Ajoute un champ de recherche par nom dans index.php et filtre les résultats affichés.</p>
+        <div class="solution-wrapper" id="sol-u6">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+// Dans index.php
+$search = $_GET['search'] ?? '';
+$data = json_decode(file_get_contents('data.json'), true) ?? [];
+
+if ($search) {
+    $data = array_filter($data, fn($p) => stripos($p['nom'], $search) !== false);
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== DIFFICILE ====================== -->
+  <div class="section" id="section-difficile">
+    <div class="niveau-header difficile">
+      <span class="niveau-label">Difficile</span>
+      <div class="niveau-desc"><strong>Objectif :</strong> Organisation du code et sécurité.</div>
+    </div>
+
+    <!-- EXO 7 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title"><span class="exo-num">EXO-07</span><span class="exo-name">Fonctions CRUD centralisées</span><span class="exo-theme">functions.php</span></div>
+        <button class="toggle-btn" id="btn-u7">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">Crée un fichier <strong>functions.php</strong> avec les fonctions : getAll(), add(), update(), delete().</p>
+        <div class="solution-wrapper" id="sol-u7">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+// functions.php
+function getAllProducts() {
+    $file = 'data.json';
+    if (!file_exists($file)) return [];
+    return json_decode(file_get_contents($file), true) ?? [];
+}
+
+function saveProducts($data) {
+    file_put_contents('data.json', json_encode($data, JSON_PRETTY_PRINT));
+}
+
+function addProduct($nom, $prix) {
+    $data = getAllProducts();
+    $data[] = ['id' => count($data)+1, 'nom' => trim($nom), 'prix' => (float)$prix];
+    saveProducts($data);
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO 8 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title"><span class="exo-num">EXO-08</span><span class="exo-name">Sécurité basique</span><span class="exo-theme">Validation + Sanitize</span></div>
+        <button class="toggle-btn" id="btn-u8">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">Valide que le nom n’est pas vide et que le prix est un nombre positif. Utilise htmlspecialchars() à l’affichage.</p>
+        <div class="solution-wrapper" id="sol-u8">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+// Exemple de validation dans create.php ou edit.php
+$nom = trim($_POST['nom'] ?? '');
+$prix = (float)($_POST['prix'] ?? 0);
+
+if (empty($nom) || $prix <= 0) {
+    die("Erreur : nom obligatoire et prix > 0");
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXO 9 -->
+    <div class="exo">
+      <div class="exo-header">
+        <div class="exo-title"><span class="exo-num">EXO-09</span><span class="exo-name">CRUD complet avec messages flash (Bonus)</span><span class="exo-theme">Flash messages</span></div>
+        <button class="toggle-btn" id="btn-u9">Voir la solution</button>
+      </div>
+      <div class="exo-body">
+        <p class="consigne">Ajoute des messages flash (succès / erreur) après chaque action et redirige vers la liste.</p>
+        <div class="solution-wrapper" id="sol-u9">
+          <div class="solution-block">
+            <div class="solution-header">Solution</div>
+            <pre><span class="php-tag">&lt;?php</span>
+// Après une action réussie
+session_start();
+$_SESSION['flash'] = ['type' => 'success', 'message' => 'Produit ajouté avec succès !'];
+header('Location: index.php');
+
+// Dans index.php
+if (isset($_SESSION['flash'])) {
+    echo "&lt;div style='color:green'&gt;" . htmlspecialchars($_SESSION['flash']['message']) . "&lt;/div&gt;";
+    unset($_SESSION['flash']);
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+function showSection(niveau, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active-debutant','active-intermediaire','active-difficile'));
+  document.getElementById('section-' + niveau).classList.add('active');
+  btn.classList.add('active-' + niveau);
+}
+
+function toggleSolution(id) {
+  const sol = document.getElementById('sol-' + id);
+  const btn = document.getElementById('btn-' + id);
+  if (!sol || !btn) {
+    console.error(`Élément manquant : sol-${id} ou btn-${id}`);
+    return;
+  }
+  sol.classList.add('open');
+  btn.textContent = 'Solution affichée ✓';
+  btn.style.borderColor = 'var(--gold)';
+  btn.style.color = 'var(--gold)';
+  btn.disabled = true;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.id.replace('btn-', '');
+      toggleSolution(id);
+    });
+  });
+});
+</script>
+
+</body>
+</html>
