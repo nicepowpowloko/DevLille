@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insertion Pro DWWM – Profil, Plan & Structures</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1E2D5A;
+    --navy-mid: #2C3F77;
+    --navy-light: #3A5199;
+    --gold: #A0866B;
+    --gold-light: #C4A882;
+    --gold-pale: #F0E6D9;
+    --bg: #0F1829;
+    --bg-card: #19253D;
+    --bg-card2: #1F2E48;
+    --text: #E8EEF8;
+    --text-muted: #8A9BBF;
+    --text-dim: #5A6B8A;
+    --green: #4CAF8A;
+    --green-bg: #0D2420;
+    --orange: #E8915A;
+    --orange-bg: #2A1A0E;
+    --blue: #5B9BD5;
+    --blue-bg: #0D1E30;
+    --red: #E05C6A;
+    --red-bg: #2A0D12;
+    --purple: #9B7FE8;
+    --purple-bg: #1A1230;
+    --sidebar-w: 270px;
+    --radius: 10px;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-code: 'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ─── SIDEBAR ─── */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--navy);
+    position: fixed;
+    top: 0; left: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(160,134,107,0.15);
+    z-index: 100;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid rgba(160,134,107,0.2);
+  }
+
+  .sidebar-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: #fff;
+    font-family: var(--font-head);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .sidebar-title {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .sidebar-title span { color: var(--gold-light); }
+
+  nav { padding: 16px 12px; flex: 1; }
+
+  .nav-section {
+    margin-bottom: 6px;
+  }
+
+  .nav-section-label {
+    font-family: var(--font-head);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 10px 8px 5px;
+  }
+
+  nav a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 400;
+    transition: all .2s;
+    border-left: 2px solid transparent;
+  }
+
+  nav a:hover { background: rgba(255,255,255,.05); color: var(--text); }
+
+  nav a.active {
+    background: rgba(160,134,107,.15);
+    color: var(--gold-light);
+    border-left-color: var(--gold);
+    font-weight: 500;
+  }
+
+  nav a .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+  nav a .nav-num {
+    margin-left: auto;
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: var(--text-dim);
+    background: rgba(255,255,255,.05);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(160,134,107,.15);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* ─── MAIN ─── */
+  main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 0 40px 80px;
+    max-width: calc(900px + var(--sidebar-w));
+    width: 100%;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 60px 0 50px;
+    border-bottom: 1px solid rgba(160,134,107,.15);
+    margin-bottom: 50px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -40px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(44,63,119,.4) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(160,134,107,.12);
+    border: 1px solid rgba(160,134,107,.3);
+    color: var(--gold-light);
+    font-family: var(--font-code);
+    font-size: 11px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 22px;
+  }
+
+  .hero h1 {
+    font-family: var(--font-head);
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--gold-light);
+  }
+
+  .hero p {
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 600px;
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+
+  .hero-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+
+  .pill.green { background: var(--green-bg); border-color: rgba(76,175,138,.3); color: var(--green); }
+  .pill.gold  { background: rgba(160,134,107,.1); border-color: rgba(160,134,107,.3); color: var(--gold-light); }
+  .pill.blue  { background: var(--blue-bg); border-color: rgba(91,155,213,.3); color: var(--blue); }
+
+  /* ─── SECTIONS ─── */
+  section { margin-bottom: 70px; }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+
+  .section-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .section-icon.gold { background: rgba(160,134,107,.15); }
+  .section-icon.blue { background: rgba(91,155,213,.12); }
+  .section-icon.green { background: rgba(76,175,138,.12); }
+  .section-icon.purple { background: rgba(155,127,232,.12); }
+  .section-icon.orange { background: rgba(232,145,90,.12); }
+
+  .section-header-text h2 {
+    font-family: var(--font-head);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .section-header-text p {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 18px;
+  }
+
+  .card h3 {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .card h4 {
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gold-light);
+    margin: 14px 0 8px;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+
+  /* ─── CALLOUTS ─── */
+  .callout {
+    display: flex;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    margin-bottom: 18px;
+    border-left: 3px solid;
+  }
+
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout-body { flex: 1; }
+  .callout-body strong { font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; }
+  .callout-body p, .callout-body ul { font-size: 13px; color: var(--text-muted); }
+  .callout-body ul { padding-left: 16px; }
+  .callout-body li { margin-bottom: 3px; }
+
+  .callout.tip    { background: var(--green-bg); border-color: var(--green); }
+  .callout.tip .callout-icon, .callout.tip strong { color: var(--green); }
+  .callout.warn   { background: var(--orange-bg); border-color: var(--orange); }
+  .callout.warn .callout-icon, .callout.warn strong { color: var(--orange); }
+  .callout.info   { background: var(--blue-bg); border-color: var(--blue); }
+  .callout.info .callout-icon, .callout.info strong { color: var(--blue); }
+  .callout.key    { background: var(--purple-bg); border-color: var(--purple); }
+  .callout.key .callout-icon, .callout.key strong { color: var(--purple); }
+
+  /* ─── LISTE STYLISÉE ─── */
+  .check-list { list-style: none; padding: 0; }
+  .check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .check-list li:last-child { border-bottom: none; }
+  .check-list li .check { color: var(--green); font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .check-list li .check.warn { color: var(--orange); }
+  .check-list li .check.info { color: var(--blue); }
+
+  /* ─── TIMELINE ─── */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 8px; bottom: 8px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--gold), rgba(160,134,107,.1));
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 24px;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -23px;
+    top: 6px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--bg);
+  }
+
+  .timeline-item .tl-tag {
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: var(--gold-light);
+    background: rgba(160,134,107,.12);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+
+  .timeline-item h4 {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .timeline-item p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ─── TABLE ─── */
+  .table-wrap { overflow-x: auto; margin-bottom: 18px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,.07); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+  thead { background: rgba(44,63,119,.4); }
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+  }
+
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,.04); transition: background .15s; }
+  tbody tr:hover { background: rgba(255,255,255,.03); }
+  tbody td { padding: 11px 16px; color: var(--text-muted); vertical-align: top; }
+  tbody td:first-child { color: var(--text); font-weight: 500; }
+
+  .tag-inline {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-family: var(--font-code);
+  }
+
+  .tag-inline.green { background: var(--green-bg); color: var(--green); }
+  .tag-inline.blue { background: var(--blue-bg); color: var(--blue); }
+  .tag-inline.orange { background: var(--orange-bg); color: var(--orange); }
+  .tag-inline.gold { background: rgba(160,134,107,.12); color: var(--gold-light); }
+  .tag-inline.purple { background: var(--purple-bg); color: var(--purple); }
+
+  /* ─── SKILLS GRID ─── */
+  .skills-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .skill-badge {
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-family: var(--font-code);
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+    cursor: default;
+    transition: transform .15s;
+  }
+  .skill-badge:hover { transform: translateY(-1px); }
+  .skill-badge.front { background: rgba(91,155,213,.1); border-color: rgba(91,155,213,.3); color: var(--blue); }
+  .skill-badge.back  { background: rgba(76,175,138,.1); border-color: rgba(76,175,138,.3); color: var(--green); }
+  .skill-badge.tools { background: rgba(160,134,107,.1); border-color: rgba(160,134,107,.3); color: var(--gold-light); }
+  .skill-badge.soft  { background: rgba(155,127,232,.1); border-color: rgba(155,127,232,.3); color: var(--purple); }
+  .skill-badge.other { background: rgba(232,145,90,.1); border-color: rgba(232,145,90,.3); color: var(--orange); }
+
+  /* ─── PROFIL CARD ─── */
+  .profil-preview {
+    background: linear-gradient(135deg, var(--bg-card2) 0%, var(--navy) 100%);
+    border: 1px solid rgba(160,134,107,.25);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profil-preview::before {
+    content: '{ }';
+    position: absolute;
+    right: 20px; top: 14px;
+    font-family: var(--font-code);
+    font-size: 40px;
+    color: rgba(160,134,107,.08);
+    line-height: 1;
+  }
+
+  .profil-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--navy-mid), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 14px;
+    border: 2px solid rgba(160,134,107,.3);
+  }
+
+  .profil-name {
+    font-family: var(--font-head);
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .profil-title {
+    color: var(--gold-light);
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .profil-info { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; }
+  .profil-info-item { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
+  .profil-separator { border: none; border-top: 1px solid rgba(255,255,255,.07); margin: 14px 0; }
+
+  /* ─── QUIZ ─── */
+  .quiz-wrap { margin-top: 10px; }
+
+  .quiz-q {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+
+  .quiz-q .q-num {
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: var(--gold-light);
+    background: rgba(160,134,107,.12);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+
+  .quiz-q .q-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+  .quiz-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: var(--bg-card2);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-muted);
+    transition: all .2s;
+  }
+
+  .quiz-opt:hover { border-color: rgba(160,134,107,.4); color: var(--text); background: rgba(160,134,107,.08); }
+  .quiz-opt.correct { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+  .quiz-opt.wrong   { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+  .quiz-opt.disabled { pointer-events: none; }
+
+  .quiz-opt .opt-letter {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-code);
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .quiz-feedback {
+    display: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: var(--green-bg); color: var(--green); border-left: 3px solid var(--green); }
+  .quiz-feedback.ko { background: var(--red-bg); color: var(--red); border-left: 3px solid var(--red); }
+
+  #quiz-score {
+    display: none;
+    background: linear-gradient(135deg, var(--bg-card2), var(--navy));
+    border: 1px solid rgba(160,134,107,.25);
+    border-radius: var(--radius);
+    padding: 28px;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  #quiz-score h3 { font-family: var(--font-head); font-size: 22px; color: var(--gold-light); margin-bottom: 8px; }
+  #quiz-score p { color: var(--text-muted); font-size: 14px; }
+  #quiz-score .score-num { font-family: var(--font-head); font-size: 48px; font-weight: 800; color: var(--text); }
+
+  #btn-reset {
+    display: none;
+    margin: 12px auto 0;
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  #btn-reset:hover { background: var(--gold-light); }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 30px 0;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-family: var(--font-code);
+    letter-spacing: 1px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,.06);
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-bar-wrap { margin: 8px 0 4px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
+  .progress-bar { height: 6px; background: rgba(255,255,255,.07); border-radius: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 6px; transition: width 1s ease; }
+
+  /* ─── STRUCTURE CARDS ─── */
+  .structure-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    transition: border-color .2s;
+  }
+
+  .structure-card:hover { border-color: rgba(160,134,107,.3); }
+
+  .structure-logo {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .structure-card .s-body { flex: 1; }
+  .structure-card .s-name { font-family: var(--font-head); font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .structure-card .s-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px; }
+  .structure-card .s-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    #sidebar { transform: translateX(-100%); }
+    main { margin-left: 0; padding: 0 20px 60px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-badge">DWWM · Insertion</div>
+    <div class="sidebar-title">Profil, Plan &amp; <span>Structures</span></div>
+  </div>
+
+  <nav>
+    <div class="nav-section">
+      <div class="nav-section-label">Introduction</div>
+      <a href="#intro" class="active"><span class="nav-icon">🎯</span> Objectifs du module</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">1 · Profil de compétences</div>
+      <a href="#profil-cv"><span class="nav-icon">📄</span> Mettre à jour son CV <span class="nav-num">1.1</span></a>
+      <a href="#profil-linkedin"><span class="nav-icon">💼</span> Optimiser LinkedIn <span class="nav-num">1.2</span></a>
+      <a href="#profil-portfolio"><span class="nav-icon">🌐</span> Portfolio technique <span class="nav-num">1.3</span></a>
+      <a href="#profil-github"><span class="nav-icon">🐙</span> GitHub & projets <span class="nav-num">1.4</span></a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">2 · Plan post-formation</div>
+      <a href="#plan-bilan"><span class="nav-icon">📊</span> Bilan de compétences <span class="nav-num">2.1</span></a>
+      <a href="#plan-objectifs"><span class="nav-icon">🏆</span> Définir ses objectifs <span class="nav-num">2.2</span></a>
+      <a href="#plan-actions"><span class="nav-icon">🗓️</span> Plan d'actions 90 jours <span class="nav-num">2.3</span></a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">3 · Structures à contacter</div>
+      <a href="#structures-emploi"><span class="nav-icon">🏢</span> Organismes emploi <span class="nav-num">3.1</span></a>
+      <a href="#structures-reseau"><span class="nav-icon">🔗</span> Réseaux &amp; communautés <span class="nav-num">3.2</span></a>
+      <a href="#structures-entreprises"><span class="nav-icon">💡</span> Entreprises cibles <span class="nav-num">3.3</span></a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Évaluation</div>
+      <a href="#quiz"><span class="nav-icon">✅</span> Quiz de validation</a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    Real Conseil · Formation DWWM<br>
+    Module insertion professionnelle
+  </div>
+</aside>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main>
+
+  <!-- HERO -->
+  <div class="hero" id="intro">
+    <div class="hero-tag">📋 Module · Insertion Professionnelle</div>
+    <h1>Préparer sa <em>sortie de formation</em><br>et lancer sa carrière web</h1>
+    <p>
+      La formation DWWM touche à sa fin — c'est maintenant que tout se joue. 
+      Ce support vous guide pour valoriser vos compétences, structurer votre stratégie 
+      de recherche et identifier les bons interlocuteurs.
+    </p>
+    <div class="hero-pills">
+      <span class="pill green">✓ Profil de compétences</span>
+      <span class="pill gold">✓ Plan post-formation</span>
+      <span class="pill blue">✓ Structures à contacter</span>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────
+       SECTION 1 · PROFIL DE COMPÉTENCES
+  ───────────────────────────────────── -->
+  <section id="profil-cv">
+    <div class="section-header">
+      <div class="section-icon gold">📄</div>
+      <div class="section-header-text">
+        <h2>1.1 — Mettre à jour son CV</h2>
+        <p>Transformer son parcours de formation en arguments pour un recruteur</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <strong>Pourquoi c'est prioritaire ?</strong>
+        <p>Le CV est la première chose qu'un recruteur regarde — souvent en moins de 30 secondes. Un CV technique bien structuré compense le manque d'expérience.</p>
+      </div>
+    </div>
+
+    <div class="profil-preview">
+      <div class="profil-avatar">👨‍💻</div>
+      <div class="profil-name">Prénom NOM</div>
+      <div class="profil-title">Développeur Web et Web Mobile · DWWM</div>
+      <div class="profil-info">
+        <span class="profil-info-item">📍 Amiens / Lille</span>
+        <span class="profil-info-item">✉️ email@domaine.fr</span>
+        <span class="profil-info-item">💼 Disponible dès le [DATE]</span>
+        <span class="profil-info-item">🔗 github.com/monprofil</span>
+      </div>
+      <hr class="profil-separator">
+      <div class="skills-grid">
+        <span class="skill-badge front">HTML5/CSS3</span>
+        <span class="skill-badge front">JavaScript ES6+</span>
+        <span class="skill-badge front">React</span>
+        <span class="skill-badge back">PHP 8</span>
+        <span class="skill-badge back">MySQL</span>
+        <span class="skill-badge back">REST API</span>
+        <span class="skill-badge tools">Git / GitHub</span>
+        <span class="skill-badge tools">Docker</span>
+        <span class="skill-badge tools">VS Code</span>
+        <span class="skill-badge soft">Travail en équipe</span>
+        <span class="skill-badge soft">Agilité</span>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>✅ Ce qu'il faut mettre</h3>
+        <ul class="check-list">
+          <li><span class="check">✓</span> Titre précis : "Développeur Web Full-Stack · Certifié DWWM"</li>
+          <li><span class="check">✓</span> Stack technique complète avec niveaux honnêtes</li>
+          <li><span class="check">✓</span> Projets réalisés en formation (titre, techno, lien)</li>
+          <li><span class="check">✓</span> Alternance / stage avec missions détaillées</li>
+          <li><span class="check">✓</span> Lien vers GitHub et/ou portfolio</li>
+          <li><span class="check">✓</span> Date de disponibilité explicite</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>❌ Ce qu'il faut éviter</h3>
+        <ul class="check-list">
+          <li><span class="check warn">✕</span> "Maîtrise parfaite de React" si vous débutez</li>
+          <li><span class="check warn">✕</span> Photo trop informelle ou absente (domaine tech = ok sans)</li>
+          <li><span class="check warn">✕</span> CV de 3 pages — 1 page max pour un junior</li>
+          <li><span class="check warn">✕</span> Compétences en "barres de progression" (non mesurables)</li>
+          <li><span class="check warn">✕</span> Adresse e-mail non professionnelle</li>
+          <li><span class="check warn">✕</span> Objectif générique copié-collé</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📌</div>
+      <div class="callout-body">
+        <strong>Formulation des projets (méthode STAR adaptée)</strong>
+        <p>→ <strong>Contexte</strong> : type de projet, durée, équipe<br>
+        → <strong>Technologies</strong> : stack utilisée<br>
+        → <strong>Réalisation</strong> : ce que vous avez codé<br>
+        → <strong>Résultat</strong> : ce que ça démontre (autonomie, méthode, qualité)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────
+       1.2 LINKEDIN
+  ───────────────────────────────────── -->
+  <section id="profil-linkedin">
+    <div class="section-header">
+      <div class="section-icon blue">💼</div>
+      <div class="section-header-text">
+        <h2>1.2 — Optimiser son profil LinkedIn</h2>
+        <p>LinkedIn est le canal n°1 de sourcing en IT — les recruteurs tech y sont très actifs</p>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>📸 Photo & bannière</h3>
+        <ul class="check-list">
+          <li><span class="check">✓</span> Photo professionnelle, fond neutre</li>
+          <li><span class="check">✓</span> Bannière custom (Canva) avec vos techno</li>
+          <li><span class="check">✓</span> Titre accrocheur en-dessous du nom</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>✍️ Résumé "À propos"</h3>
+        <ul class="check-list">
+          <li><span class="check">✓</span> 3-5 lignes max, ton humain</li>
+          <li><span class="check">✓</span> Ce que vous savez faire</li>
+          <li><span class="check">✓</span> Ce que vous cherchez</li>
+          <li><span class="check">✓</span> Appel à l'action (contact)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>⚙️ Paramètres clés</h3>
+        <ul class="check-list">
+          <li><span class="check">✓</span> URL personnalisée (/in/prenomnom)</li>
+          <li><span class="check">✓</span> "Open to work" activé</li>
+          <li><span class="check">✓</span> Compétences validées par des pairs</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>💬 Exemple de titre LinkedIn percutant</h3>
+      <div style="background: var(--bg); border-radius: 8px; padding: 14px 16px; margin-top: 8px; font-family: var(--font-code); font-size: 13px; color: var(--gold-light); border-left: 3px solid var(--gold);">
+        Développeur Web Full-Stack · React / PHP / MySQL · Certifié DWWM · Disponible dès [mois]
+      </div>
+      <h4>Pourquoi ça fonctionne ?</h4>
+      <p style="font-size: 13px; color: var(--text-muted);">Les mots-clés techniques sont directement recherchés par les ATS et les recruteurs. Le titre fait office de mini CV en un coup d'œil.</p>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────
+       1.3 PORTFOLIO
+  ───────────────────────────────────── -->
+  <section id="profil-portfolio">
+    <div class="section-header">
+      <div class="section-icon green">🌐</div>
+      <div class="section-header-text">
+        <h2>1.3 — Construire son portfolio</h2>
+        <p>Un portfolio en ligne est votre vitrine — il remplace 10 diplômes pour un dev junior</p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <strong>Un portfolio avec des bugs, c'est pire que pas de portfolio</strong>
+        <p>Testez sur mobile, Chrome et Firefox. Corrigez les coquilles. Un recruteur tech clique sur votre portfolio pour voir ce que vous valez — soyez irréprochable.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>📦 Ce qu'il doit contenir</h3>
+        <ul class="check-list">
+          <li><span class="check">✓</span> 3 à 5 projets max, bien choisis</li>
+          <li><span class="check">✓</span> Capture d'écran + lien live + lien GitHub</li>
+          <li><span class="check">✓</span> Stack utilisée par projet</li>
+          <li><span class="check">✓</span> Courte description : contexte, défis, solutions</li>
+          <li><span class="check">✓</span> Formulaire de contact fonctionnel</li>
+          <li><span class="check">✓</span> Design sobre et responsive</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🛠️ Solutions techniques</h3>
+        <ul class="check-list">
+          <li><span class="check info">→</span> <strong>GitHub Pages</strong> — gratuit, pour les sites statiques</li>
+          <li><span class="check info">→</span> <strong>Vercel / Netlify</strong> — idéal pour React</li>
+          <li><span class="check info">→</span> <strong>Hostinger</strong> — PHP + MySQL possible</li>
+          <li><span class="check info">→</span> <strong>Nom de domaine</strong> — prénom-nom.fr (~10€/an)</li>
+          <li><span class="check info">→</span> Évitez les constructeurs no-code — faites-le vous-même !</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────
+       1.4 GITHUB
+  ───────────────────────────────────── -->
+  <section id="profil-github">
+    <div class="section-header">
+      <div class="section-icon gold">🐙</div>
+      <div class="section-header-text">
+        <h2>1.4 — GitHub : votre vitrine technique</h2>
+        <p>Beaucoup de recruteurs tech regardent votre GitHub avant même votre CV</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>📋 README de profil</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Créez un dépôt <code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-family:var(--font-code);font-size:12px;">votre-username/votre-username</code> avec un README.md affiché sur votre profil.</p>
+        <ul class="check-list">
+          <li><span class="check">✓</span> Qui vous êtes, ce que vous cherchez</li>
+          <li><span class="check">✓</span> Stack maîtrisée (badges shields.io)</li>
+          <li><span class="check">✓</span> Projets mis en avant (pinned repos)</li>
+          <li><span class="check">✓</span> Stats GitHub (github-readme-stats)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🔁 Bonnes pratiques commits</h3>
+        <ul class="check-list">
+          <li><span class="check">✓</span> Messages clairs : "feat:", "fix:", "docs:"</li>
+          <li><span class="check">✓</span> Commits réguliers — montrent votre activité</li>
+          <li><span class="check">✓</span> README par projet : installation, usage, stack</li>
+          <li><span class="check">✓</span> .gitignore soigné — pas de fichiers sensibles</li>
+          <li><span class="check warn">✕</span> Pas de code "WIP abandonné" sans branche</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🚀</div>
+      <div class="callout-body">
+        <strong>Le "green graph" parle pour vous</strong>
+        <p>Un historique de contributions régulier montre que vous codez activement. Contribuez à des projets open source, participez à des challenges (Frontend Mentor, Codewars) ou améliorez vos projets existants.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 2 · PLAN POST-FORMATION
+  ════════════════════════════════════════════ -->
+  <div class="divider">── Section 2 · Plan post-formation ──</div>
+
+  <section id="plan-bilan">
+    <div class="section-header">
+      <div class="section-icon purple">📊</div>
+      <div class="section-header-text">
+        <h2>2.1 — Faire son bilan de compétences</h2>
+        <p>Savoir ce que vous savez — et être honnête sur ce qui reste à apprendre</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Compétence</th>
+            <th>Niveau acquis</th>
+            <th>Utilisable en prod ?</th>
+            <th>Priorité à approfondir</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>HTML5 / CSS3 / Flexbox / Grid</td>
+            <td><span class="tag-inline green">Solide</span></td>
+            <td>✅ Oui</td>
+            <td>Accessibilité ARIA</td>
+          </tr>
+          <tr>
+            <td>JavaScript ES6+</td>
+            <td><span class="tag-inline blue">Intermédiaire</span></td>
+            <td>✅ Oui</td>
+            <td>Async/Await, Promises avancées</td>
+          </tr>
+          <tr>
+            <td>React (hooks, composants)</td>
+            <td><span class="tag-inline blue">Intermédiaire</span></td>
+            <td>⚠️ En contexte simple</td>
+            <td>Context, performance, testing</td>
+          </tr>
+          <tr>
+            <td>PHP 8 / POO / MVC</td>
+            <td><span class="tag-inline orange">Débutant avancé</span></td>
+            <td>⚠️ Projets guidés</td>
+            <td>Symfony, sécurité OWASP</td>
+          </tr>
+          <tr>
+            <td>MySQL / requêtes SQL</td>
+            <td><span class="tag-inline blue">Intermédiaire</span></td>
+            <td>✅ CRUD maîtrisé</td>
+            <td>Optimisation, indexation</td>
+          </tr>
+          <tr>
+            <td>REST API (conception &amp; conso)</td>
+            <td><span class="tag-inline blue">Intermédiaire</span></td>
+            <td>✅ Oui</td>
+            <td>Auth JWT, versioning</td>
+          </tr>
+          <tr>
+            <td>Git / GitHub</td>
+            <td><span class="tag-inline green">Solide</span></td>
+            <td>✅ Oui</td>
+            <td>GitFlow, PR, code review</td>
+          </tr>
+          <tr>
+            <td>Docker (bases)</td>
+            <td><span class="tag-inline orange">Débutant</span></td>
+            <td>❌ Non</td>
+            <td>Compose, volumes, réseaux</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout key">
+      <div class="callout-icon">🔑</div>
+      <div class="callout-body">
+        <strong>Soyez honnête avec vous-même</strong>
+        <p>Surévaluer ses compétences mène à des situations embarrassantes en entretien technique. Être honnête sur son niveau montre de la maturité et rassure les recruteurs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────
+       2.2 OBJECTIFS
+  ───────────────────────────────────── -->
+  <section id="plan-objectifs">
+    <div class="section-header">
+      <div class="section-icon orange">🏆</div>
+      <div class="section-header-text">
+        <h2>2.2 — Définir ses objectifs professionnels</h2>
+        <p>Clarifier sa cible pour mieux viser — pas de stratégie sans objectif clair</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>🎯 Quel poste viser ?</h3>
+        <ul class="check-list">
+          <li><span class="check info">→</span> <strong>Développeur Front-End</strong> (HTML/CSS/JS/React)</li>
+          <li><span class="check info">→</span> <strong>Développeur Back-End</strong> (PHP/Node.js/SQL)</li>
+          <li><span class="check info">→</span> <strong>Développeur Full-Stack</strong> (les deux)</li>
+          <li><span class="check info">→</span> <strong>Intégrateur Web</strong> (maquette → code)</li>
+          <li><span class="check info">→</span> <strong>Développeur WordPress</strong> (niche fréquente en agence)</li>
+        </ul>
+        <div class="callout info" style="margin-top:12px;margin-bottom:0;">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <p>En tant que junior, visez un poste "Full-Stack" si vous êtes en agence, "Front" ou "Back" si vous visez un éditeur ou une startup produit.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>🏢 Quel type de structure ?</h3>
+        <ul class="check-list">
+          <li><span class="check">✓</span> <strong>Agence web</strong> — variété de projets, apprentissage rapide</li>
+          <li><span class="check">✓</span> <strong>Startup</strong> — autonomie, full-stack souvent requis</li>
+          <li><span class="check">✓</span> <strong>ESN / SSII</strong> — missions en clientèle, évolution rapide</li>
+          <li><span class="check">✓</span> <strong>PME / ETI</strong> — poste interne, stabilité</li>
+          <li><span class="check">✓</span> <strong>Freelance</strong> — après 2-3 ans d'expérience minimum</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📍 Critères de recherche à définir</h3>
+      <div class="grid-3" style="margin-top:14px;margin-bottom:0;">
+        <div>
+          <h4>📌 Localisation</h4>
+          <ul class="check-list">
+            <li><span class="check">✓</span> Zone géographique max</li>
+            <li><span class="check">✓</span> Télétravail partiel ou total ?</li>
+            <li><span class="check">✓</span> Mobilité possible ?</li>
+          </ul>
+        </div>
+        <div>
+          <h4>💶 Salaire</h4>
+          <ul class="check-list">
+            <li><span class="check">✓</span> Junior HdF : 24 000–30 000 €/an</li>
+            <li><span class="check">✓</span> Ne pas brader ses compétences</li>
+            <li><span class="check">✓</span> Négocier les avantages aussi</li>
+          </ul>
+        </div>
+        <div>
+          <h4>🌱 Évolution</h4>
+          <ul class="check-list">
+            <li><span class="check">✓</span> Formation continue possible ?</li>
+            <li><span class="check">✓</span> Mentorat en interne ?</li>
+            <li><span class="check">✓</span> Stack moderne ?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────
+       2.3 PLAN 90 JOURS
+  ───────────────────────────────────── -->
+  <section id="plan-actions">
+    <div class="section-header">
+      <div class="section-icon green">🗓️</div>
+      <div class="section-header-text">
+        <h2>2.3 — Plan d'actions sur 90 jours</h2>
+        <p>Une feuille de route concrète pour les 3 premiers mois post-certification</p>
+      </div>
+    </div>
+
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <span class="tl-tag">Semaine 1–2 · Jour 1 à 14</span>
+        <h4>🧹 Bilan & mise à jour des profils</h4>
+        <p>Finaliser CV, LinkedIn, GitHub, portfolio. Définir sa cible (poste, secteur, zone géo). Créer une boîte mail dédiée à la recherche. Configurer les alertes emploi (APEC, Welcome to the Jungle, Indeed).</p>
+      </div>
+
+      <div class="timeline-item">
+        <span class="tl-tag">Semaine 3–4 · Jour 15 à 28</span>
+        <h4>🚀 Lancement de la recherche active</h4>
+        <p>Envoyer 5 à 10 candidatures ciblées par semaine. Personnaliser chaque lettre de motivation. Prendre contact avec France Travail, missions locales, l'APEC. Activer son réseau (anciens stagiaires, tuteurs entreprise, formateurs).</p>
+      </div>
+
+      <div class="timeline-item">
+        <span class="tl-tag">Semaine 5–8 · Jour 29 à 56</span>
+        <h4>🎯 Entretiens & montée en compétences</h4>
+        <p>Préparer les entretiens techniques (LeetCode easy, révisions stack). S'entraîner à pitcher son parcours en 2 minutes. Continuer un projet perso pour montrer l'évolution. Rejoindre des meetups dev locaux (Hauts-de-France Tech, Humanitix Lille).</p>
+      </div>
+
+      <div class="timeline-item">
+        <span class="tl-tag">Semaine 9–12 · Jour 57 à 90</span>
+        <h4>📈 Bilan et ajustement</h4>
+        <p>Analyser les retours (silence radio ? reformuler la cible). Élargir la zone de recherche si nécessaire. Solliciter un coaching emploi via France Travail ou l'APEC. Envisager une mission freelance ou un CDD pour gagner de l'expérience.</p>
+      </div>
+
+    </div>
+
+    <div class="card" style="margin-top:24px;">
+      <h3>📊 Tracker de candidatures — template</h3>
+      <div class="table-wrap" style="margin-bottom:0;margin-top:12px;">
+        <table>
+          <thead>
+            <tr><th>Entreprise</th><th>Poste</th><th>Date envoi</th><th>Canal</th><th>Statut</th><th>Relance</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Agence X</td><td>Dev Front</td><td>02/05</td><td>LinkedIn</td><td><span class="tag-inline orange">En attente</span></td><td>09/05</td></tr>
+            <tr><td>Startup Y</td><td>Full-Stack</td><td>28/04</td><td>WttJ</td><td><span class="tag-inline blue">Entretien RH</span></td><td>—</td></tr>
+            <tr><td>ESN Z</td><td>Dev PHP</td><td>25/04</td><td>Indeed</td><td><span class="tag-inline green">Entretien tech</span></td><td>—</td></tr>
+            <tr><td>PME A</td><td>Intégrateur</td><td>20/04</td><td>Spontanée</td><td><span class="tag-inline purple">Refus</span></td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 3 · STRUCTURES À CONTACTER
+  ════════════════════════════════════════════ -->
+  <div class="divider">── Section 3 · Structures à contacter ──</div>
+
+  <section id="structures-emploi">
+    <div class="section-header">
+      <div class="section-icon blue">🏢</div>
+      <div class="section-header-text">
+        <h2>3.1 — Organismes pour l'emploi</h2>
+        <p>Les structures institutionnelles qui peuvent vous aider dans votre insertion</p>
+      </div>
+    </div>
+
+    <div class="structure-card">
+      <div class="structure-logo" style="background:rgba(91,155,213,.12);">🏛️</div>
+      <div class="s-body">
+        <div class="s-name">France Travail (ex-Pôle Emploi)</div>
+        <div class="s-desc">Inscription obligatoire si vous êtes en recherche d'emploi. Accès aux offres, accompagnement personnalisé, droits au chômage si éligible, formations complémentaires financées.</div>
+        <div class="s-tags">
+          <span class="tag-inline blue">Accompagnement</span>
+          <span class="tag-inline green">ARE (indemnités)</span>
+          <span class="tag-inline gold">Formations</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="structure-card">
+      <div class="structure-logo" style="background:rgba(76,175,138,.12);">🎓</div>
+      <div class="s-body">
+        <div class="s-name">APEC (Cadres & Bac+2 minimum)</div>
+        <div class="s-desc">Réseau spécialisé cadres et techniciens qualifiés. Offres d'emploi, accompagnement bilan de compétences, ateliers CV/entretien, coaching. Accessible aux jeunes diplômés.</div>
+        <div class="s-tags">
+          <span class="tag-inline green">Offres ciblées IT</span>
+          <span class="tag-inline blue">Coaching</span>
+          <span class="tag-inline gold">Réseau</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="structure-card">
+      <div class="structure-logo" style="background:rgba(155,127,232,.12);">🌱</div>
+      <div class="s-body">
+        <div class="s-name">Mission Locale (moins de 26 ans)</div>
+        <div class="s-desc">Accompagnement global des jeunes : emploi, logement, mobilité, santé. Dispositifs financiers (PACEA, Garantie Jeunes). Partenaires locaux en Hauts-de-France.</div>
+        <div class="s-tags">
+          <span class="tag-inline purple">-26 ans</span>
+          <span class="tag-inline orange">Aides financières</span>
+          <span class="tag-inline blue">Accompagnement global</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="structure-card">
+      <div class="structure-logo" style="background:rgba(160,134,107,.12);">🔧</div>
+      <div class="s-body">
+        <div class="s-name">Cap Emploi (si RQTH)</div>
+        <div class="s-desc">Pour les personnes en situation de handicap reconnue. Accompagnement spécialisé, aménagements de poste, partenariat avec AGEFIPH. Démarche confidentielle possible.</div>
+        <div class="s-tags">
+          <span class="tag-inline gold">RQTH</span>
+          <span class="tag-inline green">AGEFIPH</span>
+          <span class="tag-inline blue">Aménagements</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="structure-card">
+      <div class="structure-logo" style="background:rgba(232,145,90,.12);">🏢</div>
+      <div class="s-body">
+        <div class="s-name">Real Conseil — Suivi post-formation</div>
+        <div class="s-desc">Votre organisme de formation assure un suivi à 6 et 12 mois après la certification. N'hésitez pas à solliciter votre formateur pour une relecture de CV, une mise en relation ou une orientation.</div>
+        <div class="s-tags">
+          <span class="tag-inline orange">Suivi alumni</span>
+          <span class="tag-inline gold">Réseau formateurs</span>
+          <span class="tag-inline green">Recommandations</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────
+       3.2 RÉSEAUX
+  ───────────────────────────────────── -->
+  <section id="structures-reseau">
+    <div class="section-header">
+      <div class="section-icon purple">🔗</div>
+      <div class="section-header-text">
+        <h2>3.2 — Réseaux &amp; communautés tech</h2>
+        <p>Le réseau est votre premier outil de recrutement — 30-40% des postes ne sont jamais publiés</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>🖥️ Plateformes de recherche d'emploi</h3>
+        <ul class="check-list">
+          <li><span class="check">✓</span> <strong>Welcome to the Jungle</strong> — culture d'entreprise mise en avant</li>
+          <li><span class="check">✓</span> <strong>LinkedIn Jobs</strong> — candidature directe, réseau actif</li>
+          <li><span class="check">✓</span> <strong>Indeed</strong> — volume important, bonne couverture HdF</li>
+          <li><span class="check">✓</span> <strong>APEC.fr</strong> — postes qualifiés tech</li>
+          <li><span class="check">✓</span> <strong>Talent.io</strong> — profil inverti, les entreprises viennent à vous</li>
+          <li><span class="check">✓</span> <strong>Malt</strong> — pour les premières missions freelance</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🤝 Communautés locales &amp; nationales</h3>
+        <ul class="check-list">
+          <li><span class="check info">→</span> <strong>Dev Lille</strong> — meetups mensuels dev Nord</li>
+          <li><span class="check info">→</span> <strong>La French Tech Hauts-de-France</strong></li>
+          <li><span class="check info">→</span> <strong>Slack Developers France</strong></li>
+          <li><span class="check info">→</span> <strong>Discord JS, React FR, PHP FR</strong></li>
+          <li><span class="check info">→</span> <strong>OpenSourcers Amiens</strong></li>
+          <li><span class="check info">→</span> Alumni DWWM / Real Conseil (votre promo)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🤝</div>
+      <div class="callout-body">
+        <strong>La candidature spontanée fonctionne</strong>
+        <p>Identifiez 10 entreprises locales qui vous inspirent. Envoyez un email personnalisé au DT ou CTO directement (trouvez-les sur LinkedIn). C'est plus efficace que postuler à 50 offres en masse.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────
+       3.3 ENTREPRISES CIBLES
+  ───────────────────────────────────── -->
+  <section id="structures-entreprises">
+    <div class="section-header">
+      <div class="section-icon orange">💡</div>
+      <div class="section-header-text">
+        <h2>3.3 — Identifier ses entreprises cibles</h2>
+        <p>Construire une "target list" pertinente plutôt que de postuler partout</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🗺️ Cartographie des types d'employeurs en IT</h3>
+      <div class="table-wrap" style="margin-top:14px;margin-bottom:0;">
+        <table>
+          <thead>
+            <tr><th>Type</th><th>Exemples région HdF</th><th>Avantages junior</th><th>Techno fréquente</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Agence Web</td>
+              <td>Ekino, Disko, Com'On (Lille)</td>
+              <td>Montée en compétences rapide, projets variés</td>
+              <td><span class="tag-inline blue">React</span> <span class="tag-inline green">PHP/WP</span></td>
+            </tr>
+            <tr>
+              <td>ESN / SSII</td>
+              <td>Sopra Steria, Capgemini, Altran</td>
+              <td>Volume de missions, formation interne</td>
+              <td><span class="tag-inline blue">Java</span> <span class="tag-inline green">PHP</span> <span class="tag-inline gold">.NET</span></td>
+            </tr>
+            <tr>
+              <td>Startup tech</td>
+              <td>Scaleway, Izicap, Izimo</td>
+              <td>Stack moderne, responsabilité rapide</td>
+              <td><span class="tag-inline blue">React/TS</span> <span class="tag-inline purple">Node.js</span></td>
+            </tr>
+            <tr>
+              <td>PME / ETI</td>
+              <td>Entreprises locales avec DSI</td>
+              <td>Stabilité, contexte métier riche</td>
+              <td><span class="tag-inline green">PHP</span> <span class="tag-inline gold">WordPress</span></td>
+            </tr>
+            <tr>
+              <td>Collectivités / public</td>
+              <td>Mairies, Région HdF, CAF</td>
+              <td>Sécurité de l'emploi, projets impactants</td>
+              <td><span class="tag-inline gold">PHP/Symfony</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>✉️ Structure d'un e-mail de candidature spontanée</h3>
+      <div style="background:var(--bg);border-radius:8px;padding:18px;margin-top:10px;font-size:13px;line-height:1.8;border:1px solid rgba(255,255,255,.06);">
+        <div style="color:var(--text-dim);font-family:var(--font-code);font-size:11px;margin-bottom:10px;">OBJET : Candidature Développeur Web Full-Stack – [Prénom NOM]</div>
+        <p style="color:var(--text-muted);">
+          Bonjour [Prénom du contact],<br><br>
+          Développeur web junior certifié DWWM, je me permets de vous contacter suite à la découverte de <strong style="color:var(--text);">[projet/produit/valeur de l'entreprise]</strong> qui m'a particulièrement interpellé.<br><br>
+          Je maîtrise <strong style="color:var(--text);">React, PHP 8 et MySQL</strong> et j'ai notamment réalisé <strong style="color:var(--text);">[nom du projet]</strong> disponible ici : [lien GitHub/portfolio].<br><br>
+          Disponible dès <strong style="color:var(--text);">[date]</strong>, je serais ravi d'échanger sur les opportunités au sein de votre équipe, même pour un stage ou une mission courte pour démarrer.<br><br>
+          En vous souhaitant bonne réception,<br>
+          <strong style="color:var(--gold-light);">[Prénom NOM]</strong> · <span style="color:var(--text-dim);">lien LinkedIn · lien Portfolio</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       QUIZ
+  ════════════════════════════════════════════ -->
+  <section id="quiz">
+    <div class="section-header">
+      <div class="section-icon green">✅</div>
+      <div class="section-header-text">
+        <h2>Quiz de validation</h2>
+        <p>Vérifiez vos acquis sur ce module insertion professionnelle</p>
+      </div>
+    </div>
+
+    <div class="quiz-wrap">
+
+      <!-- Q1 -->
+      <div class="quiz-q" data-correct="b">
+        <span class="q-num">Question 1 / 6</span>
+        <div class="q-text">Quelle est la longueur recommandée pour un CV de développeur junior ?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" data-val="a" onclick="answer(this)"><span class="opt-letter">A</span> 2 à 3 pages pour tout détailler</div>
+          <div class="quiz-opt" data-val="b" onclick="answer(this)"><span class="opt-letter">B</span> 1 page maximum, l'essentiel bien mis en valeur</div>
+          <div class="quiz-opt" data-val="c" onclick="answer(this)"><span class="opt-letter">C</span> Peu importe la longueur si le contenu est bon</div>
+          <div class="quiz-opt" data-val="d" onclick="answer(this)"><span class="opt-letter">D</span> Une infographie visuelle avec des jauges de niveau</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Exact ! 1 page est la norme pour un profil junior. Au-delà, les recruteurs ne lisent plus.</div>
+        <div class="quiz-feedback ko">❌ Non. Pour un junior, 1 page maximum est la règle. Allez à l'essentiel : stack, projets, expériences.</div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-q" data-correct="c">
+        <span class="q-num">Question 2 / 6</span>
+        <div class="q-text">Sur LinkedIn, où placer les mots-clés techniques pour être trouvé par les recruteurs ?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" data-val="a" onclick="answer(this)"><span class="opt-letter">A</span> Uniquement dans la section "Expériences"</div>
+          <div class="quiz-opt" data-val="b" onclick="answer(this)"><span class="opt-letter">B</span> Dans les commentaires de ses propres posts</div>
+          <div class="quiz-opt" data-val="c" onclick="answer(this)"><span class="opt-letter">C</span> Dans le titre, le résumé "À propos" et la section "Compétences"</div>
+          <div class="quiz-opt" data-val="d" onclick="answer(this)"><span class="opt-letter">D</span> Seulement dans la bannière image</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Parfait ! Ces 3 zones sont indexées par l'algorithme LinkedIn — titre, "À propos" et compétences.</div>
+        <div class="quiz-feedback ko">❌ Non. Les mots-clés doivent figurer dans le titre (sous le nom), le résumé "À propos" ET la section compétences.</div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-q" data-correct="b">
+        <span class="q-num">Question 3 / 6</span>
+        <div class="q-text">Combien de projets faut-il idéalement présenter dans son portfolio ?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" data-val="a" onclick="answer(this)"><span class="opt-letter">A</span> Le plus possible — montrez tout ce que vous avez fait</div>
+          <div class="quiz-opt" data-val="b" onclick="answer(this)"><span class="opt-letter">B</span> 3 à 5 projets bien documentés et fonctionnels</div>
+          <div class="quiz-opt" data-val="c" onclick="answer(this)"><span class="opt-letter">C</span> 1 seul projet très abouti suffit</div>
+          <div class="quiz-opt" data-val="d" onclick="answer(this)"><span class="opt-letter">D</span> Aucun si vous avez une belle page d'accueil</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Correct ! 3 à 5 projets ciblés valent mieux que 20 projets non documentés. La qualité prime.</div>
+        <div class="quiz-feedback ko">❌ Non. 3 à 5 projets bien documentés est l'idéal. Trop de projets dilue l'attention. Trop peu limite la preuve.</div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-q" data-correct="a">
+        <span class="q-num">Question 4 / 6</span>
+        <div class="q-text">Quel organisme contacter en priorité si vous avez moins de 26 ans et cherchez un accompagnement global (emploi, logement, mobilité) ?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" data-val="a" onclick="answer(this)"><span class="opt-letter">A</span> La Mission Locale</div>
+          <div class="quiz-opt" data-val="b" onclick="answer(this)"><span class="opt-letter">B</span> L'APEC</div>
+          <div class="quiz-opt" data-val="c" onclick="answer(this)"><span class="opt-letter">C</span> Cap Emploi</div>
+          <div class="quiz-opt" data-val="d" onclick="answer(this)"><span class="opt-letter">D</span> La Chambre de Commerce</div>
+        </div>
+        <div class="quiz-feedback ok">✅ La Mission Locale est spécialisée dans l'accompagnement global des moins de 26 ans.</div>
+        <div class="quiz-feedback ko">❌ Non. La Mission Locale est l'organisme dédié aux moins de 26 ans pour un accompagnement complet.</div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-q" data-correct="c">
+        <span class="q-num">Question 5 / 6</span>
+        <div class="q-text">Dans le "plan 90 jours", quelle est la priorité des 2 premières semaines ?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" data-val="a" onclick="answer(this)"><span class="opt-letter">A</span> Envoyer un maximum de candidatures dès le premier jour</div>
+          <div class="quiz-opt" data-val="b" onclick="answer(this)"><span class="opt-letter">B</span> Attendre les offres qui correspondent exactement à ses compétences</div>
+          <div class="quiz-opt" data-val="c" onclick="answer(this)"><span class="opt-letter">C</span> Finaliser son bilan et mettre à jour tous ses profils (CV, LinkedIn, GitHub)</div>
+          <div class="quiz-opt" data-val="d" onclick="answer(this)"><span class="opt-letter">D</span> Contacter directement les entreprises par téléphone</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Exact ! Les 2 premières semaines servent à poser les fondations : profils, cible, outils de suivi.</div>
+        <div class="quiz-feedback ko">❌ Non. Postuler sans profils à jour est contre-productif. Semaines 1-2 = bilan + mise à jour de tous les profils.</div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="quiz-q" data-correct="d">
+        <span class="q-num">Question 6 / 6</span>
+        <div class="q-text">Pourquoi la candidature spontanée est-elle recommandée ?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" data-val="a" onclick="answer(this)"><span class="opt-letter">A</span> Elle est obligatoire pour s'inscrire à France Travail</div>
+          <div class="quiz-opt" data-val="b" onclick="answer(this)"><span class="opt-letter">B</span> Elle garantit une réponse plus rapide</div>
+          <div class="quiz-opt" data-val="c" onclick="answer(this)"><span class="opt-letter">C</span> Elle évite de passer par les plateformes d'emploi</div>
+          <div class="quiz-opt" data-val="d" onclick="answer(this)"><span class="opt-letter">D</span> 30-40% des postes ne sont jamais publiés — le réseau et le contact direct y donnent accès</div>
+        </div>
+        <div class="quiz-feedback ok">✅ Exact ! Le "marché caché" de l'emploi représente une part significative des recrutements en IT.</div>
+        <div class="quiz-feedback ko">❌ Non. La candidature spontanée permet d'accéder aux postes non publiés (30-40% du marché réel).</div>
+      </div>
+
+      <div id="quiz-score">
+        <h3>🎓 Résultat</h3>
+        <div class="score-num" id="score-val">—</div>
+        <p id="score-msg"></p>
+      </div>
+      <button id="btn-reset" onclick="resetQuiz()">🔄 Recommencer</button>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // ─── SCROLL SPY ───
+  const sections = document.querySelectorAll('section, .hero');
+  const navLinks = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const id = e.target.id;
+        const link = document.querySelector('nav a[href="#' + id + '"]');
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // ─── QUIZ ───
+  let answered = 0;
+  let correct = 0;
+  const totalQ = 6;
+
+  function answer(el) {
+    const qBlock = el.closest('.quiz-q');
+    if (qBlock.dataset.done) return;
+    qBlock.dataset.done = '1';
+    answered++;
+
+    const opts = qBlock.querySelectorAll('.quiz-opt');
+    opts.forEach(o => o.classList.add('disabled'));
+
+    const correctVal = qBlock.dataset.correct;
+    const chosen = el.dataset.val;
+
+    opts.forEach(o => {
+      if (o.dataset.val === correctVal) o.classList.add('correct');
+    });
+
+    const fbs = qBlock.querySelectorAll('.quiz-feedback');
+    if (chosen === correctVal) {
+      el.classList.add('correct');
+      fbs[0].classList.add('show');
+      correct++;
+    } else {
+      el.classList.add('wrong');
+      fbs[1].classList.add('show');
+    }
+
+    if (answered === totalQ) showScore();
+  }
+
+  function showScore() {
+    const scoreEl = document.getElementById('quiz-score');
+    const valEl   = document.getElementById('score-val');
+    const msgEl   = document.getElementById('score-msg');
+    const btnEl   = document.getElementById('btn-reset');
+
+    valEl.textContent = correct + ' / ' + totalQ;
+    scoreEl.style.display = 'block';
+    btnEl.style.display = 'block';
+
+    if (correct === totalQ) {
+      msgEl.textContent = '🏆 Excellent ! Vous maîtrisez parfaitement ce module insertion. Bonne chance dans vos démarches !';
+    } else if (correct >= 4) {
+      msgEl.textContent = '👍 Bien joué ! Quelques points à revoir — relisez les sections correspondantes.';
+    } else {
+      msgEl.textContent = '📚 Quelques notions à consolider. Reprenez le support et retentez le quiz !';
+    }
+  }
+
+  function resetQuiz() {
+    answered = 0;
+    correct = 0;
+    document.querySelectorAll('.quiz-q').forEach(q => {
+      delete q.dataset.done;
+      q.querySelectorAll('.quiz-opt').forEach(o => {
+        o.classList.remove('correct','wrong','disabled');
+      });
+      q.querySelectorAll('.quiz-feedback').forEach(f => f.classList.remove('show'));
+    });
+    document.getElementById('quiz-score').style.display = 'none';
+    document.getElementById('btn-reset').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
