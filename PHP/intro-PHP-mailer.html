@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP Mailer — Cours Real Conseil</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #2C3F77;
+    --navy-d: #1e2d57;
+    --gold:   #A0896A;
+    --gold-l: #c4a882;
+    --bg:     #f4f6fb;
+    --white:  #ffffff;
+    --text:   #1a1f36;
+    --muted:  #6b7280;
+    --border: #dde3f0;
+    --code-bg:#1e2d57;
+    --green:  #22c55e;
+    --red:    #ef4444;
+    --yellow: #f59e0b;
+    --sidebar-w: 270px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--navy-d);
+    color: #cbd5f0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    padding-bottom: 2rem;
+  }
+  .sidebar-logo {
+    background: var(--navy);
+    padding: 1.4rem 1.5rem;
+    border-bottom: 3px solid var(--gold);
+    margin-bottom: .5rem;
+  }
+  .sidebar-logo .label {
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--gold-l);
+    text-transform: uppercase;
+    margin-bottom: .2rem;
+  }
+  .sidebar-logo h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .sidebar-logo h2 span { color: var(--gold-l); }
+  .nav-section {
+    padding: .6rem 1rem .2rem;
+    font-size: .6rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: .5rem;
+  }
+  #sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .45rem 1.5rem;
+    color: #a8b4d8;
+    text-decoration: none;
+    font-size: .82rem;
+    transition: background .15s, color .15s;
+    border-left: 3px solid transparent;
+  }
+  #sidebar nav a .ico { font-size: .9rem; opacity: .7; }
+  #sidebar nav a:hover { background: rgba(255,255,255,.06); color: #fff; }
+  #sidebar nav a.active {
+    background: rgba(160,137,106,.15);
+    color: #fff;
+    border-left-color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* ── MAIN ── */
+  main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 2.5rem 2.8rem;
+    max-width: 960px;
+  }
+  .page-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-d) 100%);
+    color: #fff;
+    border-radius: 14px;
+    padding: 2.5rem 2.8rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::before {
+    content: '✉';
+    position: absolute;
+    right: 2rem; top: 50%;
+    transform: translateY(-50%);
+    font-size: 7rem;
+    opacity: .08;
+  }
+  .page-header .tag {
+    display: inline-block;
+    background: rgba(160,137,106,.3);
+    color: var(--gold-l);
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: .3rem .8rem;
+    border-radius: 20px;
+    margin-bottom: .8rem;
+  }
+  .page-header h1 { font-size: 2.1rem; font-weight: 700; margin-bottom: .5rem; }
+  .page-header p { color: #a8b4d8; font-size: .95rem; line-height: 1.6; max-width: 560px; }
+
+  /* ── SECTIONS ── */
+  section { margin-bottom: 3rem; scroll-margin-top: 1.5rem; }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 1.2rem;
+    padding-bottom: .7rem;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-title .badge {
+    background: var(--navy);
+    color: var(--gold-l);
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    padding: .25rem .65rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 1.4rem 0 .6rem;
+  }
+  p, li { line-height: 1.7; font-size: .93rem; color: var(--text); }
+  ul, ol { padding-left: 1.4rem; margin-bottom: .8rem; }
+  li { margin-bottom: .25rem; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 1.2rem;
+  }
+  .card.warn {
+    border-left: 4px solid var(--yellow);
+    background: #fffbeb;
+  }
+  .card.info {
+    border-left: 4px solid var(--navy);
+    background: #f0f4ff;
+  }
+  .card.danger {
+    border-left: 4px solid var(--red);
+    background: #fff1f1;
+  }
+  .card.success {
+    border-left: 4px solid var(--green);
+    background: #f0fdf4;
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: .85rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .5rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .card.warn .card-title  { color: #92400e; }
+  .card.info .card-title  { color: var(--navy); }
+  .card.danger .card-title{ color: #991b1b; }
+  .card.success .card-title{ color: #166534; }
+
+  /* ── CODE ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1rem 0;
+    font-family: 'Fira Code', monospace;
+    font-size: .82rem;
+    line-height: 1.6;
+  }
+  .code-block .cb-header {
+    background: rgba(255,255,255,.06);
+    padding: .5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .cb-lang {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gold-l);
+  }
+  .cb-copy {
+    background: none;
+    border: 1px solid rgba(255,255,255,.2);
+    color: #a8b4d8;
+    font-size: .7rem;
+    padding: .2rem .6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .cb-copy:hover { background: rgba(255,255,255,.1); color: #fff; }
+  .code-block pre { padding: 1.2rem 1.4rem; overflow-x: auto; color: #e2e8f0; }
+
+  /* syntax */
+  .kw  { color: #93c5fd; }  /* keyword */
+  .fn  { color: #86efac; }  /* function */
+  .str { color: #fca5a5; }  /* string */
+  .cm  { color: #6b7280; font-style: italic; } /* comment */
+  .nb  { color: #fcd34d; }  /* variable */
+  .op  { color: #c4b5fd; }  /* operator/method */
+
+  /* ── TOGGLE SOLUTION ── */
+  .toggle-solution {
+    margin: 1rem 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .toggle-btn {
+    width: 100%;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: .75rem 1.2rem;
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    transition: background .15s;
+  }
+  .toggle-btn:hover { background: var(--navy-d); }
+  .toggle-btn .arrow { transition: transform .25s; }
+  .toggle-btn.open .arrow { transform: rotate(90deg); }
+  .toggle-content {
+    display: none;
+    background: var(--white);
+  }
+  .toggle-content.open { display: block; }
+  .toggle-content .code-block { border-radius: 0; margin: 0; }
+
+  /* ── STEPS ── */
+  .steps { list-style: none; padding: 0; }
+  .steps li {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+  }
+  .step-num {
+    min-width: 2rem;
+    height: 2rem;
+    background: var(--navy);
+    color: var(--gold-l);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .8rem;
+    flex-shrink: 0;
+    margin-top: .1rem;
+  }
+  .step-body strong { display: block; margin-bottom: .2rem; color: var(--navy); }
+
+  /* ── TABLE ── */
+  .tbl-wrap { overflow-x: auto; margin: 1rem 0; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th {
+    background: var(--navy);
+    color: #fff;
+    padding: .6rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: .8rem;
+    letter-spacing: .03em;
+  }
+  td { padding: .55rem 1rem; border-bottom: 1px solid var(--border); }
+  tr:nth-child(even) td { background: #f8faff; }
+  code {
+    font-family: 'Fira Code', monospace;
+    background: #eef1fb;
+    padding: .1rem .4rem;
+    border-radius: 4px;
+    font-size: .82rem;
+    color: var(--navy);
+  }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:720px){ .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ── EXERCISE ── */
+  .exo {
+    background: linear-gradient(135deg, #1e2d57 0%, #2C3F77 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 1.6rem 1.8rem;
+    margin: 1.5rem 0;
+  }
+  .exo h4 {
+    color: var(--gold-l);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: .6rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .exo p, .exo li { color: #cbd5f0; font-size: .9rem; }
+  .exo ul { margin-top: .5rem; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <div class="label">Real Conseil — DWWM</div>
+    <h2>PHP <span>Mailer</span></h2>
+  </div>
+  <nav>
+    <div class="nav-section">Introduction</div>
+    <a href="#intro" class="nav-link"><span class="ico"></span> Envoyer des emails en PHP</a>
+    <a href="#mail-natif" class="nav-link"><span class="ico"></span> Fonction mail() native</a>
+
+    <div class="nav-section">PHPMailer</div>
+    <a href="#install" class="nav-link"><span class="ico"></span> Installation</a>
+    <a href="#smtp" class="nav-link"><span class="ico"></span> Config SMTP</a>
+    <a href="#premier-email" class="nav-link"><span class="ico"></span> Premier email</a>
+    <a href="#html-email" class="nav-link"><span class="ico"></span> Email HTML</a>
+    <a href="#pieces-jointes" class="nav-link"><span class="ico"></span> Pièces jointes</a>
+
+    <div class="nav-section">Cas pratiques</div>
+    <a href="#formulaire" class="nav-link"><span class="ico"></span> Formulaire de contact</a>
+    <a href="#reset" class="nav-link"><span class="ico"></span> Réinitialisation mot de passe</a>
+    <a href="#securite" class="nav-link"><span class="ico"></span> Sécurité & bonnes pratiques</a>
+
+    <div class="nav-section">Exercices</div>
+    <a href="#exo1" class="nav-link"><span class="ico"></span> Exercice 1</a>
+    <a href="#exo2" class="nav-link"><span class="ico"></span> Exercice 2</a>
+    <a href="#exo3" class="nav-link"><span class="ico"></span> Exercice 3</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main>
+
+  <div class="page-header">
+    <div class="tag">Module PHP — Envoi d'emails</div>
+    <h1>PHP Mailer</h1>
+    <p>Apprenez à envoyer des emails depuis PHP : fonction native <code style="background:rgba(255,255,255,.15);color:#fff">mail()</code>, bibliothèque PHPMailer, SMTP, emails HTML et pièces jointes.</p>
+  </div>
+
+  <!-- ─── INTRO ─── -->
+  <section id="intro">
+    <div class="section-title">
+      Envoyer des emails en PHP
+      <span class="badge">Concepts</span>
+    </div>
+
+    <p>PHP propose deux approches pour envoyer des emails :</p>
+
+    <div class="grid-2" style="margin-top:1rem">
+      <div class="card info">
+        <div class="card-title">mail() natif</div>
+        <p>Fonction built-in de PHP. Simple, mais limitée : pas de SMTP, peu de contrôle sur les en-têtes, souvent bloquée par les hébergeurs modernes.</p>
+      </div>
+      <div class="card success">
+        <div class="card-title">PHPMailer</div>
+        <p>Bibliothèque open-source (via Composer). Supporte SMTP, TLS, emails HTML, pièces jointes, envois multiples, etc. Standard de l'industrie.</p>
+      </div>
+    </div>
+
+    <div class="card warn">
+      <div class="card-title">Prérequis MAMP</div>
+      <p>Sous MAMP (port 8889), la fonction <code>mail()</code> native ne fonctionne pas sans configuration Sendmail. <strong>PHPMailer + SMTP est la solution recommandée.</strong> Vous pouvez utiliser un compte Gmail ou un service de test comme Mailtrap.</p>
+    </div>
+  </section>
+
+  <!-- ─── MAIL NATIF ─── -->
+  <section id="mail-natif">
+    <div class="section-title">
+      Fonction mail() native
+      <span class="badge">Built-in</span>
+    </div>
+
+    <p>La fonction <code>mail()</code> est disponible nativement en PHP. Elle est simple mais peu fiable en développement local.</p>
+
+    <h3>Syntaxe</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Paramètre</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>$to</code></td><td>string</td><td>Destinataire(s)</td></tr>
+          <tr><td><code>$subject</code></td><td>string</td><td>Objet du message</td></tr>
+          <tr><td><code>$message</code></td><td>string</td><td>Corps du message</td></tr>
+          <tr><td><code>$headers</code></td><td>string|array</td><td>En-têtes optionnels (From, CC…)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <div class="cb-header">
+        <span class="cb-lang">PHP</span>
+        <button class="cb-copy" onclick="copyCode(this)">Copier</button>
+      </div>
+      <pre><span class="cm">// Envoi simple avec mail()</span>
+<span class="nb">$to</span>      = <span class="str">'destinataire@exemple.com'</span>;
+<span class="nb">$subject</span> = <span class="str">'Bonjour depuis PHP !'</span>;
+<span class="nb">$message</span> = <span class="str">'Ceci est un message de test.'</span>;
+<span class="nb">$headers</span> = <span class="str">'From: expediteur@monsite.com'</span>;
+
+<span class="kw">if</span> (<span class="fn">mail</span>(<span class="nb">$to</span>, <span class="nb">$subject</span>, <span class="nb">$message</span>, <span class="nb">$headers</span>)) {
+    <span class="kw">echo</span> <span class="str">'Email envoyé avec succès !'</span>;
+} <span class="kw">else</span> {
+    <span class="kw">echo</span> <span class="str">'Échec de l\'envoi.'</span>;
+}</pre>
+    </div>
+
+    <div class="card danger">
+      <div class="card-title">Limites de mail()</div>
+      <ul>
+        <li>Nécessite un serveur Sendmail/Postfix configuré sur le serveur</li>
+        <li>Emails souvent classés en spam (pas d'authentification SPF/DKIM)</li>
+        <li>Pas de support natif SMTP authentifié</li>
+        <li>Pas de prise en charge facile des emails HTML ou des pièces jointes</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ─── INSTALLATION ─── -->
+  <section id="install">
+    <div class="section-title">
+      Installation de PHPMailer
+      <span class="badge">Composer</span>
+    </div>
+
+    <ul class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Installer via Composer</strong>
+          <p>Dans le dossier racine de votre projet :</p>
+          <div class="code-block">
+            <div class="cb-header"><span class="cb-lang">Bash</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+            <pre>composer require phpmailer/phpmailer</pre>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Structure générée</strong>
+          <div class="code-block">
+            <div class="cb-header"><span class="cb-lang">Structure</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+            <pre>mon-projet/
+├── vendor/
+│   └── phpmailer/
+│       └── phpmailer/
+│           └── src/
+│               ├── PHPMailer.php
+│               ├── SMTP.php
+│               └── Exception.php
+├── composer.json
+└── composer.lock</pre>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Inclure l'autoloader dans votre fichier PHP</strong>
+          <div class="code-block">
+            <div class="cb-header"><span class="cb-lang">PHP</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+            <pre><span class="kw">require</span> <span class="str">'vendor/autoload.php'</span>;
+
+<span class="kw">use</span> PHPMailer\PHPMailer\PHPMailer;
+<span class="kw">use</span> PHPMailer\PHPMailer\SMTP;
+<span class="kw">use</span> PHPMailer\PHPMailer\Exception;</pre>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="card info">
+      <div class="card-title">Sans Composer (alternative)</div>
+      <p>Si Composer n'est pas disponible, téléchargez PHPMailer depuis GitHub et incluez les fichiers manuellement :</p>
+      <div class="code-block">
+        <div class="cb-header"><span class="cb-lang">PHP</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+        <pre><span class="kw">require</span> <span class="str">'PHPMailer/src/Exception.php'</span>;
+<span class="kw">require</span> <span class="str">'PHPMailer/src/PHPMailer.php'</span>;
+<span class="kw">require</span> <span class="str">'PHPMailer/src/SMTP.php'</span>;</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SMTP CONFIG ─── -->
+  <section id="smtp">
+    <div class="section-title">
+      🔌 Configuration SMTP
+      <span class="badge">Config</span>
+    </div>
+
+    <p>SMTP (<em>Simple Mail Transfer Protocol</em>) est le protocole standard d'envoi d'emails. PHPMailer s'y connecte de façon authentifiée et sécurisée.</p>
+
+    <h3>Paramètres clés</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Propriété</th><th>Valeur exemple</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>isSMTP()</code></td><td>—</td><td>Active le mode SMTP</td></tr>
+          <tr><td><code>Host</code></td><td><code>smtp.gmail.com</code></td><td>Serveur SMTP</td></tr>
+          <tr><td><code>SMTPAuth</code></td><td><code>true</code></td><td>Authentification SMTP</td></tr>
+          <tr><td><code>Username</code></td><td><code>vous@gmail.com</code></td><td>Login du compte</td></tr>
+          <tr><td><code>Password</code></td><td><code>motdepasse</code></td><td>Mot de passe (ou App Password)</td></tr>
+          <tr><td><code>SMTPSecure</code></td><td><code>PHPMailer::ENCRYPTION_STARTTLS</code></td><td>Chiffrement TLS</td></tr>
+          <tr><td><code>Port</code></td><td><code>587</code></td><td>Port SMTP TLS</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Serveurs SMTP courants</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Service</th><th>Host</th><th>Port</th><th>Chiffrement</th></tr></thead>
+        <tbody>
+          <tr><td>Gmail</td><td><code>smtp.gmail.com</code></td><td>587</td><td>TLS (STARTTLS)</td></tr>
+          <tr><td>Gmail (SSL)</td><td><code>smtp.gmail.com</code></td><td>465</td><td>SSL</td></tr>
+          <tr><td>Outlook / Hotmail</td><td><code>smtp-mail.outlook.com</code></td><td>587</td><td>TLS</td></tr>
+          <tr><td>OVH</td><td><code>ssl0.ovh.net</code></td><td>465</td><td>SSL</td></tr>
+          <tr><td>Mailtrap (test)</td><td><code>sandbox.smtp.mailtrap.io</code></td><td>2525</td><td>TLS</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card warn">
+      <div class="card-title">Gmail — App Password</div>
+      <p>Depuis 2022, Gmail exige un <strong>mot de passe d'application</strong> (App Password) à la place du mot de passe principal si la validation en 2 étapes est activée. Créez-le dans : Compte Google → Sécurité → Mots de passe des applications.</p>
+    </div>
+
+    <h3>Fichier de configuration séparé (bonne pratique)</h3>
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">PHP — config/mailer.php</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre><span class="cm">// config/mailer.php — NE PAS versionner ce fichier !</span>
+<span class="kw">return</span> [
+    <span class="str">'host'</span>     => <span class="str">'smtp.gmail.com'</span>,
+    <span class="str">'port'</span>     => <span class="nb">587</span>,
+    <span class="str">'username'</span> => <span class="str">'vous@gmail.com'</span>,
+    <span class="str">'password'</span> => <span class="str">'votre_app_password'</span>,
+    <span class="str">'from'</span>     => <span class="str">'vous@gmail.com'</span>,
+    <span class="str">'from_name'</span>=> <span class="str">'Mon Site Web'</span>,
+];
+
+<span class="cm">// Dans .gitignore :</span>
+<span class="cm">// config/mailer.php</span></pre>
+    </div>
+  </section>
+
+  <!-- ─── PREMIER EMAIL ─── -->
+  <section id="premier-email">
+    <div class="section-title">
+      Premier email avec PHPMailer
+      <span class="badge">Exemple complet</span>
+    </div>
+
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">PHP — send_email.php</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre><span class="cm">// Chargement de l'autoloader Composer</span>
+<span class="kw">require</span> <span class="str">'vendor/autoload.php'</span>;
+
+<span class="kw">use</span> PHPMailer\PHPMailer\PHPMailer;
+<span class="kw">use</span> PHPMailer\PHPMailer\SMTP;
+<span class="kw">use</span> PHPMailer\PHPMailer\Exception;
+
+<span class="cm">// Chargement de la config</span>
+<span class="nb">$config</span> = <span class="kw">require</span> <span class="str">'config/mailer.php'</span>;
+
+<span class="nb">$mail</span> = <span class="kw">new</span> <span class="fn">PHPMailer</span>(<span class="kw">true</span>); <span class="cm">// true = exceptions activées</span>
+
+<span class="kw">try</span> {
+    <span class="cm">// ── Configuration SMTP ─</span>
+    <span class="nb">$mail</span>-><span class="fn">isSMTP</span>();
+    <span class="nb">$mail</span>-><span class="op">Host</span>       = <span class="nb">$config</span>[<span class="str">'host'</span>];
+    <span class="nb">$mail</span>-><span class="op">SMTPAuth</span>   = <span class="kw">true</span>;
+    <span class="nb">$mail</span>-><span class="op">Username</span>   = <span class="nb">$config</span>[<span class="str">'username'</span>];
+    <span class="nb">$mail</span>-><span class="op">Password</span>   = <span class="nb">$config</span>[<span class="str">'password'</span>];
+    <span class="nb">$mail</span>-><span class="op">SMTPSecure</span> = PHPMailer::<span class="op">ENCRYPTION_STARTTLS</span>;
+    <span class="nb">$mail</span>-><span class="op">Port</span>       = <span class="nb">$config</span>[<span class="str">'port'</span>];
+    <span class="nb">$mail</span>-><span class="op">CharSet</span>    = <span class="str">'UTF-8'</span>;
+
+    <span class="cm">// ── Expéditeur & destinataire ──</span>
+    <span class="nb">$mail</span>-><span class="fn">setFrom</span>(<span class="nb">$config</span>[<span class="str">'from'</span>], <span class="nb">$config</span>[<span class="str">'from_name'</span>]);
+    <span class="nb">$mail</span>-><span class="fn">addAddress</span>(<span class="str">'destinataire@exemple.com'</span>, <span class="str">'Jean Dupont'</span>);
+    <span class="nb">$mail</span>-><span class="fn">addReplyTo</span>(<span class="nb">$config</span>[<span class="str">'from'</span>], <span class="nb">$config</span>[<span class="str">'from_name'</span>]);
+
+    <span class="cm">// ── Contenu ──</span>
+    <span class="nb">$mail</span>-><span class="op">isHTML</span>(<span class="kw">false</span>);
+    <span class="nb">$mail</span>-><span class="op">Subject</span> = <span class="str">'Test PHPMailer'</span>;
+    <span class="nb">$mail</span>-><span class="op">Body</span>    = <span class="str">'Bonjour ! Ceci est un email de test envoyé via PHPMailer.'</span>;
+
+    <span class="nb">$mail</span>-><span class="fn">send</span>();
+    <span class="kw">echo</span> <span class="str">'Email envoyé avec succès !'</span>;
+
+} <span class="kw">catch</span> (Exception <span class="nb">$e</span>) {
+    <span class="kw">echo</span> <span class="str">"Erreur : {</span><span class="nb">$mail</span><span class="str">->ErrorInfo}"</span>;
+}</pre>
+    </div>
+
+    <div class="card info">
+      <div class="card-title">Debug SMTP</div>
+      <p>Pour afficher les échanges SMTP en détail (utile en développement), ajoutez avant <code>send()</code> :</p>
+      <div class="code-block">
+        <div class="cb-header"><span class="cb-lang">PHP</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+        <pre><span class="nb">$mail</span>-><span class="op">SMTPDebug</span> = SMTP::<span class="op">DEBUG_SERVER</span>; <span class="cm">// 0 = désactivé, 2 = debug complet</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── HTML EMAIL ─── -->
+  <section id="html-email">
+    <div class="section-title">
+      Email HTML
+      <span class="badge">Mise en forme</span>
+    </div>
+
+    <p>PHPMailer permet d'envoyer des emails en HTML avec un fallback en texte brut pour les clients qui ne supportent pas HTML.</p>
+
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">PHP</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre><span class="cm">// ... (config SMTP identique)</span>
+
+<span class="nb">$mail</span>-><span class="op">isHTML</span>(<span class="kw">true</span>); <span class="cm">// Active le mode HTML</span>
+<span class="nb">$mail</span>-><span class="op">Subject</span> = <span class="str">'Bienvenue sur notre plateforme !'</span>;
+
+<span class="cm">// Corps HTML</span>
+<span class="nb">$mail</span>-><span class="op">Body</span> = <span class="str">'&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;style&gt;
+    body { font-family: Arial, sans-serif; background: #f4f6fb; }
+    .container { max-width: 600px; margin: 2rem auto; background: #fff;
+                 border-radius: 8px; padding: 2rem; }
+    h1 { color: #2C3F77; }
+    .btn { display: inline-block; background: #2C3F77; color: #fff;
+           padding: .8rem 1.5rem; border-radius: 6px; text-decoration: none; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="container"&gt;
+    &lt;h1&gt;Bienvenue, Jean !&lt;/h1&gt;
+    &lt;p&gt;Votre compte a bien été créé. Cliquez ci-dessous pour le confirmer.&lt;/p&gt;
+    &lt;a class="btn" href="https://monsite.com/confirm?token=abc123"&gt;
+      Confirmer mon compte
+    &lt;/a&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;'</span>;
+
+<span class="cm">// Version texte brut (fallback)</span>
+<span class="nb">$mail</span>-><span class="op">AltBody</span> = <span class="str">'Bienvenue Jean ! Confirmez votre compte : https://monsite.com/confirm?token=abc123'</span>;</pre>
+    </div>
+
+    <h3>Bonne pratique : template dans un fichier séparé</h3>
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">PHP — templates/email_bienvenue.php</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre><span class="cm">// templates/email_bienvenue.php</span>
+<span class="kw">function</span> <span class="fn">getEmailBienvenue</span>(<span class="kw">string</span> <span class="nb">$prenom</span>, <span class="kw">string</span> <span class="nb">$lien</span>): <span class="kw">string</span>
+{
+    <span class="kw">return</span> <span class="str">"&lt;!DOCTYPE html&gt;...&lt;h1&gt;Bienvenue, {$prenom} !&lt;/h1&gt;
+    &lt;a href='{$lien}'&gt;Confirmer&lt;/a&gt;..."</span>;
+}
+
+<span class="cm">// Dans send_email.php</span>
+<span class="kw">require</span> <span class="str">'templates/email_bienvenue.php'</span>;
+<span class="nb">$mail</span>-><span class="op">Body</span> = <span class="fn">getEmailBienvenue</span>(<span class="str">'Jean'</span>, <span class="str">'https://monsite.com/confirm?token=xyz'</span>);</pre>
+    </div>
+  </section>
+
+  <!-- ─── PIÈCES JOINTES ─── -->
+  <section id="pieces-jointes">
+    <div class="section-title">
+      Pièces jointes
+      <span class="badge">Attachments</span>
+    </div>
+
+    <h3>Joindre un fichier depuis le serveur</h3>
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">PHP</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre><span class="cm">// Chemin absolu ou relatif au fichier</span>
+<span class="nb">$mail</span>-><span class="fn">addAttachment</span>(<span class="str">'/chemin/vers/document.pdf'</span>);
+
+<span class="cm">// Avec un nom de téléchargement personnalisé</span>
+<span class="nb">$mail</span>-><span class="fn">addAttachment</span>(<span class="str">'/chemin/vers/rapport_2024.pdf'</span>, <span class="str">'Rapport Annuel 2024.pdf'</span>);
+
+<span class="cm">// Plusieurs pièces jointes</span>
+<span class="nb">$mail</span>-><span class="fn">addAttachment</span>(<span class="str">'/chemin/vers/image.png'</span>);
+<span class="nb">$mail</span>-><span class="fn">addAttachment</span>(<span class="str">'/chemin/vers/data.xlsx'</span>, <span class="str">'Données.xlsx'</span>);</pre>
+    </div>
+
+    <h3>Image intégrée dans le corps HTML (inline)</h3>
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">PHP</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre><span class="cm">// Ajoute l'image avec un identifiant (CID)</span>
+<span class="nb">$mail</span>-><span class="fn">addEmbeddedImage</span>(<span class="str">'/chemin/vers/logo.png'</span>, <span class="str">'logo_cid'</span>);
+
+<span class="cm">// Dans le corps HTML, utilisez cid: suivi de l'identifiant</span>
+<span class="nb">$mail</span>-><span class="op">Body</span> = <span class="str">'&lt;img src="cid:logo_cid" alt="Logo" style="width:150px"&gt;
+&lt;p&gt;Bonjour !</p&gt;'</span>;</pre>
+    </div>
+
+    <h3>Pièce jointe depuis un upload utilisateur</h3>
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">PHP</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre><span class="kw">if</span> (<span class="fn">isset</span>(<span class="nb">$_FILES</span>[<span class="str">'fichier'</span>]) && <span class="nb">$_FILES</span>[<span class="str">'fichier'</span>][<span class="str">'error'</span>] === UPLOAD_ERR_OK) {
+    <span class="nb">$tmpPath</span>   = <span class="nb">$_FILES</span>[<span class="str">'fichier'</span>][<span class="str">'tmp_name'</span>];
+    <span class="nb">$origName</span>  = <span class="fn">basename</span>(<span class="nb">$_FILES</span>[<span class="str">'fichier'</span>][<span class="str">'name'</span>]);
+
+    <span class="cm">// Vérification de la taille (max 5 Mo)</span>
+    <span class="kw">if</span> (<span class="nb">$_FILES</span>[<span class="str">'fichier'</span>][<span class="str">'size'</span>] <= <span class="nb">5</span> * <span class="nb">1024</span> * <span class="nb">1024</span>) {
+        <span class="nb">$mail</span>-><span class="fn">addAttachment</span>(<span class="nb">$tmpPath</span>, <span class="nb">$origName</span>);
+    }
+}</pre>
+    </div>
+  </section>
+
+  <!-- ─── FORMULAIRE ─── -->
+  <section id="formulaire">
+    <div class="section-title">
+      Formulaire de contact complet
+      <span class="badge">Cas pratique</span>
+    </div>
+
+    <p>Exemple complet : formulaire HTML → validation PHP → envoi par email.</p>
+
+    <h3>contact.html</h3>
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">HTML</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre><span class="kw">&lt;form</span> <span class="op">action</span>=<span class="str">"traitement_contact.php"</span> <span class="op">method</span>=<span class="str">"post"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;label&gt;</span>Nom<span class="kw">&lt;/label&gt;</span>
+  <span class="kw">&lt;input</span> <span class="op">type</span>=<span class="str">"text"</span> <span class="op">name</span>=<span class="str">"nom"</span> required<span class="kw">&gt;</span>
+
+  <span class="kw">&lt;label&gt;</span>Email<span class="kw">&lt;/label&gt;</span>
+  <span class="kw">&lt;input</span> <span class="op">type</span>=<span class="str">"email"</span> <span class="op">name</span>=<span class="str">"email"</span> required<span class="kw">&gt;</span>
+
+  <span class="kw">&lt;label&gt;</span>Message<span class="kw">&lt;/label&gt;</span>
+  <span class="kw">&lt;textarea</span> <span class="op">name</span>=<span class="str">"message"</span> required<span class="kw">&gt;&lt;/textarea&gt;</span>
+
+  <span class="kw">&lt;button</span> <span class="op">type</span>=<span class="str">"submit"</span><span class="kw">&gt;</span>Envoyer<span class="kw">&lt;/button&gt;</span>
+<span class="kw">&lt;/form&gt;</span></pre>
+    </div>
+
+    <h3>traitement_contact.php</h3>
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">PHP</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre><span class="kw">require</span> <span class="str">'vendor/autoload.php'</span>;
+
+<span class="kw">use</span> PHPMailer\PHPMailer\PHPMailer;
+<span class="kw">use</span> PHPMailer\PHPMailer\Exception;
+
+<span class="nb">$config</span> = <span class="kw">require</span> <span class="str">'config/mailer.php'</span>;
+
+<span class="cm">// ── 1. Validation & nettoyage des données ──</span>
+<span class="kw">if</span> (<span class="nb">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] !== <span class="str">'POST'</span>) {
+    <span class="fn">header</span>(<span class="str">'Location: contact.html'</span>);
+    <span class="kw">exit</span>;
+}
+
+<span class="nb">$nom</span>     = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="nb">$_POST</span>[<span class="str">'nom'</span>] ?? <span class="str">''</span>));
+<span class="nb">$email</span>   = <span class="fn">filter_var</span>(<span class="nb">$_POST</span>[<span class="str">'email'</span>] ?? <span class="str">''</span>, FILTER_VALIDATE_EMAIL);
+<span class="nb">$message</span> = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="nb">$_POST</span>[<span class="str">'message'</span>] ?? <span class="str">''</span>));
+
+<span class="kw">if</span> (!<span class="nb">$nom</span> || !<span class="nb">$email</span> || !<span class="nb">$message</span>) {
+    <span class="kw">echo</span> <span class="str">'Données invalides.'</span>;
+    <span class="kw">exit</span>;
+}
+
+<span class="cm">// ── 2. Envoi de l'email ──</span>
+<span class="nb">$mail</span> = <span class="kw">new</span> <span class="fn">PHPMailer</span>(<span class="kw">true</span>);
+
+<span class="kw">try</span> {
+    <span class="nb">$mail</span>-><span class="fn">isSMTP</span>();
+    <span class="nb">$mail</span>-><span class="op">Host</span>       = <span class="nb">$config</span>[<span class="str">'host'</span>];
+    <span class="nb">$mail</span>-><span class="op">SMTPAuth</span>   = <span class="kw">true</span>;
+    <span class="nb">$mail</span>-><span class="op">Username</span>   = <span class="nb">$config</span>[<span class="str">'username'</span>];
+    <span class="nb">$mail</span>-><span class="op">Password</span>   = <span class="nb">$config</span>[<span class="str">'password'</span>];
+    <span class="nb">$mail</span>-><span class="op">SMTPSecure</span> = PHPMailer::<span class="op">ENCRYPTION_STARTTLS</span>;
+    <span class="nb">$mail</span>-><span class="op">Port</span>       = <span class="nb">$config</span>[<span class="str">'port'</span>];
+    <span class="nb">$mail</span>-><span class="op">CharSet</span>    = <span class="str">'UTF-8'</span>;
+
+    <span class="nb">$mail</span>-><span class="fn">setFrom</span>(<span class="nb">$config</span>[<span class="str">'from'</span>], <span class="nb">$config</span>[<span class="str">'from_name'</span>]);
+    <span class="nb">$mail</span>-><span class="fn">addAddress</span>(<span class="str">'admin@monsite.com'</span>, <span class="str">'Admin'</span>);
+    <span class="nb">$mail</span>-><span class="fn">addReplyTo</span>(<span class="nb">$email</span>, <span class="nb">$nom</span>); <span class="cm">// Répondre directement à l'utilisateur</span>
+
+    <span class="nb">$mail</span>-><span class="op">isHTML</span>(<span class="kw">true</span>);
+    <span class="nb">$mail</span>-><span class="op">Subject</span> = <span class="str">"Nouveau message de {$nom}"</span>;
+    <span class="nb">$mail</span>-><span class="op">Body</span>    = <span class="str">"
+        &lt;h2&gt;Message de {$nom}&lt;/h2&gt;
+        &lt;p&gt;&lt;strong&gt;Email :&lt;/strong&gt; {$email}&lt;/p&gt;
+        &lt;p&gt;&lt;strong&gt;Message :&lt;/strong&gt;&lt;/p&gt;
+        &lt;blockquote&gt;{$message}&lt;/blockquote&gt;
+    "</span>;
+    <span class="nb">$mail</span>-><span class="op">AltBody</span> = <span class="str">"De: {$nom} ({$email})\n\n{$message}"</span>;
+
+    <span class="nb">$mail</span>-><span class="fn">send</span>();
+
+    <span class="cm">// Rediriger avec confirmation</span>
+    <span class="fn">header</span>(<span class="str">'Location: contact.html?statut=succes'</span>);
+
+} <span class="kw">catch</span> (Exception <span class="nb">$e</span>) {
+    <span class="fn">header</span>(<span class="str">'Location: contact.html?statut=erreur'</span>);
+}
+<span class="kw">exit</span>;</pre>
+    </div>
+  </section>
+
+  <!-- ─── RESET MDP ─── -->
+  <section id="reset">
+    <div class="section-title">
+      Réinitialisation de mot de passe
+      <span class="badge">Cas pratique</span>
+    </div>
+
+    <p>Fonctionnement classique en 3 étapes :</p>
+
+    <ul class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Génération d'un token unique</strong>
+          <p>Créer un token aléatoire sécurisé, le stocker en BDD avec une expiration.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Envoi de l'email avec le lien</strong>
+          <p>Le lien contient le token : <code>https://monsite.com/reset?token=XYZ</code></p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Validation du token et mise à jour du mot de passe</strong>
+          <p>Vérifier que le token existe et n'est pas expiré, puis permettre la saisie du nouveau mot de passe.</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">PHP — forgot_password.php</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre><span class="kw">require</span> <span class="str">'vendor/autoload.php'</span>;
+<span class="kw">require</span> <span class="str">'config/database.php'</span>;  <span class="cm">// connexion PDO dans $pdo</span>
+
+<span class="kw">use</span> PHPMailer\PHPMailer\PHPMailer;
+<span class="kw">use</span> PHPMailer\PHPMailer\Exception;
+
+<span class="nb">$email</span>  = <span class="fn">filter_var</span>(<span class="nb">$_POST</span>[<span class="str">'email'</span>] ?? <span class="str">''</span>, FILTER_VALIDATE_EMAIL);
+<span class="nb">$config</span> = <span class="kw">require</span> <span class="str">'config/mailer.php'</span>;
+
+<span class="kw">if</span> (<span class="nb">$email</span>) {
+    <span class="cm">// Vérifier si l'email existe</span>
+    <span class="nb">$stmt</span> = <span class="nb">$pdo</span>-><span class="fn">prepare</span>(<span class="str">'SELECT id FROM users WHERE email = ?'</span>);
+    <span class="nb">$stmt</span>-><span class="fn">execute</span>([<span class="nb">$email</span>]);
+    <span class="nb">$user</span> = <span class="nb">$stmt</span>-><span class="fn">fetch</span>();
+
+    <span class="kw">if</span> (<span class="nb">$user</span>) {
+        <span class="cm">// Générer un token sécurisé</span>
+        <span class="nb">$token</span>   = <span class="fn">bin2hex</span>(<span class="fn">random_bytes</span>(<span class="nb">32</span>));
+        <span class="nb">$expires</span> = <span class="fn">date</span>(<span class="str">'Y-m-d H:i:s'</span>, <span class="fn">strtotime</span>(<span class="str">'+1 hour'</span>));
+
+        <span class="cm">// Stocker en BDD</span>
+        <span class="nb">$stmt</span> = <span class="nb">$pdo</span>-><span class="fn">prepare</span>(
+            <span class="str">'INSERT INTO password_resets (user_id, token, expires_at)
+             VALUES (?, ?, ?)'</span>
+        );
+        <span class="nb">$stmt</span>-><span class="fn">execute</span>([<span class="nb">$user</span>[<span class="str">'id'</span>], <span class="fn">hash</span>(<span class="str">'sha256'</span>, <span class="nb">$token</span>), <span class="nb">$expires</span>]);
+
+        <span class="cm">// Construire le lien</span>
+        <span class="nb">$lien</span> = <span class="str">"https://monsite.com/reset_password.php?token={$token}"</span>;
+
+        <span class="cm">// Envoyer l'email</span>
+        <span class="nb">$mail</span> = <span class="kw">new</span> <span class="fn">PHPMailer</span>(<span class="kw">true</span>);
+        <span class="kw">try</span> {
+            <span class="cm">// ... config SMTP ...</span>
+            <span class="nb">$mail</span>-><span class="fn">addAddress</span>(<span class="nb">$email</span>);
+            <span class="nb">$mail</span>-><span class="op">Subject</span> = <span class="str">'Réinitialisation de votre mot de passe'</span>;
+            <span class="nb">$mail</span>-><span class="op">isHTML</span>(<span class="kw">true</span>);
+            <span class="nb">$mail</span>-><span class="op">Body</span> = <span class="str">"
+                &lt;p&gt;Vous avez demandé la réinitialisation de votre mot de passe.&lt;/p&gt;
+                &lt;p&gt;Cliquez sur ce lien (valable 1 heure) :&lt;/p&gt;
+                &lt;a href='{$lien}'&gt;Réinitialiser mon mot de passe&lt;/a&gt;
+                &lt;p&gt;Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.&lt;/p&gt;
+            "</span>;
+            <span class="nb">$mail</span>-><span class="fn">send</span>();
+        } <span class="kw">catch</span> (Exception <span class="nb">$e</span>) { <span class="cm">/* log erreur */ </span>}
+    }
+
+    <span class="cm">// Toujours afficher le même message (sécurité)</span>
+    <span class="kw">echo</span> <span class="str">'Si cet email existe, un lien de réinitialisation a été envoyé.'</span>;
+}</pre>
+    </div>
+  </section>
+
+  <!-- ─── SÉCURITÉ ─── -->
+  <section id="securite">
+    <div class="section-title">
+      🛡️ Sécurité & bonnes pratiques
+      <span class="badge">Important</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card danger">
+        <div class="card-title">À éviter</div>
+        <ul>
+          <li>Mettre les credentials SMTP dans le code versionné</li>
+          <li>Afficher <code>$mail->ErrorInfo</code> à l'utilisateur final</li>
+          <li>Ne pas valider les données du formulaire avant envoi</li>
+          <li>Envoyer un email par utilisateur trouvé (confirmation de l'existence)</li>
+          <li>Utiliser des tokens prévisibles pour les réinitialisations</li>
+        </ul>
+      </div>
+      <div class="card success">
+        <div class="card-title">À faire</div>
+        <ul>
+          <li>Stocker les credentials dans un fichier hors version (<code>.gitignore</code>) ou en variables d'environnement</li>
+          <li>Logger les erreurs côté serveur (<code>error_log()</code>)</li>
+          <li>Valider et nettoyer toutes les données (<code>filter_var</code>, <code>htmlspecialchars</code>)</li>
+          <li>Utiliser <code>random_bytes()</code> pour les tokens</li>
+          <li>Hasher les tokens en BDD (<code>hash('sha256', $token)</code>)</li>
+          <li>Limiter le taux d'envoi (anti-spam)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Variables d'environnement (.env)</h3>
+    <p>Alternative propre aux fichiers de config PHP :</p>
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">Bash — .env (jamais versionné !)</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre>SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=vous@gmail.com
+SMTP_PASS=votre_app_password
+SMTP_FROM=vous@gmail.com
+SMTP_FROM_NAME="Mon Site"</pre>
+    </div>
+    <div class="code-block">
+      <div class="cb-header"><span class="cb-lang">PHP — lecture avec vlucas/phpdotenv</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+      <pre><span class="cm">// composer require vlucas/phpdotenv</span>
+<span class="nb">$dotenv</span> = Dotenv\Dotenv::<span class="fn">createImmutable</span>(<span class="fn">__DIR__</span>);
+<span class="nb">$dotenv</span>-><span class="fn">load</span>();
+
+<span class="nb">$mail</span>-><span class="op">Host</span>     = <span class="nb">$_ENV</span>[<span class="str">'SMTP_HOST'</span>];
+<span class="nb">$mail</span>-><span class="op">Username</span> = <span class="nb">$_ENV</span>[<span class="str">'SMTP_USER'</span>];
+<span class="nb">$mail</span>-><span class="op">Password</span> = <span class="nb">$_ENV</span>[<span class="str">'SMTP_PASS'</span>];</pre>
+    </div>
+
+    <h3>Service de test recommandé : Mailtrap</h3>
+    <div class="card info">
+      <div class="card-title">Mailtrap — emails de test sans risque</div>
+      <p><strong>Mailtrap</strong> (mailtrap.io) capture les emails en développement sans les envoyer réellement aux destinataires. Idéal pour tester sans risque de spammer des vraies adresses. Créez un compte gratuit, récupérez vos credentials SMTP et utilisez-les en dev.</p>
+      <div class="code-block" style="margin-top:.8rem">
+        <div class="cb-header"><span class="cb-lang">PHP — Config Mailtrap</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+        <pre><span class="nb">$mail</span>-><span class="fn">isSMTP</span>();
+<span class="nb">$mail</span>-><span class="op">Host</span>       = <span class="str">'sandbox.smtp.mailtrap.io'</span>;
+<span class="nb">$mail</span>-><span class="op">SMTPAuth</span>   = <span class="kw">true</span>;
+<span class="nb">$mail</span>-><span class="op">Username</span>   = <span class="str">'votre_username_mailtrap'</span>;
+<span class="nb">$mail</span>-><span class="op">Password</span>   = <span class="str">'votre_password_mailtrap'</span>;
+<span class="nb">$mail</span>-><span class="op">SMTPSecure</span> = PHPMailer::<span class="op">ENCRYPTION_STARTTLS</span>;
+<span class="nb">$mail</span>-><span class="op">Port</span>       = <span class="nb">2525</span>;</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── EXO 1 ─── -->
+  <section id="exo1">
+    <div class="section-title">
+      Exercice 1 — Email simple
+      <span class="badge">Débutant</span>
+    </div>
+
+    <div class="exo">
+      <h4>Énoncé</h4>
+      <p>Créez un script PHP <code>test_mail.php</code> qui :</p>
+      <ul>
+        <li>Configure PHPMailer avec votre compte SMTP (Gmail ou Mailtrap)</li>
+        <li>Envoie un email texte brut à votre propre adresse</li>
+        <li>Affiche un message de succès ou d'erreur</li>
+      </ul>
+    </div>
+
+    <div class="toggle-solution">
+      <button class="toggle-btn" onclick="toggleSolution(this)">
+        <span>▶</span> <span class="arrow">›</span> Voir la correction
+      </button>
+      <div class="toggle-content">
+        <div class="code-block">
+          <div class="cb-header"><span class="cb-lang">PHP — test_mail.php</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+          <pre><span class="kw">require</span> <span class="str">'vendor/autoload.php'</span>;
+
+<span class="kw">use</span> PHPMailer\PHPMailer\PHPMailer;
+<span class="kw">use</span> PHPMailer\PHPMailer\Exception;
+
+<span class="nb">$mail</span> = <span class="kw">new</span> <span class="fn">PHPMailer</span>(<span class="kw">true</span>);
+
+<span class="kw">try</span> {
+    <span class="nb">$mail</span>-><span class="fn">isSMTP</span>();
+    <span class="nb">$mail</span>-><span class="op">Host</span>       = <span class="str">'sandbox.smtp.mailtrap.io'</span>;
+    <span class="nb">$mail</span>-><span class="op">SMTPAuth</span>   = <span class="kw">true</span>;
+    <span class="nb">$mail</span>-><span class="op">Username</span>   = <span class="str">'VOTRE_USERNAME'</span>;
+    <span class="nb">$mail</span>-><span class="op">Password</span>   = <span class="str">'VOTRE_PASSWORD'</span>;
+    <span class="nb">$mail</span>-><span class="op">SMTPSecure</span> = PHPMailer::<span class="op">ENCRYPTION_STARTTLS</span>;
+    <span class="nb">$mail</span>-><span class="op">Port</span>       = <span class="nb">2525</span>;
+    <span class="nb">$mail</span>-><span class="op">CharSet</span>    = <span class="str">'UTF-8'</span>;
+
+    <span class="nb">$mail</span>-><span class="fn">setFrom</span>(<span class="str">'test@exemple.com'</span>, <span class="str">'Test DWWM'</span>);
+    <span class="nb">$mail</span>-><span class="fn">addAddress</span>(<span class="str">'moi@exemple.com'</span>);
+
+    <span class="nb">$mail</span>-><span class="op">Subject</span> = <span class="str">'Mon premier email PHPMailer'</span>;
+    <span class="nb">$mail</span>-><span class="op">Body</span>    = <span class="str">'Ça fonctionne ! PHPMailer est configuré.'</span>;
+
+    <span class="nb">$mail</span>-><span class="fn">send</span>();
+    <span class="kw">echo</span> <span class="str">'Email envoyé !'</span>;
+} <span class="kw">catch</span> (Exception <span class="nb">$e</span>) {
+    <span class="kw">echo</span> <span class="str">"Erreur SMTP : {</span><span class="nb">$mail</span><span class="str">->ErrorInfo}"</span>;
+}</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── EXO 2 ─── -->
+  <section id="exo2">
+    <div class="section-title">
+      Exercice 2 — Formulaire de contact
+      <span class="badge">Intermédiaire</span>
+    </div>
+
+    <div class="exo">
+      <h4>Énoncé</h4>
+      <p>Créez un formulaire de contact complet avec :</p>
+      <ul>
+        <li>Champs : Nom, Email, Sujet, Message</li>
+        <li>Validation PHP côté serveur (champs requis, email valide)</li>
+        <li>Envoi d'un email HTML avec PHPMailer</li>
+        <li>Redirection avec paramètre GET pour afficher un message de confirmation</li>
+        <li>Affichage conditionnel du message (<code>?statut=succes</code> ou <code>?statut=erreur</code>)</li>
+      </ul>
+    </div>
+
+    <div class="toggle-solution">
+      <button class="toggle-btn" onclick="toggleSolution(this)">
+        <span>▶</span> <span class="arrow">›</span> Voir la correction
+      </button>
+      <div class="toggle-content">
+        <div class="code-block">
+          <div class="cb-header"><span class="cb-lang">HTML — contact.html (extrait)</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+          <pre><span class="cm">&lt;!-- Affichage du statut --&gt;</span>
+<span class="kw">&lt;?php</span> <span class="kw">if</span> (<span class="fn">isset</span>(<span class="nb">$_GET</span>[<span class="str">'statut'</span>])): <span class="kw">?&gt;</span>
+  <span class="kw">&lt;?php</span> <span class="kw">if</span> (<span class="nb">$_GET</span>[<span class="str">'statut'</span>] === <span class="str">'succes'</span>): <span class="kw">?&gt;</span>
+    <span class="kw">&lt;p</span> <span class="op">class</span>=<span class="str">"succes"</span><span class="kw">&gt;</span>Message envoyé avec succès !<span class="kw">&lt;/p&gt;</span>
+  <span class="kw">&lt;?php</span> <span class="kw">else</span>: <span class="kw">?&gt;</span>
+    <span class="kw">&lt;p</span> <span class="op">class</span>=<span class="str">"erreur"</span><span class="kw">&gt;</span>Une erreur est survenue. Réessayez.<span class="kw">&lt;/p&gt;</span>
+  <span class="kw">&lt;?php</span> <span class="kw">endif</span>; <span class="kw">?&gt;</span>
+<span class="kw">&lt;?php</span> <span class="kw">endif</span>; <span class="kw">?&gt;</span>
+
+<span class="kw">&lt;form</span> <span class="op">action</span>=<span class="str">"traitement.php"</span> <span class="op">method</span>=<span class="str">"post"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;input</span> <span class="op">type</span>=<span class="str">"text"</span> <span class="op">name</span>=<span class="str">"nom"</span> placeholder=<span class="str">"Votre nom"</span> required<span class="kw">&gt;</span>
+  <span class="kw">&lt;input</span> <span class="op">type</span>=<span class="str">"email"</span> <span class="op">name</span>=<span class="str">"email"</span> placeholder=<span class="str">"Votre email"</span> required<span class="kw">&gt;</span>
+  <span class="kw">&lt;input</span> <span class="op">type</span>=<span class="str">"text"</span> <span class="op">name</span>=<span class="str">"sujet"</span> placeholder=<span class="str">"Sujet"</span> required<span class="kw">&gt;</span>
+  <span class="kw">&lt;textarea</span> <span class="op">name</span>=<span class="str">"message"</span> placeholder=<span class="str">"Votre message"</span> required<span class="kw">&gt;&lt;/textarea&gt;</span>
+  <span class="kw">&lt;button</span> <span class="op">type</span>=<span class="str">"submit"</span><span class="kw">&gt;</span>Envoyer<span class="kw">&lt;/button&gt;</span>
+<span class="kw">&lt;/form&gt;</span></pre>
+        </div>
+        <div class="code-block">
+          <div class="cb-header"><span class="cb-lang">PHP — traitement.php</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+          <pre><span class="kw">require</span> <span class="str">'vendor/autoload.php'</span>;
+<span class="kw">use</span> PHPMailer\PHPMailer\PHPMailer;
+<span class="kw">use</span> PHPMailer\PHPMailer\Exception;
+
+<span class="kw">if</span> (<span class="nb">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] !== <span class="str">'POST'</span>) {
+    <span class="fn">header</span>(<span class="str">'Location: contact.php'</span>); <span class="kw">exit</span>;
+}
+
+<span class="nb">$nom</span>     = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="nb">$_POST</span>[<span class="str">'nom'</span>] ?? <span class="str">''</span>));
+<span class="nb">$email</span>   = <span class="fn">filter_var</span>(<span class="nb">$_POST</span>[<span class="str">'email'</span>] ?? <span class="str">''</span>, FILTER_VALIDATE_EMAIL);
+<span class="nb">$sujet</span>   = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="nb">$_POST</span>[<span class="str">'sujet'</span>] ?? <span class="str">''</span>));
+<span class="nb">$message</span> = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="nb">$_POST</span>[<span class="str">'message'</span>] ?? <span class="str">''</span>));
+
+<span class="kw">if</span> (!<span class="nb">$nom</span> || !<span class="nb">$email</span> || !<span class="nb">$sujet</span> || !<span class="nb">$message</span>) {
+    <span class="fn">header</span>(<span class="str">'Location: contact.php?statut=erreur'</span>); <span class="kw">exit</span>;
+}
+
+<span class="nb">$mail</span> = <span class="kw">new</span> <span class="fn">PHPMailer</span>(<span class="kw">true</span>);
+<span class="kw">try</span> {
+    <span class="nb">$mail</span>-><span class="fn">isSMTP</span>();
+    <span class="nb">$mail</span>-><span class="op">Host</span>       = <span class="str">'sandbox.smtp.mailtrap.io'</span>;
+    <span class="nb">$mail</span>-><span class="op">SMTPAuth</span>   = <span class="kw">true</span>;
+    <span class="nb">$mail</span>-><span class="op">Username</span>   = <span class="str">'VOTRE_USERNAME'</span>;
+    <span class="nb">$mail</span>-><span class="op">Password</span>   = <span class="str">'VOTRE_PASSWORD'</span>;
+    <span class="nb">$mail</span>-><span class="op">SMTPSecure</span> = PHPMailer::<span class="op">ENCRYPTION_STARTTLS</span>;
+    <span class="nb">$mail</span>-><span class="op">Port</span>       = <span class="nb">2525</span>;
+    <span class="nb">$mail</span>-><span class="op">CharSet</span>    = <span class="str">'UTF-8'</span>;
+
+    <span class="nb">$mail</span>-><span class="fn">setFrom</span>(<span class="str">'noreply@monsite.com'</span>, <span class="str">'Mon Site'</span>);
+    <span class="nb">$mail</span>-><span class="fn">addAddress</span>(<span class="str">'admin@monsite.com'</span>);
+    <span class="nb">$mail</span>-><span class="fn">addReplyTo</span>(<span class="nb">$email</span>, <span class="nb">$nom</span>);
+
+    <span class="nb">$mail</span>-><span class="op">isHTML</span>(<span class="kw">true</span>);
+    <span class="nb">$mail</span>-><span class="op">Subject</span> = <span class="str">"[Contact] {$sujet}"</span>;
+    <span class="nb">$mail</span>-><span class="op">Body</span>    = <span class="str">"&lt;h2&gt;Message de {$nom}&lt;/h2&gt;
+        &lt;p&gt;Email : {$email}&lt;/p&gt;
+        &lt;p&gt;Sujet : {$sujet}&lt;/p&gt;
+        &lt;hr&gt;&lt;p&gt;{$message}&lt;/p&gt;"</span>;
+    <span class="nb">$mail</span>-><span class="op">AltBody</span> = <span class="str">"De: {$nom} ({$email})\nSujet: {$sujet}\n\n{$message}"</span>;
+
+    <span class="nb">$mail</span>-><span class="fn">send</span>();
+    <span class="fn">header</span>(<span class="str">'Location: contact.php?statut=succes'</span>);
+} <span class="kw">catch</span> (Exception <span class="nb">$e</span>) {
+    <span class="fn">error_log</span>(<span class="str">"Mailer error: {$mail->ErrorInfo}"</span>);
+    <span class="fn">header</span>(<span class="str">'Location: contact.php?statut=erreur'</span>);
+}
+<span class="kw">exit</span>;</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── EXO 3 ─── -->
+  <section id="exo3">
+    <div class="section-title">
+      Exercice 3 — Email avec pièce jointe uploadée
+      <span class="badge">Avancé</span>
+    </div>
+
+    <div class="exo">
+      <h4>Énoncé</h4>
+      <p>Créez un formulaire permettant d'envoyer un CV par email. Le formulaire doit avoir :</p>
+      <ul>
+        <li>Nom, Prénom, Email du candidat</li>
+        <li>Poste souhaité (select : Développeur Web, UX Designer, Chef de projet)</li>
+        <li>Un champ de téléversement pour le CV (PDF uniquement, max 2 Mo)</li>
+        <li>Validation du type MIME et de la taille côté PHP</li>
+        <li>Email HTML récapitulatif envoyé au RH avec le CV en pièce jointe</li>
+        <li>Email de confirmation envoyé au candidat</li>
+      </ul>
+    </div>
+
+    <div class="toggle-solution">
+      <button class="toggle-btn" onclick="toggleSolution(this)">
+        <span>▶</span> <span class="arrow">›</span> Voir la correction
+      </button>
+      <div class="toggle-content">
+        <div class="code-block">
+          <div class="cb-header"><span class="cb-lang">PHP — traitement_candidature.php</span><button class="cb-copy" onclick="copyCode(this)">Copier</button></div>
+          <pre><span class="kw">require</span> <span class="str">'vendor/autoload.php'</span>;
+<span class="kw">use</span> PHPMailer\PHPMailer\PHPMailer;
+<span class="kw">use</span> PHPMailer\PHPMailer\Exception;
+
+<span class="cm">// Validation des champs texte</span>
+<span class="nb">$nom</span>    = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="nb">$_POST</span>[<span class="str">'nom'</span>] ?? <span class="str">''</span>));
+<span class="nb">$prenom</span> = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="nb">$_POST</span>[<span class="str">'prenom'</span>] ?? <span class="str">''</span>));
+<span class="nb">$email</span>  = <span class="fn">filter_var</span>(<span class="nb">$_POST</span>[<span class="str">'email'</span>] ?? <span class="str">''</span>, FILTER_VALIDATE_EMAIL);
+<span class="nb">$poste</span>  = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="nb">$_POST</span>[<span class="str">'poste'</span>] ?? <span class="str">''</span>));
+
+<span class="cm">// Validation du fichier</span>
+<span class="nb">$cv</span> = <span class="nb">$_FILES</span>[<span class="str">'cv'</span>] ?? <span class="kw">null</span>;
+<span class="nb">$erreurs</span> = [];
+
+<span class="kw">if</span> (!<span class="nb">$nom</span> || !<span class="nb">$prenom</span> || !<span class="nb">$email</span> || !<span class="nb">$poste</span>) {
+    <span class="nb">$erreurs</span>[] = <span class="str">'Champs obligatoires manquants.'</span>;
+}
+
+<span class="kw">if</span> (!<span class="nb">$cv</span> || <span class="nb">$cv</span>[<span class="str">'error'</span>] !== UPLOAD_ERR_OK) {
+    <span class="nb">$erreurs</span>[] = <span class="str">'Aucun fichier téléversé.'</span>;
+} <span class="kw">else</span> {
+    <span class="cm">// Vérif type MIME réel</span>
+    <span class="nb">$finfo</span> = <span class="kw">new</span> <span class="fn">finfo</span>(FILEINFO_MIME_TYPE);
+    <span class="nb">$mime</span>  = <span class="nb">$finfo</span>-><span class="fn">file</span>(<span class="nb">$cv</span>[<span class="str">'tmp_name'</span>]);
+
+    <span class="kw">if</span> (<span class="nb">$mime</span> !== <span class="str">'application/pdf'</span>) {
+        <span class="nb">$erreurs</span>[] = <span class="str">'Le fichier doit être un PDF.'</span>;
+    }
+    <span class="kw">if</span> (<span class="nb">$cv</span>[<span class="str">'size'</span>] > <span class="nb">2</span> * <span class="nb">1024</span> * <span class="nb">1024</span>) {
+        <span class="nb">$erreurs</span>[] = <span class="str">'Le PDF ne doit pas dépasser 2 Mo.'</span>;
+    }
+}
+
+<span class="kw">if</span> (!<span class="kw">empty</span>(<span class="nb">$erreurs</span>)) {
+    <span class="fn">header</span>(<span class="str">'Location: candidature.php?statut=erreur'</span>); <span class="kw">exit</span>;
+}
+
+<span class="cm">// Envoi email RH avec pièce jointe</span>
+<span class="nb">$mail</span> = <span class="kw">new</span> <span class="fn">PHPMailer</span>(<span class="kw">true</span>);
+<span class="kw">try</span> {
+    <span class="cm">// ... config SMTP ...</span>
+    <span class="nb">$mail</span>-><span class="fn">addAddress</span>(<span class="str">'rh@monentreprise.com'</span>, <span class="str">'RH'</span>);
+    <span class="nb">$mail</span>-><span class="fn">addAttachment</span>(<span class="nb">$cv</span>[<span class="str">'tmp_name'</span>], <span class="str">"CV_{$nom}_{$prenom}.pdf"</span>);
+    <span class="nb">$mail</span>-><span class="op">isHTML</span>(<span class="kw">true</span>);
+    <span class="nb">$mail</span>-><span class="op">Subject</span> = <span class="str">"Candidature {$poste} — {$prenom} {$nom}"</span>;
+    <span class="nb">$mail</span>-><span class="op">Body</span>    = <span class="str">"
+        &lt;h2&gt;Nouvelle candidature&lt;/h2&gt;
+        &lt;p&gt;&lt;strong&gt;Candidat :&lt;/strong&gt; {$prenom} {$nom}&lt;/p&gt;
+        &lt;p&gt;&lt;strong&gt;Email :&lt;/strong&gt; {$email}&lt;/p&gt;
+        &lt;p&gt;&lt;strong&gt;Poste :&lt;/strong&gt; {$poste}&lt;/p&gt;
+        &lt;p&gt;Le CV est joint à cet email.&lt;/p&gt;
+    "</span>;
+    <span class="nb">$mail</span>-><span class="fn">send</span>();
+
+    <span class="cm">// Email de confirmation au candidat</span>
+    <span class="nb">$mail</span>-><span class="fn">clearAddresses</span>();
+    <span class="nb">$mail</span>-><span class="fn">clearAttachments</span>();
+    <span class="nb">$mail</span>-><span class="fn">addAddress</span>(<span class="nb">$email</span>, <span class="str">"{$prenom} {$nom}"</span>);
+    <span class="nb">$mail</span>-><span class="op">Subject</span> = <span class="str">'Votre candidature a bien été reçue'</span>;
+    <span class="nb">$mail</span>-><span class="op">Body</span>    = <span class="str">"
+        &lt;p&gt;Bonjour {$prenom},&lt;/p&gt;
+        &lt;p&gt;Nous avons bien reçu votre candidature pour le poste de &lt;strong&gt;{$poste}&lt;/strong&gt;.&lt;/p&gt;
+        &lt;p&gt;Notre équipe RH reviendra vers vous dans les meilleurs délais.&lt;/p&gt;
+        &lt;p&gt;Cordialement,&lt;/p&gt;
+    "</span>;
+    <span class="nb">$mail</span>-><span class="fn">send</span>();
+
+    <span class="fn">header</span>(<span class="str">'Location: candidature.php?statut=succes'</span>);
+} <span class="kw">catch</span> (Exception <span class="nb">$e</span>) {
+    <span class="fn">error_log</span>(<span class="str">"Mailer: {$mail->ErrorInfo}"</span>);
+    <span class="fn">header</span>(<span class="str">'Location: candidature.php?statut=erreur'</span>);
+}
+<span class="kw">exit</span>;</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// Scroll-spy
+const links = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('section[id]');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// Toggle
+function toggleSolution(btn) {
+  const content = btn.nextElementSibling;
+  btn.classList.toggle('open');
+  content.classList.toggle('open');
+  btn.querySelector('span').textContent = content.classList.contains('open') ? '▼' : '▶';
+}
+
+// Copy
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('pre').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Copié !';
+    setTimeout(() => btn.textContent = 'Copier', 2000);
+  });
+}
+</script>
+</body>
+</html>
